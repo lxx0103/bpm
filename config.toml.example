@@ -1,0 +1,42 @@
+[application]
+    name = "bpm"
+    api_uri = "/api/v1"
+    mode = "debug"     # debug/release
+
+[log]    
+    level = "debug" 
+    encoding = "json"
+    output = "/Users/lewis/Project/log/bpm.log"
+
+[cache]
+    host = "192.168.13.71:6379"
+    password = ""
+    db = 2
+    expiration = 3600
+    
+[web]
+    host = "0.0.0.0"
+    port = 8080
+
+[database]
+    host = "192.168.13.71"
+    port = 3306
+    user = "vanda"
+    password = "650211"
+    dbname = "bpm"
+
+[queue]
+    host = "192.168.13.71"
+    port = 5672
+    user = "vanda"
+    password = "650211"
+    exchange = "bpm"
+
+[auth]
+    secret = "bpm"
+
+
+[Wechat]
+    signin_uri = "https://api.weixin.qq.com/sns/jscode2session"
+    app_id = "asdf"
+    app_secret = "asdfasdfasdfasdf"

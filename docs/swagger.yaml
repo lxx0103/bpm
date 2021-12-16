@@ -1,0 +1,793 @@
+basePath: /
+definitions:
+  auth.SigninResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/auth.User'
+    type: object
+  auth.User:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      email:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      open_id:
+        type: string
+      role_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  auth.WechatSigninRequest:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  component.Component:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      event_id:
+        type: integer
+      id:
+        type: integer
+      info:
+        type: string
+      name:
+        type: string
+      status:
+        type: integer
+      type:
+        type: string
+      updated:
+        type: string
+      updated_by:
+        type: string
+      value:
+        type: string
+    type: object
+  component.ComponentNew:
+    properties:
+      description:
+        type: string
+      event_id:
+        type: integer
+      info:
+        type: string
+      name:
+        type: string
+      status:
+        type: integer
+      type:
+        type: string
+    required:
+    - description
+    - event_id
+    - info
+    - name
+    - status
+    - type
+    type: object
+  event.Event:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      project_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  event.EventNew:
+    properties:
+      name:
+        type: string
+      project_id:
+        type: integer
+      status:
+        type: integer
+    required:
+    - name
+    - project_id
+    - status
+    type: object
+  organization.Organization:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  organization.OrganizationNew:
+    properties:
+      name:
+        type: string
+      status:
+        type: integer
+    required:
+    - name
+    - status
+    type: object
+  project.Project:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  project.ProjectNew:
+    properties:
+      name:
+        type: string
+      organization_id:
+        type: integer
+      status:
+        type: integer
+    required:
+    - name
+    - organization_id
+    - status
+    type: object
+  response.ErrorRes:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
+  response.ListRes:
+    properties:
+      count:
+        type: integer
+      data:
+        type: object
+      page_id:
+        type: integer
+      page_size:
+        type: integer
+    type: object
+  response.SuccessRes:
+    properties:
+      data:
+        type: object
+    type: object
+host: 0.0.0.0:8080
+info:
+  contact:
+    email: lxx0103@yahoo.com
+    name: Lewis
+  description: API for BPM.
+  title: BPM API
+  version: "1.0"
+paths:
+  /components:
+    get:
+      consumes:
+      - application/json
+      operationId: "13"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 组件编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/component.Component'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 组件列表
+      tags:
+      - 组件管理
+    post:
+      consumes:
+      - application/json
+      operationId: "14"
+      parameters:
+      - description: 组件信息
+        in: body
+        name: component_info
+        required: true
+        schema:
+          $ref: '#/definitions/component.ComponentNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/component.Component'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建组件
+      tags:
+      - 组件管理
+  /components/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "15"
+      parameters:
+      - description: 组件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/component.Component'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取组件
+      tags:
+      - 组件管理
+    put:
+      consumes:
+      - application/json
+      operationId: "16"
+      parameters:
+      - description: 组件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 组件信息
+        in: body
+        name: component_info
+        required: true
+        schema:
+          $ref: '#/definitions/component.ComponentNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/component.Component'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新组件
+      tags:
+      - 组件管理
+  /events:
+    get:
+      consumes:
+      - application/json
+      operationId: "9"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 事件编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.Event'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 事件列表
+      tags:
+      - 事件管理
+    post:
+      consumes:
+      - application/json
+      operationId: "10"
+      parameters:
+      - description: 事件信息
+        in: body
+        name: event_info
+        required: true
+        schema:
+          $ref: '#/definitions/event.EventNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/event.Event'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建事件
+      tags:
+      - 事件管理
+  /events/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "11"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/event.Event'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取事件
+      tags:
+      - 事件管理
+    put:
+      consumes:
+      - application/json
+      operationId: "12"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 事件信息
+        in: body
+        name: event_info
+        required: true
+        schema:
+          $ref: '#/definitions/event.EventNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/event.Event'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新事件
+      tags:
+      - 事件管理
+  /organizations:
+    get:
+      consumes:
+      - application/json
+      operationId: "1"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 组织编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/organization.Organization'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 组织列表
+      tags:
+      - 组织管理
+    post:
+      consumes:
+      - application/json
+      operationId: "2"
+      parameters:
+      - description: 组织信息
+        in: body
+        name: organization_info
+        required: true
+        schema:
+          $ref: '#/definitions/organization.OrganizationNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/organization.Organization'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建组织
+      tags:
+      - 组织管理
+  /organizations/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "3"
+      parameters:
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/organization.Organization'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取组织
+      tags:
+      - 组织管理
+    put:
+      consumes:
+      - application/json
+      operationId: "4"
+      parameters:
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 组织信息
+        in: body
+        name: organization_info
+        required: true
+        schema:
+          $ref: '#/definitions/organization.OrganizationNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/organization.Organization'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新组织
+      tags:
+      - 组织管理
+  /projects:
+    get:
+      consumes:
+      - application/json
+      operationId: "5"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 项目编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目列表
+      tags:
+      - 项目管理
+    post:
+      consumes:
+      - application/json
+      operationId: "6"
+      parameters:
+      - description: 项目信息
+        in: body
+        name: project_info
+        required: true
+        schema:
+          $ref: '#/definitions/project.ProjectNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/project.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目
+      tags:
+      - 项目管理
+  /projects/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "7"
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/project.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取项目
+      tags:
+      - 项目管理
+    put:
+      consumes:
+      - application/json
+      operationId: "8"
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 项目信息
+        in: body
+        name: project_info
+        required: true
+        schema:
+          $ref: '#/definitions/project.ProjectNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/project.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新项目
+      tags:
+      - 项目管理
+  /signin:
+    post:
+      consumes:
+      - application/json
+      operationId: "17"
+      parameters:
+      - description: 登录类型
+        in: body
+        name: signin_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.WechatSigninRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.SigninResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 微信小程序登录
+      tags:
+      - 用户权限
+swagger: "2.0"
