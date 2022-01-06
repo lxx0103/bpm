@@ -1,9 +1,5 @@
 package auth
 
-type WechatSigninRequest struct {
-	Code string `json:"code" binding:"required,min=6"`
-}
-
 type WechatCredential struct {
 	OpenID     string `json:"openid" binding:"required"`
 	SessionKey string `json:"session_key" binding:"required"`
@@ -14,7 +10,7 @@ type WechatCredential struct {
 type SigninRequest struct {
 	AuthType   int    `json:"auth_type" binding:"required,max=9,min=1"`
 	Identifier string `json:"identifier" binding:"required"`
-	Credential string `json:"credential" binding:"required,min=6"`
+	Credential string `json:"credential" binding:"omitempty,min=6"`
 }
 type SigninResponse struct {
 	Token string `json:"token"`
@@ -25,8 +21,6 @@ type SignupRequest struct {
 	AuthType   int    `json:"auth_type" binding:"required,max=9,min=1"`
 	Identifier string `json:"identifier" binding:"required"`
 	Credential string `json:"credential" binding:"required,min=6"`
-	Name       string `json:"name" binding:"required"`
-	Email      string `json:"email" binding:"required,email"`
 }
 
 type RoleFilter struct {

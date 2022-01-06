@@ -20,6 +20,7 @@ type AuthQuery interface {
 	//User Management
 	GetUserByID(id int64) (*User, error)
 	GetUserByOpenID(openID string) (*User, error)
+	GetUserByUserName(userName string) (*User, error)
 	// GetUserCount(filter UserFilter) (int, error)
 	// GetUserList(filter UserFilter) (*[]User, error)
 	//Role Management
@@ -40,6 +41,15 @@ func (r *authQuery) GetUserByID(id int64) (*User, error) {
 func (r *authQuery) GetUserByOpenID(openID string) (*User, error) {
 	var user User
 	err := r.conn.Get(&user, "SELECT * FROM users WHERE open_id = ? ", openID)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *authQuery) GetUserByUserName(userName string) (*User, error) {
+	var user User
+	err := r.conn.Get(&user, "SELECT * FROM users WHERE identifier = ? ", userName)
 	if err != nil {
 		return nil, err
 	}

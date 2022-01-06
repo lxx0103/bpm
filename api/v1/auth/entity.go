@@ -3,17 +3,22 @@ package auth
 import "time"
 
 type User struct {
-	ID        int64     `db:"id" json:"id"`
-	OpenID    string    `db:"open_id" json:"open_id"`
-	RoleID    int64     `db:"role_id" json:"role_id"`
-	Name      string    `db:"name" json:"name"`
-	Email     string    `db:"email" json:"email"`
-	Gender    string    `db:"gender" json:"gender"`
-	Status    int       `db:"status" json:"status"`
-	Created   time.Time `db:"created" json:"created"`
-	CreatedBy string    `db:"created_by" json:"created_by"`
-	Updated   time.Time `db:"updated" json:"updated"`
-	UpdatedBy string    `db:"updated_by" json:"updated_by"`
+	ID         int64     `db:"id" json:"id"`
+	Type       int       `db:"type" json:"type"`
+	Identifier string    `db:"identifier" json:"identifier"`
+	Credential string    `db:"credential" json:"credential"`
+	RoleID     int64     `db:"role_id" json:"role_id"`
+	Name       string    `db:"name" json:"name"`
+	Email      string    `db:"email" json:"email"`
+	Gender     string    `db:"gender" json:"gender"`
+	Phone      string    `db:"phone" json:"phone"`
+	Birthday   string    `db:"birthday" json:"birthday"`
+	Address    string    `db:"address" json:"address"`
+	Status     int       `db:"status" json:"status"`
+	Created    time.Time `db:"created" json:"created"`
+	CreatedBy  string    `db:"created_by" json:"created_by"`
+	Updated    time.Time `db:"updated" json:"updated"`
+	UpdatedBy  string    `db:"updated_by" json:"updated_by"`
 }
 type Role struct {
 	ID             int64     `db:"id" json:"id"`

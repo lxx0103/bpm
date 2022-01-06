@@ -21,26 +21,39 @@ import (
 // @Failure 400 object response.ErrorRes 内部错误
 // @Failure 401 object response.ErrorRes 登录失败
 // @Router /signin [POST]
-func WechatSignin(c *gin.Context) {
-	var signinInfo WechatSigninRequest
+func Signin(c *gin.Context) {
+	var signinInfo SigninRequest
+	var userInfo *User
 	err := c.ShouldBindJSON(&signinInfo)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	authService := NewAuthService()
-	wechatCredential, err := authService.VerifyWechatSignin(signinInfo.Code)
-	if err != nil {
-		response.ResponseUnauthorized(c, "AuthError", err)
-		return
-	}
-	if wechatCredential.ErrCode != 0 {
-		response.ResponseUnauthorized(c, "AuthError", errors.New(wechatCredential.ErrMsg))
-		return
-	}
-	userInfo, err := authService.GetUserInfo(wechatCredential.OpenID)
-	if err != nil {
-		response.ResponseUnauthorized(c, "AuthError", err)
+	if signinInfo.AuthType == 2 {
+		wechatCredential, err := authService.VerifyWechatSignin(signinInfo.Identifier)
+		if err != nil {
+			response.ResponseUnauthorized(c, "AuthError", err)
+			return
+		}
+		if wechatCredential.ErrCode != 0 {
+			response.ResponseUnauthorized(c, "AuthError", errors.New(wechatCredential.ErrMsg))
+			return
+		}
+		userInfo, err = authService.GetUserInfo(wechatCredential.OpenID)
+		if err != nil {
+			response.ResponseUnauthorized(c, "AuthError", err)
+			return
+		}
+	} else if signinInfo.AuthType == 1 {
+		userInfo, err = authService.VerifyCredential(signinInfo)
+		if err != nil {
+			response.ResponseUnauthorized(c, "AuthError", err)
+			return
+		}
+	} else {
+		errMessage := "登陆类型错误"
+		response.ResponseUnauthorized(c, "AuthError", errors.New(errMessage))
 		return
 	}
 	claims := service.CustomClaims{
@@ -60,6 +73,33 @@ func WechatSignin(c *gin.Context) {
 	res.Token = generatedToken
 	res.User = *userInfo
 	response.Response(c, res)
+}
+
+// @Id 22
+// @Tags 用户权限
+// @Summary 用户注册
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param signup_info body SignupRequest true "登录类型"
+// @Success 200 object response.SuccessRes{data=int} 注册成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /signup [POST]
+func Signup(c *gin.Context) {
+	var signupInfo SignupRequest
+	err := c.ShouldBindJSON(&signupInfo)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	signupInfo.AuthType = 1
+	authService := NewAuthService()
+	authID, err := authService.CreateAuth(signupInfo)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, authID)
 }
 
 // @Summary 角色列表

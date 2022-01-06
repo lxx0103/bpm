@@ -2,11 +2,14 @@ package auth
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 
 	"bpm/core/config"
 	"bpm/core/database"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type authService struct {
@@ -17,7 +20,9 @@ func NewAuthService() AuthService {
 }
 
 type AuthService interface {
+	CreateAuth(SignupRequest) (int64, error)
 	VerifyWechatSignin(string) (*WechatCredential, error)
+	VerifyCredential(SigninRequest) (*User, error)
 	GetUserInfo(string) (*User, error)
 	//Role Management
 	GetRoleByID(int64) (*Role, error)
@@ -40,6 +45,38 @@ type AuthService interface {
 	// GetMenuAPIByID(int64) ([]int64, error)
 	// NewMenuAPI(int64, MenuAPINew) ([]int64, error)
 	// GetMyMenu(int64) ([]UserMenu, error)
+}
+
+func (s authService) CreateAuth(signupInfo SignupRequest) (int64, error) {
+	hashed, err := hashPassword(signupInfo.Credential)
+	if err != nil {
+		return 0, err
+	}
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	var newUser User
+	newUser.Credential = hashed
+	isConflict, err := repo.CheckConfict(signupInfo.AuthType, signupInfo.Identifier)
+	if err != nil {
+		return 0, err
+	}
+	if isConflict {
+		errMessage := "用户名已存在"
+		return 0, errors.New(errMessage)
+	}
+	newUser.Identifier = signupInfo.Identifier
+	newUser.Type = signupInfo.AuthType
+	authID, err := repo.CreateUser(newUser)
+	if err != nil {
+		return 0, err
+	}
+	tx.Commit()
+	return authID, nil
 }
 
 func (s *authService) VerifyWechatSignin(code string) (*WechatCredential, error) {
@@ -82,8 +119,11 @@ func (s *authService) GetUserInfo(openID string) (*User, error) {
 			return nil, err
 		}
 		defer tx.Rollback()
+		var newUser User
+		newUser.Type = 2
+		newUser.Identifier = openID
 		repo := NewAuthRepository(tx)
-		userID, err := repo.CreateUser(openID)
+		userID, err := repo.CreateUser(newUser)
 		if err != nil {
 			return nil, err
 		}
@@ -94,6 +134,30 @@ func (s *authService) GetUserInfo(openID string) (*User, error) {
 		tx.Commit()
 	}
 	return user, nil
+}
+
+func (s *authService) VerifyCredential(signinInfo SigninRequest) (*User, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	userInfo, err := query.GetUserByUserName(signinInfo.Identifier)
+	if err != nil {
+		return nil, err
+	}
+	if !checkPasswordHash(signinInfo.Credential, userInfo.Credential) {
+		errMessage := "密码错误"
+		return nil, errors.New(errMessage)
+	}
+	return userInfo, err
+}
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 func (s *authService) GetRoleByID(id int64) (*Role, error) {

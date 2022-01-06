@@ -17,10 +17,10 @@ func NewAuthRepository(transaction *sql.Tx) AuthRepository {
 
 type AuthRepository interface {
 	// GetCredential(SigninRequest) (UserAuth, error)
-	CreateUser(string) (int64, error)
+	CreateUser(User) (int64, error)
 	GetUserByID(int64) (*User, error)
-	// CheckConfict(int, string) (bool, error)
-	// UpdateUserID(UserAuth) error
+	CheckConfict(int, string) (bool, error)
+
 	// GetAuthCount(filter AuthFilter) (int, error)
 	// GetAuthList(filter AuthFilter) ([]Auth, error)
 
@@ -48,19 +48,21 @@ type AuthRepository interface {
 	// GetMyMenu(int64) ([]UserMenu, error)
 }
 
-func (r *authRepository) CreateUser(openID string) (int64, error) {
+func (r *authRepository) CreateUser(newUser User) (int64, error) {
 	result, err := r.tx.Exec(`
 		INSERT INTO users
 		(
-			open_id,
+			type,
+			identifier,
+			credential,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, 1, ?, "SIGNUP", ?, "SIGNUP")
-	`, openID, time.Now(), time.Now())
+		VALUES (?, ?, ?, 1, ?, "SIGNUP", ?, "SIGNUP")
+	`, newUser.Type, newUser.Identifier, newUser.Credential, time.Now(), time.Now())
 	if err != nil {
 		return 0, err
 	}
@@ -73,43 +75,23 @@ func (r *authRepository) CreateUser(openID string) (int64, error) {
 
 func (r *authRepository) GetUserByID(id int64) (*User, error) {
 	var res User
-	row := r.tx.QueryRow(`SELECT id, open_id, name, email, role_id, gender, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
-	err := row.Scan(&res.ID, &res.OpenID, &res.Name, &res.Email, &res.RoleID, &res.Gender, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	row := r.tx.QueryRow(`SELECT id, type, identifier, credential, role_id, name, email, gender, phone, birthday, address, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Type, &res.Identifier, &res.Credential, res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
-// func (r *authRepository) GetCredential(signInfo SigninRequest) (UserAuth, error) {
-// 	var authInfo UserAuth
-// 	err := r.conn.Get(&authInfo, "SELECT user_id, credential FROM user_auths WHERE auth_type = ? AND identifier = ?", signInfo.AuthType, signInfo.Identifier)
-// 	if err != nil {
-// 		return UserAuth{}, err
-// 	}
-// 	return authInfo, nil
-// }
-
-// func (r *authRepository) UpdateUserID(authInfo UserAuth) error {
-// 	_, err := r.conn.Exec(`
-// 		UPDATE user_auths
-// 		SET user_id = ?
-// 		WHERE id = ?
-// 	`, authInfo.UserID, authInfo.ID)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-// func (r *authRepository) CheckConfict(authType int, identifier string) (bool, error) {
-// 	existed := 0
-// 	err := r.conn.Get(&existed, "SELECT count(1) FROM user_auths WHERE auth_type = ? AND identifier = ?", authType, identifier)
-// 	if err != nil {
-// 		return true, err
-// 	}
-// 	return existed != 0, nil
-// }
+func (r *authRepository) CheckConfict(authType int, identifier string) (bool, error) {
+	var existed int
+	row := r.tx.QueryRow("SELECT count(1) FROM users WHERE type = ? AND identifier = ?", authType, identifier)
+	err := row.Scan(&existed)
+	if err != nil {
+		return true, err
+	}
+	return existed != 0, nil
+}
 
 // // func (r *authRepository) GetAuthCount(filter AuthFilter) (int, error) {
 // // 	where, args := []string{"1 = 1"}, []interface{}{}
