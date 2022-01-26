@@ -3,15 +3,16 @@ package service
 import (
 	"errors"
 
-	"github.com/dgrijalva/jwt-go"
 	"bpm/core/config"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 type CustomClaims struct {
-	UserID   int64
-	Username string
-	RoleID   int64
-	Email    string
+	UserID         int64
+	OrganizationID int64
+	Username       string
+	RoleID         int64
 	jwt.StandardClaims
 }
 

@@ -1,5 +1,65 @@
 basePath: /
 definitions:
+  auth.Role:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      priority:
+        type: integer
+      status:
+        type: string
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  auth.RoleNew:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      priority:
+        minimum: 1
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - name
+    - organization_id
+    - priority
+    - status
+    type: object
+  auth.SigninRequest:
+    properties:
+      auth_type:
+        enum:
+        - 1
+        - 2
+        type: integer
+      credential:
+        minLength: 6
+        type: string
+      identifier:
+        type: string
+    required:
+    - auth_type
+    - identifier
+    type: object
   auth.SigninResponse:
     properties:
       token:
@@ -7,11 +67,33 @@ definitions:
       user:
         $ref: '#/definitions/auth.User'
     type: object
+  auth.SignupRequest:
+    properties:
+      auth_type:
+        maximum: 9
+        minimum: 1
+        type: integer
+      credential:
+        minLength: 6
+        type: string
+      identifier:
+        type: string
+    required:
+    - auth_type
+    - credential
+    - identifier
+    type: object
   auth.User:
     properties:
+      address:
+        type: string
+      birthday:
+        type: string
       created:
         type: string
       created_by:
+        type: string
+      credential:
         type: string
       email:
         type: string
@@ -19,25 +101,22 @@ definitions:
         type: string
       id:
         type: integer
+      identifier:
+        type: string
       name:
         type: string
-      open_id:
+      phone:
         type: string
       role_id:
         type: integer
       status:
         type: integer
+      type:
+        type: integer
       updated:
         type: string
       updated_by:
         type: string
-    type: object
-  auth.WechatSigninRequest:
-    properties:
-      code:
-        type: string
-    required:
-    - code
     type: object
   component.Component:
     properties:
@@ -69,16 +148,27 @@ definitions:
   component.ComponentNew:
     properties:
       description:
+        maxLength: 255
+        minLength: 1
         type: string
       event_id:
+        minimum: 1
         type: integer
       info:
+        minLength: 1
         type: string
       name:
+        maxLength: 64
+        minLength: 1
         type: string
       status:
+        enum:
+        - 1
+        - 2
         type: integer
       type:
+        maxLength: 32
+        minLength: 1
         type: string
     required:
     - description
@@ -110,10 +200,16 @@ definitions:
   event.EventNew:
     properties:
       name:
+        maxLength: 64
+        minLength: 1
         type: string
       project_id:
+        minimum: 1
         type: integer
       status:
+        enum:
+        - 1
+        - 2
         type: integer
     required:
     - name
@@ -140,8 +236,13 @@ definitions:
   organization.OrganizationNew:
     properties:
       name:
+        maxLength: 64
+        minLength: 1
         type: string
       status:
+        enum:
+        - 1
+        - 2
         type: integer
     required:
     - name
@@ -169,10 +270,16 @@ definitions:
   project.ProjectNew:
     properties:
       name:
+        maxLength: 64
+        minLength: 1
         type: string
       organization_id:
+        minimum: 1
         type: integer
       status:
+        enum:
+        - 1
+        - 2
         type: integer
     required:
     - name
@@ -190,8 +297,7 @@ definitions:
     properties:
       count:
         type: integer
-      data:
-        type: object
+      data: {}
       page_id:
         type: integer
       page_size:
@@ -199,8 +305,7 @@ definitions:
     type: object
   response.SuccessRes:
     properties:
-      data:
-        type: object
+      data: {}
     type: object
 host: 0.0.0.0:8080
 info:
@@ -755,6 +860,142 @@ paths:
       summary: 根据ID更新项目
       tags:
       - 项目管理
+  /roles:
+    get:
+      consumes:
+      - application/json
+      operationId: "18"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数（5/10/15/20）
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 角色名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/auth.Role'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 角色列表
+      tags:
+      - 角色管理
+    post:
+      consumes:
+      - application/json
+      operationId: "19"
+      parameters:
+      - description: 角色信息
+        in: body
+        name: role_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RoleNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Role'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建角色
+      tags:
+      - 角色管理
+  /roles/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "20"
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Role'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取角色
+      tags:
+      - 角色管理
+    put:
+      consumes:
+      - application/json
+      operationId: "21"
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 角色信息
+        in: body
+        name: role_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RoleNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Role'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新角色
+      tags:
+      - 角色管理
   /signin:
     post:
       consumes:
@@ -766,7 +1007,7 @@ paths:
         name: signin_info
         required: true
         schema:
-          $ref: '#/definitions/auth.WechatSigninRequest'
+          $ref: '#/definitions/auth.SigninRequest'
       produces:
       - application/json
       responses:
@@ -787,7 +1028,38 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 微信小程序登录
+      summary: 登录
+      tags:
+      - 用户权限
+  /signup:
+    post:
+      consumes:
+      - application/json
+      operationId: "22"
+      parameters:
+      - description: 登录类型
+        in: body
+        name: signup_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: integer
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 用户注册
       tags:
       - 用户权限
 swagger: "2.0"

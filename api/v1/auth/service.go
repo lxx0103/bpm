@@ -24,6 +24,7 @@ type AuthService interface {
 	VerifyWechatSignin(string) (*WechatCredential, error)
 	VerifyCredential(SigninRequest) (*User, error)
 	GetUserInfo(string) (*User, error)
+	UpdateUser(int64, UserUpdate, int64) (*User, error)
 	//Role Management
 	GetRoleByID(int64) (*Role, error)
 	NewRole(RoleNew) (*Role, error)
@@ -61,7 +62,7 @@ func (s authService) CreateAuth(signupInfo SignupRequest) (int64, error) {
 	repo := NewAuthRepository(tx)
 	var newUser User
 	newUser.Credential = hashed
-	isConflict, err := repo.CheckConfict(signupInfo.AuthType, signupInfo.Identifier)
+	isConflict, err := repo.CheckConfict(1, signupInfo.Identifier)
 	if err != nil {
 		return 0, err
 	}
@@ -70,7 +71,8 @@ func (s authService) CreateAuth(signupInfo SignupRequest) (int64, error) {
 		return 0, errors.New(errMessage)
 	}
 	newUser.Identifier = signupInfo.Identifier
-	newUser.Type = signupInfo.AuthType
+	newUser.Type = 1
+	newUser.OrganizationID = signupInfo.OrganizationID
 	authID, err := repo.CreateUser(newUser)
 	if err != nil {
 		return 0, err
@@ -158,6 +160,58 @@ func hashPassword(password string) (string, error) {
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) (*User, error) {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+
+	oldUser, err := repo.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	byUser, err := repo.GetUserByID(byUserID)
+	if err != nil {
+		return nil, err
+	}
+	byRole, err := repo.GetRoleByID(byUser.RoleID)
+	if err != nil {
+		return nil, err
+	}
+	if oldUser.RoleID != 0 {
+		targetRole, err := repo.GetRoleByID(oldUser.RoleID)
+		if err != nil {
+			return nil, err
+		}
+		if byRole.OrganizationID != targetRole.OrganizationID {
+			msg := "目标用户属于其他组织"
+			return nil, errors.New(msg)
+		}
+		if byRole.Priority <= targetRole.Priority && userID != byUserID {
+			msg := "你的权限不足"
+			return nil, errors.New(msg)
+		}
+	}
+	toRole, err := repo.GetRoleByID(info.RoleID)
+	if err != nil {
+		return nil, err
+	}
+	if byRole.Priority <= toRole.Priority {
+		msg := "你的权限不足"
+		return nil, errors.New(msg)
+	}
+	err = repo.UpdateUser(userID, info)
+	if err != nil {
+		return nil, err
+	}
+	user, err := repo.GetUserByID(userID)
+	tx.Commit()
+	return user, err
 }
 
 func (s *authService) GetRoleByID(id int64) (*Role, error) {

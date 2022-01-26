@@ -8,7 +8,7 @@ type WechatCredential struct {
 	ErrMsg     string `json:"errmsg"`
 }
 type SigninRequest struct {
-	AuthType   int    `json:"auth_type" binding:"required,max=9,min=1"`
+	AuthType   int    `json:"auth_type" binding:"required,oneof=1 2"`
 	Identifier string `json:"identifier" binding:"required"`
 	Credential string `json:"credential" binding:"omitempty,min=6"`
 }
@@ -18,9 +18,9 @@ type SigninResponse struct {
 }
 
 type SignupRequest struct {
-	AuthType   int    `json:"auth_type" binding:"required,max=9,min=1"`
-	Identifier string `json:"identifier" binding:"required"`
-	Credential string `json:"credential" binding:"required,min=6"`
+	OrganizationID int64  `json:"organization_id" binding:"required,min=1"`
+	Identifier     string `json:"identifier" binding:"required"`
+	Credential     string `json:"credential" binding:"required,min=6"`
 }
 
 type RoleFilter struct {
@@ -110,4 +110,19 @@ type MyMenuDetail struct {
 	IsHidden  int64          `json:"is_hidden" binding:"required,oneof=1 2"`
 	Enabled   int64          `json:"enabled" binding:"required,oneof=1 2"`
 	Items     []MyMenuDetail `json:"items"`
+}
+
+type UserID struct {
+	ID int64 `uri:"id" binding:"required,min=1"`
+}
+type UserUpdate struct {
+	Name     string `json:"name" binding:"required,min=2"`
+	Email    string `json:"email" binding:"required,email"`
+	RoleID   int64  `json:"role_id" binding:"required,min=1"`
+	Gender   string `json:"gender" binding:"required,min=1"`
+	Phone    string `json:"phone" binding:"required,min=1"`
+	Birthday string `json:"birthday" binding:"required,min=1"`
+	Address  string `json:"address" binding:"required,min=1"`
+	Status   int    `json:"status" binding:"required,min=1"`
+	User     string `json:"user" swaggerignore:"true"`
 }

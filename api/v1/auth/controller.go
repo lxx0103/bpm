@@ -10,13 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary 微信小程序登录
+// @Summary 登录
 // @Id 17
 // @Tags 用户权限
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param signin_info body WechatSigninRequest true "登录类型"
+// @Param signin_info body SigninRequest true "登录类型"
 // @Success 200 object response.SuccessRes{data=SigninResponse} 登录成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Failure 401 object response.ErrorRes 登录失败
@@ -57,10 +57,10 @@ func Signin(c *gin.Context) {
 		return
 	}
 	claims := service.CustomClaims{
-		UserID:   userInfo.ID,
-		Username: userInfo.Name,
-		RoleID:   userInfo.RoleID,
-		Email:    userInfo.Email,
+		UserID:         userInfo.ID,
+		Username:       userInfo.Name,
+		RoleID:         userInfo.RoleID,
+		OrganizationID: userInfo.OrganizationID,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000,
 			ExpiresAt: time.Now().Unix() + 72000,
@@ -92,7 +92,6 @@ func Signup(c *gin.Context) {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	signupInfo.AuthType = 1
 	authService := NewAuthService()
 	authID, err := authService.CreateAuth(signupInfo)
 	if err != nil {
@@ -111,7 +110,7 @@ func Signup(c *gin.Context) {
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数（5/10/15/20）"
 // @Param name query string false "角色名称"
-// @Success 200 object response.ListRes{data=[]UserRole} 成功
+// @Success 200 object response.ListRes{data=[]Role} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /roles [GET]
 func GetRoleList(c *gin.Context) {
@@ -137,7 +136,7 @@ func GetRoleList(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param role_info body RoleNew true "角色信息"
-// @Success 200 object response.SuccessRes{data=UserRole} 成功
+// @Success 200 object response.SuccessRes{data=Role} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /roles [POST]
 func NewRole(c *gin.Context) {
@@ -164,7 +163,7 @@ func NewRole(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path int true "角色ID"
-// @Success 200 object response.SuccessRes{data=UserRole} 成功
+// @Success 200 object response.SuccessRes{data=Role} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /roles/:id [GET]
 func GetRoleByID(c *gin.Context) {
@@ -191,7 +190,7 @@ func GetRoleByID(c *gin.Context) {
 // @Produce application/json
 // @Param id path int true "角色ID"
 // @Param role_info body RoleNew true "角色信息"
-// @Success 200 object response.SuccessRes{data=UserRole} 成功
+// @Success 200 object response.SuccessRes{data=Role} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /roles/:id [PUT]
 func UpdateRole(c *gin.Context) {
@@ -209,6 +208,39 @@ func UpdateRole(c *gin.Context) {
 	role.User = claims.Username
 	authService := NewAuthService()
 	new, err := authService.UpdateRole(uri.ID, role)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, new)
+}
+
+// @Summary 根据ID更新用户
+// @Id 23
+// @Tags 用户管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "用户ID"
+// @Param menu_info body UserUpdate true "用户信息"
+// @Success 200 object response.SuccessRes{data=UserProfile} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /users/:id [PUT]
+func UpdateUser(c *gin.Context) {
+	var uri UserID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var user UserUpdate
+	if err := c.ShouldBindJSON(&user); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	user.User = claims.Username
+	authService := NewAuthService()
+	new, err := authService.UpdateUser(uri.ID, user, claims.UserID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

@@ -20,7 +20,7 @@ type AuthRepository interface {
 	CreateUser(User) (int64, error)
 	GetUserByID(int64) (*User, error)
 	CheckConfict(int, string) (bool, error)
-
+	UpdateUser(int64, UserUpdate) error
 	// GetAuthCount(filter AuthFilter) (int, error)
 	// GetAuthList(filter AuthFilter) ([]Auth, error)
 
@@ -54,6 +54,7 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 		(
 			type,
 			identifier,
+			organization_id,
 			credential,
 			status,
 			created,
@@ -61,8 +62,8 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, 1, ?, "SIGNUP", ?, "SIGNUP")
-	`, newUser.Type, newUser.Identifier, newUser.Credential, time.Now(), time.Now())
+		VALUES (?, ?, ?, ?, 1, ?, "SIGNUP", ?, "SIGNUP")
+	`, newUser.Type, newUser.Identifier, newUser.OrganizationID, newUser.Credential, time.Now(), time.Now())
 	if err != nil {
 		return 0, err
 	}
@@ -75,8 +76,8 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 
 func (r *authRepository) GetUserByID(id int64) (*User, error) {
 	var res User
-	row := r.tx.QueryRow(`SELECT id, type, identifier, credential, role_id, name, email, gender, phone, birthday, address, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
-	err := row.Scan(&res.ID, &res.Type, &res.Identifier, &res.Credential, res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	row := r.tx.QueryRow(`SELECT id, organization_id, type, identifier, credential, role_id, name, email, gender, phone, birthday, address, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.Type, &res.Identifier, &res.Credential, &res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
@@ -92,48 +93,26 @@ func (r *authRepository) CheckConfict(authType int, identifier string) (bool, er
 	}
 	return existed != 0, nil
 }
-
-// // func (r *authRepository) GetAuthCount(filter AuthFilter) (int, error) {
-// // 	where, args := []string{"1 = 1"}, []interface{}{}
-// // 	if v := filter.Name; v != "" {
-// // 		where, args = append(where, "name = ?"), append(args, v)
-// // 	}
-// // 	if v := filter.Email; v != "" {
-// // 		where, args = append(where, "email = ?"), append(args, v)
-// // 	}
-// // 	var count int
-// // 	err := r.conn.Get(&count, `
-// // 		SELECT count(1) as count
-// // 		FROM auths
-// // 		WHERE `+strings.Join(where, " AND "), args...)
-// // 	if err != nil {
-// // 		return 0, err
-// // 	}
-// // 	return count, nil
-// // }
-
-// // func (r *authRepository) GetAuthList(filter AuthFilter) ([]Auth, error) {
-// // 	where, args := []string{"1 = 1"}, []interface{}{}
-// // 	if v := filter.Name; v != "" {
-// // 		where, args = append(where, "name = ?"), append(args, v)
-// // 	}
-// // 	if v := filter.Email; v != "" {
-// // 		where, args = append(where, "email = ?"), append(args, v)
-// // 	}
-// // 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
-// // 	args = append(args, filter.PageSize)
-// // 	var auths []Auth
-// // 	err := r.conn.Select(&auths, `
-// // 		SELECT *
-// // 		FROM auths
-// // 		WHERE `+strings.Join(where, " AND ")+`
-// // 		LIMIT ?, ?
-// // 	`, args...)
-// // 	if err != nil {
-// // 		return nil, err
-// // 	}
-// // 	return auths, nil
-// // }
+func (r *authRepository) UpdateUser(id int64, info UserUpdate) error {
+	_, err := r.tx.Exec(`
+		Update user_profiles SET 
+		name = ?,
+		email = ?,
+		role_id = ?,
+		gender = ?,
+		phone = ?,
+		birthday = ?,
+		address = ?,
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, info.Name, info.Email, info.RoleID, info.Gender, info.Phone, info.Birthday, info.Address, info.Status, time.Now(), info.User, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (r *authRepository) CreateRole(info RoleNew) (int64, error) {
 	result, err := r.tx.Exec(`
