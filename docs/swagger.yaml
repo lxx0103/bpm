@@ -69,19 +69,18 @@ definitions:
     type: object
   auth.SignupRequest:
     properties:
-      auth_type:
-        maximum: 9
-        minimum: 1
-        type: integer
       credential:
         minLength: 6
         type: string
       identifier:
         type: string
+      organization_id:
+        minimum: 1
+        type: integer
     required:
-    - auth_type
     - credential
     - identifier
+    - organization_id
     type: object
   auth.User:
     properties:
@@ -105,6 +104,8 @@ definitions:
         type: string
       name:
         type: string
+      organization_id:
+        type: integer
       phone:
         type: string
       role_id:
@@ -117,6 +118,87 @@ definitions:
         type: string
       updated_by:
         type: string
+    type: object
+  auth.UserUpdate:
+    properties:
+      address:
+        minLength: 1
+        type: string
+      birthday:
+        minLength: 1
+        type: string
+      email:
+        type: string
+      gender:
+        minLength: 1
+        type: string
+      name:
+        minLength: 2
+        type: string
+      phone:
+        minLength: 1
+        type: string
+      role_id:
+        minimum: 1
+        type: integer
+      status:
+        minimum: 1
+        type: integer
+    required:
+    - address
+    - birthday
+    - email
+    - gender
+    - name
+    - phone
+    - role_id
+    - status
+    type: object
+  client.Client:
+    properties:
+      address:
+        type: string
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      phone:
+        type: string
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  client.ClientNew:
+    properties:
+      address:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      phone:
+        maxLength: 64
+        minLength: 6
+        type: string
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - name
+    - phone
+    - status
     type: object
   component.Component:
     properties:
@@ -316,6 +398,142 @@ info:
   title: BPM API
   version: "1.0"
 paths:
+  /clients:
+    get:
+      consumes:
+      - application/json
+      operationId: "24"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 客户名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/client.Client'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 客户列表
+      tags:
+      - 客户管理
+    post:
+      consumes:
+      - application/json
+      operationId: "25"
+      parameters:
+      - description: 客户信息
+        in: body
+        name: client_info
+        required: true
+        schema:
+          $ref: '#/definitions/client.ClientNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/client.Client'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建客户
+      tags:
+      - 客户管理
+  /clients/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "26"
+      parameters:
+      - description: 客户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/client.Client'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取客户
+      tags:
+      - 客户管理
+    put:
+      consumes:
+      - application/json
+      operationId: "37"
+      parameters:
+      - description: 客户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 客户信息
+        in: body
+        name: client_info
+        required: true
+        schema:
+          $ref: '#/definitions/client.ClientNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/client.Client'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新客户
+      tags:
+      - 客户管理
   /components:
     get:
       consumes:
@@ -1062,4 +1280,40 @@ paths:
       summary: 用户注册
       tags:
       - 用户权限
+  /users/:id:
+    put:
+      consumes:
+      - application/json
+      operationId: "23"
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 用户信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新用户
+      tags:
+      - 用户管理
 swagger: "2.0"

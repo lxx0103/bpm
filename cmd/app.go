@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bpm/api/v1/auth"
+	"bpm/api/v1/client"
 	"bpm/api/v1/component"
 	"bpm/api/v1/event"
 	"bpm/api/v1/organization"
@@ -21,6 +22,6 @@ func Run() {
 	// event.Subscribe(user.Subscribe, auth.Subscribe, inventory.Subscribe)
 	r := router.InitRouter()
 	router.InitPublicRouter(r, auth.Routers)
-	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter)
+	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers)
 	router.RunServer(r)
 }

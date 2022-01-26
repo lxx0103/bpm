@@ -223,7 +223,7 @@ func UpdateRole(c *gin.Context) {
 // @Produce application/json
 // @Param id path int true "用户ID"
 // @Param menu_info body UserUpdate true "用户信息"
-// @Success 200 object response.SuccessRes{data=UserProfile} 成功
+// @Success 200 object response.SuccessRes{data=User} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /users/:id [PUT]
 func UpdateUser(c *gin.Context) {
