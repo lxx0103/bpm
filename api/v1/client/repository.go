@@ -28,14 +28,16 @@ func (r *clientRepository) CreateClient(info ClientNew, organizationID int64) (i
 		(
 			organization_id,
 			name,
+			phone,
+			address,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`, organizationID, info.Name, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, organizationID, info.Name, info.Phone, info.Address, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}

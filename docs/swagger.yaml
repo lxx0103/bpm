@@ -355,9 +355,6 @@ definitions:
         maxLength: 64
         minLength: 1
         type: string
-      organization_id:
-        minimum: 1
-        type: integer
       status:
         enum:
         - 1
@@ -365,7 +362,6 @@ definitions:
         type: integer
     required:
     - name
-    - organization_id
     - status
     type: object
   response.ErrorRes:

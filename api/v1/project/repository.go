@@ -17,12 +17,13 @@ func NewProjectRepository(transaction *sql.Tx) ProjectRepository {
 
 type ProjectRepository interface {
 	//Project Management
-	CreateProject(info ProjectNew) (int64, error)
-	UpdateProject(id int64, info ProjectNew) (int64, error)
-	GetProjectByID(id int64) (*Project, error)
+	CreateProject(ProjectNew, int64) (int64, error)
+	UpdateProject(int64, ProjectNew) (int64, error)
+	GetProjectByID(int64, int64) (*Project, error)
+	CheckNameExist(string, int64) (int, error)
 }
 
-func (r *projectRepository) CreateProject(info ProjectNew) (int64, error) {
+func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64) (int64, error) {
 	result, err := r.tx.Exec(`
 		INSERT INTO projects
 		(
@@ -35,7 +36,7 @@ func (r *projectRepository) CreateProject(info ProjectNew) (int64, error) {
 			updated_by
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`, info.OrganizationID, info.Name, info.Status, time.Now(), info.User, time.Now(), info.User)
+	`, organizationID, info.Name, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -49,13 +50,12 @@ func (r *projectRepository) CreateProject(info ProjectNew) (int64, error) {
 func (r *projectRepository) UpdateProject(id int64, info ProjectNew) (int64, error) {
 	result, err := r.tx.Exec(`
 		Update projects SET 
-		organization_id = ?,
 		name = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.OrganizationID, info.Name, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Status, time.Now(), info.User, id)
 	if err != nil {
 		return 0, err
 	}
@@ -66,12 +66,27 @@ func (r *projectRepository) UpdateProject(id int64, info ProjectNew) (int64, err
 	return affected, nil
 }
 
-func (r *projectRepository) GetProjectByID(id int64) (*Project, error) {
+func (r *projectRepository) GetProjectByID(id int64, organizationID int64) (*Project, error) {
 	var res Project
-	row := r.tx.QueryRow(`SELECT id, organization_id, name, status, created, created_by, updated, updated_by FROM projects WHERE id = ? LIMIT 1`, id)
+	var row *sql.Row
+	if organizationID != 0 {
+		row = r.tx.QueryRow(`SELECT id, organization_id, name, status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
+	} else {
+		row = r.tx.QueryRow(`SELECT id, organization_id, name, status, created, created_by, updated, updated_by FROM projects WHERE id = ? LIMIT 1`, id)
+	}
 	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
 	return &res, nil
+}
+
+func (r *projectRepository) CheckNameExist(name string, organizationID int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM projects WHERE name = ? AND organization_id = ? LIMIT 1`, name, organizationID)
+	err := row.Scan(&res)
+	if err != nil {
+		return 0, err
+	}
+	return res, nil
 }

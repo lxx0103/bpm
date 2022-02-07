@@ -3,6 +3,7 @@ package project
 import (
 	"bpm/core/response"
 	"bpm/service"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +28,9 @@ func GetProjectList(c *gin.Context) {
 		return
 	}
 	projectService := NewProjectService()
-	count, list, err := projectService.GetProjectList(filter)
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
+	count, list, err := projectService.GetProjectList(filter, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -53,8 +56,9 @@ func NewProject(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	project.User = claims.Username
+	organizationID := claims.OrganizationID
 	projectService := NewProjectService()
-	new, err := projectService.NewProject(project)
+	new, err := projectService.NewProject(project, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -78,8 +82,10 @@ func GetProjectByID(c *gin.Context) {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
 	projectService := NewProjectService()
-	project, err := projectService.GetProjectByID(uri.ID)
+	project, err := projectService.GetProjectByID(uri.ID, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -111,9 +117,11 @@ func UpdateProject(c *gin.Context) {
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
+	fmt.Println(claims.Username)
 	project.User = claims.Username
+	organizationID := claims.OrganizationID
 	projectService := NewProjectService()
-	new, err := projectService.UpdateProject(uri.ID, project)
+	new, err := projectService.UpdateProject(uri.ID, project, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

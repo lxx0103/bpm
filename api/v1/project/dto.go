@@ -8,10 +8,9 @@ type ProjectFilter struct {
 }
 
 type ProjectNew struct {
-	OrganizationID int64  `json:"organization_id" binding:"required,min=1"`
-	Name           string `json:"name" binding:"required,min=1,max=64"`
-	Status         int    `json:"status" binding:"required,oneof=1 2"`
-	User           string `json:"user" swaggerignore:"true"`
+	Name   string `json:"name" binding:"required,min=1,max=64"`
+	Status int    `json:"status" binding:"required,oneof=1 2"`
+	User   string `json:"user" swaggerignore:"true"`
 }
 
 type ProjectID struct {
