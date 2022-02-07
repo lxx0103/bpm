@@ -20,6 +20,7 @@ type ClientRepository interface {
 	CreateClient(ClientNew, int64) (int64, error)
 	UpdateClient(int64, ClientNew) (int64, error)
 	GetClientByID(int64, int64) (*Client, error)
+	CheckNameExist(string, int64) (int, error)
 }
 
 func (r *clientRepository) CreateClient(info ClientNew, organizationID int64) (int64, error) {
@@ -82,4 +83,14 @@ func (r *clientRepository) GetClientByID(id int64, organizationID int64) (*Clien
 		return nil, err
 	}
 	return &res, nil
+}
+
+func (r *clientRepository) CheckNameExist(name string, organizationID int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM clients WHERE name = ? AND organization_id = ? LIMIT 1`, name, organizationID)
+	err := row.Scan(&res)
+	if err != nil {
+		return 0, err
+	}
+	return res, nil
 }

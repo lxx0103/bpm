@@ -1,37 +1,36 @@
-package client
+package position
 
 import (
 	"bpm/core/response"
 	"bpm/service"
-	"errors"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary 客户列表
-// @Id 24
-// @Tags 客户管理
+// @Summary 职位列表
+// @Id 28
+// @Tags 职位管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
-// @Param name query string false "客户名称"
-// @Success 200 object response.ListRes{data=[]Client} 成功
+// @Param name query string false "职位编码"
+// @Success 200 object response.ListRes{data=[]Position} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /clients [GET]
-func GetClientList(c *gin.Context) {
-	var filter ClientFilter
+// @Router /positions [GET]
+func GetPositionList(c *gin.Context) {
+	var filter PositionFilter
 	err := c.ShouldBindQuery(&filter)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
+	positionService := NewPositionService()
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	organizationID := claims.OrganizationID
-	clientService := NewClientService()
-	count, list, err := clientService.GetClientList(filter, organizationID)
+	count, list, err := positionService.GetPositionList(filter, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -39,33 +38,27 @@ func GetClientList(c *gin.Context) {
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
 }
 
-// @Summary 新建客户
-// @Id 25
-// @Tags 客户管理
+// @Summary 新建职位
+// @Id 29
+// @Tags 职位管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param client_info body ClientNew true "客户信息"
-// @Success 200 object response.SuccessRes{data=Client} 成功
+// @Param position_info body PositionNew true "职位信息"
+// @Success 200 object response.SuccessRes{data=Position} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /clients [POST]
-func NewClient(c *gin.Context) {
-	var client ClientNew
-	if err := c.ShouldBindJSON(&client); err != nil {
+// @Router /positions [POST]
+func NewPosition(c *gin.Context) {
+	var position PositionNew
+	if err := c.ShouldBindJSON(&position); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	fmt.Println(claims)
-	client.User = claims.Username
+	position.User = claims.Username
 	organizationID := claims.OrganizationID
-	if organizationID == 0 {
-		msg := "此用户没有组织"
-		response.ResponseError(c, "DatabaseError", errors.New(msg))
-		return
-	}
-	clientService := NewClientService()
-	new, err := clientService.NewClient(client, organizationID)
+	positionService := NewPositionService()
+	new, err := positionService.NewPosition(position, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -73,61 +66,62 @@ func NewClient(c *gin.Context) {
 	response.Response(c, new)
 }
 
-// @Summary 根据ID获取客户
-// @Id 26
-// @Tags 客户管理
+// @Summary 根据ID获取职位
+// @Id 30
+// @Tags 职位管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param id path int true "客户ID"
-// @Success 200 object response.SuccessRes{data=Client} 成功
+// @Param id path int true "职位ID"
+// @Success 200 object response.SuccessRes{data=Position} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /clients/:id [GET]
-func GetClientByID(c *gin.Context) {
-	var uri ClientID
+// @Router /positions/:id [GET]
+func GetPositionByID(c *gin.Context) {
+	var uri PositionID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	clientService := NewClientService()
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	organizationID := claims.OrganizationID
-	client, err := clientService.GetClientByID(uri.ID, organizationID)
+	positionService := NewPositionService()
+	position, err := positionService.GetPositionByID(uri.ID, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
 	}
-	response.Response(c, client)
+	response.Response(c, position)
 
 }
 
-// @Summary 根据ID更新客户
-// @Id 27
-// @Tags 客户管理
+// @Summary 根据ID更新职位
+// @Id 31
+// @Tags 职位管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param id path int true "客户ID"
-// @Param client_info body ClientNew true "客户信息"
-// @Success 200 object response.SuccessRes{data=Client} 成功
+// @Param id path int true "职位ID"
+// @Param position_info body PositionNew true "职位信息"
+// @Success 200 object response.SuccessRes{data=Position} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /clients/:id [PUT]
-func UpdateClient(c *gin.Context) {
-	var uri ClientID
+// @Router /positions/:id [PUT]
+func UpdatePosition(c *gin.Context) {
+	var uri PositionID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	var client ClientNew
-	if err := c.ShouldBindJSON(&client); err != nil {
+	var position PositionNew
+	if err := c.ShouldBindJSON(&position); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	client.User = claims.Username
+	fmt.Println(claims.Username)
+	position.User = claims.Username
 	organizationID := claims.OrganizationID
-	clientService := NewClientService()
-	new, err := clientService.UpdateClient(uri.ID, client, organizationID)
+	positionService := NewPositionService()
+	new, err := positionService.UpdatePosition(uri.ID, position, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

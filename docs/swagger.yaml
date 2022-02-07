@@ -27,9 +27,6 @@ definitions:
         maxLength: 64
         minLength: 1
         type: string
-      organization_id:
-        minimum: 1
-        type: integer
       priority:
         minimum: 1
         type: integer
@@ -40,7 +37,6 @@ definitions:
         type: integer
     required:
     - name
-    - organization_id
     - priority
     - status
     type: object
@@ -330,6 +326,40 @@ definitions:
     - name
     - status
     type: object
+  position.Position:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  position.PositionNew:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - name
+    - status
+    type: object
   project.Project:
     properties:
       created:
@@ -498,7 +528,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "37"
+      operationId: "27"
       parameters:
       - description: 客户ID
         in: path
@@ -938,6 +968,142 @@ paths:
       summary: 根据ID更新组织
       tags:
       - 组织管理
+  /positions:
+    get:
+      consumes:
+      - application/json
+      operationId: "28"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 项目编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/position.Position'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目列表
+      tags:
+      - 项目管理
+    post:
+      consumes:
+      - application/json
+      operationId: "29"
+      parameters:
+      - description: 项目信息
+        in: body
+        name: position_info
+        required: true
+        schema:
+          $ref: '#/definitions/position.PositionNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/position.Position'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目
+      tags:
+      - 项目管理
+  /positions/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "30"
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/position.Position'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取项目
+      tags:
+      - 项目管理
+    put:
+      consumes:
+      - application/json
+      operationId: "31"
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 项目信息
+        in: body
+        name: position_info
+        required: true
+        schema:
+          $ref: '#/definitions/position.PositionNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/position.Position'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新项目
+      tags:
+      - 项目管理
   /projects:
     get:
       consumes:

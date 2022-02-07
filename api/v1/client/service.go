@@ -36,6 +36,14 @@ func (s *clientService) NewClient(info ClientNew, organizationID int64) (*Client
 	}
 	defer tx.Rollback()
 	repo := NewClientRepository(tx)
+	exist, err := repo.CheckNameExist(info.Name, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	if exist != 0 {
+		msg := "客户名称重复"
+		return nil, errors.New(msg)
+	}
 	clientID, err := repo.CreateClient(info, organizationID)
 	if err != nil {
 		return nil, err
@@ -76,6 +84,14 @@ func (s *clientService) UpdateClient(clientID int64, info ClientNew, organizatio
 	}
 	if organizationID != 0 && organizationID != oldClient.OrganizationID {
 		msg := "你无权修改此客户"
+		return nil, errors.New(msg)
+	}
+	exist, err := repo.CheckNameExist(info.Name, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	if exist != 0 {
+		msg := "客户名称重复"
 		return nil, errors.New(msg)
 	}
 	_, err = repo.UpdateClient(clientID, info)

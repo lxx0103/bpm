@@ -119,7 +119,6 @@ func (r *authRepository) CreateRole(info RoleNew) (int64, error) {
 		INSERT INTO roles
 		(
 			name,
-			organization_id,
 			priority,
 			status,
 			created,
@@ -127,8 +126,8 @@ func (r *authRepository) CreateRole(info RoleNew) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.Name, info.OrganizationID, info.Priority, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Priority, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -143,13 +142,12 @@ func (r *authRepository) UpdateRole(id int64, info RoleNew) (int64, error) {
 	result, err := r.tx.Exec(`
 		Update roles SET
 		name = ?,
-		organization_id = ?,
 		priority = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ?
 		WHERE id = ?
-	`, info.Name, info.OrganizationID, info.Priority, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Priority, info.Status, time.Now(), info.User, id)
 	if err != nil {
 		return 0, err
 	}
@@ -162,8 +160,8 @@ func (r *authRepository) UpdateRole(id int64, info RoleNew) (int64, error) {
 
 func (r *authRepository) GetRoleByID(id int64) (*Role, error) {
 	var res Role
-	row := r.tx.QueryRow(`SELECT id, organization_id, priority, name, status, created, created_by, updated, updated_by FROM roles WHERE id = ? LIMIT 1`, id)
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.Priority, &res.Name, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	row := r.tx.QueryRow(`SELECT id, priority, name, status, created, created_by, updated, updated_by FROM roles WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Priority, &res.Name, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}

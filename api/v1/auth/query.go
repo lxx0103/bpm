@@ -111,9 +111,6 @@ func (r *authQuery) GetRoleCount(filter RoleFilter) (int, error) {
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
-	if v := filter.OrganizationID; v != 0 {
-		where, args = append(where, "organization_id = ?"), append(args, v)
-	}
 	var count int
 	err := r.conn.Get(&count, `
 		SELECT count(1) as count
@@ -129,9 +126,6 @@ func (r *authQuery) GetRoleList(filter RoleFilter) (*[]Role, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
-	}
-	if v := filter.OrganizationID; v != 0 {
-		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)

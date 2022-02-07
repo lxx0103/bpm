@@ -83,7 +83,7 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectNew, organiz
 		return nil, err
 	}
 	if organizationID != 0 && organizationID != oldProject.OrganizationID {
-		msg := "你无权修改此客户"
+		msg := "你无权修改此项目"
 		return nil, errors.New(msg)
 	}
 	exist, err := repo.CheckNameExist(info.Name, organizationID)
