@@ -166,7 +166,8 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, err
+		msg := "事务开启错误" + err.Error()
+		return nil, errors.New(msg)
 	}
 	defer tx.Rollback()
 	repo := NewAuthRepository(tx)
@@ -188,24 +189,47 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 		if err != nil {
 			return nil, err
 		}
-		if byRole.OrganizationID != targetRole.OrganizationID {
-			msg := "目标用户属于其他组织"
-			return nil, errors.New(msg)
-		}
-		if byRole.Priority <= targetRole.Priority && userID != byUserID {
-			msg := "你的权限不足"
+		if byRole.Priority <= targetRole.Priority && userID != byUserID { //只能修改角色比自己优先级低的用户,或者用户自身
+			msg := "你无法修改角色为" + targetRole.Name + "的用户"
 			return nil, errors.New(msg)
 		}
 	}
-	toRole, err := repo.GetRoleByID(info.RoleID)
-	if err != nil {
-		return nil, err
+	if info.RoleID != 0 {
+		toRole, err := repo.GetRoleByID(info.RoleID)
+		if err != nil {
+			return nil, err
+		}
+		if byRole.Priority < toRole.Priority { //只能将目标修改为和自己同级的角色
+			msg := "你无法将目标角色改为:" + toRole.Name
+			return nil, errors.New(msg)
+		}
+		oldUser.RoleID = info.RoleID
 	}
-	if byRole.Priority <= toRole.Priority {
-		msg := "你的权限不足"
-		return nil, errors.New(msg)
+	if info.PositionID != 0 {
+		oldUser.PositionID = info.PositionID
 	}
-	err = repo.UpdateUser(userID, info)
+	if info.Name != "" {
+		oldUser.Name = info.Name
+	}
+	if info.Email != "" {
+		oldUser.Email = info.Email
+	}
+	if info.Gender != "" {
+		oldUser.Gender = info.Gender
+	}
+	if info.Birthday != "" {
+		oldUser.Birthday = info.Birthday
+	}
+	if info.Phone != "" {
+		oldUser.Phone = info.Phone
+	}
+	if info.Address != "" {
+		oldUser.Address = info.Address
+	}
+	if info.Status != 0 {
+		oldUser.Status = info.Status
+	}
+	err = repo.UpdateUser(userID, *oldUser, (*byUser).Identifier)
 	if err != nil {
 		return nil, err
 	}

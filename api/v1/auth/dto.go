@@ -114,13 +114,14 @@ type UserID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 type UserUpdate struct {
-	Name     string `json:"name" binding:"required,min=2"`
-	Email    string `json:"email" binding:"required,email"`
-	RoleID   int64  `json:"role_id" binding:"required,min=1"`
-	Gender   string `json:"gender" binding:"required,min=1"`
-	Phone    string `json:"phone" binding:"required,min=1"`
-	Birthday string `json:"birthday" binding:"required,min=1"`
-	Address  string `json:"address" binding:"required,min=1"`
-	Status   int    `json:"status" binding:"required,min=1"`
-	User     string `json:"user" swaggerignore:"true"`
+	RoleID     int64  `json:"role_id" binding:"omitempty,min=1"`
+	PositionID int64  `json:"position_id" binding:"omitempty,min=1"`
+	Name       string `json:"name" binding:"omitempty,min=2"`
+	Email      string `json:"email" binding:"omitempty,email"`
+	Gender     string `json:"gender" binding:"omitempty,min=1"`
+	Phone      string `json:"phone" binding:"omitempty,min=1"`
+	Birthday   string `json:"birthday" binding:"omitempty,min=1"`
+	Address    string `json:"address" binding:"omitempty,min=1"`
+	Status     int    `json:"status" binding:"omitempty,min=1"`
+	User       string `json:"user" swaggerignore:"true"`
 }

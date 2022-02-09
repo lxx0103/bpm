@@ -8,6 +8,7 @@ type User struct {
 	Identifier     string    `db:"identifier" json:"identifier"`
 	Credential     string    `db:"credential" json:"credential"`
 	OrganizationID int64     `db:"organization_id" json:"organization_id"`
+	PositionID     int64     `db:"position_id" json:"position_id"`
 	RoleID         int64     `db:"role_id" json:"role_id"`
 	Name           string    `db:"name" json:"name"`
 	Email          string    `db:"email" json:"email"`
@@ -22,15 +23,14 @@ type User struct {
 	UpdatedBy      string    `db:"updated_by" json:"updated_by"`
 }
 type Role struct {
-	ID             int64     `db:"id" json:"id"`
-	Name           string    `db:"name" json:"name"`
-	OrganizationID int64     `db:"organization_id" json:"organization_id"`
-	Priority       int64     `db:"priority" json:"priority"`
-	Status         string    `db:"status" json:"status"`
-	Created        time.Time `db:"created" json:"created"`
-	CreatedBy      string    `db:"created_by" json:"created_by"`
-	Updated        time.Time `db:"updated" json:"updated"`
-	UpdatedBy      string    `db:"updated_by" json:"updated_by"`
+	ID        int64     `db:"id" json:"id"`
+	Name      string    `db:"name" json:"name"`
+	Priority  int64     `db:"priority" json:"priority"`
+	Status    string    `db:"status" json:"status"`
+	Created   time.Time `db:"created" json:"created"`
+	CreatedBy string    `db:"created_by" json:"created_by"`
+	Updated   time.Time `db:"updated" json:"updated"`
+	UpdatedBy string    `db:"updated_by" json:"updated_by"`
 }
 type UserAPI struct {
 	ID        int64     `db:"id" json:"id"`

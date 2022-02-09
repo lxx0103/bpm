@@ -2,6 +2,7 @@ package auth
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -20,7 +21,7 @@ type AuthRepository interface {
 	CreateUser(User) (int64, error)
 	GetUserByID(int64) (*User, error)
 	CheckConfict(int, string) (bool, error)
-	UpdateUser(int64, UserUpdate) error
+	UpdateUser(int64, User, string) error
 	// GetAuthCount(filter AuthFilter) (int, error)
 	// GetAuthList(filter AuthFilter) ([]Auth, error)
 
@@ -76,10 +77,11 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 
 func (r *authRepository) GetUserByID(id int64) (*User, error) {
 	var res User
-	row := r.tx.QueryRow(`SELECT id, organization_id, type, identifier, credential, role_id, name, email, gender, phone, birthday, address, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.Type, &res.Identifier, &res.Credential, &res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	row := r.tx.QueryRow(`SELECT id, organization_id, type, identifier, credential, role_id, position_id, name, email, gender, phone, birthday, address, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.Type, &res.Identifier, &res.Credential, &res.RoleID, &res.PositionID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
-		return nil, err
+		msg := "用户不存在:" + err.Error()
+		return nil, errors.New(msg)
 	}
 	return &res, nil
 }
@@ -93,12 +95,13 @@ func (r *authRepository) CheckConfict(authType int, identifier string) (bool, er
 	}
 	return existed != 0, nil
 }
-func (r *authRepository) UpdateUser(id int64, info UserUpdate) error {
+func (r *authRepository) UpdateUser(id int64, info User, by string) error {
 	_, err := r.tx.Exec(`
-		Update user_profiles SET 
+		Update users SET
 		name = ?,
 		email = ?,
 		role_id = ?,
+		position_id = ?, 
 		gender = ?,
 		phone = ?,
 		birthday = ?,
@@ -107,9 +110,10 @@ func (r *authRepository) UpdateUser(id int64, info UserUpdate) error {
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Email, info.RoleID, info.Gender, info.Phone, info.Birthday, info.Address, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Email, info.RoleID, info.PositionID, info.Gender, info.Phone, info.Birthday, info.Address, info.Status, time.Now(), by, id)
 	if err != nil {
-		return err
+		msg := "更新失败:" + err.Error()
+		return errors.New(msg)
 	}
 	return nil
 }
@@ -163,7 +167,8 @@ func (r *authRepository) GetRoleByID(id int64) (*Role, error) {
 	row := r.tx.QueryRow(`SELECT id, priority, name, status, created, created_by, updated, updated_by FROM roles WHERE id = ? LIMIT 1`, id)
 	err := row.Scan(&res.ID, &res.Priority, &res.Name, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
-		return nil, err
+		msg := "角色不存在:" + err.Error()
+		return nil, errors.New(msg)
 	}
 	return &res, nil
 }
