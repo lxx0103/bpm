@@ -23,8 +23,11 @@ type AuthService interface {
 	CreateAuth(SignupRequest) (int64, error)
 	VerifyWechatSignin(string) (*WechatCredential, error)
 	VerifyCredential(SigninRequest) (*User, error)
+	//User Management
 	GetUserInfo(string) (*User, error)
 	UpdateUser(int64, UserUpdate, int64) (*User, error)
+	GetUserByID(int64, int64) (*User, error)
+	GetUserList(UserFilter, int64) (int, *[]User, error)
 	//Role Management
 	GetRoleByID(int64) (*Role, error)
 	NewRole(RoleNew) (*Role, error)
@@ -291,6 +294,27 @@ func (s *authService) UpdateRole(roleID int64, info RoleNew) (*Role, error) {
 	role, err := repo.GetRoleByID(roleID)
 	tx.Commit()
 	return role, err
+}
+
+func (s *authService) GetUserByID(id int64, organizationID int64) (*User, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	user, err := query.GetUserByID(id, organizationID)
+	return user, err
+}
+
+func (s *authService) GetUserList(filter UserFilter, organizationID int64) (int, *[]User, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	count, err := query.GetUserCount(filter, organizationID)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetUserList(filter, organizationID)
+	if err != nil {
+		return 0, nil, err
+	}
+	return count, list, err
 }
 
 // func (s *authService) GetAPIByID(id int64) (UserAPI, error) {

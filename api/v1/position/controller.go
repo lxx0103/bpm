@@ -3,7 +3,6 @@ package position
 import (
 	"bpm/core/response"
 	"bpm/service"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -117,7 +116,6 @@ func UpdatePosition(c *gin.Context) {
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	fmt.Println(claims.Username)
 	position.User = claims.Username
 	organizationID := claims.OrganizationID
 	positionService := NewPositionService()

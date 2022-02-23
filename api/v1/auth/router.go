@@ -14,6 +14,8 @@ func AuthRouter(g *gin.RouterGroup) {
 	g.POST("/roles", NewRole)
 
 	g.PUT("/users/:id", UpdateUser)
+	g.GET("/users", GetUserList)
+	g.GET("/users/:id", GetUserByID)
 	// g.GET("/apis", GetAPIList)
 	// g.GET("/apis/:id", GetAPIByID)
 	// g.PUT("/apis/:id", UpdateAPI)

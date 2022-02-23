@@ -40,6 +40,12 @@ type RoleID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
+type UserFilter struct {
+	Name     string `form:"name" binding:"omitempty,max=64,min=1"`
+	PageId   int    `form:"page_id" binding:"required,min=1"`
+	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
+}
+
 type APIFilter struct {
 	Name     string `form:"name" binding:"omitempty,max=64,min=1"`
 	Route    string `form:"route" binding:"omitempty,max=128,min=1"`

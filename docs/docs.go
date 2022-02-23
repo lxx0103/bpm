@@ -927,9 +927,9 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "项目管理"
+                    "职位管理"
                 ],
-                "summary": "项目列表",
+                "summary": "职位列表",
                 "operationId": "28",
                 "parameters": [
                     {
@@ -948,7 +948,7 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "项目编码",
+                        "description": "职位编码",
                         "name": "name",
                         "in": "query"
                     }
@@ -991,13 +991,13 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "项目管理"
+                    "职位管理"
                 ],
-                "summary": "新建项目",
+                "summary": "新建职位",
                 "operationId": "29",
                 "parameters": [
                     {
-                        "description": "项目信息",
+                        "description": "职位信息",
                         "name": "position_info",
                         "in": "body",
                         "required": true,
@@ -1043,14 +1043,14 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "项目管理"
+                    "职位管理"
                 ],
-                "summary": "根据ID获取项目",
+                "summary": "根据ID获取职位",
                 "operationId": "30",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "项目ID",
+                        "description": "职位ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1091,20 +1091,20 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "项目管理"
+                    "职位管理"
                 ],
-                "summary": "根据ID更新项目",
+                "summary": "根据ID更新职位",
                 "operationId": "31",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "项目ID",
+                        "description": "职位ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "项目信息",
+                        "description": "职位信息",
                         "name": "position_info",
                         "in": "body",
                         "required": true,
@@ -1697,7 +1697,121 @@ var doc = `{
                 }
             }
         },
+        "/users": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "用户列表",
+                "operationId": "32",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数（5/10/15/20）",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户名称",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/auth.Role"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/users/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "根据ID获取用户",
+                "operationId": "33",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/auth.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
             "put": {
                 "consumes": [
                     "application/json"
@@ -1772,9 +1886,6 @@ var doc = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "organization_id": {
-                    "type": "integer"
                 },
                 "priority": {
                     "type": "integer"
@@ -1910,6 +2021,9 @@ var doc = `{
                 "phone": {
                     "type": "string"
                 },
+                "position_id": {
+                    "type": "integer"
+                },
                 "role_id": {
                     "type": "integer"
                 },
@@ -1929,16 +2043,6 @@ var doc = `{
         },
         "auth.UserUpdate": {
             "type": "object",
-            "required": [
-                "address",
-                "birthday",
-                "email",
-                "gender",
-                "name",
-                "phone",
-                "role_id",
-                "status"
-            ],
             "properties": {
                 "address": {
                     "type": "string",
@@ -1962,6 +2066,10 @@ var doc = `{
                 "phone": {
                     "type": "string",
                     "minLength": 1
+                },
+                "position_id": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "role_id": {
                     "type": "integer",

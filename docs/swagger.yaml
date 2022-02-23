@@ -10,8 +10,6 @@ definitions:
         type: integer
       name:
         type: string
-      organization_id:
-        type: integer
       priority:
         type: integer
       status:
@@ -104,6 +102,8 @@ definitions:
         type: integer
       phone:
         type: string
+      position_id:
+        type: integer
       role_id:
         type: integer
       status:
@@ -134,21 +134,15 @@ definitions:
       phone:
         minLength: 1
         type: string
+      position_id:
+        minimum: 1
+        type: integer
       role_id:
         minimum: 1
         type: integer
       status:
         minimum: 1
         type: integer
-    required:
-    - address
-    - birthday
-    - email
-    - gender
-    - name
-    - phone
-    - role_id
-    - status
     type: object
   client.Client:
     properties:
@@ -984,7 +978,7 @@ paths:
         name: page_size
         required: true
         type: integer
-      - description: 项目编码
+      - description: 职位编码
         in: query
         name: name
         type: string
@@ -1006,15 +1000,15 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 项目列表
+      summary: 职位列表
       tags:
-      - 项目管理
+      - 职位管理
     post:
       consumes:
       - application/json
       operationId: "29"
       parameters:
-      - description: 项目信息
+      - description: 职位信息
         in: body
         name: position_info
         required: true
@@ -1036,16 +1030,16 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 新建项目
+      summary: 新建职位
       tags:
-      - 项目管理
+      - 职位管理
   /positions/:id:
     get:
       consumes:
       - application/json
       operationId: "30"
       parameters:
-      - description: 项目ID
+      - description: 职位ID
         in: path
         name: id
         required: true
@@ -1066,20 +1060,20 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID获取项目
+      summary: 根据ID获取职位
       tags:
-      - 项目管理
+      - 职位管理
     put:
       consumes:
       - application/json
       operationId: "31"
       parameters:
-      - description: 项目ID
+      - description: 职位ID
         in: path
         name: id
         required: true
         type: integer
-      - description: 项目信息
+      - description: 职位信息
         in: body
         name: position_info
         required: true
@@ -1101,9 +1095,9 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID更新项目
+      summary: 根据ID更新职位
       tags:
-      - 项目管理
+      - 职位管理
   /projects:
     get:
       consumes:
@@ -1442,7 +1436,77 @@ paths:
       summary: 用户注册
       tags:
       - 用户权限
+  /users:
+    get:
+      consumes:
+      - application/json
+      operationId: "32"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数（5/10/15/20）
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 用户名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/auth.Role'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 用户列表
+      tags:
+      - 用户管理
   /users/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "33"
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取用户
+      tags:
+      - 用户管理
     put:
       consumes:
       - application/json

@@ -248,6 +248,64 @@ func UpdateUser(c *gin.Context) {
 	response.Response(c, new)
 }
 
+// @Summary 用户列表
+// @Id 32
+// @Tags 用户管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数（5/10/15/20）"
+// @Param name query string false "用户名称"
+// @Success 200 object response.ListRes{data=[]Role} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /users [GET]
+func GetUserList(c *gin.Context) {
+	var filter UserFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
+	authService := NewAuthService()
+	count, list, err := authService.GetUserList(filter, organizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 根据ID获取用户
+// @Id 33
+// @Tags 用户管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "用户ID"
+// @Success 200 object response.SuccessRes{data=User} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /users/:id [GET]
+func GetUserByID(c *gin.Context) {
+	var uri UserID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
+	authService := NewAuthService()
+	user, err := authService.GetUserByID(uri.ID, organizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, user)
+
+}
+
 // // @Summary API列表
 // // @Id 34
 // // @Tags API管理
