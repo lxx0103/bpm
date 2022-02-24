@@ -20,7 +20,7 @@ type PositionRepository interface {
 	CreatePosition(PositionNew, int64) (int64, error)
 	UpdatePosition(int64, PositionNew) (int64, error)
 	GetPositionByID(int64, int64) (*Position, error)
-	CheckNameExist(string, int64) (int, error)
+	CheckNameExist(string, int64, int64) (int, error)
 }
 
 func (r *positionRepository) CreatePosition(info PositionNew, organizationID int64) (int64, error) {
@@ -81,9 +81,9 @@ func (r *positionRepository) GetPositionByID(id int64, organizationID int64) (*P
 	return &res, nil
 }
 
-func (r *positionRepository) CheckNameExist(name string, organizationID int64) (int, error) {
+func (r *positionRepository) CheckNameExist(name string, organizationID int64, selfID int64) (int, error) {
 	var res int
-	row := r.tx.QueryRow(`SELECT count(1) FROM positions WHERE name = ? AND organization_id = ? LIMIT 1`, name, organizationID)
+	row := r.tx.QueryRow(`SELECT count(1) FROM positions WHERE name = ? AND organization_id = ? AND id != ?  LIMIT 1`, name, organizationID, selfID)
 	err := row.Scan(&res)
 	if err != nil {
 		return 0, err

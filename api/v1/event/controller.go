@@ -27,7 +27,9 @@ func GetEventList(c *gin.Context) {
 		return
 	}
 	eventService := NewEventService()
-	count, list, err := eventService.GetEventList(filter)
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
+	count, list, err := eventService.GetEventList(filter, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -53,8 +55,9 @@ func NewEvent(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	event.User = claims.Username
+	organizationID := claims.OrganizationID
 	eventService := NewEventService()
-	new, err := eventService.NewEvent(event)
+	new, err := eventService.NewEvent(event, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -105,15 +108,16 @@ func UpdateEvent(c *gin.Context) {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	var event EventNew
+	var event EventUpdate
 	if err := c.ShouldBindJSON(&event); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	event.User = claims.Username
+	organizationID := claims.OrganizationID
 	eventService := NewEventService()
-	new, err := eventService.UpdateEvent(uri.ID, event)
+	new, err := eventService.UpdateEvent(uri.ID, event, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

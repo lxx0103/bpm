@@ -20,7 +20,7 @@ type ProjectRepository interface {
 	CreateProject(ProjectNew, int64) (int64, error)
 	UpdateProject(int64, ProjectNew) (int64, error)
 	GetProjectByID(int64, int64) (*Project, error)
-	CheckNameExist(string, int64) (int, error)
+	CheckNameExist(string, int64, int64) (int, error)
 }
 
 func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64) (int64, error) {
@@ -81,9 +81,9 @@ func (r *projectRepository) GetProjectByID(id int64, organizationID int64) (*Pro
 	return &res, nil
 }
 
-func (r *projectRepository) CheckNameExist(name string, organizationID int64) (int, error) {
+func (r *projectRepository) CheckNameExist(name string, organizationID int64, selfID int64) (int, error) {
 	var res int
-	row := r.tx.QueryRow(`SELECT count(1) FROM projects WHERE name = ? AND organization_id = ? LIMIT 1`, name, organizationID)
+	row := r.tx.QueryRow(`SELECT count(1) FROM projects WHERE name = ? AND organization_id = ? AND id != ? LIMIT 1`, name, organizationID, selfID)
 	err := row.Scan(&res)
 	if err != nil {
 		return 0, err

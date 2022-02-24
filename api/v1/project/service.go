@@ -36,7 +36,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 	}
 	defer tx.Rollback()
 	repo := NewProjectRepository(tx)
-	exist, err := repo.CheckNameExist(info.Name, organizationID)
+	exist, err := repo.CheckNameExist(info.Name, organizationID, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectNew, organiz
 		msg := "你无权修改此项目"
 		return nil, errors.New(msg)
 	}
-	exist, err := repo.CheckNameExist(info.Name, organizationID)
+	exist, err := repo.CheckNameExist(info.Name, organizationID, projectID)
 	if err != nil {
 		return nil, err
 	}

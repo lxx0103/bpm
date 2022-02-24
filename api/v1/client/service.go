@@ -36,7 +36,7 @@ func (s *clientService) NewClient(info ClientNew, organizationID int64) (*Client
 	}
 	defer tx.Rollback()
 	repo := NewClientRepository(tx)
-	exist, err := repo.CheckNameExist(info.Name, organizationID)
+	exist, err := repo.CheckNameExist(info.Name, organizationID, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (s *clientService) UpdateClient(clientID int64, info ClientNew, organizatio
 		msg := "你无权修改此客户"
 		return nil, errors.New(msg)
 	}
-	exist, err := repo.CheckNameExist(info.Name, organizationID)
+	exist, err := repo.CheckNameExist(info.Name, organizationID, clientID)
 	if err != nil {
 		return nil, err
 	}

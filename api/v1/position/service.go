@@ -36,7 +36,7 @@ func (s *positionService) NewPosition(info PositionNew, organizationID int64) (*
 	}
 	defer tx.Rollback()
 	repo := NewPositionRepository(tx)
-	exist, err := repo.CheckNameExist(info.Name, organizationID)
+	exist, err := repo.CheckNameExist(info.Name, organizationID, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (s *positionService) UpdatePosition(positionID int64, info PositionNew, org
 		msg := "你无权修改此职位"
 		return nil, errors.New(msg)
 	}
-	exist, err := repo.CheckNameExist(info.Name, organizationID)
+	exist, err := repo.CheckNameExist(info.Name, organizationID, positionID)
 	if err != nil {
 		return nil, err
 	}
