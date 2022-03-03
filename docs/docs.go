@@ -2234,6 +2234,12 @@ var doc = `{
         "event.Event": {
             "type": "object",
             "properties": {
+                "assign": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event.EventAssign"
+                    }
+                },
                 "created": {
                     "type": "string"
                 },
@@ -2246,7 +2252,45 @@ var doc = `{
                 "name": {
                     "type": "string"
                 },
+                "pre_id": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event.EventPre"
+                    }
+                },
                 "project_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "event.EventAssign": {
+            "type": "object",
+            "properties": {
+                "assign_to": {
+                    "type": "string"
+                },
+                "assign_type": {
+                    "type": "integer"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "event_id": {
+                    "type": "integer"
+                },
+                "id": {
                     "type": "integer"
                 },
                 "status": {
@@ -2263,15 +2307,37 @@ var doc = `{
         "event.EventNew": {
             "type": "object",
             "required": [
+                "assign_to",
+                "assign_type",
                 "name",
+                "pre_id",
                 "project_id",
                 "status"
             ],
             "properties": {
+                "assign_to": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "assign_type": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
+                },
+                "pre_id": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "project_id": {
                     "type": "integer",
@@ -2281,8 +2347,38 @@ var doc = `{
                     "type": "integer",
                     "enum": [
                         1,
-                        2
+                        2,
+                        3
                     ]
+                }
+            }
+        },
+        "event.EventPre": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "event_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "pre_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
                 }
             }
         },
@@ -2392,6 +2488,9 @@ var doc = `{
                 "created_by": {
                     "type": "string"
                 },
+                "event_json": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -2415,10 +2514,14 @@ var doc = `{
         "project.ProjectNew": {
             "type": "object",
             "required": [
+                "event_json",
                 "name",
                 "status"
             ],
             "properties": {
+                "event_json": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,

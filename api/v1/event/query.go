@@ -20,6 +20,7 @@ type EventQuery interface {
 	//Event Management
 	GetEventByID(id int64) (*Event, error)
 	GetAssignsByEventID(int64) (*[]EventAssign, error)
+	GetPresByEventID(int64) (*[]EventPre, error)
 	GetEventCount(EventFilter, int64) (int, error)
 	GetEventList(EventFilter, int64) (*[]Event, error)
 }
@@ -92,4 +93,13 @@ func (r *eventQuery) GetAssignsByEventID(eventID int64) (*[]EventAssign, error) 
 		return nil, err
 	}
 	return &assigns, nil
+}
+
+func (r *eventQuery) GetPresByEventID(eventID int64) (*[]EventPre, error) {
+	var pres []EventPre
+	err := r.conn.Select(&pres, "SELECT * FROM event_pres WHERE event_id = ? AND status = ?", eventID, 1)
+	if err != nil {
+		return nil, err
+	}
+	return &pres, nil
 }

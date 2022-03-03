@@ -7,6 +7,7 @@ type Project struct {
 	OrganizationID int64     `db:"organization_id" json:"organization_id"`
 	Name           string    `db:"name" json:"name"`
 	Status         int       `db:"status" json:"status"`
+	EventJson      string    `db:"event_json" json:"event_json"`
 	Created        time.Time `db:"created" json:"created"`
 	CreatedBy      string    `db:"created_by" json:"created_by"`
 	Updated        time.Time `db:"updated" json:"updated"`

@@ -33,6 +33,11 @@ func (s *eventService) GetEventByID(id int64) (*Event, error) {
 		return nil, err
 	}
 	event.Assign = assigns
+	pres, err := query.GetPresByEventID(event.ID)
+	if err != nil {
+		return nil, err
+	}
+	event.PreID = pres
 	return event, err
 }
 
@@ -77,6 +82,15 @@ func (s *eventService) NewEvent(info EventNew, organizationID int64) (*Event, er
 		return nil, err
 	}
 	event.Assign = assigns
+	err = repo.CreateEventPre(eventID, info.PreID, info.User)
+	if err != nil {
+		return nil, err
+	}
+	pres, err := repo.GetPresByEventID(eventID)
+	if err != nil {
+		return nil, err
+	}
+	event.PreID = pres
 	tx.Commit()
 	return event, err
 }
@@ -118,9 +132,6 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 		}
 		oldEvent.Name = info.Name
 	}
-	if info.PreID != 0 {
-		oldEvent.PreID = info.PreID
-	}
 	if info.Status != 0 {
 		oldEvent.Status = info.Status
 	}
@@ -147,6 +158,21 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 		return nil, err
 	}
 	event.Assign = assigns
+	err = repo.DeleteEventPre(eventID, info.User)
+	if err != nil {
+		return nil, err
+	}
+	if len(info.PreID) != 0 {
+		err = repo.CreateEventPre(eventID, info.PreID, info.User)
+		if err != nil {
+			return nil, err
+		}
+	}
+	pres, err := repo.GetPresByEventID(eventID)
+	if err != nil {
+		return nil, err
+	}
+	event.PreID = pres
 	tx.Commit()
 	return event, err
 }

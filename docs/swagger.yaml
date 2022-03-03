@@ -252,6 +252,10 @@ definitions:
     type: object
   event.Event:
     properties:
+      assign:
+        items:
+          $ref: '#/definitions/event.EventAssign'
+        type: array
       created:
         type: string
       created_by:
@@ -260,7 +264,32 @@ definitions:
         type: integer
       name:
         type: string
+      pre_id:
+        items:
+          $ref: '#/definitions/event.EventPre'
+        type: array
       project_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  event.EventAssign:
+    properties:
+      assign_to:
+        type: string
+      assign_type:
+        type: integer
+      created:
+        type: string
+      created_by:
+        type: string
+      event_id:
+        type: integer
+      id:
         type: integer
       status:
         type: integer
@@ -271,10 +300,23 @@ definitions:
     type: object
   event.EventNew:
     properties:
+      assign_to:
+        items:
+          type: integer
+        type: array
+      assign_type:
+        enum:
+        - 1
+        - 2
+        type: integer
       name:
         maxLength: 64
         minLength: 1
         type: string
+      pre_id:
+        items:
+          type: integer
+        type: array
       project_id:
         minimum: 1
         type: integer
@@ -282,11 +324,34 @@ definitions:
         enum:
         - 1
         - 2
+        - 3
         type: integer
     required:
+    - assign_to
+    - assign_type
     - name
+    - pre_id
     - project_id
     - status
+    type: object
+  event.EventPre:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      event_id:
+        type: integer
+      id:
+        type: integer
+      pre_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
     type: object
   organization.Organization:
     properties:
@@ -360,6 +425,8 @@ definitions:
         type: string
       created_by:
         type: string
+      event_json:
+        type: string
       id:
         type: integer
       name:
@@ -375,6 +442,8 @@ definitions:
     type: object
   project.ProjectNew:
     properties:
+      event_json:
+        type: string
       name:
         maxLength: 64
         minLength: 1
@@ -385,6 +454,7 @@ definitions:
         - 2
         type: integer
     required:
+    - event_json
     - name
     - status
     type: object

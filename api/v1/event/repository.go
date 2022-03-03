@@ -21,9 +21,12 @@ type EventRepository interface {
 	CreateEvent(info EventNew) (int64, error)
 	CreateEventAssign(int64, int, []int64, string) error
 	DeleteEventAssign(int64, string) error
+	GetAssignsByEventID(int64) (*[]EventAssign, error)
+	CreateEventPre(int64, []int64, string) error
+	DeleteEventPre(int64, string) error
+	GetPresByEventID(int64) (*[]EventPre, error)
 	UpdateEvent(int64, Event, string) (int64, error)
 	GetEventByID(int64, int64) (*Event, error)
-	GetAssignsByEventID(int64) (*[]EventAssign, error)
 	CheckProjectExist(int64, int64) (int, error)
 	CheckNameExist(string, int64, int64) (int, error)
 }
@@ -34,15 +37,14 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 		(
 			project_id,
 			name,
-			pre_id,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.ProjectID, info.Name, info.PreID, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, info.ProjectID, info.Name, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -89,12 +91,11 @@ func (r *eventRepository) UpdateEvent(id int64, info Event, byUser string) (int6
 	result, err := r.tx.Exec(`
 		Update events SET 
 		name = ?,
-		pre_id = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.PreID, info.Status, time.Now(), byUser, id)
+	`, info.Name, info.Status, time.Now(), byUser, id)
 	if err != nil {
 		return 0, err
 	}
@@ -123,11 +124,11 @@ func (r *eventRepository) GetEventByID(id int64, organizationID int64) (*Event, 
 	var res Event
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.pre_id, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, project_id, name, pre_id, status, created, created_by, updated, updated_by FROM events WHERE id = ? LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, project_id, name, status, created, created_by, updated, updated_by FROM events WHERE id = ? LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.PreID, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
@@ -163,6 +164,69 @@ func (r *eventRepository) GetAssignsByEventID(eventID int64) (*[]EventAssign, er
 	for rows.Next() {
 		var rowRes EventAssign
 		err = rows.Scan(&rowRes.ID, &rowRes.EventID, &rowRes.AssignType, &rowRes.AssignTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, rowRes)
+	}
+	return &res, nil
+}
+
+func (r *eventRepository) CreateEventPre(eventID int64, preIDs []int64, user string) error {
+	for i := 0; i < len(preIDs); i++ {
+		var exist int
+		row := r.tx.QueryRow(`SELECT count(1) FROM event_pres WHERE event_id = ? AND pre_id = ? AND status = 1  LIMIT 1`, eventID, preIDs[i])
+		err := row.Scan(&exist)
+		if err != nil {
+			return err
+		}
+		if exist != 0 {
+			msg := "前置事件有重复"
+			return errors.New(msg)
+		}
+		_, err = r.tx.Exec(`
+			INSERT INTO event_pres
+			(
+				event_id,
+				pre_id,
+				status,
+				created,
+				created_by,
+				updated,
+				updated_by
+			)
+			VALUES (?, ?, ?, ?, ?, ?, ?)
+		`, eventID, preIDs[i], 1, time.Now(), user, time.Now(), user)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r *eventRepository) DeleteEventPre(event_id int64, user string) error {
+	_, err := r.tx.Exec(`
+		Update event_pres SET
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE event_id = ?
+	`, 2, time.Now(), user, event_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *eventRepository) GetPresByEventID(eventID int64) (*[]EventPre, error) {
+	var res []EventPre
+	rows, err := r.tx.Query(`SELECT id, event_id, pre_id, status, created, created_by, updated, updated_by FROM event_pres WHERE event_id = ? AND status = ? `, eventID, 1)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var rowRes EventPre
+		err = rows.Scan(&rowRes.ID, &rowRes.EventID, &rowRes.PreID, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
 		if err != nil {
 			return nil, err
 		}
