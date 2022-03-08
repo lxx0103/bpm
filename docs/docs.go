@@ -695,6 +695,112 @@ var doc = `{
                 }
             }
         },
+        "/members": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "项目成员列表",
+                "operationId": "34",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "project_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/member.MemberResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "新建项目成员",
+                "operationId": "35",
+                "parameters": [
+                    {
+                        "description": "成员信息",
+                        "name": "member_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/member.MemberNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/member.MemberResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/organizations": {
             "get": {
                 "consumes": [
@@ -2379,6 +2485,36 @@ var doc = `{
                 },
                 "updated_by": {
                     "type": "string"
+                }
+            }
+        },
+        "member.MemberNew": {
+            "type": "object",
+            "required": [
+                "project_id",
+                "user_id"
+            ],
+            "properties": {
+                "project_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "user_id": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "member.MemberResponse": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

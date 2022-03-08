@@ -353,6 +353,26 @@ definitions:
       updated_by:
         type: string
     type: object
+  member.MemberNew:
+    properties:
+      project_id:
+        minimum: 1
+        type: integer
+      user_id:
+        items:
+          type: integer
+        type: array
+    required:
+    - project_id
+    - user_id
+    type: object
+  member.MemberResponse:
+    properties:
+      name:
+        type: string
+      user_id:
+        type: integer
+    type: object
   organization.Organization:
     properties:
       created:
@@ -896,6 +916,70 @@ paths:
       summary: 根据ID更新事件
       tags:
       - 事件管理
+  /members:
+    get:
+      consumes:
+      - application/json
+      operationId: "34"
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/member.MemberResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目成员列表
+      tags:
+      - 项目管理
+    post:
+      consumes:
+      - application/json
+      operationId: "35"
+      parameters:
+      - description: 成员信息
+        in: body
+        name: member_info
+        required: true
+        schema:
+          $ref: '#/definitions/member.MemberNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/member.MemberResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目成员
+      tags:
+      - 项目管理
   /organizations:
     get:
       consumes:

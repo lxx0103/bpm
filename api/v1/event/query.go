@@ -27,7 +27,7 @@ type EventQuery interface {
 
 func (r *eventQuery) GetEventByID(id int64) (*Event, error) {
 	var event Event
-	err := r.conn.Get(&event, "SELECT * FROM events WHERE id = ? ", id)
+	err := r.conn.Get(&event, "SELECT * FROM events WHERE id = ? AND status = 1 ", id)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (r *eventQuery) GetEventByID(id int64) (*Event, error) {
 }
 
 func (r *eventQuery) GetEventCount(filter EventFilter, organizationID int64) (int, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "e.name like ?"), append(args, "%"+v+"%")
 	}
@@ -59,7 +59,7 @@ func (r *eventQuery) GetEventCount(filter EventFilter, organizationID int64) (in
 }
 
 func (r *eventQuery) GetEventList(filter EventFilter, organizationID int64) (*[]Event, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "e.name like ?"), append(args, "%"+v+"%")
 	}
