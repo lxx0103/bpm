@@ -135,6 +135,9 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	if info.Status != 0 {
 		oldEvent.Status = info.Status
 	}
+	if info.AssignType != 0 {
+		oldEvent.AssignType = info.AssignType
+	}
 	_, err = repo.UpdateEvent(eventID, *oldEvent, info.User)
 	if err != nil {
 		return nil, err
