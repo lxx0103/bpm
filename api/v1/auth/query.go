@@ -27,6 +27,10 @@ type AuthQuery interface {
 	GetRoleByID(id int64) (*Role, error)
 	GetRoleCount(filter RoleFilter) (int, error)
 	GetRoleList(filter RoleFilter) (*[]Role, error)
+	// //API Management
+	GetAPIByID(id int64) (*API, error)
+	GetAPICount(filter APIFilter) (int, error)
+	GetAPIList(filter APIFilter) (*[]API, error)
 }
 
 func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
@@ -45,7 +49,7 @@ func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
 
 func (r *authQuery) GetUserByOpenID(openID string) (*User, error) {
 	var user User
-	err := r.conn.Get(&user, "SELECT * FROM users WHERE open_id = ? ", openID)
+	err := r.conn.Get(&user, "SELECT * FROM users WHERE identifier = ? ", openID)
 	if err != nil {
 		return nil, err
 	}
@@ -145,4 +149,52 @@ func (r *authQuery) GetRoleList(filter RoleFilter) (*[]Role, error) {
 		return nil, err
 	}
 	return &roles, nil
+}
+
+func (r *authQuery) GetAPIByID(id int64) (*API, error) {
+	var api API
+	err := r.conn.Get(&api, "SELECT * FROM apis WHERE id = ? ", id)
+	return &api, err
+}
+
+func (r *authQuery) GetAPICount(filter APIFilter) (int, error) {
+	where, args := []string{"1 = 1"}, []interface{}{}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.Route; v != "" {
+		where, args = append(where, "route like ?"), append(args, "%"+v+"%")
+	}
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) as count
+		FROM apis
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *authQuery) GetAPIList(filter APIFilter) (*[]API, error) {
+	where, args := []string{"1 = 1"}, []interface{}{}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.Route; v != "" {
+		where, args = append(where, "route like ?"), append(args, "%"+v+"%")
+	}
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var apis []API
+	err := r.conn.Select(&apis, `
+		SELECT *
+		FROM apis
+		WHERE `+strings.Join(where, " AND ")+`
+		LIMIT ?, ?
+	`, args...)
+	if err != nil {
+		return nil, err
+	}
+	return &apis, nil
 }

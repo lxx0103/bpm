@@ -34,10 +34,10 @@ type AuthService interface {
 	GetRoleList(RoleFilter) (int, *[]Role, error)
 	UpdateRole(int64, RoleNew) (*Role, error)
 	// //API Management
-	// GetAPIByID(int64) (UserAPI, error)
-	// NewAPI(APINew) (UserAPI, error)
-	// GetAPIList(APIFilter) (int, []UserAPI, error)
-	// UpdateAPI(int64, APINew) (UserAPI, error)
+	GetAPIByID(int64) (*API, error)
+	NewAPI(APINew) (*API, error)
+	GetAPIList(APIFilter) (int, *[]API, error)
+	UpdateAPI(int64, APINew) (*API, error)
 	// //Menu Management
 	// GetMenuByID(int64) (UserMenu, error)
 	// NewMenu(MenuNew) (UserMenu, error)
@@ -317,48 +317,60 @@ func (s *authService) GetUserList(filter UserFilter, organizationID int64) (int,
 	return count, list, err
 }
 
-// func (s *authService) GetAPIByID(id int64) (UserAPI, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	api, err := repo.GetAPIByID(id)
-// 	return api, err
-// }
+func (s *authService) GetAPIByID(id int64) (*API, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	api, err := query.GetAPIByID(id)
+	return api, err
+}
 
-// func (s *authService) NewAPI(info APINew) (UserAPI, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	apiID, err := repo.CreateAPI(info)
-// 	if err != nil {
-// 		return UserAPI{}, err
-// 	}
-// 	api, err := repo.GetAPIByID(apiID)
-// 	return api, err
-// }
+func (s *authService) GetAPIList(filter APIFilter) (int, *[]API, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	count, err := query.GetAPICount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetAPIList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	return count, list, err
+}
 
-// func (s *authService) GetAPIList(filter APIFilter) (int, []UserAPI, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	count, err := repo.GetAPICount(filter)
-// 	if err != nil {
-// 		return 0, nil, err
-// 	}
-// 	list, err := repo.GetAPIList(filter)
-// 	if err != nil {
-// 		return 0, nil, err
-// 	}
-// 	return count, list, err
-// }
+func (s *authService) NewAPI(info APINew) (*API, error) {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	apiID, err := repo.CreateAPI(info)
+	if err != nil {
+		return nil, err
+	}
+	api, err := repo.GetAPIByID(apiID)
+	tx.Commit()
+	return api, err
+}
 
-// func (s *authService) UpdateAPI(apiID int64, info APINew) (UserAPI, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	_, err := repo.UpdateAPI(apiID, info)
-// 	if err != nil {
-// 		return UserAPI{}, err
-// 	}
-// 	api, err := repo.GetAPIByID(apiID)
-// 	return api, err
-// }
+func (s *authService) UpdateAPI(apiID int64, info APINew) (*API, error) {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	_, err = repo.UpdateAPI(apiID, info)
+	if err != nil {
+		return nil, err
+	}
+	api, err := repo.GetAPIByID(apiID)
+	tx.Commit()
+	return api, err
+}
 
 // func (s *authService) GetMenuByID(id int64) (UserMenu, error) {
 // 	db := database.InitMySQL()

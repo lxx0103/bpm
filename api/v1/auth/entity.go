@@ -32,12 +32,12 @@ type Role struct {
 	Updated   time.Time `db:"updated" json:"updated"`
 	UpdatedBy string    `db:"updated_by" json:"updated_by"`
 }
-type UserAPI struct {
+type API struct {
 	ID        int64     `db:"id" json:"id"`
 	Name      string    `db:"name" json:"name"`
 	Method    string    `db:"method" json:"method"`
 	Route     string    `db:"route" json:"route"`
-	Enabled   string    `db:"enabled" json:"enabled"`
+	Status    string    `db:"status" json:"status"`
 	Created   time.Time `db:"created" json:"created"`
 	CreatedBy string    `db:"created_by" json:"created_by"`
 	Updated   time.Time `db:"updated" json:"updated"`

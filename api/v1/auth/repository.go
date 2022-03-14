@@ -27,14 +27,12 @@ type AuthRepository interface {
 
 	// //Role Management
 	CreateRole(info RoleNew) (int64, error)
-	UpdateRole(id int64, info RoleNew) (int64, error)
+	UpdateRole(int64, RoleNew) (int64, error)
 	GetRoleByID(int64) (*Role, error)
 	// //API Management
-	// GetAPIByID(id int64) (UserAPI, error)
-	// CreateAPI(info APINew) (int64, error)
-	// GetAPICount(filter APIFilter) (int, error)
-	// GetAPIList(filter APIFilter) ([]UserAPI, error)
-	// UpdateAPI(id int64, info APINew) (int64, error)
+	CreateAPI(APINew) (int64, error)
+	UpdateAPI(int64, APINew) (int64, error)
+	GetAPIByID(int64) (*API, error)
 	// //Menu Management
 	// GetMenuByID(id int64) (UserMenu, error)
 	// CreateMenu(info MenuNew) (int64, error)
@@ -173,113 +171,56 @@ func (r *authRepository) GetRoleByID(id int64) (*Role, error) {
 	return &res, nil
 }
 
-// func (r *authRepository) GetAPIByID(id int64) (UserAPI, error) {
-// 	var api UserAPI
-// 	err := r.conn.Get(&api, "SELECT * FROM user_apis WHERE id = ? ", id)
-// 	if err != nil {
-// 		return UserAPI{}, err
-// 	}
-// 	return api, nil
-// }
-// func (r *authRepository) CreateAPI(info APINew) (int64, error) {
-// 	tx, err := r.conn.Begin()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	defer tx.Rollback()
-// 	result, err := tx.Exec(`
-// 		INSERT INTO user_apis
-// 		(
-// 			name,
-// 			route,
-// 			method,
-// 			enabled,
-// 			created,
-// 			created_by,
-// 			updated,
-// 			updated_by
-// 		)
-// 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-// 	`, info.Name, info.Route, info.Method, info.Enabled, time.Now(), info.User, time.Now(), info.User)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	id, err := result.LastInsertId()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	tx.Commit()
-// 	return id, nil
-// }
+func (r *authRepository) CreateAPI(info APINew) (int64, error) {
+	result, err := r.tx.Exec(`
+		INSERT INTO apis
+		(
+			name,
+			route,
+			method,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Route, info.Method, info.Status, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
+	return id, err
+}
 
-// func (r *authRepository) GetAPICount(filter APIFilter) (int, error) {
-// 	where, args := []string{"1 = 1"}, []interface{}{}
-// 	if v := filter.Name; v != "" {
-// 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
-// 	}
-// 	if v := filter.Route; v != "" {
-// 		where, args = append(where, "route like ?"), append(args, "%"+v+"%")
-// 	}
-// 	var count int
-// 	err := r.conn.Get(&count, `
-// 		SELECT count(1) as count
-// 		FROM user_apis
-// 		WHERE `+strings.Join(where, " AND "), args...)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	return count, nil
-// }
+func (r *authRepository) UpdateAPI(id int64, info APINew) (int64, error) {
+	result, err := r.tx.Exec(`
+		Update apis SET
+		name = ?,
+		route = ?,
+		method = ?,
+		status = ?,
+		updated = ?,
+		updated_by = ?
+		WHERE id = ?
+	`, info.Name, info.Route, info.Method, info.Status, time.Now(), info.User, id)
+	if err != nil {
+		return 0, err
+	}
+	affected, err := result.RowsAffected()
+	return affected, err
+}
 
-// func (r *authRepository) GetAPIList(filter APIFilter) ([]UserAPI, error) {
-// 	where, args := []string{"1 = 1"}, []interface{}{}
-// 	if v := filter.Name; v != "" {
-// 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
-// 	}
-// 	if v := filter.Route; v != "" {
-// 		where, args = append(where, "route like ?"), append(args, "%"+v+"%")
-// 	}
-// 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
-// 	args = append(args, filter.PageSize)
-// 	var apis []UserAPI
-// 	err := r.conn.Select(&apis, `
-// 		SELECT *
-// 		FROM user_apis
-// 		WHERE `+strings.Join(where, " AND ")+`
-// 		LIMIT ?, ?
-// 	`, args...)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return apis, nil
-// }
-
-// func (r *authRepository) UpdateAPI(id int64, info APINew) (int64, error) {
-// 	tx, err := r.conn.Begin()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	defer tx.Rollback()
-// 	result, err := tx.Exec(`
-// 		Update user_apis SET
-// 		name = ?,
-// 		route = ?,
-// 		method = ?,
-// 		enabled = ?,
-// 		updated = ?,
-// 		updated_by = ?
-// 		WHERE id = ?
-// 	`, info.Name, info.Route, info.Method, info.Enabled, time.Now(), info.User, id)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	affected, err := result.RowsAffected()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	tx.Commit()
-// 	return affected, nil
-// }
+func (r *authRepository) GetAPIByID(id int64) (*API, error) {
+	var res API
+	row := r.tx.QueryRow(`SELECT id, name, route, method, status, created, created_by, updated, updated_by FROM apis WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Name, &res.Route, &res.Method, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	if err != nil {
+		msg := "API不存在:" + err.Error()
+		return nil, errors.New(msg)
+	}
+	return &res, nil
+}
 
 // func (r *authRepository) GetMenuByID(id int64) (UserMenu, error) {
 // 	var menu UserMenu

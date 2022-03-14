@@ -306,123 +306,123 @@ func GetUserByID(c *gin.Context) {
 
 }
 
-// // @Summary API列表
-// // @Id 34
-// // @Tags API管理
-// // @version 1.0
-// // @Accept application/json
-// // @Produce application/json
-// // @Param page_id query int true "页码"
-// // @Param page_size query int true "每页行数"
-// // @Param name query string false "API名称"
-// // @Param route query string false "API路由"
-// // @Success 200 object response.ListRes{data=[]UserAPI} 成功
-// // @Failure 400 object response.ErrorRes 内部错误
-// // @Router /apis [GET]
-// func GetAPIList(c *gin.Context) {
-// 	var filter APIFilter
-// 	err := c.ShouldBindQuery(&filter)
-// 	if err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	authService := NewAuthService()
-// 	count, list, err := authService.GetAPIList(filter)
-// 	if err != nil {
-// 		response.ResponseError(c, "DatabaseError", err)
-// 		return
-// 	}
-// 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
-// }
+// @Summary API列表
+// @Id 36
+// @Tags API管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param name query string false "API名称"
+// @Param route query string false "API路由"
+// @Success 200 object response.ListRes{data=[]UserAPI} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /apis [GET]
+func GetAPIList(c *gin.Context) {
+	var filter APIFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	authService := NewAuthService()
+	count, list, err := authService.GetAPIList(filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
 
-// // @Summary 新建API
-// // @Id 35
-// // @Tags API管理
-// // @version 1.0
-// // @Accept application/json
-// // @Produce application/json
-// // @Param api_info body APINew true "API信息"
-// // @Success 200 object response.SuccessRes{data=UserAPI} 成功
-// // @Failure 400 object response.ErrorRes 内部错误
-// // @Router /apis [POST]
-// func NewAPI(c *gin.Context) {
-// 	var api APINew
-// 	if err := c.ShouldBindJSON(&api); err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	claims := c.MustGet("claims").(*service.CustomClaims)
-// 	api.User = claims.Username
-// 	authService := NewAuthService()
-// 	new, err := authService.NewAPI(api)
-// 	if err != nil {
-// 		response.ResponseError(c, "DatabaseError", err)
-// 		return
-// 	}
-// 	response.Response(c, new)
-// }
+// @Summary 新建API
+// @Id 37
+// @Tags API管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param api_info body APINew true "API信息"
+// @Success 200 object response.SuccessRes{data=UserAPI} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /apis [POST]
+func NewAPI(c *gin.Context) {
+	var api APINew
+	if err := c.ShouldBindJSON(&api); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	api.User = claims.Username
+	authService := NewAuthService()
+	new, err := authService.NewAPI(api)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, new)
+}
 
-// // @Summary 根据ID获取API
-// // @Id 36
-// // @Tags API管理
-// // @version 1.0
-// // @Accept application/json
-// // @Produce application/json
-// // @Param id path int true "API ID"
-// // @Success 200 object response.SuccessRes{data=UserAPI} 成功
-// // @Failure 400 object response.ErrorRes 内部错误
-// // @Router /apis/:id [GET]
-// func GetAPIByID(c *gin.Context) {
-// 	var uri APIID
-// 	if err := c.ShouldBindUri(&uri); err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	authService := NewAuthService()
-// 	api, err := authService.GetAPIByID(uri.ID)
-// 	if err != nil {
-// 		response.ResponseError(c, "DatabaseError", err)
-// 		return
-// 	}
-// 	response.Response(c, api)
+// @Summary 根据ID获取API
+// @Id 38
+// @Tags API管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "API ID"
+// @Success 200 object response.SuccessRes{data=UserAPI} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /apis/:id [GET]
+func GetAPIByID(c *gin.Context) {
+	var uri APIID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	authService := NewAuthService()
+	api, err := authService.GetAPIByID(uri.ID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, api)
 
-// }
+}
 
-// // @Summary 根据ID更新API
-// // @Id 37
-// // @Tags API管理
-// // @version 1.0
-// // @Accept application/json
-// // @Produce application/json
-// // @Param id path int true "API ID"
-// // @Param api_info body APINew true "API信息"
-// // @Success 200 object response.SuccessRes{data=UserAPI} 成功
-// // @Failure 400 object response.ErrorRes 内部错误
-// // @Router /apis/:id [PUT]
-// func UpdateAPI(c *gin.Context) {
-// 	var uri APIID
-// 	if err := c.ShouldBindUri(&uri); err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	var api APINew
-// 	if err := c.ShouldBindJSON(&api); err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	claims := c.MustGet("claims").(*service.CustomClaims)
-// 	api.User = claims.Username
-// 	authService := NewAuthService()
-// 	new, err := authService.UpdateAPI(uri.ID, api)
-// 	if err != nil {
-// 		response.ResponseError(c, "DatabaseError", err)
-// 		return
-// 	}
-// 	response.Response(c, new)
-// }
+// @Summary 根据ID更新API
+// @Id 39
+// @Tags API管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "API ID"
+// @Param api_info body APINew true "API信息"
+// @Success 200 object response.SuccessRes{data=UserAPI} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /apis/:id [PUT]
+func UpdateAPI(c *gin.Context) {
+	var uri APIID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var api APINew
+	if err := c.ShouldBindJSON(&api); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	api.User = claims.Username
+	authService := NewAuthService()
+	new, err := authService.UpdateAPI(uri.ID, api)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, new)
+}
 
 // // @Summary 菜单列表
-// // @Id 38
+// // @Id 40
 // // @Tags 菜单管理
 // // @version 1.0
 // // @Accept application/json
@@ -451,7 +451,7 @@ func GetUserByID(c *gin.Context) {
 // }
 
 // // @Summary 新建菜单
-// // @Id 39
+// // @Id 41
 // // @Tags 菜单管理
 // // @version 1.0
 // // @Accept application/json
@@ -478,7 +478,7 @@ func GetUserByID(c *gin.Context) {
 // }
 
 // // @Summary 根据ID获取菜单
-// // @Id 40
+// // @Id 42
 // // @Tags 菜单管理
 // // @version 1.0
 // // @Accept application/json
@@ -504,7 +504,7 @@ func GetUserByID(c *gin.Context) {
 // }
 
 // // @Summary 根据ID更新菜单
-// // @Id 41
+// // @Id 43
 // // @Tags 菜单管理
 // // @version 1.0
 // // @Accept application/json
@@ -537,7 +537,7 @@ func GetUserByID(c *gin.Context) {
 // }
 
 // // @Summary 根据角色ID获取菜单权限
-// // @Id 42
+// // @Id 44
 // // @Tags 权限管理
 // // @version 1.0
 // // @Accept application/json
@@ -563,7 +563,7 @@ func GetUserByID(c *gin.Context) {
 // }
 
 // // @Summary 根据角色ID更新菜单权限
-// // @Id 43
+// // @Id 45
 // // @Tags 权限管理
 // // @version 1.0
 // // @Accept application/json
@@ -596,7 +596,7 @@ func GetUserByID(c *gin.Context) {
 // }
 
 // // @Summary 根据菜单ID获取API权限
-// // @Id 44
+// // @Id 46
 // // @Tags 权限管理
 // // @version 1.0
 // // @Accept application/json
@@ -622,7 +622,7 @@ func GetUserByID(c *gin.Context) {
 // }
 
 // // @Summary 根据菜单ID更新API权限
-// // @Id 45
+// // @Id 47
 // // @Tags 权限管理
 // // @version 1.0
 // // @Accept application/json
@@ -655,7 +655,7 @@ func GetUserByID(c *gin.Context) {
 // }
 
 // // @Summary 获取当前用户的前端路由
-// // @Id 46
+// // @Id 48
 // // @Tags 权限管理
 // // @version 1.0
 // // @Accept application/json

@@ -54,11 +54,11 @@ type APIFilter struct {
 }
 
 type APINew struct {
-	Name    string `json:"name" binding:"required,min=1,max=64"`
-	Route   string `json:"route" binding:"required,min=1,max=128"`
-	Method  string `json:"method" binding:"required,oneof=post put get"`
-	Enabled int    `json:"enabled" binding:"required,oneof=1 2"`
-	User    string `json:"user" swaggerignore:"true"`
+	Name   string `json:"name" binding:"required,min=1,max=64"`
+	Route  string `json:"route" binding:"required,min=1,max=128"`
+	Method string `json:"method" binding:"required,oneof=post put get"`
+	Status int    `json:"status" binding:"required,oneof=1 2"`
+	User   string `json:"user" swaggerignore:"true"`
 }
 
 type APIID struct {
