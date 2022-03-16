@@ -25,7 +25,7 @@ type ComponentQuery interface {
 
 func (r *componentQuery) GetComponentByID(id int64) (*Component, error) {
 	var component Component
-	err := r.conn.Get(&component, "SELECT * FROM components WHERE id = ? ", id)
+	err := r.conn.Get(&component, "SELECT * FROM event_components WHERE id = ? ", id)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (r *componentQuery) GetComponentCount(filter ComponentFilter) (int, error) 
 	var count int
 	err := r.conn.Get(&count, `
 		SELECT count(1) as count 
-		FROM components 
+		FROM event_components 
 		WHERE `+strings.Join(where, " AND "), args...)
 	if err != nil {
 		return 0, err
@@ -64,7 +64,7 @@ func (r *componentQuery) GetComponentList(filter ComponentFilter) (*[]Component,
 	var components []Component
 	err := r.conn.Select(&components, `
 		SELECT * 
-		FROM components 
+		FROM event_components 
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
 	`, args...)

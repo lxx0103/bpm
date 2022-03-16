@@ -507,6 +507,13 @@ var doc = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "event_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "type": "string",
                         "description": "组件编码",
                         "name": "name",
@@ -669,7 +676,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/component.ComponentNew"
+                            "$ref": "#/definitions/component.ComponentUpdate"
                         }
                     }
                 ],
@@ -686,6 +693,54 @@ var doc = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/component.Component"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "组件管理"
+                ],
+                "summary": "根据ID更新组件",
+                "operationId": "49",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "组件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -2557,13 +2612,16 @@ var doc = `{
         "component.Component": {
             "type": "object",
             "properties": {
+                "component_type": {
+                    "type": "string"
+                },
                 "created": {
                     "type": "string"
                 },
                 "created_by": {
                     "type": "string"
                 },
-                "description": {
+                "default_value": {
                     "type": "string"
                 },
                 "event_id": {
@@ -2572,17 +2630,23 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "info": {
+                "json_data": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "status": {
+                "patterns": {
+                    "type": "string"
+                },
+                "required": {
                     "type": "integer"
                 },
-                "type": {
-                    "type": "string"
+                "sort": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
                 },
                 "updated": {
                     "type": "string"
@@ -2598,43 +2662,87 @@ var doc = `{
         "component.ComponentNew": {
             "type": "object",
             "required": [
-                "description",
                 "event_id",
-                "info",
+                "json_data",
                 "name",
-                "status",
+                "required",
+                "sort",
                 "type"
             ],
             "properties": {
-                "description": {
+                "default_value": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 1
+                    "maxLength": 255
                 },
                 "event_id": {
                     "type": "integer",
                     "minimum": 1
                 },
-                "info": {
-                    "type": "string",
-                    "minLength": 1
+                "json_data": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
                 },
-                "status": {
+                "patterns": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "required": {
                     "type": "integer",
                     "enum": [
                         1,
                         2
                     ]
                 },
+                "sort": {
+                    "type": "integer",
+                    "minimum": 1
+                },
                 "type": {
                     "type": "string",
                     "maxLength": 32,
                     "minLength": 1
+                }
+            }
+        },
+        "component.ComponentUpdate": {
+            "type": "object",
+            "required": [
+                "json_data"
+            ],
+            "properties": {
+                "default_value": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "json_data": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "patterns": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "required": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "sort": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "type": {
+                    "type": "string",
+                    "maxLength": 32
                 }
             }
         },

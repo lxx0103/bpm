@@ -35,7 +35,7 @@ func (r *eventQuery) GetEventByID(id int64) (*Event, error) {
 }
 
 func (r *eventQuery) GetEventCount(filter EventFilter, organizationID int64) (int, error) {
-	where, args := []string{"status = 1"}, []interface{}{}
+	where, args := []string{"e.status = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "e.name like ?"), append(args, "%"+v+"%")
 	}
@@ -59,7 +59,7 @@ func (r *eventQuery) GetEventCount(filter EventFilter, organizationID int64) (in
 }
 
 func (r *eventQuery) GetEventList(filter EventFilter, organizationID int64) (*[]Event, error) {
-	where, args := []string{"status = 1"}, []interface{}{}
+	where, args := []string{"e.status = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "e.name like ?"), append(args, "%"+v+"%")
 	}

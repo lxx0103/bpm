@@ -243,24 +243,30 @@ definitions:
     type: object
   component.Component:
     properties:
+      component_type:
+        type: string
       created:
         type: string
       created_by:
         type: string
-      description:
+      default_value:
         type: string
       event_id:
         type: integer
       id:
         type: integer
-      info:
+      json_data:
         type: string
       name:
         type: string
+      patterns:
+        type: string
+      required:
+        type: integer
+      sort:
+        type: integer
       status:
         type: integer
-      type:
-        type: string
       updated:
         type: string
       updated_by:
@@ -270,36 +276,67 @@ definitions:
     type: object
   component.ComponentNew:
     properties:
-      description:
+      default_value:
         maxLength: 255
-        minLength: 1
         type: string
       event_id:
         minimum: 1
         type: integer
-      info:
-        minLength: 1
+      json_data:
         type: string
       name:
         maxLength: 64
         minLength: 1
         type: string
-      status:
+      patterns:
+        maxLength: 255
+        type: string
+      required:
         enum:
         - 1
         - 2
+        type: integer
+      sort:
+        minimum: 1
         type: integer
       type:
         maxLength: 32
         minLength: 1
         type: string
     required:
-    - description
     - event_id
-    - info
+    - json_data
     - name
-    - status
+    - required
+    - sort
     - type
+    type: object
+  component.ComponentUpdate:
+    properties:
+      default_value:
+        maxLength: 255
+        type: string
+      json_data:
+        type: string
+      name:
+        maxLength: 64
+        type: string
+      patterns:
+        maxLength: 255
+        type: string
+      required:
+        enum:
+        - 1
+        - 2
+        type: integer
+      sort:
+        minimum: 1
+        type: integer
+      type:
+        maxLength: 32
+        type: string
+    required:
+    - json_data
     type: object
   event.Event:
     properties:
@@ -853,6 +890,11 @@ paths:
         name: page_size
         required: true
         type: integer
+      - description: 事件ID
+        in: query
+        name: event_id
+        required: true
+        type: integer
       - description: 组件编码
         in: query
         name: name
@@ -909,6 +951,35 @@ paths:
       tags:
       - 组件管理
   /components/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "49"
+      parameters:
+      - description: 组件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新组件
+      tags:
+      - 组件管理
     get:
       consumes:
       - application/json
@@ -953,7 +1024,7 @@ paths:
         name: component_info
         required: true
         schema:
-          $ref: '#/definitions/component.ComponentNew'
+          $ref: '#/definitions/component.ComponentUpdate'
       produces:
       - application/json
       responses:
