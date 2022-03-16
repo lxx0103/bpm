@@ -40,7 +40,7 @@ func Signin(c *gin.Context) {
 			response.ResponseUnauthorized(c, "AuthError", errors.New(wechatCredential.ErrMsg))
 			return
 		}
-		userInfo, err = authService.GetUserInfo(wechatCredential.OpenID)
+		userInfo, err = authService.GetUserInfo(wechatCredential.OpenID, signinInfo.OrganizationID)
 		if err != nil {
 			response.ResponseUnauthorized(c, "AuthError", err)
 			return
@@ -316,7 +316,7 @@ func GetUserByID(c *gin.Context) {
 // @Param page_size query int true "每页行数"
 // @Param name query string false "API名称"
 // @Param route query string false "API路由"
-// @Success 200 object response.ListRes{data=[]UserAPI} 成功
+// @Success 200 object response.ListRes{data=[]API} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /apis [GET]
 func GetAPIList(c *gin.Context) {
@@ -342,7 +342,7 @@ func GetAPIList(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param api_info body APINew true "API信息"
-// @Success 200 object response.SuccessRes{data=UserAPI} 成功
+// @Success 200 object response.SuccessRes{data=API} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /apis [POST]
 func NewAPI(c *gin.Context) {
@@ -369,7 +369,7 @@ func NewAPI(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path int true "API ID"
-// @Success 200 object response.SuccessRes{data=UserAPI} 成功
+// @Success 200 object response.SuccessRes{data=API} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /apis/:id [GET]
 func GetAPIByID(c *gin.Context) {
@@ -396,7 +396,7 @@ func GetAPIByID(c *gin.Context) {
 // @Produce application/json
 // @Param id path int true "API ID"
 // @Param api_info body APINew true "API信息"
-// @Success 200 object response.SuccessRes{data=UserAPI} 成功
+// @Success 200 object response.SuccessRes{data=API} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /apis/:id [PUT]
 func UpdateAPI(c *gin.Context) {

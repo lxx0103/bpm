@@ -8,9 +8,10 @@ type WechatCredential struct {
 	ErrMsg     string `json:"errmsg"`
 }
 type SigninRequest struct {
-	AuthType   int    `json:"auth_type" binding:"required,oneof=1 2"`
-	Identifier string `json:"identifier" binding:"required"`
-	Credential string `json:"credential" binding:"omitempty,min=6"`
+	AuthType       int    `json:"auth_type" binding:"required,oneof=1 2"`
+	Identifier     string `json:"identifier" binding:"required"`
+	Credential     string `json:"credential" binding:"omitempty,min=6"`
+	OrganizationID int64  `json:"organization_id" binding:"omitempty,min=1"`
 }
 type SigninResponse struct {
 	Token string `json:"token"`

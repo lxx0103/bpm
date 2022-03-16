@@ -1,5 +1,53 @@
 basePath: /
 definitions:
+  auth.API:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      method:
+        type: string
+      name:
+        type: string
+      route:
+        type: string
+      status:
+        type: string
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  auth.APINew:
+    properties:
+      method:
+        enum:
+        - post
+        - put
+        - get
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      route:
+        maxLength: 128
+        minLength: 1
+        type: string
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - method
+    - name
+    - route
+    - status
+    type: object
   auth.Role:
     properties:
       created:
@@ -50,6 +98,9 @@ definitions:
         type: string
       identifier:
         type: string
+      organization_id:
+        minimum: 1
+        type: integer
     required:
     - auth_type
     - identifier
@@ -256,6 +307,8 @@ definitions:
         items:
           $ref: '#/definitions/event.EventAssign'
         type: array
+      assign_type:
+        type: integer
       created:
         type: string
       created_by:
@@ -280,7 +333,7 @@ definitions:
   event.EventAssign:
     properties:
       assign_to:
-        type: string
+        type: integer
       assign_type:
         type: integer
       created:
@@ -508,6 +561,146 @@ info:
   title: BPM API
   version: "1.0"
 paths:
+  /apis:
+    get:
+      consumes:
+      - application/json
+      operationId: "36"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: API名称
+        in: query
+        name: name
+        type: string
+      - description: API路由
+        in: query
+        name: route
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/auth.API'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: API列表
+      tags:
+      - API管理
+    post:
+      consumes:
+      - application/json
+      operationId: "37"
+      parameters:
+      - description: API信息
+        in: body
+        name: api_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.APINew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.API'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建API
+      tags:
+      - API管理
+  /apis/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "38"
+      parameters:
+      - description: API ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.API'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取API
+      tags:
+      - API管理
+    put:
+      consumes:
+      - application/json
+      operationId: "39"
+      parameters:
+      - description: API ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: API信息
+        in: body
+        name: api_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.APINew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.API'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新API
+      tags:
+      - API管理
   /clients:
     get:
       consumes:

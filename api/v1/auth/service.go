@@ -24,7 +24,7 @@ type AuthService interface {
 	VerifyWechatSignin(string) (*WechatCredential, error)
 	VerifyCredential(SigninRequest) (*User, error)
 	//User Management
-	GetUserInfo(string) (*User, error)
+	GetUserInfo(string, int64) (*User, error)
 	UpdateUser(int64, UserUpdate, int64) (*User, error)
 	GetUserByID(int64, int64) (*User, error)
 	GetUserList(UserFilter, int64) (int, *[]User, error)
@@ -111,13 +111,17 @@ func (s *authService) VerifyWechatSignin(code string) (*WechatCredential, error)
 	return &credential, nil
 }
 
-func (s *authService) GetUserInfo(openID string) (*User, error) {
+func (s *authService) GetUserInfo(openID string, organizationID int64) (*User, error) {
 	db := database.InitMySQL()
 	query := NewAuthQuery(db)
 	user, err := query.GetUserByOpenID(openID)
 	if err != nil {
 		if err.Error() != "sql: no rows in result set" {
 			return nil, err
+		}
+		if organizationID == 0 {
+			msg := "组织ID不存在"
+			return nil, errors.New(msg)
 		}
 		tx, err := db.Begin()
 		if err != nil {
@@ -127,6 +131,7 @@ func (s *authService) GetUserInfo(openID string) (*User, error) {
 		var newUser User
 		newUser.Type = 2
 		newUser.Identifier = openID
+		newUser.OrganizationID = organizationID
 		repo := NewAuthRepository(tx)
 		userID, err := repo.CreateUser(newUser)
 		if err != nil {
@@ -183,16 +188,21 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 	if err != nil {
 		return nil, err
 	}
-	byRole, err := repo.GetRoleByID(byUser.RoleID)
-	if err != nil {
-		return nil, err
+	var byPriority int64
+	byPriority = 0
+	if byUser.RoleID != 0 {
+		byRole, err := repo.GetRoleByID(byUser.RoleID)
+		if err != nil {
+			return nil, err
+		}
+		byPriority = byRole.Priority
 	}
 	if oldUser.RoleID != 0 {
 		targetRole, err := repo.GetRoleByID(oldUser.RoleID)
 		if err != nil {
 			return nil, err
 		}
-		if byRole.Priority <= targetRole.Priority && userID != byUserID { //只能修改角色比自己优先级低的用户,或者用户自身
+		if byPriority <= targetRole.Priority && userID != byUserID { //只能修改角色比自己优先级低的用户,或者用户自身
 			msg := "你无法修改角色为" + targetRole.Name + "的用户"
 			return nil, errors.New(msg)
 		}
@@ -202,7 +212,7 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 		if err != nil {
 			return nil, err
 		}
-		if byRole.Priority < toRole.Priority { //只能将目标修改为和自己同级的角色
+		if byPriority < toRole.Priority { //只能将目标修改为和自己同级的角色
 			msg := "你无法将目标角色改为:" + toRole.Name
 			return nil, errors.New(msg)
 		}
