@@ -19,6 +19,7 @@ type EventService interface {
 	NewEvent(EventNew, int64) (*Event, error)
 	GetEventList(EventFilter, int64) (int, *[]Event, error)
 	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
+	DeleteEvent(int64, int64, string) error
 }
 
 func (s *eventService) GetEventByID(id int64) (*Event, error) {
@@ -138,6 +139,7 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	if info.AssignType != 0 {
 		oldEvent.AssignType = info.AssignType
 	}
+	oldEvent.JsonData = info.JsonData
 	_, err = repo.UpdateEvent(eventID, *oldEvent, info.User)
 	if err != nil {
 		return nil, err
@@ -178,4 +180,24 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	event.PreID = pres
 	tx.Commit()
 	return event, err
+}
+
+func (s *eventService) DeleteEvent(eventID int64, organizationID int64, user string) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewEventRepository(tx)
+	_, err = repo.GetEventByID(eventID, organizationID)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteEvent(eventID, user)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
 }

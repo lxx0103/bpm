@@ -13,7 +13,7 @@ type EventNew struct {
 	PreID      []int64 `json:"pre_id" binding:"required"`
 	AssignType int     `json:"assign_type" binding:"required,oneof=1 2"`
 	AssignTo   []int64 `json:"assign_to" binding:"required"`
-	Status     int     `json:"status" binding:"required,oneof=1 2 3"`
+	Status     int     `json:"status" binding:"required,oneof=1 2"`
 	User       string  `json:"user" swaggerignore:"true"`
 }
 type EventUpdate struct {
@@ -21,7 +21,8 @@ type EventUpdate struct {
 	PreID      []int64 `json:"pre_id" binding:"omitempty"`
 	AssignType int     `json:"assign_type" binding:"omitempty,oneof=1 2"`
 	AssignTo   []int64 `json:"assign_to" binding:"omitempty"`
-	Status     int     `json:"status" binding:"omitempty,oneof=1 2 3"`
+	JsonData   string  `json:"json_data" binding:"required,json"`
+	Status     int     `json:"status" binding:"omitempty,oneof=1 2"`
 	User       string  `json:"user" swaggerignore:"true"`
 }
 

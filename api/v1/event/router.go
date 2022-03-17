@@ -7,4 +7,5 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/events/:id", GetEventByID)
 	g.PUT("/events/:id", UpdateEvent)
 	g.POST("/events", NewEvent)
+	g.DELETE("/events/:id", DeleteEvent)
 }

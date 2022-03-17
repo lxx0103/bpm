@@ -48,6 +48,77 @@ definitions:
     - route
     - status
     type: object
+  auth.Menu:
+    properties:
+      action:
+        type: string
+      component:
+        type: string
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      is_hidden:
+        type: integer
+      name:
+        type: string
+      parent_id:
+        type: integer
+      path:
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  auth.MenuNew:
+    properties:
+      action:
+        maxLength: 64
+        minLength: 1
+        type: string
+      component:
+        maxLength: 255
+        minLength: 1
+        type: string
+      is_hidden:
+        enum:
+        - 1
+        - 2
+        type: integer
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      parent_id:
+        minimum: -1
+        type: integer
+      path:
+        maxLength: 128
+        minLength: 1
+        type: string
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+      title:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+    - is_hidden
+    - name
+    - parent_id
+    - status
+    - title
+    type: object
   auth.Role:
     properties:
       created:
@@ -352,6 +423,8 @@ definitions:
         type: string
       id:
         type: integer
+      json_data:
+        type: string
       name:
         type: string
       pre_id:
@@ -414,7 +487,6 @@ definitions:
         enum:
         - 1
         - 2
-        - 3
         type: integer
     required:
     - assign_to
@@ -442,6 +514,35 @@ definitions:
         type: string
       updated_by:
         type: string
+    type: object
+  event.EventUpdate:
+    properties:
+      assign_to:
+        items:
+          type: integer
+        type: array
+      assign_type:
+        enum:
+        - 1
+        - 2
+        type: integer
+      json_data:
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      pre_id:
+        items:
+          type: integer
+        type: array
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - json_data
     type: object
   member.MemberNew:
     properties:
@@ -1116,6 +1217,35 @@ paths:
       tags:
       - 事件管理
   /events/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "12"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新事件
+      tags:
+      - 事件管理
     get:
       consumes:
       - application/json
@@ -1160,7 +1290,7 @@ paths:
         name: event_info
         required: true
         schema:
-          $ref: '#/definitions/event.EventNew'
+          $ref: '#/definitions/event.EventUpdate'
       produces:
       - application/json
       responses:
@@ -1244,6 +1374,181 @@ paths:
       summary: 新建项目成员
       tags:
       - 项目管理
+  /menus:
+    get:
+      consumes:
+      - application/json
+      operationId: "40"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数（5/10/15/20）
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 菜单名称
+        in: query
+        name: name
+        type: string
+      - description: 只显示顶级菜单
+        in: query
+        name: only_top
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/auth.Menu'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 菜单列表
+      tags:
+      - 菜单管理
+    post:
+      consumes:
+      - application/json
+      operationId: "41"
+      parameters:
+      - description: 菜单信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.MenuNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Menu'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建菜单
+      tags:
+      - 菜单管理
+  /menus/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "50"
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 菜单信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.MenuNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新菜单
+      tags:
+      - 菜单管理
+    get:
+      consumes:
+      - application/json
+      operationId: "42"
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Menu'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取菜单
+      tags:
+      - 菜单管理
+    put:
+      consumes:
+      - application/json
+      operationId: "43"
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 菜单信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.MenuNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Menu'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新菜单
+      tags:
+      - 菜单管理
   /organizations:
     get:
       consumes:

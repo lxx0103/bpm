@@ -98,7 +98,7 @@ func GetEventByID(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path int true "事件ID"
-// @Param event_info body EventNew true "事件信息"
+// @Param event_info body EventUpdate true "事件信息"
 // @Success 200 object response.SuccessRes{data=Event} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /events/:id [PUT]
@@ -123,4 +123,30 @@ func UpdateEvent(c *gin.Context) {
 		return
 	}
 	response.Response(c, new)
+}
+
+// @Summary 根据ID更新事件
+// @Id 12
+// @Tags 事件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /events/:id [DELETE]
+func DeleteEvent(c *gin.Context) {
+	var uri EventID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	eventService := NewEventService()
+	err := eventService.DeleteEvent(uri.ID, claims.OrganizationID, claims.Username)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "OK")
 }
