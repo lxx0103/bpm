@@ -31,6 +31,10 @@ type AuthQuery interface {
 	GetAPIByID(id int64) (*API, error)
 	GetAPICount(filter APIFilter) (int, error)
 	GetAPIList(filter APIFilter) (*[]API, error)
+	//Menu Management
+	GetMenuByID(id int64) (*Menu, error)
+	GetMenuCount(filter MenuFilter) (int, error)
+	GetMenuList(filter MenuFilter) (*[]Menu, error)
 }
 
 func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
@@ -197,4 +201,49 @@ func (r *authQuery) GetAPIList(filter APIFilter) (*[]API, error) {
 		return nil, err
 	}
 	return &apis, nil
+}
+
+func (r *authQuery) GetMenuByID(id int64) (*Menu, error) {
+	var menu Menu
+	err := r.conn.Get(&menu, "SELECT * FROM menus WHERE id = ? AND status > 0 ", id)
+	return &menu, err
+}
+
+func (r *authQuery) GetMenuCount(filter MenuFilter) (int, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "code like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.OnlyTop; v {
+		where, args = append(where, "parent_id = ?"), append(args, 0)
+	}
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) as count
+		FROM menus
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *authQuery) GetMenuList(filter MenuFilter) (*[]Menu, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "code like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.OnlyTop; v {
+		where, args = append(where, "parent_id = ?"), append(args, 0)
+	}
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var menus []Menu
+	err := r.conn.Select(&menus, `
+		SELECT *
+		FROM menus
+		WHERE `+strings.Join(where, " AND ")+`
+		LIMIT ?, ?
+	`, args...)
+	return &menus, err
 }

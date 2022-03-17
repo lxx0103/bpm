@@ -38,17 +38,18 @@ type AuthService interface {
 	NewAPI(APINew) (*API, error)
 	GetAPIList(APIFilter) (int, *[]API, error)
 	UpdateAPI(int64, APINew) (*API, error)
-	// //Menu Management
-	// GetMenuByID(int64) (UserMenu, error)
-	// NewMenu(MenuNew) (UserMenu, error)
-	// GetMenuList(MenuFilter) (int, []UserMenu, error)
-	// UpdateMenu(int64, MenuNew) (UserMenu, error)
+	//Menu Management
+	GetMenuByID(int64) (*Menu, error)
+	NewMenu(MenuNew) (*Menu, error)
+	GetMenuList(MenuFilter) (int, *[]Menu, error)
+	UpdateMenu(int64, MenuUpdate) (*Menu, error)
+	DeleteMenu(int64, string) error
 	// //Privilege Management
 	// GetRoleMenuByID(int64) ([]int64, error)
 	// NewRoleMenu(int64, RoleMenuNew) ([]int64, error)
 	// GetMenuAPIByID(int64) ([]int64, error)
 	// NewMenuAPI(int64, MenuAPINew) ([]int64, error)
-	// GetMyMenu(int64) ([]UserMenu, error)
+	// GetMyMenu(int64) ([]Menu, error)
 }
 
 func (s authService) CreateAuth(signupInfo SignupRequest) (int64, error) {
@@ -382,48 +383,106 @@ func (s *authService) UpdateAPI(apiID int64, info APINew) (*API, error) {
 	return api, err
 }
 
-// func (s *authService) GetMenuByID(id int64) (UserMenu, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	menu, err := repo.GetMenuByID(id)
-// 	return menu, err
-// }
+func (s *authService) GetMenuByID(id int64) (*Menu, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	menu, err := query.GetMenuByID(id)
+	return menu, err
+}
 
-// func (s *authService) NewMenu(info MenuNew) (UserMenu, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	menuID, err := repo.CreateMenu(info)
-// 	if err != nil {
-// 		return UserMenu{}, err
-// 	}
-// 	menu, err := repo.GetMenuByID(menuID)
-// 	return menu, err
-// }
+func (s *authService) GetMenuList(filter MenuFilter) (int, *[]Menu, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	count, err := query.GetMenuCount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetMenuList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	return count, list, err
+}
 
-// func (s *authService) GetMenuList(filter MenuFilter) (int, []UserMenu, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	count, err := repo.GetMenuCount(filter)
-// 	if err != nil {
-// 		return 0, nil, err
-// 	}
-// 	list, err := repo.GetMenuList(filter)
-// 	if err != nil {
-// 		return 0, nil, err
-// 	}
-// 	return count, list, err
-// }
+func (s *authService) NewMenu(info MenuNew) (*Menu, error) {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	menuID, err := repo.CreateMenu(info)
+	if err != nil {
+		return nil, err
+	}
+	menu, err := repo.GetMenuByID(menuID)
+	if err != nil {
+		return nil, err
+	}
+	tx.Commit()
+	return menu, nil
+}
 
-// func (s *authService) UpdateMenu(menuID int64, info MenuNew) (UserMenu, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	_, err := repo.UpdateMenu(menuID, info)
-// 	if err != nil {
-// 		return UserMenu{}, err
-// 	}
-// 	menu, err := repo.GetMenuByID(menuID)
-// 	return menu, err
-// }
+func (s *authService) UpdateMenu(menuID int64, info MenuUpdate) (*Menu, error) {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	oldMenu, err := repo.GetMenuByID(menuID)
+	if err != nil {
+		return nil, err
+	}
+	if info.Name != "" {
+		oldMenu.Name = info.Name
+	}
+	if info.Action != "" {
+		oldMenu.Action = info.Action
+	}
+	if info.Title != "" {
+		oldMenu.Title = info.Title
+	}
+	if info.Path != "" {
+		oldMenu.Path = info.Path
+	}
+	if info.Component != "" {
+		oldMenu.Component = info.Component
+	}
+	if info.IsHidden != 0 {
+		oldMenu.IsHidden = info.IsHidden
+	}
+	if info.ParentID != 0 {
+		oldMenu.ParentID = info.ParentID
+	}
+	if info.Status != 0 {
+		oldMenu.Status = info.Status
+	}
+	err = repo.UpdateMenu(menuID, *oldMenu, info.User)
+	if err != nil {
+		return nil, err
+	}
+	menu, err := repo.GetMenuByID(menuID)
+	return menu, err
+}
+
+func (s *authService) DeleteMenu(menuID int64, user string) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	err = repo.DeleteMenu(menuID, user)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
 
 // func (s *authService) GetRoleMenuByID(id int64) ([]int64, error) {
 // 	db := database.InitMySQL()
@@ -461,7 +520,7 @@ func (s *authService) UpdateAPI(apiID int64, info APINew) (*API, error) {
 // 	return menu, err
 // }
 
-// func (s *authService) GetMyMenu(roleID int64) ([]UserMenu, error) {
+// func (s *authService) GetMyMenu(roleID int64) ([]Menu, error) {
 // 	db := database.InitMySQL()
 // 	repo := NewAuthRepository(db)
 // 	menu, err := repo.GetMyMenu(roleID)

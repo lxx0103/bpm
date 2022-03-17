@@ -43,7 +43,7 @@ type API struct {
 	Updated   time.Time `db:"updated" json:"updated"`
 	UpdatedBy string    `db:"updated_by" json:"updated_by"`
 }
-type UserMenu struct {
+type Menu struct {
 	ID        int64     `db:"id" json:"id"`
 	Name      string    `db:"name" json:"name"`
 	Action    string    `db:"action" json:"action"`
@@ -52,7 +52,7 @@ type UserMenu struct {
 	Component string    `db:"component" json:"component"`
 	IsHidden  int64     `db:"is_hidden" json:"is_hidden"`
 	ParentID  int64     `db:"parent_id" json:"parent_id"`
-	Enabled   int64     `db:"enabled" json:"enabled"`
+	Status    int       `db:"status" json:"status"`
 	Created   time.Time `db:"created" json:"created"`
 	CreatedBy string    `db:"created_by" json:"created_by"`
 	Updated   time.Time `db:"updated" json:"updated"`

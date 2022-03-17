@@ -80,8 +80,20 @@ type MenuNew struct {
 	Path      string `json:"path" binding:"omitempty,min=1,max=128"`
 	Component string `json:"component" binding:"omitempty,min=1,max=255"`
 	IsHidden  int64  `json:"is_hidden" binding:"required,oneof=1 2"`
-	ParentID  *int64 `json:"parent_id" binding:"required,min=0"`
-	Enabled   int64  `json:"enabled" binding:"required,oneof=1 2"`
+	ParentID  int64  `json:"parent_id" binding:"required,min=-1"`
+	Status    int    `json:"status" binding:"required,oneof=1 2"`
+	User      string `json:"user" swaggerignore:"true"`
+}
+
+type MenuUpdate struct {
+	Name      string `json:"name" binding:"omitempty,min=1,max=64"`
+	Action    string `json:"action" binding:"omitempty,min=1,max=64"`
+	Title     string `json:"title" binding:"omitempty,min=1,max=64"`
+	Path      string `json:"path" binding:"omitempty,min=1,max=128"`
+	Component string `json:"component" binding:"omitempty,min=1,max=255"`
+	IsHidden  int64  `json:"is_hidden" binding:"omitempty,oneof=1 2"`
+	ParentID  int64  `json:"parent_id" binding:"omitempty,min=-1"`
+	Status    int    `json:"status" binding:"required,oneof=1 2"`
 	User      string `json:"user" swaggerignore:"true"`
 }
 

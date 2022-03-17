@@ -33,18 +33,17 @@ type AuthRepository interface {
 	CreateAPI(APINew) (int64, error)
 	UpdateAPI(int64, APINew) (int64, error)
 	GetAPIByID(int64) (*API, error)
-	// //Menu Management
-	// GetMenuByID(id int64) (UserMenu, error)
-	// CreateMenu(info MenuNew) (int64, error)
-	// GetMenuCount(filter MenuFilter) (int, error)
-	// GetMenuList(filter MenuFilter) ([]UserMenu, error)
-	// UpdateMenu(id int64, info MenuNew) (int64, error)
+	//Menu Management
+	GetMenuByID(id int64) (*Menu, error)
+	CreateMenu(info MenuNew) (int64, error)
+	UpdateMenu(int64, Menu, string) error
+	DeleteMenu(int64, string) error
 	// //Privilege Management
 	// GetRoleMenuByID(int64) ([]int64, error)
 	// NewRoleMenu(int64, RoleMenuNew) (int64, error)
 	// GetMenuAPIByID(int64) ([]int64, error)
 	// NewMenuAPI(int64, MenuAPINew) (int64, error)
-	// GetMyMenu(int64) ([]UserMenu, error)
+	// GetMyMenu(int64) ([]Menu, error)
 }
 
 func (r *authRepository) CreateUser(newUser User) (int64, error) {
@@ -222,121 +221,70 @@ func (r *authRepository) GetAPIByID(id int64) (*API, error) {
 	return &res, nil
 }
 
-// func (r *authRepository) GetMenuByID(id int64) (UserMenu, error) {
-// 	var menu UserMenu
-// 	err := r.conn.Get(&menu, "SELECT * FROM user_menus WHERE id = ? ", id)
-// 	if err != nil {
-// 		return UserMenu{}, err
-// 	}
-// 	return menu, nil
-// }
-// func (r *authRepository) CreateMenu(info MenuNew) (int64, error) {
-// 	tx, err := r.conn.Begin()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	defer tx.Rollback()
-// 	result, err := tx.Exec(`
-// 		INSERT INTO user_menus
-// 		(
-// 			name,
-// 			action,
-// 			title,
-// 			path,
-// 			component,
-// 			is_hidden,
-// 			parent_id,
-// 			enabled,
-// 			created,
-// 			created_by,
-// 			updated,
-// 			updated_by
-// 		)
-// 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-// 	`, info.Name, info.Action, info.Title, info.Path, info.Component, info.IsHidden, info.ParentID, info.Enabled, time.Now(), info.User, time.Now(), info.User)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	id, err := result.LastInsertId()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	tx.Commit()
-// 	return id, nil
-// }
+func (r *authRepository) GetMenuByID(id int64) (*Menu, error) {
+	var res Menu
+	row := r.tx.QueryRow(`SELECT id, name, action, title, path, component, is_hidden, parent_id, status, created, created_by, updated, updated_by FROM menus WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Name, &res.Action, &res.Title, &res.Path, &res.Component, &res.IsHidden, &res.ParentID, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	if err != nil {
+		msg := "菜单不存在:" + err.Error()
+		return nil, errors.New(msg)
+	}
+	return &res, nil
+}
 
-// func (r *authRepository) GetMenuCount(filter MenuFilter) (int, error) {
-// 	where, args := []string{"1 = 1"}, []interface{}{}
-// 	if v := filter.Name; v != "" {
-// 		where, args = append(where, "code like ?"), append(args, "%"+v+"%")
-// 	}
-// 	if v := filter.OnlyTop; v {
-// 		where, args = append(where, "parent_id = ?"), append(args, 0)
-// 	}
-// 	var count int
-// 	err := r.conn.Get(&count, `
-// 		SELECT count(1) as count
-// 		FROM user_menus
-// 		WHERE `+strings.Join(where, " AND "), args...)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	return count, nil
-// }
+func (r *authRepository) CreateMenu(info MenuNew) (int64, error) {
+	result, err := r.tx.Exec(`
+		INSERT INTO menus
+		(
+			name,
+			action,
+			title,
+			path,
+			component,
+			is_hidden,
+			parent_id,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Action, info.Title, info.Path, info.Component, info.IsHidden, info.ParentID, 1, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
+}
 
-// func (r *authRepository) GetMenuList(filter MenuFilter) ([]UserMenu, error) {
-// 	where, args := []string{"1 = 1"}, []interface{}{}
-// 	if v := filter.Name; v != "" {
-// 		where, args = append(where, "code like ?"), append(args, "%"+v+"%")
-// 	}
-// 	if v := filter.OnlyTop; v {
-// 		where, args = append(where, "parent_id = ?"), append(args, 0)
-// 	}
-// 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
-// 	args = append(args, filter.PageSize)
-// 	var menus []UserMenu
-// 	err := r.conn.Select(&menus, `
-// 		SELECT *
-// 		FROM user_menus
-// 		WHERE `+strings.Join(where, " AND ")+`
-// 		LIMIT ?, ?
-// 	`, args...)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return menus, nil
-// }
+func (r *authRepository) UpdateMenu(id int64, info Menu, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update menus SET
+		name = ?,
+		action = ?,
+		title = ?,
+		path = ?,
+		component = ?,
+		is_hidden = ?,
+		parent_id = ?,
+		status = ?,
+		updated = ?,
+		updated_by = ?
+		WHERE id = ?
+	`, info.Name, info.Action, info.Title, info.Path, info.Component, info.IsHidden, info.ParentID, info.Status, time.Now(), byUser, id)
+	return err
+}
 
-// func (r *authRepository) UpdateMenu(id int64, info MenuNew) (int64, error) {
-// 	tx, err := r.conn.Begin()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	defer tx.Rollback()
-// 	result, err := tx.Exec(`
-// 		Update user_menus SET
-// 		name = ?,
-// 		action = ?,
-// 		title = ?,
-// 		path = ?,
-// 		component = ?,
-// 		is_hidden = ?,
-// 		parent_id = ?,
-// 		enabled = ?,
-// 		updated = ?,
-// 		updated_by = ?
-// 		WHERE id = ?
-// 	`, info.Name, info.Action, info.Title, info.Path, info.Component, info.IsHidden, info.ParentID, info.Enabled, time.Now(), info.User, id)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	affected, err := result.RowsAffected()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	tx.Commit()
-// 	return affected, nil
-// }
+func (r *authRepository) DeleteMenu(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update menus SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, time.Now(), byUser, id)
+	return err
+}
 
 // func (r *authRepository) GetRoleMenuByID(id int64) ([]int64, error) {
 // 	var menu []int64
@@ -445,8 +393,8 @@ func (r *authRepository) GetAPIByID(id int64) (*API, error) {
 // 	tx.Commit()
 // 	return rows, nil
 // }
-// func (r *authRepository) GetMyMenu(roleID int64) ([]UserMenu, error) {
-// 	var menu []UserMenu
+// func (r *authRepository) GetMyMenu(roleID int64) ([]Menu, error) {
+// 	var menu []Menu
 // 	err := r.conn.Select(&menu, `
 // 		SELECT um.* FROM user_role_menus urm
 // 		LEFT JOIN user_menus um
