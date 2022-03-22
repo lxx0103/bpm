@@ -3,6 +3,7 @@ package auth
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -25,24 +26,23 @@ type AuthRepository interface {
 	// GetAuthCount(filter AuthFilter) (int, error)
 	// GetAuthList(filter AuthFilter) ([]Auth, error)
 
-	// //Role Management
+	//  Role Management
 	CreateRole(info RoleNew) (int64, error)
 	UpdateRole(int64, RoleNew) (int64, error)
 	GetRoleByID(int64) (*Role, error)
-	// //API Management
+	// API Management
 	CreateAPI(APINew) (int64, error)
 	UpdateAPI(int64, APINew) (int64, error)
 	GetAPIByID(int64) (*API, error)
-	//Menu Management
+	// Menu Management
 	GetMenuByID(id int64) (*Menu, error)
 	CreateMenu(info MenuNew) (int64, error)
 	UpdateMenu(int64, Menu, string) error
 	DeleteMenu(int64, string) error
-	// //Privilege Management
+	// Privilege Management
+	NewMenuAPI(int64, MenuAPINew) error
 	// GetRoleMenuByID(int64) ([]int64, error)
 	// NewRoleMenu(int64, RoleMenuNew) (int64, error)
-	// GetMenuAPIByID(int64) ([]int64, error)
-	// NewMenuAPI(int64, MenuAPINew) (int64, error)
 	// GetMyMenu(int64) ([]Menu, error)
 }
 
@@ -340,59 +340,38 @@ func (r *authRepository) DeleteMenu(id int64, byUser string) error {
 // 	return rows, nil
 // }
 
-// func (r *authRepository) GetMenuAPIByID(id int64) ([]int64, error) {
-// 	var apis []int64
-// 	err := r.conn.Select(&apis, "SELECT api_id FROM user_menu_apis WHERE menu_id = ? and enabled = 1", id)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return apis, nil
-// }
-// func (r *authRepository) NewMenuAPI(menu_id int64, info MenuAPINew) (int64, error) {
-// 	tx, err := r.conn.Begin()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	defer tx.Rollback()
-// 	_, err = tx.Exec(`
-// 		Update user_menu_apis SET
-// 		enabled = 2,
-// 		updated = ?,
-// 		updated_by = ?
-// 		WHERE menu_id = ?
-// 		AND enabled = 1
-// 	`, time.Now(), info.User, menu_id)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	sql := `
-// 	INSERT INTO user_menu_apis
-// 	(
-// 		menu_id,
-// 		api_id,
-// 		enabled,
-// 		created,
-// 		created_by,
-// 		updated,
-// 		updated_by
-// 	)
-// 	VALUES
-// 	`
-// 	for i := 0; i < len(info.IDS); i++ {
-// 		sql += "(" + fmt.Sprint(menu_id) + "," + fmt.Sprint(info.IDS[i]) + ",1,\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\",\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\"),"
-// 	}
-// 	sql = sql[:len(sql)-1]
-// 	result, err := tx.Exec(sql)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	rows, err := result.RowsAffected()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	tx.Commit()
-// 	return rows, nil
-// }
+func (r *authRepository) NewMenuAPI(menu_id int64, info MenuAPINew) error {
+	_, err := r.tx.Exec(`
+		Update menu_apis SET
+		status = -1,
+		updated = ?,
+		updated_by = ?
+		WHERE menu_id = ?
+	`, time.Now(), info.User, menu_id)
+	if err != nil {
+		return err
+	}
+	sql := `
+	INSERT INTO menu_apis
+	(
+		menu_id,
+		api_id,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	)
+	VALUES
+	`
+	for i := 0; i < len(info.IDS); i++ {
+		sql += "(" + fmt.Sprint(menu_id) + "," + fmt.Sprint(info.IDS[i]) + ",1,\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\",\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\"),"
+	}
+	sql = sql[:len(sql)-1]
+	_, err = r.tx.Exec(sql)
+	return err
+}
+
 // func (r *authRepository) GetMyMenu(roleID int64) ([]Menu, error) {
 // 	var menu []Menu
 // 	err := r.conn.Select(&menu, `

@@ -109,7 +109,7 @@ type RoleMenuNew struct {
 	User string  `json:"_" swaggerignore:"true"`
 }
 
-type MenuAPI struct {
+type MenuAPIID struct {
 	IDS []int64 `json:"ids" binding:"required"`
 }
 

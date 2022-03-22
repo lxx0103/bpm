@@ -35,6 +35,7 @@ type AuthQuery interface {
 	GetMenuByID(id int64) (*Menu, error)
 	GetMenuCount(filter MenuFilter) (int, error)
 	GetMenuList(filter MenuFilter) (*[]Menu, error)
+	GetMenuAPIByID(int64) ([]int64, error)
 }
 
 func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
@@ -246,4 +247,10 @@ func (r *authQuery) GetMenuList(filter MenuFilter) (*[]Menu, error) {
 		LIMIT ?, ?
 	`, args...)
 	return &menus, err
+}
+
+func (r *authQuery) GetMenuAPIByID(menuID int64) ([]int64, error) {
+	var apis []int64
+	err := r.conn.Select(&apis, "SELECT api_id FROM menu_apis WHERE menu_id = ? and status > 0", menuID)
+	return apis, err
 }

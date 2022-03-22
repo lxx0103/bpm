@@ -28,8 +28,8 @@ func AuthRouter(g *gin.RouterGroup) {
 	g.DELETE("/menus/:id", DeleteMenu)
 	// g.GET("/rolemenus/:id", GetRoleMenu)
 	// g.POST("/rolemenus/:id", NewRoleMenu)
-	// g.GET("/menuapis/:id", GetMenuApi)
-	// g.POST("/menuapis/:id", NewMenuApi)
+	g.GET("/menuapis/:id", GetMenuApi)
+	g.POST("/menuapis/:id", NewMenuApi)
 	// g.GET("/mymenu", GetMyMenu)
 
 }

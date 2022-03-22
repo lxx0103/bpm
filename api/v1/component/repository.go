@@ -72,7 +72,7 @@ func (r *componentRepository) UpdateComponent(id int64, info Component, byUser s
 
 func (r *componentRepository) GetComponentByID(id int64) (*Component, error) {
 	var res Component
-	row := r.tx.QueryRow(`SELECT id, event_id, sort, component_type, name, value, default_value, required, patterns, json_data, status, created, created_by, updated, updated_by FROM event_components WHERE id = ? LIMIT 1`, id)
+	row := r.tx.QueryRow(`SELECT id, event_id, sort, component_type, name, value, default_value, required, patterns, json_data, status, created, created_by, updated, updated_by FROM event_components WHERE status > 0 AND id = ? LIMIT 1`, id)
 	err := row.Scan(&res.ID, &res.EventID, &res.Sort, &res.ComponentType, &res.Name, &res.Value, &res.DefaultValue, &res.Required, &res.Patterns, &res.JsonData, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	return &res, err
 }
@@ -80,7 +80,7 @@ func (r *componentRepository) GetComponentByID(id int64) (*Component, error) {
 func (r *componentRepository) DeleteComponent(id int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update event_components SET 
-		status = 2,
+		status = -1,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?

@@ -59,11 +59,11 @@ type Menu struct {
 	UpdatedBy string    `db:"updated_by" json:"updated_by"`
 }
 
-type UserMenuAPI struct {
+type MenuAPI struct {
 	ID        int64     `db:"id" json:"id"`
 	MenuID    int64     `db:"menu_id" json:"menu_id"`
 	APIID     int64     `db:"api_id" json:"api_id"`
-	Enabled   string    `db:"enabled" json:"enabled"`
+	Status    string    `db:"status" json:"enabled"`
 	Created   time.Time `db:"created" json:"created"`
 	CreatedBy string    `db:"created_by" json:"created_by"`
 	Updated   time.Time `db:"updated" json:"updated"`
