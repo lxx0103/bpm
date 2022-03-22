@@ -77,6 +77,15 @@ definitions:
       updated_by:
         type: string
     type: object
+  auth.MenuAPINew:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
   auth.MenuNew:
     properties:
       action:
@@ -132,11 +141,20 @@ definitions:
       priority:
         type: integer
       status:
-        type: string
+        type: integer
       updated:
         type: string
       updated_by:
         type: string
+    type: object
+  auth.RoleMenu:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
     type: object
   auth.RoleNew:
     properties:
@@ -1220,7 +1238,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "12"
+      operationId: "51"
       parameters:
       - description: 事件ID
         in: path
@@ -1243,7 +1261,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID更新事件
+      summary: 根据ID删除事件
       tags:
       - 事件管理
     get:
@@ -1374,6 +1392,73 @@ paths:
       summary: 新建项目成员
       tags:
       - 项目管理
+  /menuapis/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "46"
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    type: integer
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据菜单ID获取API权限
+      tags:
+      - 权限管理
+    post:
+      consumes:
+      - application/json
+      operationId: "47"
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 菜单信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.MenuAPINew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据菜单ID更新API权限
+      tags:
+      - 权限管理
   /menus:
     get:
       consumes:
@@ -1549,6 +1634,30 @@ paths:
       summary: 根据ID更新菜单
       tags:
       - 菜单管理
+  /mymenu:
+    get:
+      consumes:
+      - application/json
+      operationId: "48"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取当前用户的前端路由
+      tags:
+      - 权限管理
   /organizations:
     get:
       consumes:
@@ -1957,6 +2066,73 @@ paths:
       summary: 根据ID更新项目
       tags:
       - 项目管理
+  /rolemenus/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "44"
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    type: integer
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据角色ID获取菜单权限
+      tags:
+      - 权限管理
+    post:
+      consumes:
+      - application/json
+      operationId: "45"
+      parameters:
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 菜单信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RoleMenu'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据角色ID更新菜单权限
+      tags:
+      - 权限管理
   /roles:
     get:
       consumes:
@@ -2029,6 +2205,35 @@ paths:
       tags:
       - 角色管理
   /roles/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "52"
+      parameters:
+      - description: 菜单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除角色
+      tags:
+      - 菜单管理
     get:
       consumes:
       - application/json

@@ -33,6 +33,7 @@ type AuthService interface {
 	NewRole(RoleNew) (*Role, error)
 	GetRoleList(RoleFilter) (int, *[]Role, error)
 	UpdateRole(int64, RoleNew) (*Role, error)
+	DeleteRole(int64, string) error
 	// //API Management
 	GetAPIByID(int64) (*API, error)
 	NewAPI(APINew) (*API, error)
@@ -45,11 +46,11 @@ type AuthService interface {
 	UpdateMenu(int64, MenuUpdate) (*Menu, error)
 	DeleteMenu(int64, string) error
 	// Privilege Management
-	// GetRoleMenuByID(int64) ([]int64, error)
-	// NewRoleMenu(int64, RoleMenuNew) ([]int64, error)
+	GetRoleMenuByID(int64) ([]int64, error)
+	NewRoleMenu(int64, RoleMenuNew) error
 	GetMenuAPIByID(int64) ([]int64, error)
 	NewMenuAPI(int64, MenuAPINew) error
-	// GetMyMenu(int64) ([]Menu, error)
+	GetMyMenu(int64) ([]Menu, error)
 }
 
 func (s authService) CreateAuth(signupInfo SignupRequest) (int64, error) {
@@ -484,29 +485,34 @@ func (s *authService) DeleteMenu(menuID int64, user string) error {
 	return nil
 }
 
-// func (s *authService) GetRoleMenuByID(id int64) ([]int64, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	menu, err := repo.GetRoleMenuByID(id)
-// 	return menu, err
-// }
+func (s *authService) GetRoleMenuByID(id int64) ([]int64, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	menus, err := query.GetRoleMenuByID(id)
+	return menus, err
+}
 
-// func (s *authService) NewRoleMenu(id int64, info RoleMenuNew) ([]int64, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	_, err := repo.NewRoleMenu(id, info)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	menu, err := repo.GetRoleMenuByID(id)
-// 	return menu, err
-// }
+func (s *authService) NewRoleMenu(id int64, info RoleMenuNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	err = repo.NewRoleMenu(id, info)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
 
 func (s *authService) GetMenuAPIByID(id int64) ([]int64, error) {
 	db := database.InitMySQL()
 	query := NewAuthQuery(db)
-	menu, err := query.GetMenuAPIByID(id)
-	return menu, err
+	apis, err := query.GetMenuAPIByID(id)
+	return apis, err
 }
 
 func (s *authService) NewMenuAPI(id int64, info MenuAPINew) error {
@@ -525,9 +531,25 @@ func (s *authService) NewMenuAPI(id int64, info MenuAPINew) error {
 	return nil
 }
 
-// func (s *authService) GetMyMenu(roleID int64) ([]Menu, error) {
-// 	db := database.InitMySQL()
-// 	repo := NewAuthRepository(db)
-// 	menu, err := repo.GetMyMenu(roleID)
-// 	return menu, err
-// }
+func (s *authService) GetMyMenu(roleID int64) ([]Menu, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	menu, err := query.GetMyMenu(roleID)
+	return menu, err
+}
+
+func (s *authService) DeleteRole(roleID int64, user string) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	err = repo.DeleteRole(roleID, user)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}

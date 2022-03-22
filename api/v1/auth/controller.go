@@ -563,64 +563,64 @@ func DeleteMenu(c *gin.Context) {
 	response.Response(c, "OK")
 }
 
-// // @Summary 根据角色ID获取菜单权限
-// // @Id 44
-// // @Tags 权限管理
-// // @version 1.0
-// // @Accept application/json
-// // @Produce application/json
-// // @Param id path int true "角色ID"
-// // @Success 200 object response.SuccessRes{data=[]int64} 成功
-// // @Failure 400 object response.ErrorRes 内部错误
-// // @Router /rolemenus/:id [GET]
-// func GetRoleMenu(c *gin.Context) {
-// 	var uri RoleID
-// 	if err := c.ShouldBindUri(&uri); err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	authService := NewAuthService()
-// 	menu, err := authService.GetRoleMenuByID(uri.ID)
-// 	if err != nil {
-// 		response.ResponseError(c, "DatabaseError", err)
-// 		return
-// 	}
-// 	response.Response(c, menu)
+// @Summary 根据角色ID获取菜单权限
+// @Id 44
+// @Tags 权限管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "角色ID"
+// @Success 200 object response.SuccessRes{data=[]int64} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /rolemenus/:id [GET]
+func GetRoleMenu(c *gin.Context) {
+	var uri RoleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	authService := NewAuthService()
+	menu, err := authService.GetRoleMenuByID(uri.ID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, menu)
 
-// }
+}
 
-// // @Summary 根据角色ID更新菜单权限
-// // @Id 45
-// // @Tags 权限管理
-// // @version 1.0
-// // @Accept application/json
-// // @Produce application/json
-// // @Param id path int true "角色ID"
-// // @Param menu_info body RoleMenu true "菜单信息"
-// // @Success 200 object response.SuccessRes{data=[]int64} 成功
-// // @Failure 400 object response.ErrorRes 内部错误
-// // @Router /rolemenus/:id [POST]
-// func NewRoleMenu(c *gin.Context) {
-// 	var uri RoleID
-// 	if err := c.ShouldBindUri(&uri); err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	var menu RoleMenuNew
-// 	if err := c.ShouldBindJSON(&menu); err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	claims := c.MustGet("claims").(*service.CustomClaims)
-// 	menu.User = claims.Username
-// 	authService := NewAuthService()
-// 	new, err := authService.NewRoleMenu(uri.ID, menu)
-// 	if err != nil {
-// 		response.ResponseError(c, "DatabaseError", err)
-// 		return
-// 	}
-// 	response.Response(c, new)
-// }
+// @Summary 根据角色ID更新菜单权限
+// @Id 45
+// @Tags 权限管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "角色ID"
+// @Param menu_info body RoleMenu true "菜单信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /rolemenus/:id [POST]
+func NewRoleMenu(c *gin.Context) {
+	var uri RoleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var menu RoleMenuNew
+	if err := c.ShouldBindJSON(&menu); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	menu.User = claims.Username
+	authService := NewAuthService()
+	err := authService.NewRoleMenu(uri.ID, menu)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "OK")
+}
 
 // @Summary 根据菜单ID获取API权限
 // @Id 46
@@ -655,7 +655,7 @@ func GetMenuApi(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path int true "菜单ID"
-// @Param menu_info body MenuNew true "菜单信息"
+// @Param menu_info body MenuAPINew true "菜单信息"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /menuapis/:id [POST]
@@ -681,47 +681,73 @@ func NewMenuApi(c *gin.Context) {
 	response.Response(c, "OK")
 }
 
-// // @Summary 获取当前用户的前端路由
-// // @Id 48
-// // @Tags 权限管理
-// // @version 1.0
-// // @Accept application/json
-// // @Produce application/json
-// // @Success 200 object response.SuccessRes{data=interface{}} 成功
-// // @Failure 400 object response.ErrorRes 内部错误
-// // @Router /mymenu [GET]
-// func GetMyMenu(c *gin.Context) {
-// 	claims := c.MustGet("claims").(*service.CustomClaims)
-// 	role_id := claims.RoleID
-// 	authService := NewAuthService()
-// 	new, err := authService.GetMyMenu(role_id)
-// 	if err != nil {
-// 		response.ResponseError(c, "DatabaseError", err)
-// 		return
-// 	}
-// 	res := make(map[int64]*MyMenuDetail)
-// 	for i := 0; i < len(new); i++ {
-// 		if new[i].ParentID == 0 {
-// 			var m MyMenuDetail
-// 			m.Action = new[i].Action
-// 			m.Component = new[i].Component
-// 			m.Name = new[i].Name
-// 			m.Title = new[i].Title
-// 			m.Path = new[i].Path
-// 			m.IsHidden = new[i].IsHidden
-// 			m.Enabled = new[i].Enabled
-// 			res[new[i].ID] = &m
-// 		} else {
-// 			var m MyMenuDetail
-// 			m.Action = new[i].Action
-// 			m.Component = new[i].Component
-// 			m.Name = new[i].Name
-// 			m.Title = new[i].Title
-// 			m.Path = new[i].Path
-// 			m.IsHidden = new[i].IsHidden
-// 			m.Enabled = new[i].Enabled
-// 			res[new[i].ParentID].Items = append(res[new[i].ParentID].Items, m)
-// 		}
-// 	}
-// 	response.Response(c, res)
-// }
+// @Summary 获取当前用户的前端路由
+// @Id 48
+// @Tags 权限管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Success 200 object response.SuccessRes{data=interface{}} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /mymenu [GET]
+func GetMyMenu(c *gin.Context) {
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	role_id := claims.RoleID
+	authService := NewAuthService()
+	new, err := authService.GetMyMenu(role_id)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	res := make(map[int64]*MyMenuDetail)
+	for i := 0; i < len(new); i++ {
+		if new[i].ParentID == 0 {
+			var m MyMenuDetail
+			m.Action = new[i].Action
+			m.Component = new[i].Component
+			m.Name = new[i].Name
+			m.Title = new[i].Title
+			m.Path = new[i].Path
+			m.IsHidden = new[i].IsHidden
+			m.Status = new[i].Status
+			res[new[i].ID] = &m
+		} else {
+			var m MyMenuDetail
+			m.Action = new[i].Action
+			m.Component = new[i].Component
+			m.Name = new[i].Name
+			m.Title = new[i].Title
+			m.Path = new[i].Path
+			m.IsHidden = new[i].IsHidden
+			m.Status = new[i].Status
+			res[new[i].ParentID].Items = append(res[new[i].ParentID].Items, m)
+		}
+	}
+	response.Response(c, res)
+}
+
+// @Summary 根据ID删除角色
+// @Id 52
+// @Tags 菜单管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "菜单ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /roles/:id [DELETE]
+func DeleteRole(c *gin.Context) {
+	var uri MenuID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	authService := NewAuthService()
+	err := authService.DeleteRole(uri.ID, claims.Username)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "OK")
+}

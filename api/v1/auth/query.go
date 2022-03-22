@@ -36,6 +36,8 @@ type AuthQuery interface {
 	GetMenuCount(filter MenuFilter) (int, error)
 	GetMenuList(filter MenuFilter) (*[]Menu, error)
 	GetMenuAPIByID(int64) ([]int64, error)
+	GetRoleMenuByID(int64) ([]int64, error)
+	GetMyMenu(int64) ([]Menu, error)
 }
 
 func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
@@ -114,14 +116,14 @@ func (r *authQuery) GetUserList(filter UserFilter, organizationID int64) (*[]Use
 
 func (r *authQuery) GetRoleByID(id int64) (*Role, error) {
 	var role Role
-	err := r.conn.Get(&role, "SELECT * FROM roles WHERE id = ? ", id)
+	err := r.conn.Get(&role, "SELECT * FROM roles WHERE id = ? AND status > 0", id)
 	if err != nil {
 		return nil, err
 	}
 	return &role, nil
 }
 func (r *authQuery) GetRoleCount(filter RoleFilter) (int, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -137,7 +139,7 @@ func (r *authQuery) GetRoleCount(filter RoleFilter) (int, error) {
 }
 
 func (r *authQuery) GetRoleList(filter RoleFilter) (*[]Role, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -253,4 +255,24 @@ func (r *authQuery) GetMenuAPIByID(menuID int64) ([]int64, error) {
 	var apis []int64
 	err := r.conn.Select(&apis, "SELECT api_id FROM menu_apis WHERE menu_id = ? and status > 0", menuID)
 	return apis, err
+}
+
+func (r *authQuery) GetRoleMenuByID(roleID int64) ([]int64, error) {
+	var menu []int64
+	err := r.conn.Select(&menu, "SELECT menu_id FROM role_menus WHERE role_id = ? and status > 0", roleID)
+	return menu, err
+}
+
+func (r *authQuery) GetMyMenu(roleID int64) ([]Menu, error) {
+	var menu []Menu
+	err := r.conn.Select(&menu, `
+		SELECT m.* FROM role_menus rm
+		LEFT JOIN menus m
+		ON rm.menu_id = m.id
+		WHERE rm.role_id = ?
+		AND m.status > 0
+		AND rm.status > 0
+		ORDER BY parent_id ASC, ID ASC
+	`, roleID)
+	return menu, err
 }

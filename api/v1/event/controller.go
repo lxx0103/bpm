@@ -125,8 +125,8 @@ func UpdateEvent(c *gin.Context) {
 	response.Response(c, new)
 }
 
-// @Summary 根据ID更新事件
-// @Id 12
+// @Summary 根据ID删除事件
+// @Id 51
 // @Tags 事件管理
 // @version 1.0
 // @Accept application/json

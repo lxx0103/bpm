@@ -30,6 +30,7 @@ type AuthRepository interface {
 	CreateRole(info RoleNew) (int64, error)
 	UpdateRole(int64, RoleNew) (int64, error)
 	GetRoleByID(int64) (*Role, error)
+	DeleteRole(int64, string) error
 	// API Management
 	CreateAPI(APINew) (int64, error)
 	UpdateAPI(int64, APINew) (int64, error)
@@ -41,9 +42,7 @@ type AuthRepository interface {
 	DeleteMenu(int64, string) error
 	// Privilege Management
 	NewMenuAPI(int64, MenuAPINew) error
-	// GetRoleMenuByID(int64) ([]int64, error)
-	// NewRoleMenu(int64, RoleMenuNew) (int64, error)
-	// GetMyMenu(int64) ([]Menu, error)
+	NewRoleMenu(int64, RoleMenuNew) error
 }
 
 func (r *authRepository) CreateUser(newUser User) (int64, error) {
@@ -161,7 +160,7 @@ func (r *authRepository) UpdateRole(id int64, info RoleNew) (int64, error) {
 
 func (r *authRepository) GetRoleByID(id int64) (*Role, error) {
 	var res Role
-	row := r.tx.QueryRow(`SELECT id, priority, name, status, created, created_by, updated, updated_by FROM roles WHERE id = ? LIMIT 1`, id)
+	row := r.tx.QueryRow(`SELECT id, priority, name, status, created, created_by, updated, updated_by FROM roles WHERE id = ? AND status > 0 LIMIT 1`, id)
 	err := row.Scan(&res.ID, &res.Priority, &res.Name, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		msg := "角色不存在:" + err.Error()
@@ -286,59 +285,37 @@ func (r *authRepository) DeleteMenu(id int64, byUser string) error {
 	return err
 }
 
-// func (r *authRepository) GetRoleMenuByID(id int64) ([]int64, error) {
-// 	var menu []int64
-// 	err := r.conn.Select(&menu, "SELECT menu_id FROM user_role_menus WHERE role_id = ? and enabled = 1", id)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return menu, nil
-// }
-// func (r *authRepository) NewRoleMenu(role_id int64, info RoleMenuNew) (int64, error) {
-// 	tx, err := r.conn.Begin()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	defer tx.Rollback()
-// 	_, err = tx.Exec(`
-// 		Update user_role_menus SET
-// 		enabled = 2,
-// 		updated = ?,
-// 		updated_by = ?
-// 		WHERE role_id = ?
-// 		AND enabled = 1
-// 	`, time.Now(), info.User, role_id)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	sql := `
-// 	INSERT INTO user_role_menus
-// 	(
-// 		role_id,
-// 		menu_id,
-// 		enabled,
-// 		created,
-// 		created_by,
-// 		updated,
-// 		updated_by
-// 	)
-// 	VALUES
-// 	`
-// 	for i := 0; i < len(info.IDS); i++ {
-// 		sql += "(" + fmt.Sprint(role_id) + "," + fmt.Sprint(info.IDS[i]) + ",1,\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\",\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\"),"
-// 	}
-// 	sql = sql[:len(sql)-1]
-// 	result, err := tx.Exec(sql)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	rows, err := result.RowsAffected()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	tx.Commit()
-// 	return rows, nil
-// }
+func (r *authRepository) NewRoleMenu(role_id int64, info RoleMenuNew) error {
+	_, err := r.tx.Exec(`
+		Update role_menus SET
+		status = -1,
+		updated = ?,
+		updated_by = ?
+		WHERE role_id = ?
+	`, time.Now(), info.User, role_id)
+	if err != nil {
+		return err
+	}
+	sql := `
+	INSERT INTO role_menus
+	(
+		role_id,
+		menu_id,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	)
+	VALUES
+	`
+	for i := 0; i < len(info.IDS); i++ {
+		sql += "(" + fmt.Sprint(role_id) + "," + fmt.Sprint(info.IDS[i]) + ",1,\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\",\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\"),"
+	}
+	sql = sql[:len(sql)-1]
+	_, err = r.tx.Exec(sql)
+	return err
+}
 
 func (r *authRepository) NewMenuAPI(menu_id int64, info MenuAPINew) error {
 	_, err := r.tx.Exec(`
@@ -372,19 +349,13 @@ func (r *authRepository) NewMenuAPI(menu_id int64, info MenuAPINew) error {
 	return err
 }
 
-// func (r *authRepository) GetMyMenu(roleID int64) ([]Menu, error) {
-// 	var menu []Menu
-// 	err := r.conn.Select(&menu, `
-// 		SELECT um.* FROM user_role_menus urm
-// 		LEFT JOIN user_menus um
-// 		ON urm.menu_id = um.id
-// 		WHERE urm.role_id = ?
-// 		AND um.enabled = 1
-// 		AND urm.enabled = 1
-// 		ORDER BY parent_id ASC, ID ASC
-// 	`, roleID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return menu, nil
-// }
+func (r *authRepository) DeleteRole(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update roles SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, time.Now(), byUser, id)
+	return err
+}
