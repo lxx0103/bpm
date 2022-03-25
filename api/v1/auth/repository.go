@@ -59,7 +59,7 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, 1, ?, "SIGNUP", ?, "SIGNUP")
+		VALUES (?, ?, ?, ?, 2, ?, "SIGNUP", ?, "SIGNUP")
 	`, newUser.Type, newUser.Identifier, newUser.OrganizationID, newUser.Credential, time.Now(), time.Now())
 	if err != nil {
 		return 0, err
@@ -257,6 +257,7 @@ func (r *authRepository) CreateMenu(info MenuNew) (int64, error) {
 }
 
 func (r *authRepository) UpdateMenu(id int64, info Menu, byUser string) error {
+	fmt.Println(info.Component)
 	_, err := r.tx.Exec(`
 		Update menus SET
 		name = ?,

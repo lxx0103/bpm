@@ -13,6 +13,7 @@ type CustomClaims struct {
 	OrganizationID int64
 	Username       string
 	RoleID         int64
+	PositionID     int64
 	jwt.StandardClaims
 }
 

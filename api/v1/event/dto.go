@@ -29,3 +29,10 @@ type EventUpdate struct {
 type EventID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
+
+type MyEventFilter struct {
+	Status string `form:"status" binding:"required,oneof=all active"`
+}
+
+type MyEventResponse struct {
+}

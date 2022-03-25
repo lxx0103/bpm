@@ -73,7 +73,7 @@ func (r *authQuery) GetUserByUserName(userName string) (*User, error) {
 }
 
 func (r *authQuery) GetUserCount(filter UserFilter, organizationID int64) (int, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -92,7 +92,7 @@ func (r *authQuery) GetUserCount(filter UserFilter, organizationID int64) (int, 
 }
 
 func (r *authQuery) GetUserList(filter UserFilter, organizationID int64) (*[]User, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -103,7 +103,7 @@ func (r *authQuery) GetUserList(filter UserFilter, organizationID int64) (*[]Use
 	args = append(args, filter.PageSize)
 	var users []User
 	err := r.conn.Select(&users, `
-		SELECT *
+		SELECT id, type, identifier, organization_id, position_id, role_id, name, email, gender, phone, birthday, address, status
 		FROM users
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?

@@ -261,7 +261,6 @@ definitions:
         minLength: 1
         type: string
       birthday:
-        minLength: 1
         type: string
       email:
         type: string
@@ -2470,4 +2469,36 @@ paths:
       summary: 根据ID更新用户
       tags:
       - 用户管理
+  /wx/events:
+    get:
+      consumes:
+      - application/json
+      operationId: "53"
+      parameters:
+      - description: 显示所有all/激活active
+        in: query
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.Event'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取我的当前任务
+      tags:
+      - 小程序接口
 swagger: "2.0"

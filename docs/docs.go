@@ -2902,6 +2902,59 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/wx/events": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "获取我的当前任务",
+                "operationId": "53",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "显示所有all/激活active",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/event.Event"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -3281,8 +3334,7 @@ var doc = `{
                     "minLength": 1
                 },
                 "birthday": {
-                    "type": "string",
-                    "minLength": 1
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"

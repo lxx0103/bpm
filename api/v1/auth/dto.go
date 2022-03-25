@@ -139,7 +139,7 @@ type UserUpdate struct {
 	Email      string `json:"email" binding:"omitempty,email"`
 	Gender     string `json:"gender" binding:"omitempty,min=1"`
 	Phone      string `json:"phone" binding:"omitempty,min=1"`
-	Birthday   string `json:"birthday" binding:"omitempty,min=1"`
+	Birthday   string `json:"birthday" binding:"omitempty,datetime=2006-01-02"`
 	Address    string `json:"address" binding:"omitempty,min=1"`
 	Status     int    `json:"status" binding:"omitempty,min=1"`
 	User       string `json:"user" swaggerignore:"true"`

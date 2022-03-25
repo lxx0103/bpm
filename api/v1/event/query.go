@@ -23,6 +23,10 @@ type EventQuery interface {
 	GetPresByEventID(int64) (*[]EventPre, error)
 	GetEventCount(EventFilter, int64) (int, error)
 	GetEventList(EventFilter, int64) (*[]Event, error)
+	//WX
+	GetAssigned(int64, int64) ([]int64, error)
+	CheckActive(int64) (bool, error)
+	GetAssignedEventByID(int64, string) (*Event, error)
 }
 
 func (r *eventQuery) GetEventByID(id int64) (*Event, error) {
@@ -102,4 +106,44 @@ func (r *eventQuery) GetPresByEventID(eventID int64) (*[]EventPre, error) {
 		return nil, err
 	}
 	return &pres, nil
+}
+
+func (r *eventQuery) GetAssigned(userID int64, positionID int64) ([]int64, error) {
+	var assigns []int64
+	err := r.conn.Select(&assigns, "SELECT event_id FROM event_assigns WHERE ((assign_type = 2 AND assign_to  = ?) OR (assign_type = 1 AND assign_to = ?)) AND status = ?", userID, positionID, 1)
+	return assigns, err
+}
+
+func (r *eventQuery) CheckActive(eventID int64) (bool, error) {
+	var activePreCount int
+	err := r.conn.Get(&activePreCount, `
+		SELECT count(1) from event_pres ep
+		LEFT JOIN events e
+		ON ep.pre_id = e.id 
+		WHERE ep.status = 1  
+		AND ep.event_id = ?
+		AND e.status = 1`, eventID)
+	if err != nil {
+		return false, err
+	}
+	if activePreCount == 0 {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
+func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*Event, error) {
+	var event Event
+	sql := "SELECT * FROM events WHERE id = ?"
+	if status == "all" {
+		sql = sql + " AND status > 0"
+	} else {
+		sql = sql + " AND status = 1"
+	}
+	err := r.conn.Get(&event, sql, id)
+	if err != nil {
+		return nil, err
+	}
+	return &event, nil
 }

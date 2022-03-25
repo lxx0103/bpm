@@ -36,7 +36,12 @@ func (r *memberRepository) CreateProjectMember(projectID int64, userID []int64, 
 			msg := "指派对象有重复"
 			return errors.New(msg)
 		}
-		row = r.tx.QueryRow(`SELECT count(1) FROM users WHERE organization_id = ? AND id = ? AND status = 1  LIMIT 1`, organizationID, userID[i])
+		if organizationID == 0 {
+			row = r.tx.QueryRow(`SELECT count(1) FROM users WHERE  id = ? AND status = 1  LIMIT 1`, userID[i])
+
+		} else {
+			row = r.tx.QueryRow(`SELECT count(1) FROM users WHERE organization_id = ? AND id = ? AND status = 1  LIMIT 1`, organizationID, userID[i])
+		}
 		err = row.Scan(&exist)
 		if err != nil {
 			return err
@@ -81,7 +86,12 @@ func (r *memberRepository) DeleteProjectMember(projectID int64, user string) err
 
 func (r *memberRepository) CheckProjectExist(projectID int64, organizationID int64) (int, error) {
 	var res int
-	row := r.tx.QueryRow(`SELECT count(1) FROM projects WHERE id = ? AND organization_id = ?  LIMIT 1`, projectID, organizationID)
+	var row *sql.Row
+	if organizationID == 0 {
+		row = r.tx.QueryRow(`SELECT count(1) FROM projects WHERE id = ?  LIMIT 1`, projectID)
+	} else {
+		row = r.tx.QueryRow(`SELECT count(1) FROM projects WHERE id = ? AND organization_id = ?  LIMIT 1`, projectID, organizationID)
+	}
 	err := row.Scan(&res)
 	if err != nil {
 		return 0, err

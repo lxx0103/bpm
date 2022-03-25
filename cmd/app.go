@@ -25,5 +25,6 @@ func Run() {
 	r := router.InitRouter()
 	router.InitPublicRouter(r, auth.Routers)
 	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers, position.Routers, member.Routers)
+	router.InitWxRouter(r, event.WxRouters)
 	router.RunServer(r)
 }

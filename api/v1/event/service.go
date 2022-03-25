@@ -20,6 +20,8 @@ type EventService interface {
 	GetEventList(EventFilter, int64) (int, *[]Event, error)
 	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
 	DeleteEvent(int64, int64, string) error
+	//WX API
+	GetMyEvent(MyEventFilter, int64, int64, int64) (*[]Event, error)
 }
 
 func (s *eventService) GetEventByID(id int64) (*Event, error) {
@@ -200,4 +202,32 @@ func (s *eventService) DeleteEvent(eventID int64, organizationID int64, user str
 	}
 	tx.Commit()
 	return nil
+}
+
+func (s *eventService) GetMyEvent(filter MyEventFilter, userID int64, positionID int64, organizationID int64) (*[]Event, error) {
+	var activeEvents []Event
+	db := database.InitMySQL()
+	query := NewEventQuery(db)
+	assigned, err := query.GetAssigned(userID, positionID)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(assigned); i++ {
+		active, err := query.CheckActive(assigned[i])
+		if err != nil {
+			return nil, err
+		}
+		if !active {
+			continue
+		}
+		activeEvent, err := query.GetAssignedEventByID(assigned[i], filter.Status)
+		if err != nil {
+			if err.Error() != "sql: no rows in result set" {
+				return nil, err
+			}
+			continue
+		}
+		activeEvents = append(activeEvents, *activeEvent)
+	}
+	return &activeEvents, err
 }

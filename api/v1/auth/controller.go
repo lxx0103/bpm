@@ -61,6 +61,7 @@ func Signin(c *gin.Context) {
 		Username:       userInfo.Identifier,
 		RoleID:         userInfo.RoleID,
 		OrganizationID: userInfo.OrganizationID,
+		PositionID:     userInfo.PositionID,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000,
 			ExpiresAt: time.Now().Unix() + 72000,
@@ -701,7 +702,7 @@ func GetMyMenu(c *gin.Context) {
 	}
 	res := make(map[int64]*MyMenuDetail)
 	for i := 0; i < len(new); i++ {
-		if new[i].ParentID == 0 {
+		if new[i].ParentID == -1 {
 			var m MyMenuDetail
 			m.Action = new[i].Action
 			m.Component = new[i].Component

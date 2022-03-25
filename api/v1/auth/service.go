@@ -466,7 +466,11 @@ func (s *authService) UpdateMenu(menuID int64, info MenuUpdate) (*Menu, error) {
 		return nil, err
 	}
 	menu, err := repo.GetMenuByID(menuID)
-	return menu, err
+	if err != nil {
+		return nil, err
+	}
+	tx.Commit()
+	return menu, nil
 }
 
 func (s *authService) DeleteMenu(menuID int64, user string) error {
