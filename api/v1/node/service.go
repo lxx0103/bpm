@@ -20,8 +20,6 @@ type NodeService interface {
 	GetNodeList(NodeFilter, int64) (int, *[]Node, error)
 	UpdateNode(int64, NodeUpdate, int64) (*Node, error)
 	DeleteNode(int64, int64, string) error
-	//WX API
-	GetMyNode(MyNodeFilter, int64, int64, int64) (*[]Node, error)
 }
 
 func (s *nodeService) GetNodeByID(id int64) (*Node, error) {
@@ -205,32 +203,4 @@ func (s *nodeService) DeleteNode(nodeID int64, organizationID int64, user string
 	}
 	tx.Commit()
 	return nil
-}
-
-func (s *nodeService) GetMyNode(filter MyNodeFilter, userID int64, positionID int64, organizationID int64) (*[]Node, error) {
-	var activeNodes []Node
-	db := database.InitMySQL()
-	query := NewNodeQuery(db)
-	assigned, err := query.GetAssigned(userID, positionID)
-	if err != nil {
-		return nil, err
-	}
-	for i := 0; i < len(assigned); i++ {
-		active, err := query.CheckActive(assigned[i])
-		if err != nil {
-			return nil, err
-		}
-		if !active {
-			continue
-		}
-		activeNode, err := query.GetAssignedNodeByID(assigned[i], filter.Status)
-		if err != nil {
-			if err.Error() != "sql: no rows in result set" {
-				return nil, err
-			}
-			continue
-		}
-		activeNodes = append(activeNodes, *activeNode)
-	}
-	return &activeNodes, err
 }

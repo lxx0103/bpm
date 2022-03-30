@@ -29,10 +29,3 @@ type NodeUpdate struct {
 type NodeID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
-
-type MyNodeFilter struct {
-	Status string `form:"status" binding:"required,oneof=all active"`
-}
-
-type MyNodeResponse struct {
-}

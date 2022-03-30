@@ -150,30 +150,3 @@ func DeleteNode(c *gin.Context) {
 	}
 	response.Response(c, "OK")
 }
-
-// @Summary 获取我的当前任务
-// @Id 64
-// @Tags 小程序接口
-// @version 1.0
-// @Accept application/json
-// @Produce application/json
-// @Param status query string true "显示所有all/激活active"
-// @Success 200 object response.SuccessRes{data=[]Node} 成功
-// @Failure 400 object response.ErrorRes 内部错误
-// @Router /wx/nodes [GET]
-func WxGetNodes(c *gin.Context) {
-	var filter MyNodeFilter
-	err := c.ShouldBindQuery(&filter)
-	if err != nil {
-		response.ResponseError(c, "BindingError", err)
-		return
-	}
-	nodeService := NewNodeService()
-	claims := c.MustGet("claims").(*service.CustomClaims)
-	list, err := nodeService.GetMyNode(filter, claims.UserID, claims.PositionID, claims.OrganizationID)
-	if err != nil {
-		response.ResponseError(c, "DatabaseError", err)
-		return
-	}
-	response.Response(c, list)
-}
