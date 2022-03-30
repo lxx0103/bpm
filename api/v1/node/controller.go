@@ -1,4 +1,4 @@
-package event
+package node
 
 import (
 	"bpm/core/response"
@@ -7,29 +7,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary 事件列表
-// @Id 9
-// @Tags 事件管理
+// @Summary 节点列表
+// @Id 59
+// @Tags 节点管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
-// @Param name query string false "事件编码"
-// @Success 200 object response.ListRes{data=[]Event} 成功
+// @Param name query string false "节点编码"
+// @Success 200 object response.ListRes{data=[]Node} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /events [GET]
-func GetEventList(c *gin.Context) {
-	var filter EventFilter
+// @Router /nodes [GET]
+func GetNodeList(c *gin.Context) {
+	var filter NodeFilter
 	err := c.ShouldBindQuery(&filter)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	eventService := NewEventService()
+	nodeService := NewNodeService()
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	organizationID := claims.OrganizationID
-	count, list, err := eventService.GetEventList(filter, organizationID)
+	count, list, err := nodeService.GetNodeList(filter, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -37,27 +37,27 @@ func GetEventList(c *gin.Context) {
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
 }
 
-// @Summary 新建事件
-// @Id 10
-// @Tags 事件管理
+// @Summary 新建节点
+// @Id 60
+// @Tags 节点管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param event_info body EventNew true "事件信息"
-// @Success 200 object response.SuccessRes{data=Event} 成功
+// @Param node_info body NodeNew true "节点信息"
+// @Success 200 object response.SuccessRes{data=Node} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /events [POST]
-func NewEvent(c *gin.Context) {
-	var event EventNew
-	if err := c.ShouldBindJSON(&event); err != nil {
+// @Router /nodes [POST]
+func NewNode(c *gin.Context) {
+	var node NodeNew
+	if err := c.ShouldBindJSON(&node); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	event.User = claims.Username
+	node.User = claims.Username
 	organizationID := claims.OrganizationID
-	eventService := NewEventService()
-	new, err := eventService.NewEvent(event, organizationID)
+	nodeService := NewNodeService()
+	new, err := nodeService.NewNode(node, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -65,59 +65,59 @@ func NewEvent(c *gin.Context) {
 	response.Response(c, new)
 }
 
-// @Summary 根据ID获取事件
-// @Id 11
-// @Tags 事件管理
+// @Summary 根据ID获取节点
+// @Id 61
+// @Tags 节点管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param id path int true "事件ID"
-// @Success 200 object response.SuccessRes{data=Event} 成功
+// @Param id path int true "节点ID"
+// @Success 200 object response.SuccessRes{data=Node} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /events/:id [GET]
-func GetEventByID(c *gin.Context) {
-	var uri EventID
+// @Router /nodes/:id [GET]
+func GetNodeByID(c *gin.Context) {
+	var uri NodeID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	eventService := NewEventService()
-	event, err := eventService.GetEventByID(uri.ID)
+	nodeService := NewNodeService()
+	node, err := nodeService.GetNodeByID(uri.ID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
 	}
-	response.Response(c, event)
+	response.Response(c, node)
 
 }
 
-// @Summary 根据ID更新事件
-// @Id 12
-// @Tags 事件管理
+// @Summary 根据ID更新节点
+// @Id 62
+// @Tags 节点管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param id path int true "事件ID"
-// @Param event_info body EventUpdate true "事件信息"
-// @Success 200 object response.SuccessRes{data=Event} 成功
+// @Param id path int true "节点ID"
+// @Param node_info body NodeUpdate true "节点信息"
+// @Success 200 object response.SuccessRes{data=Node} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /events/:id [PUT]
-func UpdateEvent(c *gin.Context) {
-	var uri EventID
+// @Router /nodes/:id [PUT]
+func UpdateNode(c *gin.Context) {
+	var uri NodeID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	var event EventUpdate
-	if err := c.ShouldBindJSON(&event); err != nil {
+	var node NodeUpdate
+	if err := c.ShouldBindJSON(&node); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	event.User = claims.Username
+	node.User = claims.Username
 	organizationID := claims.OrganizationID
-	eventService := NewEventService()
-	new, err := eventService.UpdateEvent(uri.ID, event, organizationID)
+	nodeService := NewNodeService()
+	new, err := nodeService.UpdateNode(uri.ID, node, organizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -125,25 +125,25 @@ func UpdateEvent(c *gin.Context) {
 	response.Response(c, new)
 }
 
-// @Summary 根据ID删除事件
-// @Id 51
-// @Tags 事件管理
+// @Summary 根据ID删除节点
+// @Id 63
+// @Tags 节点管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param id path int true "事件ID"
+// @Param id path int true "节点ID"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /events/:id [DELETE]
-func DeleteEvent(c *gin.Context) {
-	var uri EventID
+// @Router /nodes/:id [DELETE]
+func DeleteNode(c *gin.Context) {
+	var uri NodeID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	eventService := NewEventService()
-	err := eventService.DeleteEvent(uri.ID, claims.OrganizationID, claims.Username)
+	nodeService := NewNodeService()
+	err := nodeService.DeleteNode(uri.ID, claims.OrganizationID, claims.Username)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -152,25 +152,25 @@ func DeleteEvent(c *gin.Context) {
 }
 
 // @Summary 获取我的当前任务
-// @Id 53
+// @Id 64
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
 // @Param status query string true "显示所有all/激活active"
-// @Success 200 object response.SuccessRes{data=[]Event} 成功
+// @Success 200 object response.SuccessRes{data=[]Node} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /wx/events [GET]
-func WxGetEvents(c *gin.Context) {
-	var filter MyEventFilter
+// @Router /wx/nodes [GET]
+func WxGetNodes(c *gin.Context) {
+	var filter MyNodeFilter
 	err := c.ShouldBindQuery(&filter)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	eventService := NewEventService()
+	nodeService := NewNodeService()
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	list, err := eventService.GetMyEvent(filter, claims.UserID, claims.PositionID, claims.OrganizationID)
+	list, err := nodeService.GetMyNode(filter, claims.UserID, claims.PositionID, claims.OrganizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
