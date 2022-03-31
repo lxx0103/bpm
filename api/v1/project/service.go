@@ -8,6 +8,7 @@ import (
 	"bpm/api/v1/template"
 	"bpm/core/database"
 	"errors"
+	"fmt"
 )
 
 type projectService struct {
@@ -100,6 +101,29 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 			if err != nil {
 				return nil, err
 			}
+		}
+	}
+	events, err := eventRepo.GetEventsByProjectID(projectID)
+	if err != nil {
+		return nil, err
+	}
+	for k := 0; k < len(*events); k++ {
+		fmt.Println("aaaa", (*events)[k].NodeID)
+		var pres []int64
+		nodePres, err := nodeRepo.GetPresByNodeID((*events)[k].NodeID)
+		if err != nil {
+			return nil, err
+		}
+		for l := 0; l < len(*nodePres); l++ {
+			preEventID, err := eventRepo.GetEventIDByProjectAndNode(projectID, (*nodePres)[l].PreID)
+			if err != nil {
+				return nil, err
+			}
+			pres = append(pres, preEventID)
+		}
+		err = eventRepo.CreateEventPre((*events)[k].ID, pres, info.User)
+		if err != nil {
+			return nil, err
 		}
 	}
 	project, err := repo.GetProjectByID(projectID, organizationID)
