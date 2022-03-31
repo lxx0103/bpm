@@ -24,6 +24,7 @@ type ElementRepository interface {
 	CheckNodeExist(int64, int64) (int, error)
 	CheckNameExist(string, int64, int64) (int, error)
 	CheckSortExist(int, int64, int64) (int, error)
+	GetElementsByNodeID(int64) (*[]Element, error)
 }
 
 func (r *elementRepository) CreateElement(info ElementNew) (int64, error) {
@@ -115,4 +116,21 @@ func (r *elementRepository) CheckSortExist(sorting int, nodeID int64, selfID int
 	row := r.tx.QueryRow(`SELECT count(1) FROM elements WHERE sort = ? AND node_id = ? AND id != ? AND status > 0  LIMIT 1`, sorting, nodeID, selfID)
 	err := row.Scan(&res)
 	return res, err
+}
+
+func (r *elementRepository) GetElementsByNodeID(nodeID int64) (*[]Element, error) {
+	var res []Element
+	rows, err := r.tx.Query(`SELECT id, node_id, sort, element_type, name, value, default_value, required, patterns FROM elements WHERE node_id = ? AND status > 0`, nodeID)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var rowRes Element
+		err = rows.Scan(&rowRes.ID, &rowRes.NodeID, &rowRes.Sort, &rowRes.ElementType, &rowRes.Name, &rowRes.Value, &rowRes.DefaultValue, &rowRes.Required, &rowRes.Patterns)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, rowRes)
+	}
+	return &res, nil
 }

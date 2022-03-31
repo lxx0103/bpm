@@ -16,7 +16,7 @@ func NewEventService() EventService {
 type EventService interface {
 	//Event Management
 	GetEventByID(int64) (*Event, error)
-	NewEvent(EventNew, int64) (*Event, error)
+	// NewEvent(EventNew, int64) (*Event, error)
 	GetEventList(EventFilter, int64) (int, *[]Event, error)
 	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
 	DeleteEvent(int64, int64, string) error
@@ -44,59 +44,59 @@ func (s *eventService) GetEventByID(id int64) (*Event, error) {
 	return event, err
 }
 
-func (s *eventService) NewEvent(info EventNew, organizationID int64) (*Event, error) {
-	db := database.InitMySQL()
-	tx, err := db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-	repo := NewEventRepository(tx)
-	projectExist, err := repo.CheckProjectExist(info.ProjectID, organizationID)
-	if err != nil {
-		return nil, err
-	}
-	if projectExist == 0 {
-		msg := "项目不存在"
-		return nil, errors.New(msg)
-	}
-	exist, err := repo.CheckNameExist(info.Name, info.ProjectID, 0)
-	if err != nil {
-		return nil, err
-	}
-	if exist != 0 {
-		msg := "事件名称重复"
-		return nil, errors.New(msg)
-	}
-	eventID, err := repo.CreateEvent(info)
-	if err != nil {
-		return nil, err
-	}
-	event, err := repo.GetEventByID(eventID, organizationID)
-	if err != nil {
-		return nil, err
-	}
-	err = repo.CreateEventAssign(eventID, info.AssignType, info.AssignTo, info.User)
-	if err != nil {
-		return nil, err
-	}
-	assigns, err := repo.GetAssignsByEventID(eventID)
-	if err != nil {
-		return nil, err
-	}
-	event.Assign = assigns
-	err = repo.CreateEventPre(eventID, info.PreID, info.User)
-	if err != nil {
-		return nil, err
-	}
-	pres, err := repo.GetPresByEventID(eventID)
-	if err != nil {
-		return nil, err
-	}
-	event.PreID = pres
-	tx.Commit()
-	return event, err
-}
+// func (s *eventService) NewEvent(info EventNew, organizationID int64) (*Event, error) {
+// 	db := database.InitMySQL()
+// 	tx, err := db.Begin()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer tx.Rollback()
+// 	repo := NewEventRepository(tx)
+// 	projectExist, err := repo.CheckProjectExist(info.ProjectID, organizationID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	if projectExist == 0 {
+// 		msg := "项目不存在"
+// 		return nil, errors.New(msg)
+// 	}
+// 	exist, err := repo.CheckNameExist(info.Name, info.ProjectID, 0)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	if exist != 0 {
+// 		msg := "事件名称重复"
+// 		return nil, errors.New(msg)
+// 	}
+// 	eventID, err := repo.CreateEvent(info)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	event, err := repo.GetEventByID(eventID, organizationID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	err = repo.CreateEventAssign(eventID, info.AssignType, info.AssignTo, info.User)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	assigns, err := repo.GetAssignsByEventID(eventID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	event.Assign = assigns
+// 	err = repo.CreateEventPre(eventID, info.PreID, info.User)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	pres, err := repo.GetPresByEventID(eventID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	event.PreID = pres
+// 	tx.Commit()
+// 	return event, err
+// }
 
 func (s *eventService) GetEventList(filter EventFilter, organizationID int64) (int, *[]Event, error) {
 	db := database.InitMySQL()
@@ -141,7 +141,6 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	if info.AssignType != 0 {
 		oldEvent.AssignType = info.AssignType
 	}
-	oldEvent.JsonData = info.JsonData
 	_, err = repo.UpdateEvent(eventID, *oldEvent, info.User)
 	if err != nil {
 		return nil, err

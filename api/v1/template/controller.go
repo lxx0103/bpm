@@ -16,6 +16,7 @@ import (
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Param name query string false "模板编码"
+// @Param name query int64 false "模板编码"
 // @Success 200 object response.ListRes{data=[]Template} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /templates [GET]

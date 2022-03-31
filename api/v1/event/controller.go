@@ -47,23 +47,23 @@ func GetEventList(c *gin.Context) {
 // @Success 200 object response.SuccessRes{data=Event} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /events [POST]
-func NewEvent(c *gin.Context) {
-	var event EventNew
-	if err := c.ShouldBindJSON(&event); err != nil {
-		response.ResponseError(c, "BindingError", err)
-		return
-	}
-	claims := c.MustGet("claims").(*service.CustomClaims)
-	event.User = claims.Username
-	organizationID := claims.OrganizationID
-	eventService := NewEventService()
-	new, err := eventService.NewEvent(event, organizationID)
-	if err != nil {
-		response.ResponseError(c, "DatabaseError", err)
-		return
-	}
-	response.Response(c, new)
-}
+// func NewEvent(c *gin.Context) {
+// 	var event EventNew
+// 	if err := c.ShouldBindJSON(&event); err != nil {
+// 		response.ResponseError(c, "BindingError", err)
+// 		return
+// 	}
+// 	claims := c.MustGet("claims").(*service.CustomClaims)
+// 	event.User = claims.Username
+// 	organizationID := claims.OrganizationID
+// 	eventService := NewEventService()
+// 	new, err := eventService.NewEvent(event, organizationID)
+// 	if err != nil {
+// 		response.ResponseError(c, "DatabaseError", err)
+// 		return
+// 	}
+// 	response.Response(c, new)
+// }
 
 // @Summary 根据ID获取事件
 // @Id 11

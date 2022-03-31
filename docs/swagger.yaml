@@ -426,6 +426,103 @@ definitions:
     required:
     - json_data
     type: object
+  element.Element:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      default_value:
+        type: string
+      element_type:
+        type: string
+      id:
+        type: integer
+      json_data:
+        type: string
+      name:
+        type: string
+      node_id:
+        type: integer
+      patterns:
+        type: string
+      required:
+        type: integer
+      sort:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+      value:
+        type: string
+    type: object
+  element.ElementNew:
+    properties:
+      default_value:
+        maxLength: 255
+        type: string
+      json_data:
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      node_id:
+        minimum: 1
+        type: integer
+      patterns:
+        maxLength: 255
+        type: string
+      required:
+        enum:
+        - 1
+        - 2
+        type: integer
+      sort:
+        minimum: 1
+        type: integer
+      type:
+        maxLength: 32
+        minLength: 1
+        type: string
+    required:
+    - json_data
+    - name
+    - node_id
+    - required
+    - sort
+    - type
+    type: object
+  element.ElementUpdate:
+    properties:
+      default_value:
+        maxLength: 255
+        type: string
+      json_data:
+        type: string
+      name:
+        maxLength: 64
+        type: string
+      patterns:
+        maxLength: 255
+        type: string
+      required:
+        enum:
+        - 1
+        - 2
+        type: integer
+      sort:
+        minimum: 1
+        type: integer
+      type:
+        maxLength: 32
+        type: string
+    required:
+    - json_data
+    type: object
   event.Event:
     properties:
       assign:
@@ -581,6 +678,145 @@ definitions:
       user_id:
         type: integer
     type: object
+  node.Node:
+    properties:
+      assign:
+        items:
+          $ref: '#/definitions/node.NodeAssign'
+        type: array
+      assign_type:
+        type: integer
+      assignable:
+        type: integer
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      json_data:
+        type: string
+      name:
+        type: string
+      pre_id:
+        items:
+          $ref: '#/definitions/node.NodePre'
+        type: array
+      status:
+        type: integer
+      template_id:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  node.NodeAssign:
+    properties:
+      assign_to:
+        type: integer
+      assign_type:
+        type: integer
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      node_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  node.NodeNew:
+    properties:
+      assign_to:
+        items:
+          type: integer
+        type: array
+      assign_type:
+        enum:
+        - 1
+        - 2
+        - 3
+        type: integer
+      assignable:
+        enum:
+        - 1
+        - 2
+        type: integer
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      pre_id:
+        items:
+          type: integer
+        type: array
+      template_id:
+        minimum: 1
+        type: integer
+    required:
+    - assign_to
+    - assign_type
+    - assignable
+    - name
+    - pre_id
+    - template_id
+    type: object
+  node.NodePre:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      node_id:
+        type: integer
+      pre_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  node.NodeUpdate:
+    properties:
+      assign_to:
+        items:
+          type: integer
+        type: array
+      assign_type:
+        enum:
+        - 1
+        - 2
+        - 3
+        type: integer
+      assignable:
+        enum:
+        - 1
+        - 2
+        type: integer
+      json_data:
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      pre_id:
+        items:
+          type: integer
+        type: array
+    required:
+    - json_data
+    type: object
   organization.Organization:
     properties:
       created:
@@ -706,6 +942,63 @@ definitions:
   response.SuccessRes:
     properties:
       data: {}
+    type: object
+  template.Template:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      event_json:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  template.TemplateNew:
+    properties:
+      event_json:
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - event_json
+    - name
+    - organization_id
+    - status
+    type: object
+  template.TemplateUpdate:
+    properties:
+      event_json:
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
     type: object
 host: 0.0.0.0:8080
 info:
@@ -1162,6 +1455,176 @@ paths:
       summary: 根据ID更新组件
       tags:
       - 组件管理
+  /elements:
+    get:
+      consumes:
+      - application/json
+      operationId: "64"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 节点ID
+        in: query
+        name: node_id
+        required: true
+        type: integer
+      - description: 元素名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/element.Element'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 元素列表
+      tags:
+      - 元素管理
+    post:
+      consumes:
+      - application/json
+      operationId: "65"
+      parameters:
+      - description: 元素信息
+        in: body
+        name: element_info
+        required: true
+        schema:
+          $ref: '#/definitions/element.ElementNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/element.Element'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建元素
+      tags:
+      - 元素管理
+  /elements/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "68"
+      parameters:
+      - description: 元素ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新元素
+      tags:
+      - 元素管理
+    get:
+      consumes:
+      - application/json
+      operationId: "66"
+      parameters:
+      - description: 元素ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/element.Element'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取元素
+      tags:
+      - 元素管理
+    put:
+      consumes:
+      - application/json
+      operationId: "67"
+      parameters:
+      - description: 元素ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 元素信息
+        in: body
+        name: element_info
+        required: true
+        schema:
+          $ref: '#/definitions/element.ElementUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/element.Element'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新元素
+      tags:
+      - 元素管理
   /events:
     get:
       consumes:
@@ -1657,6 +2120,176 @@ paths:
       summary: 获取当前用户的前端路由
       tags:
       - 权限管理
+  /nodes:
+    get:
+      consumes:
+      - application/json
+      operationId: "59"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 节点名称
+        in: query
+        name: name
+        type: string
+      - description: 模板ID
+        in: query
+        name: template_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/node.Node'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 节点列表
+      tags:
+      - 节点管理
+    post:
+      consumes:
+      - application/json
+      operationId: "60"
+      parameters:
+      - description: 节点信息
+        in: body
+        name: node_info
+        required: true
+        schema:
+          $ref: '#/definitions/node.NodeNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/node.Node'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建节点
+      tags:
+      - 节点管理
+  /nodes/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "63"
+      parameters:
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除节点
+      tags:
+      - 节点管理
+    get:
+      consumes:
+      - application/json
+      operationId: "61"
+      parameters:
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/node.Node'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取节点
+      tags:
+      - 节点管理
+    put:
+      consumes:
+      - application/json
+      operationId: "62"
+      parameters:
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 节点信息
+        in: body
+        name: node_info
+        required: true
+        schema:
+          $ref: '#/definitions/node.NodeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/node.Node'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新节点
+      tags:
+      - 节点管理
   /organizations:
     get:
       consumes:
@@ -2363,6 +2996,175 @@ paths:
       summary: 用户注册
       tags:
       - 用户权限
+  /templates:
+    get:
+      consumes:
+      - application/json
+      operationId: "54"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 模板编码
+        in: query
+        name: name
+        type: string
+      - description: 模板编码
+        in: query
+        name: name
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/template.Template'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 模板列表
+      tags:
+      - 模板管理
+    post:
+      consumes:
+      - application/json
+      operationId: "55"
+      parameters:
+      - description: 模板信息
+        in: body
+        name: template_info
+        required: true
+        schema:
+          $ref: '#/definitions/template.TemplateNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/template.Template'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建模板
+      tags:
+      - 模板管理
+  /templates/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "58"
+      parameters:
+      - description: 模板ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除模板
+      tags:
+      - 模板管理
+    get:
+      consumes:
+      - application/json
+      operationId: "56"
+      parameters:
+      - description: 模板ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/template.Template'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取模板
+      tags:
+      - 模板管理
+    put:
+      consumes:
+      - application/json
+      operationId: "57"
+      parameters:
+      - description: 模板ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 模板信息
+        in: body
+        name: template_info
+        required: true
+        schema:
+          $ref: '#/definitions/template.TemplateUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/template.Template'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新模板
+      tags:
+      - 模板管理
   /users:
     get:
       consumes:

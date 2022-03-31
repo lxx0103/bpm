@@ -7,16 +7,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary 组件列表
-// @Id 13
-// @Tags 组件管理
+// @Summary 元素列表
+// @Id 64
+// @Tags 元素管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
-// @Param node_id query int true "事件ID"
-// @Param name query string false "组件编码"
+// @Param node_id query int true "节点ID"
+// @Param name query string false "元素名称"
 // @Success 200 object response.ListRes{data=[]Element} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /elements [GET]
@@ -36,13 +36,13 @@ func GetElementList(c *gin.Context) {
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
 }
 
-// @Summary 新建组件
-// @Id 14
-// @Tags 组件管理
+// @Summary 新建元素
+// @Id 65
+// @Tags 元素管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param element_info body ElementNew true "组件信息"
+// @Param element_info body ElementNew true "元素信息"
 // @Success 200 object response.SuccessRes{data=Element} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /elements [POST]
@@ -63,13 +63,13 @@ func NewElement(c *gin.Context) {
 	response.Response(c, new)
 }
 
-// @Summary 根据ID获取组件
-// @Id 15
-// @Tags 组件管理
+// @Summary 根据ID获取元素
+// @Id 66
+// @Tags 元素管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param id path int true "组件ID"
+// @Param id path int true "元素ID"
 // @Success 200 object response.SuccessRes{data=Element} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /elements/:id [GET]
@@ -89,14 +89,14 @@ func GetElementByID(c *gin.Context) {
 
 }
 
-// @Summary 根据ID更新组件
-// @Id 16
-// @Tags 组件管理
+// @Summary 根据ID更新元素
+// @Id 67
+// @Tags 元素管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param id path int true "组件ID"
-// @Param element_info body ElementUpdate true "组件信息"
+// @Param id path int true "元素ID"
+// @Param element_info body ElementUpdate true "元素信息"
 // @Success 200 object response.SuccessRes{data=Element} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /elements/:id [PUT]
@@ -122,13 +122,13 @@ func UpdateElement(c *gin.Context) {
 	response.Response(c, new)
 }
 
-// @Summary 根据ID更新组件
-// @Id 49
-// @Tags 组件管理
+// @Summary 根据ID更新元素
+// @Id 68
+// @Tags 元素管理
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param id path int true "组件ID"
+// @Param id path int true "元素ID"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /elements/:id [DELETE]

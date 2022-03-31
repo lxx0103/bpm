@@ -30,6 +30,7 @@ type NodeRepository interface {
 	DeleteNode(int64, string) error
 	CheckTemplateExist(int64, int64) (int, error)
 	CheckNameExist(string, int64, int64) (int, error)
+	GetNodesByTemplateID(int64) (*[]Node, error)
 }
 
 func (r *nodeRepository) CreateNode(info NodeNew) (int64, error) {
@@ -225,6 +226,16 @@ func (r *nodeRepository) GetPresByNodeID(nodeID int64) (*[]NodePre, error) {
 
 func (r *nodeRepository) DeleteNode(id int64, byUser string) error {
 	_, err := r.tx.Exec(`
+		Update node_pres SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE node_id = ?
+	`, time.Now(), byUser, id)
+	if err != nil {
+		return err
+	}
+	_, err = r.tx.Exec(`
 		Update nodes SET 
 		status = -1,
 		updated = ?,
@@ -232,4 +243,21 @@ func (r *nodeRepository) DeleteNode(id int64, byUser string) error {
 		WHERE id = ?
 	`, time.Now(), byUser, id)
 	return err
+}
+
+func (r *nodeRepository) GetNodesByTemplateID(templateID int64) (*[]Node, error) {
+	var res []Node
+	rows, err := r.tx.Query(`SELECT id, template_id, name, assign_type FROM nodes  WHERE template_id = ? AND status > 0`, templateID)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var rowRes Node
+		err = rows.Scan(&rowRes.ID, &rowRes.TemplateID, &rowRes.Name, &rowRes.AssignType)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, rowRes)
+	}
+	return &res, nil
 }

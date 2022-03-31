@@ -37,17 +37,18 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 		INSERT INTO events
 		(
 			project_id,
+			node_id,
 			name,
 			assign_type,
+			assignable,
 			status,
-			json_data,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.ProjectID, info.Name, info.AssignType, info.Status, "{}", time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}

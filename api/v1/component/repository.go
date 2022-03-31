@@ -34,15 +34,14 @@ func (r *componentRepository) CreateComponent(info ComponentNew) (int64, error) 
 			default_value,
 			required,
 			patterns,
-			json_data,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.EventID, info.Sort, info.Type, info.Name, info.DefaultValue, info.Required, info.Patterns, info.JsonData, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.EventID, info.Sort, info.Type, info.Name, info.DefaultValue, info.Required, info.Patterns, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
