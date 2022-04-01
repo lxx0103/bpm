@@ -18,7 +18,7 @@ func NewProjectRepository(transaction *sql.Tx) ProjectRepository {
 type ProjectRepository interface {
 	//Project Management
 	CreateProject(ProjectNew, int64) (int64, error)
-	UpdateProject(int64, ProjectNew) (int64, error)
+	UpdateProject(int64, Project, string) error
 	GetProjectByID(int64, int64) (*Project, error)
 	CheckNameExist(string, int64, int64) (int, error)
 }
@@ -48,23 +48,15 @@ func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64)
 	return id, nil
 }
 
-func (r *projectRepository) UpdateProject(id int64, info ProjectNew) (int64, error) {
-	result, err := r.tx.Exec(`
+func (r *projectRepository) UpdateProject(id int64, info Project, byUser string) error {
+	_, err := r.tx.Exec(`
 		Update projects SET 
 		name = ?,
-		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, 1, time.Now(), info.User, id)
-	if err != nil {
-		return 0, err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return 0, err
-	}
-	return affected, nil
+	`, info.Name, time.Now(), byUser, id)
+	return err
 }
 
 func (r *projectRepository) GetProjectByID(id int64, organizationID int64) (*Project, error) {

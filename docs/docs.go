@@ -1098,56 +1098,6 @@ var doc = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "事件管理"
-                ],
-                "summary": "新建事件",
-                "operationId": "10",
-                "parameters": [
-                    {
-                        "description": "事件信息",
-                        "name": "event_info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/event.EventNew"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/event.Event"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
             }
         },
         "/events/:id": {
@@ -2602,7 +2552,7 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "项目编码",
+                        "description": "项目名称",
                         "name": "name",
                         "in": "query"
                     }
@@ -2763,7 +2713,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/project.ProjectNew"
+                            "$ref": "#/definitions/project.ProjectUpdate"
                         }
                     }
                 ],
@@ -4559,11 +4509,11 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
-                "json_data": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
+                },
+                "node_id": {
+                    "type": "integer"
                 },
                 "pre_id": {
                     "type": "array",
@@ -4617,54 +4567,6 @@ var doc = `{
                 }
             }
         },
-        "event.EventNew": {
-            "type": "object",
-            "required": [
-                "assign_to",
-                "assign_type",
-                "name",
-                "pre_id",
-                "project_id",
-                "status"
-            ],
-            "properties": {
-                "assign_to": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "assign_type": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 1
-                },
-                "pre_id": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "project_id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
-                }
-            }
-        },
         "event.EventPre": {
             "type": "object",
             "properties": {
@@ -4696,9 +4598,6 @@ var doc = `{
         },
         "event.EventUpdate": {
             "type": "object",
-            "required": [
-                "json_data"
-            ],
             "properties": {
                 "assign_to": {
                     "type": "array",
@@ -4712,9 +4611,6 @@ var doc = `{
                         1,
                         2
                     ]
-                },
-                "json_data": {
-                    "type": "string"
                 },
                 "name": {
                     "type": "string",
@@ -5075,9 +4971,6 @@ var doc = `{
                 "created_by": {
                     "type": "string"
                 },
-                "event_json": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -5088,6 +4981,9 @@ var doc = `{
                     "type": "integer"
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "template_id": {
                     "type": "integer"
                 },
                 "updated": {
@@ -5101,25 +4997,28 @@ var doc = `{
         "project.ProjectNew": {
             "type": "object",
             "required": [
-                "event_json",
                 "name",
-                "status"
+                "template_id"
             ],
             "properties": {
-                "event_json": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
                 },
-                "status": {
+                "template_id": {
                     "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
+                    "minimum": 1
+                }
+            }
+        },
+        "project.ProjectUpdate": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
                 }
             }
         },

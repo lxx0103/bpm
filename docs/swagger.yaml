@@ -537,10 +537,10 @@ definitions:
         type: string
       id:
         type: integer
-      json_data:
-        type: string
       name:
         type: string
+      node_id:
+        type: integer
       pre_id:
         items:
           $ref: '#/definitions/event.EventPre'
@@ -575,41 +575,6 @@ definitions:
       updated_by:
         type: string
     type: object
-  event.EventNew:
-    properties:
-      assign_to:
-        items:
-          type: integer
-        type: array
-      assign_type:
-        enum:
-        - 1
-        - 2
-        type: integer
-      name:
-        maxLength: 64
-        minLength: 1
-        type: string
-      pre_id:
-        items:
-          type: integer
-        type: array
-      project_id:
-        minimum: 1
-        type: integer
-      status:
-        enum:
-        - 1
-        - 2
-        type: integer
-    required:
-    - assign_to
-    - assign_type
-    - name
-    - pre_id
-    - project_id
-    - status
-    type: object
   event.EventPre:
     properties:
       created:
@@ -640,8 +605,6 @@ definitions:
         - 1
         - 2
         type: integer
-      json_data:
-        type: string
       name:
         maxLength: 64
         minLength: 1
@@ -655,8 +618,6 @@ definitions:
         - 1
         - 2
         type: integer
-    required:
-    - json_data
     type: object
   member.MemberNew:
     properties:
@@ -889,8 +850,6 @@ definitions:
         type: string
       created_by:
         type: string
-      event_json:
-        type: string
       id:
         type: integer
       name:
@@ -899,6 +858,8 @@ definitions:
         type: integer
       status:
         type: integer
+      template_id:
+        type: integer
       updated:
         type: string
       updated_by:
@@ -906,21 +867,23 @@ definitions:
     type: object
   project.ProjectNew:
     properties:
-      event_json:
-        type: string
       name:
         maxLength: 64
         minLength: 1
         type: string
-      status:
-        enum:
-        - 1
-        - 2
+      template_id:
+        minimum: 1
         type: integer
     required:
-    - event_json
     - name
-    - status
+    - template_id
+    type: object
+  project.ProjectUpdate:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
     type: object
   response.ErrorRes:
     properties:
@@ -1664,36 +1627,6 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 事件列表
-      tags:
-      - 事件管理
-    post:
-      consumes:
-      - application/json
-      operationId: "10"
-      parameters:
-      - description: 事件信息
-        in: body
-        name: event_info
-        required: true
-        schema:
-          $ref: '#/definitions/event.EventNew'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  $ref: '#/definitions/event.Event'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 新建事件
       tags:
       - 事件管理
   /events/:id:
@@ -2578,7 +2511,7 @@ paths:
         name: page_size
         required: true
         type: integer
-      - description: 项目编码
+      - description: 项目名称
         in: query
         name: name
         type: string
@@ -2678,7 +2611,7 @@ paths:
         name: project_info
         required: true
         schema:
-          $ref: '#/definitions/project.ProjectNew'
+          $ref: '#/definitions/project.ProjectUpdate'
       produces:
       - application/json
       responses:

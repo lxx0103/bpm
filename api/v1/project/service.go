@@ -8,7 +8,6 @@ import (
 	"bpm/api/v1/template"
 	"bpm/core/database"
 	"errors"
-	"fmt"
 )
 
 type projectService struct {
@@ -24,7 +23,7 @@ type ProjectService interface {
 	GetProjectByID(int64, int64) (*Project, error)
 	NewProject(ProjectNew, int64) (*Project, error)
 	GetProjectList(ProjectFilter, int64) (int, *[]Project, error)
-	UpdateProject(int64, ProjectNew, int64) (*Project, error)
+	UpdateProject(int64, ProjectUpdate, int64) (*Project, error)
 }
 
 func (s *projectService) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -108,8 +107,8 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		return nil, err
 	}
 	for k := 0; k < len(*events); k++ {
-		fmt.Println("aaaa", (*events)[k].NodeID)
 		var pres []int64
+		var assigns []int64
 		nodePres, err := nodeRepo.GetPresByNodeID((*events)[k].NodeID)
 		if err != nil {
 			return nil, err
@@ -122,6 +121,21 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 			pres = append(pres, preEventID)
 		}
 		err = eventRepo.CreateEventPre((*events)[k].ID, pres, info.User)
+		if err != nil {
+			return nil, err
+		}
+		if (*events)[k].AssignType == 3 {
+			assigns = append(assigns, info.UserID)
+		} else {
+			nodeAssigns, err := nodeRepo.GetAssignsByNodeID((*events)[k].NodeID)
+			if err != nil {
+				return nil, err
+			}
+			for m := 0; m < len(*nodeAssigns); m++ {
+				assigns = append(assigns, (*nodeAssigns)[m].AssignTo)
+			}
+		}
+		err = eventRepo.CreateEventAssign((*events)[k].ID, (*events)[k].AssignType, assigns, info.User)
 		if err != nil {
 			return nil, err
 		}
@@ -148,7 +162,7 @@ func (s *projectService) GetProjectList(filter ProjectFilter, organizationID int
 	return count, list, err
 }
 
-func (s *projectService) UpdateProject(projectID int64, info ProjectNew, organizationID int64) (*Project, error) {
+func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, organizationID int64) (*Project, error) {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -164,15 +178,18 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectNew, organiz
 		msg := "你无权修改此项目"
 		return nil, errors.New(msg)
 	}
-	exist, err := repo.CheckNameExist(info.Name, organizationID, projectID)
-	if err != nil {
-		return nil, err
+	if info.Name != "" {
+		exist, err := repo.CheckNameExist(info.Name, organizationID, projectID)
+		if err != nil {
+			return nil, err
+		}
+		if exist != 0 {
+			msg := "项目名称重复"
+			return nil, errors.New(msg)
+		}
+		oldProject.Name = info.Name
 	}
-	if exist != 0 {
-		msg := "项目名称重复"
-		return nil, errors.New(msg)
-	}
-	_, err = repo.UpdateProject(projectID, info)
+	err = repo.UpdateProject(projectID, *oldProject, info.User)
 	if err != nil {
 		return nil, err
 	}

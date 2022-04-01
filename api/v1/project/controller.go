@@ -3,7 +3,6 @@ package project
 import (
 	"bpm/core/response"
 	"bpm/service"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +15,7 @@ import (
 // @Produce application/json
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
-// @Param name query string false "项目编码"
+// @Param name query string false "项目名称"
 // @Success 200 object response.ListRes{data=[]Project} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /projects [GET]
@@ -56,6 +55,7 @@ func NewProject(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	project.User = claims.Username
+	project.UserID = claims.UserID
 	organizationID := claims.OrganizationID
 	projectService := NewProjectService()
 	new, err := projectService.NewProject(project, organizationID)
@@ -101,7 +101,7 @@ func GetProjectByID(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path int true "项目ID"
-// @Param project_info body ProjectNew true "项目信息"
+// @Param project_info body ProjectUpdate true "项目信息"
 // @Success 200 object response.SuccessRes{data=Project} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /projects/:id [PUT]
@@ -111,13 +111,12 @@ func UpdateProject(c *gin.Context) {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	var project ProjectNew
+	var project ProjectUpdate
 	if err := c.ShouldBindJSON(&project); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	fmt.Println(claims.Username)
 	project.User = claims.Username
 	organizationID := claims.OrganizationID
 	projectService := NewProjectService()
