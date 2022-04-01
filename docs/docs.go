@@ -4986,6 +4986,10 @@ var doc = `{
                 "template_id"
             ],
             "properties": {
+                "client_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,

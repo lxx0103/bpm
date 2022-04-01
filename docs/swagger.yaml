@@ -856,6 +856,9 @@ definitions:
     type: object
   project.ProjectNew:
     properties:
+      client_id:
+        minimum: 1
+        type: integer
       name:
         maxLength: 64
         minLength: 1

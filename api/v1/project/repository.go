@@ -30,6 +30,7 @@ func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64)
 		(
 			organization_id,
 			template_id,
+			client_id,
 			name,
 			status,
 			created,
@@ -37,8 +38,8 @@ func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64)
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-	`, organizationID, info.TemplateID, info.Name, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, organizationID, info.TemplateID, info.ClientID, info.Name, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}

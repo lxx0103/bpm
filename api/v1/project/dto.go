@@ -10,6 +10,7 @@ type ProjectFilter struct {
 type ProjectNew struct {
 	Name       string `json:"name" binding:"required,min=1,max=64"`
 	TemplateID int64  `json:"template_id" binding:"required,min=1"`
+	ClientID   int64  `json:"client_id" binding:"omitempty,min=1"`
 	User       string `json:"user" swaggerignore:"true"`
 	UserID     int64  `json:"user_id" swaggerignore:"true"`
 }
