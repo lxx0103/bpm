@@ -835,6 +835,8 @@ definitions:
     type: object
   project.Project:
     properties:
+      client_id:
+        type: integer
       created:
         type: string
       created_by:
@@ -872,6 +874,9 @@ definitions:
     type: object
   project.ProjectUpdate:
     properties:
+      client_id:
+        minimum: 1
+        type: integer
       name:
         maxLength: 64
         minLength: 1

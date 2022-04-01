@@ -20,7 +20,8 @@ type ProjectID struct {
 }
 
 type ProjectUpdate struct {
-	Name   string `json:"name" binding:"omitempty,min=1,max=64"`
-	User   string `json:"user" swaggerignore:"true"`
-	UserID int64  `json:"user_id" swaggerignore:"true"`
+	Name     string `json:"name" binding:"omitempty,min=1,max=64"`
+	ClientID int64  `json:"client_id" binding:"omitempty,min=1"`
+	User     string `json:"user" swaggerignore:"true"`
+	UserID   int64  `json:"user_id" swaggerignore:"true"`
 }

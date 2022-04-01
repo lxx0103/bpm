@@ -190,6 +190,9 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 		}
 		oldProject.Name = info.Name
 	}
+	if info.ClientID != 0 {
+		oldProject.ClientID = info.ClientID
+	}
 	err = repo.UpdateProject(projectID, *oldProject, info.User)
 	if err != nil {
 		return nil, err

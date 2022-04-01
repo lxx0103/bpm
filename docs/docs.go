@@ -4950,6 +4950,9 @@ var doc = `{
         "project.Project": {
             "type": "object",
             "properties": {
+                "client_id": {
+                    "type": "integer"
+                },
                 "created": {
                     "type": "string"
                 },
@@ -5004,6 +5007,10 @@ var doc = `{
         "project.ProjectUpdate": {
             "type": "object",
             "properties": {
+                "client_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,
