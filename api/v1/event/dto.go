@@ -16,11 +16,8 @@ type EventNew struct {
 	User       string `json:"user" swaggerignore:"true"`
 }
 type EventUpdate struct {
-	Name       string  `json:"name" binding:"omitempty,min=1,max=64"`
-	PreID      []int64 `json:"pre_id" binding:"omitempty"`
 	AssignType int     `json:"assign_type" binding:"omitempty,oneof=1 2"`
 	AssignTo   []int64 `json:"assign_to" binding:"omitempty"`
-	Status     int     `json:"status" binding:"omitempty,oneof=1 2"`
 	User       string  `json:"user" swaggerignore:"true"`
 }
 

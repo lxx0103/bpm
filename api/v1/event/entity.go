@@ -6,6 +6,7 @@ type Event struct {
 	ID         int64          `db:"id" json:"id"`
 	ProjectID  int64          `db:"project_id" json:"project_id"`
 	Name       string         `db:"name" json:"name"`
+	Assignable int            `db:"assignable" json:"assignable"`
 	AssignType int            `db:"assign_type" json:"assign_type"`
 	NodeID     int64          `db:"node_id" json:"node_id"`
 	PreID      *[]EventPre    `json:"pre_id"`

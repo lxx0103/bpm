@@ -59,7 +59,7 @@ func (r *nodeRepository) CreateNode(info NodeNew) (int64, error) {
 func (r *nodeRepository) CreateNodeAssign(nodeID int64, assignType int, assignTo []int64, user string) error {
 	for i := 0; i < len(assignTo); i++ {
 		var exist int
-		row := r.tx.QueryRow(`SELECT count(1) FROM node_assigns WHERE node_id = ? AND assign_type = ? AND assign_to = ? AND status = 1  LIMIT 1`, nodeID, assignType, assignTo[i])
+		row := r.tx.QueryRow(`SELECT count(1) FROM node_assigns WHERE node_id = ? AND assign_type = ? AND assign_to = ? AND status > 0  LIMIT 1`, nodeID, assignType, assignTo[i])
 		err := row.Scan(&exist)
 		if err != nil {
 			return err
@@ -167,7 +167,7 @@ func (r *nodeRepository) GetAssignsByNodeID(nodeID int64) (*[]NodeAssign, error)
 func (r *nodeRepository) CreateNodePre(nodeID int64, preIDs []int64, user string) error {
 	for i := 0; i < len(preIDs); i++ {
 		var exist int
-		row := r.tx.QueryRow(`SELECT count(1) FROM node_pres WHERE node_id = ? AND pre_id = ? AND status = 1  LIMIT 1`, nodeID, preIDs[i])
+		row := r.tx.QueryRow(`SELECT count(1) FROM node_pres WHERE node_id = ? AND pre_id = ? AND status > 0  LIMIT 1`, nodeID, preIDs[i])
 		err := row.Scan(&exist)
 		if err != nil {
 			return err

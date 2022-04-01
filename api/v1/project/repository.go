@@ -21,6 +21,7 @@ type ProjectRepository interface {
 	UpdateProject(int64, Project, string) error
 	GetProjectByID(int64, int64) (*Project, error)
 	CheckNameExist(string, int64, int64) (int, error)
+	DeleteProject(int64, string) error
 }
 
 func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64) (int64, error) {
@@ -82,4 +83,15 @@ func (r *projectRepository) CheckNameExist(name string, organizationID int64, se
 		return 0, err
 	}
 	return res, nil
+}
+
+func (r *projectRepository) DeleteProject(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update projects SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, time.Now(), byUser, id)
+	return err
 }

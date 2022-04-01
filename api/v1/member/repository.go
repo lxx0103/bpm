@@ -27,7 +27,7 @@ type MemberRepository interface {
 func (r *memberRepository) CreateProjectMember(projectID int64, userID []int64, organizationID int64, user string) error {
 	for i := 0; i < len(userID); i++ {
 		var exist int
-		row := r.tx.QueryRow(`SELECT count(1) FROM project_members WHERE project_id = ? AND user_id = ? AND status = 1  LIMIT 1`, projectID, userID[i])
+		row := r.tx.QueryRow(`SELECT count(1) FROM project_members WHERE project_id = ? AND user_id = ? AND status > 0  LIMIT 1`, projectID, userID[i])
 		err := row.Scan(&exist)
 		if err != nil {
 			return err
@@ -37,10 +37,10 @@ func (r *memberRepository) CreateProjectMember(projectID int64, userID []int64, 
 			return errors.New(msg)
 		}
 		if organizationID == 0 {
-			row = r.tx.QueryRow(`SELECT count(1) FROM users WHERE  id = ? AND status = 1  LIMIT 1`, userID[i])
+			row = r.tx.QueryRow(`SELECT count(1) FROM users WHERE  id = ? AND status > 0  LIMIT 1`, userID[i])
 
 		} else {
-			row = r.tx.QueryRow(`SELECT count(1) FROM users WHERE organization_id = ? AND id = ? AND status = 1  LIMIT 1`, organizationID, userID[i])
+			row = r.tx.QueryRow(`SELECT count(1) FROM users WHERE organization_id = ? AND id = ? AND status > 0  LIMIT 1`, organizationID, userID[i])
 		}
 		err = row.Scan(&exist)
 		if err != nil {

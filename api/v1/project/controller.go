@@ -127,3 +127,29 @@ func UpdateProject(c *gin.Context) {
 	}
 	response.Response(c, new)
 }
+
+// @Summary 根据ID删除项目
+// @Id 51
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projects/:id [DELETE]
+func DeleteProject(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	projectService := NewProjectService()
+	err := projectService.DeleteProject(uri.ID, claims.OrganizationID, claims.Username)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "OK")
+}

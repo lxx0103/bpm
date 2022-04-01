@@ -24,6 +24,7 @@ type ProjectService interface {
 	NewProject(ProjectNew, int64) (*Project, error)
 	GetProjectList(ProjectFilter, int64) (int, *[]Project, error)
 	UpdateProject(int64, ProjectUpdate, int64) (*Project, error)
+	DeleteProject(int64, int64, string) error
 }
 
 func (s *projectService) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -199,4 +200,29 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 	}
 	tx.Commit()
 	return project, err
+}
+
+func (s *projectService) DeleteProject(projectID int64, organizationID int64, user string) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewProjectRepository(tx)
+	eventRepo := event.NewEventRepository(tx)
+	_, err = repo.GetProjectByID(projectID, organizationID)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteProject(projectID, user)
+	if err != nil {
+		return err
+	}
+	err = eventRepo.DeleteEventByProjectID(projectID, user)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
 }

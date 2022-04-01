@@ -120,9 +120,9 @@ func (r *eventQuery) CheckActive(eventID int64) (bool, error) {
 		SELECT count(1) from event_pres ep
 		LEFT JOIN events e
 		ON ep.pre_id = e.id 
-		WHERE ep.status = 1  
+		WHERE ep.status > 0  
 		AND ep.event_id = ?
-		AND e.status = 1`, eventID)
+		AND e.status > 0`, eventID)
 	if err != nil {
 		return false, err
 	}
