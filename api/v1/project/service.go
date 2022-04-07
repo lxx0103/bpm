@@ -25,6 +25,8 @@ type ProjectService interface {
 	GetProjectList(ProjectFilter, int64) (int, *[]Project, error)
 	UpdateProject(int64, ProjectUpdate, int64) (*Project, error)
 	DeleteProject(int64, int64, string) error
+	//WX
+	GetMyProject(MyProjectFilter, string, int64) (int, *[]Project, error)
 }
 
 func (s *projectService) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -228,4 +230,19 @@ func (s *projectService) DeleteProject(projectID int64, organizationID int64, us
 	}
 	tx.Commit()
 	return nil
+}
+
+func (s *projectService) GetMyProject(filter MyProjectFilter, userName string, organizationID int64) (int, *[]Project, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+
+	myProjects, err := query.GetProjectListByCreate(userName, organizationID, filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	myProjectsCount, err := query.GetProjectCountByCreate(userName, organizationID, filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	return myProjectsCount, myProjects, err
 }

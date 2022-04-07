@@ -77,7 +77,7 @@ func (r *memberRepository) DeleteProjectMember(projectID int64, user string) err
 		updated = ?,
 		updated_by = ? 
 		WHERE project_id = ?
-	`, 2, time.Now(), user, projectID)
+	`, -1, time.Now(), user, projectID)
 	if err != nil {
 		return err
 	}

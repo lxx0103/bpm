@@ -9,3 +9,7 @@ func Routers(g *gin.RouterGroup) {
 	g.POST("/projects", NewProject)
 	g.DELETE("/projects/:id", DeleteProject)
 }
+
+func WxRouters(g *gin.RouterGroup) {
+	g.GET("/wx/myprojects", WxGetMyProjects)
+}

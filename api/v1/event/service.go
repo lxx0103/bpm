@@ -21,7 +21,8 @@ type EventService interface {
 	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
 	DeleteEventByProjectID(int64, int64, string) error
 	//WX API
-	GetMyEvent(MyEventFilter, int64, int64, int64) (*[]Event, error)
+	GetAssignedEvent(AssignedEventFilter, int64, int64, int64) (*[]MyEvent, error)
+	GetMyEvent(MyEventFilter, string) (*[]MyEvent, error)
 }
 
 func (s *eventService) GetEventByID(id int64) (*Event, error) {
@@ -178,8 +179,8 @@ func (s *eventService) DeleteEventByProjectID(projectID int64, organizationID in
 	return nil
 }
 
-func (s *eventService) GetMyEvent(filter MyEventFilter, userID int64, positionID int64, organizationID int64) (*[]Event, error) {
-	var activeEvents []Event
+func (s *eventService) GetAssignedEvent(filter AssignedEventFilter, userID int64, positionID int64, organizationID int64) (*[]MyEvent, error) {
+	var activeEvents []MyEvent
 	db := database.InitMySQL()
 	query := NewEventQuery(db)
 	assigned, err := query.GetAssigned(userID, positionID)
@@ -204,4 +205,16 @@ func (s *eventService) GetMyEvent(filter MyEventFilter, userID int64, positionID
 		activeEvents = append(activeEvents, *activeEvent)
 	}
 	return &activeEvents, err
+}
+
+func (s *eventService) GetMyEvent(filter MyEventFilter, createdBy string) (*[]MyEvent, error) {
+	db := database.InitMySQL()
+	query := NewEventQuery(db)
+	myEvents, err := query.GetMyEvent(filter, createdBy)
+	if err != nil {
+		if err.Error() != "sql: no rows in result set" {
+			return nil, err
+		}
+	}
+	return myEvents, err
 }

@@ -608,6 +608,19 @@ definitions:
         - 2
         type: integer
     type: object
+  event.MyEvent:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      project_id:
+        type: integer
+      project_name:
+        type: string
+      status:
+        type: integer
+    type: object
   member.MemberNew:
     properties:
       project_id:
@@ -1600,6 +1613,10 @@ paths:
         in: query
         name: page_size
         required: true
+        type: integer
+      - description: 项目ID
+        in: query
+        name: project_id
         type: integer
       - description: 事件编码
         in: query
@@ -3223,7 +3240,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/event.Event'
+                    $ref: '#/definitions/event.MyEvent'
                   type: array
               type: object
         "400":
@@ -3231,6 +3248,85 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 获取我的当前任务
+      tags:
+      - 小程序接口
+  /wx/myevents:
+    get:
+      consumes:
+      - application/json
+      operationId: "70"
+      parameters:
+      - description: 显示所有all/激活active
+        in: query
+        name: status
+        required: true
+        type: string
+      - description: 项目id
+        in: query
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.MyEvent'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取我创建的任务
+      tags:
+      - 小程序接口
+  /wx/myprojects:
+    get:
+      consumes:
+      - application/json
+      operationId: "69"
+      parameters:
+      - description: 显示所有all/激活active
+        in: query
+        name: status
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取我创建的项目
       tags:
       - 小程序接口
 swagger: "2.0"

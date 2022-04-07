@@ -25,9 +25,22 @@ type EventID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
-type MyEventFilter struct {
+type AssignedEventFilter struct {
 	Status string `form:"status" binding:"required,oneof=all active"`
 }
 
+type MyEventFilter struct {
+	Status    string `form:"status" binding:"required,oneof=all active"`
+	ProjectID int64  `form:"project_id" binding:"required,min=1"`
+}
+
 type MyEventResponse struct {
+}
+
+type MyEvent struct {
+	ID          int64  `db:"id" json:"id"`
+	ProjectID   int64  `db:"project_id" json:"project_id"`
+	ProjectName string `db:"project_name" json:"project_name"`
+	Name        string `db:"name" json:"name"`
+	Status      int    `db:"status" json:"status"`
 }

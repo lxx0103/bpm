@@ -54,10 +54,11 @@ func (r *projectRepository) UpdateProject(id int64, info Project, byUser string)
 	_, err := r.tx.Exec(`
 		Update projects SET 
 		name = ?,
+		client_id = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, time.Now(), byUser, id)
+	`, info.Name, info.ClientID, time.Now(), byUser, id)
 	return err
 }
 
@@ -78,7 +79,7 @@ func (r *projectRepository) GetProjectByID(id int64, organizationID int64) (*Pro
 
 func (r *projectRepository) CheckNameExist(name string, organizationID int64, selfID int64) (int, error) {
 	var res int
-	row := r.tx.QueryRow(`SELECT count(1) FROM projects WHERE name = ? AND organization_id = ? AND id != ? LIMIT 1`, name, organizationID, selfID)
+	row := r.tx.QueryRow(`SELECT count(1) FROM projects WHERE name = ? AND organization_id = ? AND id != ? AND status > 0 LIMIT 1`, name, organizationID, selfID)
 	err := row.Scan(&res)
 	if err != nil {
 		return 0, err

@@ -21,6 +21,9 @@ type ProjectQuery interface {
 	GetProjectByID(int64, int64) (*Project, error)
 	GetProjectCount(ProjectFilter, int64) (int, error)
 	GetProjectList(ProjectFilter, int64) (*[]Project, error)
+	//WX
+	GetProjectListByCreate(string, int64, MyProjectFilter) (*[]Project, error)
+	GetProjectCountByCreate(string, int64, MyProjectFilter) (int, error)
 }
 
 func (r *projectQuery) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -81,4 +84,48 @@ func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64
 		return nil, err
 	}
 	return &projects, nil
+}
+
+func (r *projectQuery) GetProjectListByCreate(userName string, organization_id int64, filter MyProjectFilter) (*[]Project, error) {
+	where, args := []string{"1=1"}, []interface{}{}
+	if filter.Status == "all" {
+		where, args = append(where, "status > ?"), append(args, 0)
+	} else {
+		where, args = append(where, "status = ?"), append(args, 1)
+	}
+	where, args = append(where, "created_by = ?"), append(args, userName)
+	where, args = append(where, "organization_id = ?"), append(args, organization_id)
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var projects []Project
+	err := r.conn.Select(&projects, `
+		SELECT * 
+		FROM projects 
+		WHERE `+strings.Join(where, " AND ")+`
+		LIMIT ?, ?
+	`, args...)
+	if err != nil {
+		return nil, err
+	}
+	return &projects, nil
+}
+
+func (r *projectQuery) GetProjectCountByCreate(userName string, organization_id int64, filter MyProjectFilter) (int, error) {
+	where, args := []string{"1=1"}, []interface{}{}
+	if filter.Status == "all" {
+		where, args = append(where, "status > ?"), append(args, 0)
+	} else {
+		where, args = append(where, "status = ?"), append(args, 1)
+	}
+	where, args = append(where, "created_by = ?"), append(args, userName)
+	where, args = append(where, "organization_id = ?"), append(args, organization_id)
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) as count 
+		FROM projects 
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

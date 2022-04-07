@@ -25,3 +25,8 @@ type ProjectUpdate struct {
 	User     string `json:"user" swaggerignore:"true"`
 	UserID   int64  `json:"user_id" swaggerignore:"true"`
 }
+type MyProjectFilter struct {
+	Status   string `form:"status" binding:"required,oneof=all active"`
+	PageId   int    `form:"page_id" binding:"required,min=1"`
+	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
+}

@@ -153,3 +153,32 @@ func DeleteProject(c *gin.Context) {
 	}
 	response.Response(c, "OK")
 }
+
+// @Summary 获取我创建的项目
+// @Id 69
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param status query string true "显示所有all/激活active"
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.SuccessRes{data=[]Project} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/myprojects [GET]
+func WxGetMyProjects(c *gin.Context) {
+	var filter MyProjectFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	count, list, err := projectService.GetMyProject(filter, claims.Username, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}

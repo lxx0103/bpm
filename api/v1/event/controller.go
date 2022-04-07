@@ -15,6 +15,7 @@ import (
 // @Produce application/json
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
+// @Param project_id query int64 false "项目ID"
 // @Param name query string false "事件编码"
 // @Success 200 object response.ListRes{data=[]Event} 成功
 // @Failure 400 object response.ErrorRes 内部错误
@@ -132,10 +133,38 @@ func UpdateEvent(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param status query string true "显示所有all/激活active"
-// @Success 200 object response.SuccessRes{data=[]Event} 成功
+// @Success 200 object response.SuccessRes{data=[]MyEvent} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/events [GET]
 func WxGetEvents(c *gin.Context) {
+	var filter AssignedEventFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	list, err := eventService.GetAssignedEvent(filter, claims.UserID, claims.PositionID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, list)
+}
+
+// @Summary 获取我创建的任务
+// @Id 70
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param status query string true "显示所有all/激活active"
+// @Param project_id query int64 true "项目id"
+// @Success 200 object response.SuccessRes{data=[]MyEvent} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/myevents [GET]
+func WxGetMyEvents(c *gin.Context) {
 	var filter MyEventFilter
 	err := c.ShouldBindQuery(&filter)
 	if err != nil {
@@ -144,7 +173,7 @@ func WxGetEvents(c *gin.Context) {
 	}
 	eventService := NewEventService()
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	list, err := eventService.GetMyEvent(filter, claims.UserID, claims.PositionID, claims.OrganizationID)
+	list, err := eventService.GetMyEvent(filter, claims.Username)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
