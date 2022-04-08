@@ -2,6 +2,7 @@ package element
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -113,6 +114,7 @@ func (r *elementRepository) CheckNameExist(name string, nodeID int64, selfID int
 
 func (r *elementRepository) CheckSortExist(sorting int, nodeID int64, selfID int64) (int, error) {
 	var res int
+	fmt.Println("sort:", sorting, ";node:", nodeID, ";selfid:", selfID)
 	row := r.tx.QueryRow(`SELECT count(1) FROM elements WHERE sort = ? AND node_id = ? AND id != ? AND status > 0  LIMIT 1`, sorting, nodeID, selfID)
 	err := row.Scan(&res)
 	return res, err

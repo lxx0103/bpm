@@ -32,6 +32,8 @@ type EventRepository interface {
 	CheckNameExist(string, int64, int64) (int, error)
 	GetEventsByProjectID(int64) (*[]Event, error)
 	GetEventIDByProjectAndNode(int64, int64) (int64, error)
+	CheckAssign(int64, int64, int64) (int, error)
+	CompleteEvent(int64, string) error
 }
 
 func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
@@ -93,6 +95,7 @@ func (r *eventRepository) CreateEventAssign(eventID int64, assignType int, assig
 	}
 	return nil
 }
+
 func (r *eventRepository) UpdateEvent(id int64, info Event, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update events SET 
@@ -297,4 +300,22 @@ func (r *eventRepository) GetEventIDByProjectAndNode(projectID int64, nodeID int
 	row := r.tx.QueryRow(`SELECT id FROM events WHERE project_id = ? AND node_id = ? AND status > 0 LIMIT 1`, projectID, nodeID)
 	err := row.Scan(&res)
 	return res, err
+}
+
+func (r *eventRepository) CheckAssign(eventID int64, userID int64, positionID int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM event_assigns WHERE event_id = ? AND ( ( assign_type = 1 AND assign_to = ? ) OR ( assign_type = 2 and assign_to = ? ) ) AND status > 0  LIMIT 1`, eventID, positionID, userID)
+	err := row.Scan(&res)
+	return res, err
+}
+
+func (r *eventRepository) CompleteEvent(eventID int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update events SET 
+		status = 3,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, time.Now(), byUser, eventID)
+	return err
 }

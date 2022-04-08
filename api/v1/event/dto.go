@@ -44,3 +44,15 @@ type MyEvent struct {
 	Name        string `db:"name" json:"name"`
 	Status      int    `db:"status" json:"status"`
 }
+
+type SaveEventInfo struct {
+	Components []ComponentInfo `json:"component_info" binding:"required"`
+	User       string          `json:"user" swaggerignore:"true"`
+	UserID     int64           `json:"user_id" swaggerignore:"true"`
+	PositionID int64           `json:"position_id" swaggerignore:"true"`
+}
+
+type ComponentInfo struct {
+	ID    int64  `json:"id" binding:"required,min=1"`
+	Value string `json:"value" binding:"required"`
+}

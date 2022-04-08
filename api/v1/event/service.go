@@ -1,8 +1,10 @@
 package event
 
 import (
+	"bpm/api/v1/component"
 	"bpm/core/database"
 	"errors"
+	"fmt"
 )
 
 type eventService struct {
@@ -23,6 +25,7 @@ type EventService interface {
 	//WX API
 	GetAssignedEvent(AssignedEventFilter, int64, int64, int64) (*[]MyEvent, error)
 	GetMyEvent(MyEventFilter, string) (*[]MyEvent, error)
+	SaveEvent(int64, SaveEventInfo) error
 }
 
 func (s *eventService) GetEventByID(id int64) (*Event, error) {
@@ -217,4 +220,74 @@ func (s *eventService) GetMyEvent(filter MyEventFilter, createdBy string) (*[]My
 		}
 	}
 	return myEvents, err
+}
+
+func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
+	db := database.InitMySQL()
+	query := NewEventQuery(db)
+	active, err := query.CheckActive(eventID)
+	if err != nil {
+		return err
+	}
+	if !active {
+		msg := "此事件尚未激活"
+		return errors.New(msg)
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewEventRepository(tx)
+	componentRepo := component.NewComponentRepository(tx)
+	event, err := repo.GetEventByID(eventID, 0)
+	if err != nil {
+		return err
+	}
+	if event.Status != 1 {
+		msg := "此事件已完成"
+		return errors.New(msg)
+	}
+	assignExist, err := repo.CheckAssign(eventID, info.UserID, info.PositionID)
+	if err != nil {
+		return err
+	}
+	if assignExist == 0 {
+		msg := "此事件未分配给你"
+		return errors.New(msg)
+	}
+	components, err := componentRepo.GetComponentByEventID(eventID)
+	if err != nil {
+		return err
+	}
+	for i := 0; i < len(info.Components); i++ {
+		componentInfo := info.Components[i]
+		for j := 0; j < len(*components); j++ {
+			toUpdate := (*components)[j]
+			if componentInfo.ID == toUpdate.ID {
+				if toUpdate.Patterns != "" {
+					fmt.Println("数据校验")
+				}
+				err := componentRepo.SaveComponent(toUpdate.ID, componentInfo.Value, info.User)
+				if err != nil {
+					return err
+				}
+				break
+			}
+		}
+	}
+	requiredCount, err := componentRepo.CheckRequired(eventID)
+	if err != nil {
+		return err
+	}
+	if requiredCount != 0 {
+		msg := "有" + fmt.Sprintf("%v", requiredCount) + "个必填项没填"
+		return errors.New(msg)
+	}
+	err = repo.CompleteEvent(eventID, info.User)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
 }

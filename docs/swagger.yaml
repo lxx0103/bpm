@@ -362,70 +362,6 @@ definitions:
       value:
         type: string
     type: object
-  component.ComponentNew:
-    properties:
-      default_value:
-        maxLength: 255
-        type: string
-      event_id:
-        minimum: 1
-        type: integer
-      json_data:
-        type: string
-      name:
-        maxLength: 64
-        minLength: 1
-        type: string
-      patterns:
-        maxLength: 255
-        type: string
-      required:
-        enum:
-        - 1
-        - 2
-        type: integer
-      sort:
-        minimum: 1
-        type: integer
-      type:
-        maxLength: 32
-        minLength: 1
-        type: string
-    required:
-    - event_id
-    - json_data
-    - name
-    - required
-    - sort
-    - type
-    type: object
-  component.ComponentUpdate:
-    properties:
-      default_value:
-        maxLength: 255
-        type: string
-      json_data:
-        type: string
-      name:
-        maxLength: 64
-        type: string
-      patterns:
-        maxLength: 255
-        type: string
-      required:
-        enum:
-        - 1
-        - 2
-        type: integer
-      sort:
-        minimum: 1
-        type: integer
-      type:
-        maxLength: 32
-        type: string
-    required:
-    - json_data
-    type: object
   element.Element:
     properties:
       created:
@@ -522,6 +458,17 @@ definitions:
         type: string
     required:
     - json_data
+    type: object
+  event.ComponentInfo:
+    properties:
+      id:
+        minimum: 1
+        type: integer
+      value:
+        type: string
+    required:
+    - id
+    - value
     type: object
   event.Event:
     properties:
@@ -620,6 +567,15 @@ definitions:
         type: string
       status:
         type: integer
+    type: object
+  event.SaveEventInfo:
+    properties:
+      component_info:
+        items:
+          $ref: '#/definitions/event.ComponentInfo'
+        type: array
+    required:
+    - component_info
     type: object
   member.MemberNew:
     properties:
@@ -1304,66 +1260,7 @@ paths:
       summary: 组件列表
       tags:
       - 组件管理
-    post:
-      consumes:
-      - application/json
-      operationId: "14"
-      parameters:
-      - description: 组件信息
-        in: body
-        name: component_info
-        required: true
-        schema:
-          $ref: '#/definitions/component.ComponentNew'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  $ref: '#/definitions/component.Component'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 新建组件
-      tags:
-      - 组件管理
   /components/:id:
-    delete:
-      consumes:
-      - application/json
-      operationId: "49"
-      parameters:
-      - description: 组件ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID更新组件
-      tags:
-      - 组件管理
     get:
       consumes:
       - application/json
@@ -1391,41 +1288,6 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID获取组件
-      tags:
-      - 组件管理
-    put:
-      consumes:
-      - application/json
-      operationId: "16"
-      parameters:
-      - description: 组件ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 组件信息
-        in: body
-        name: component_info
-        required: true
-        schema:
-          $ref: '#/definitions/component.ComponentUpdate'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  $ref: '#/definitions/component.Component'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID更新组件
       tags:
       - 组件管理
   /elements:
@@ -3248,6 +3110,42 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 获取我的当前任务
+      tags:
+      - 小程序接口
+  /wx/events/:id:
+    put:
+      consumes:
+      - application/json
+      operationId: "71"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 组件内容
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/event.SaveEventInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 保存事件
       tags:
       - 小程序接口
   /wx/myevents:

@@ -180,3 +180,38 @@ func WxGetMyEvents(c *gin.Context) {
 	}
 	response.Response(c, list)
 }
+
+// @Summary 保存事件
+// @Id 71
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Param info body SaveEventInfo true "组件内容"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/events/:id [PUT]
+func WxSaveEvent(c *gin.Context) {
+	var uri EventID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info SaveEventInfo
+	if err := c.ShouldBindJSON(&info); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	info.PositionID = claims.PositionID
+	err := eventService.SaveEvent(uri.ID, info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}

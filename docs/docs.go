@@ -549,56 +549,6 @@ var doc = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "组件管理"
-                ],
-                "summary": "新建组件",
-                "operationId": "14",
-                "parameters": [
-                    {
-                        "description": "组件信息",
-                        "name": "component_info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/component.ComponentNew"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/component.Component"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
             }
         },
         "/components/:id": {
@@ -636,111 +586,6 @@ var doc = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/component.Component"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "组件管理"
-                ],
-                "summary": "根据ID更新组件",
-                "operationId": "16",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "组件ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "组件信息",
-                        "name": "component_info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/component.ComponentUpdate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/component.Component"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "组件管理"
-                ],
-                "summary": "根据ID更新组件",
-                "operationId": "49",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "组件ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
                                         }
                                     }
                                 }
@@ -3745,6 +3590,65 @@ var doc = `{
                 }
             }
         },
+        "/wx/events/:id": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "保存事件",
+                "operationId": "71",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "组件内容",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/event.SaveEventInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/myevents": {
             "get": {
                 "consumes": [
@@ -4397,93 +4301,6 @@ var doc = `{
                 }
             }
         },
-        "component.ComponentNew": {
-            "type": "object",
-            "required": [
-                "event_id",
-                "json_data",
-                "name",
-                "required",
-                "sort",
-                "type"
-            ],
-            "properties": {
-                "default_value": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "event_id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "json_data": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 1
-                },
-                "patterns": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "required": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
-                },
-                "sort": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "type": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 1
-                }
-            }
-        },
-        "component.ComponentUpdate": {
-            "type": "object",
-            "required": [
-                "json_data"
-            ],
-            "properties": {
-                "default_value": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "json_data": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 64
-                },
-                "patterns": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "required": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
-                },
-                "sort": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "type": {
-                    "type": "string",
-                    "maxLength": 32
-                }
-            }
-        },
         "element.Element": {
             "type": "object",
             "properties": {
@@ -4618,6 +4435,22 @@ var doc = `{
                 "type": {
                     "type": "string",
                     "maxLength": 32
+                }
+            }
+        },
+        "event.ComponentInfo": {
+            "type": "object",
+            "required": [
+                "id",
+                "value"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "value": {
+                    "type": "string"
                 }
             }
         },
@@ -4767,6 +4600,20 @@ var doc = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "event.SaveEventInfo": {
+            "type": "object",
+            "required": [
+                "component_info"
+            ],
+            "properties": {
+                "component_info": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event.ComponentInfo"
+                    }
                 }
             }
         },
