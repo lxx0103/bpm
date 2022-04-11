@@ -8,6 +8,7 @@ import (
 	"bpm/api/v1/template"
 	"bpm/core/database"
 	"errors"
+	"fmt"
 )
 
 type projectService struct {
@@ -27,6 +28,7 @@ type ProjectService interface {
 	DeleteProject(int64, int64, string) error
 	//WX
 	GetMyProject(MyProjectFilter, string, int64) (int, *[]Project, error)
+	GetAssignedProject(AssignedProjectFilter, int64, int64, int64) (int, *[]Project, error)
 }
 
 func (s *projectService) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -242,6 +244,23 @@ func (s *projectService) GetMyProject(filter MyProjectFilter, userName string, o
 	}
 	myProjectsCount, err := query.GetProjectCountByCreate(userName, organizationID, filter)
 	if err != nil {
+		return 0, nil, err
+	}
+	return myProjectsCount, myProjects, err
+}
+
+func (s *projectService) GetAssignedProject(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (int, *[]Project, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+
+	myProjects, err := query.GetProjectListByAssigned(filter, userID, positionID, organizationID)
+	if err != nil {
+		fmt.Println("aaa")
+		return 0, nil, err
+	}
+	myProjectsCount, err := query.GetProjectCountByAssigned(filter, userID, positionID, organizationID)
+	if err != nil {
+		fmt.Println("bbb")
 		return 0, nil, err
 	}
 	return myProjectsCount, myProjects, err

@@ -12,4 +12,5 @@ func Routers(g *gin.RouterGroup) {
 
 func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/myprojects", WxGetMyProjects)
+	g.GET("/wx/assignedprojects", WxGetAssignedProjects)
 }

@@ -182,3 +182,32 @@ func WxGetMyProjects(c *gin.Context) {
 	}
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
 }
+
+// @Summary 获取我参加的项目
+// @Id 74
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param status query string true "显示所有all/激活active"
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.SuccessRes{data=[]Project} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/assignedprojects [GET]
+func WxGetAssignedProjects(c *gin.Context) {
+	var filter AssignedProjectFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	count, list, err := projectService.GetAssignedProject(filter, claims.UserID, claims.PositionID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}

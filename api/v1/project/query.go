@@ -24,6 +24,8 @@ type ProjectQuery interface {
 	//WX
 	GetProjectListByCreate(string, int64, MyProjectFilter) (*[]Project, error)
 	GetProjectCountByCreate(string, int64, MyProjectFilter) (int, error)
+	GetProjectListByAssigned(AssignedProjectFilter, int64, int64, int64) (*[]Project, error)
+	GetProjectCountByAssigned(AssignedProjectFilter, int64, int64, int64) (int, error)
 }
 
 func (r *projectQuery) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -128,4 +130,36 @@ func (r *projectQuery) GetProjectCountByCreate(userName string, organization_id 
 		return 0, err
 	}
 	return count, nil
+}
+
+func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (*[]Project, error) {
+	var projects []Project
+	err := r.conn.Select(&projects, `
+		SELECT * FROM projects WHERE id IN 
+		(
+			SELECT project_id FROM events WHERE id IN 
+			(
+				SELECT event_id FROM event_assigns WHERE ((assign_type = 1 and assign_to = ?) or (assign_type = 2 and assign_to = ?)) AND status > 0
+			) AND status > 0
+		)
+		AND status > 0 AND organization_id = ? 
+		ORDER BY ID DESC
+		LIMIT ?, ?
+	`, positionID, userID, organizationID, filter.PageId*filter.PageSize-filter.PageSize, filter.PageSize)
+	return &projects, err
+}
+
+func (r *projectQuery) GetProjectCountByAssigned(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (int, error) {
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) FROM projects WHERE id IN 
+		(
+			SELECT project_id FROM events WHERE id IN 
+			(
+				SELECT event_id FROM event_assigns WHERE ((assign_type = 1 and assign_to = ?) or (assign_type = 2 and assign_to = ?)) AND status > 0
+			) AND status > 0
+		)
+		AND status > 0 AND organization_id = ? 
+	`, positionID, userID, organizationID)
+	return count, err
 }
