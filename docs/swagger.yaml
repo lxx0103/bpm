@@ -3135,6 +3135,43 @@ paths:
       summary: 根据ID更新用户
       tags:
       - 用户管理
+  /wx/assignedprojects:
+    get:
+      consumes:
+      - application/json
+      operationId: "74"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取我参加的项目
+      tags:
+      - 小程序接口
   /wx/events:
     get:
       consumes:
@@ -3268,7 +3305,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.SuccessRes'
+            - $ref: '#/definitions/response.ListRes'
             - properties:
                 data:
                   items:
