@@ -3029,29 +3029,6 @@ paths:
       summary: 文件上传列表
       tags:
       - 文件管理
-    post:
-      consumes:
-      - application/file
-      operationId: "73"
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 上传文件
-      tags:
-      - 文件管理
   /users:
     get:
       consumes:
@@ -3305,4 +3282,34 @@ paths:
       summary: 获取我创建的项目
       tags:
       - 小程序接口
+  /wx/uploads:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: "73"
+      parameters:
+      - description: 上传文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 上传文件
+      tags:
+      - 文件管理
 swagger: "2.0"

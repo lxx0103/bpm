@@ -44,11 +44,12 @@ func GetUploadList(c *gin.Context) {
 // @Id 73
 // @Tags 文件管理
 // @version 1.0
-// @Accept application/file
+// @Accept multipart/form-data
 // @Produce application/json
+// @Param  file formData file true  "上传文件"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /uploads [POST]
+// @Router /wx/uploads [POST]
 func NewUpload(c *gin.Context) {
 	uploaded, err := c.FormFile("file")
 	if err != nil {
