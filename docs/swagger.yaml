@@ -929,6 +929,25 @@ definitions:
         - 2
         type: integer
     type: object
+  upload.Upload:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      organization_id:
+        type: integer
+      path:
+        type: string
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
 host: 0.0.0.0:8080
 info:
   contact:
@@ -2974,6 +2993,65 @@ paths:
       summary: 根据ID更新模板
       tags:
       - 模板管理
+  /uploads:
+    get:
+      consumes:
+      - application/json
+      operationId: "72"
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        required: true
+        type: integer
+      - description: 创建人
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/upload.Upload'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 文件上传列表
+      tags:
+      - 文件管理
+    post:
+      consumes:
+      - application/file
+      operationId: "73"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 上传文件
+      tags:
+      - 文件管理
   /users:
     get:
       consumes:

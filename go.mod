@@ -13,6 +13,7 @@ require (
 	github.com/go-redis/cache/v8 v8.4.1
 	github.com/go-redis/redis/v8 v8.4.4
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
