@@ -65,6 +65,9 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 
 func (r *eventRepository) CreateEventAssign(eventID int64, assignType int, assignTo []int64, user string) error {
 	for i := 0; i < len(assignTo); i++ {
+		if assignType == 3 {
+			assignType = 2
+		}
 		var exist int
 		row := r.tx.QueryRow(`SELECT count(1) FROM event_assigns WHERE event_id = ? AND assign_type = ? AND assign_to = ? AND status > 0  LIMIT 1`, eventID, assignType, assignTo[i])
 		err := row.Scan(&exist)

@@ -5,6 +5,7 @@ import (
 	"bpm/core/database"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type eventService struct {
@@ -266,7 +267,45 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 			toUpdate := (*components)[j]
 			if componentInfo.ID == toUpdate.ID {
 				if toUpdate.Patterns != "" {
-					fmt.Println("数据校验")
+					patternArr := strings.Split(toUpdate.Patterns, "|")
+					if len(patternArr) != 2 {
+						msg := "字段规则错误"
+						return errors.New(msg)
+					}
+					switch patternArr[0] {
+					case "oneof":
+						valid := false
+						valueArr := strings.Split(patternArr[1], ";")
+						for k := 0; k < len(valueArr); k++ {
+							if componentInfo.Value == valueArr[k] {
+								valid = true
+							}
+						}
+						if !valid {
+							msg := toUpdate.Name + "字段规则错误"
+							return errors.New(msg)
+						}
+					case "mul":
+						valid := false
+						inputArr := strings.Split(componentInfo.Value, ";")
+						valueArr := strings.Split(patternArr[1], ";")
+						for k := 0; k < len(inputArr); k++ {
+							valid = false
+							for l := 0; l < len(valueArr); l++ {
+								if inputArr[k] == valueArr[l] {
+									valid = true
+								}
+							}
+						}
+						if !valid {
+							msg := toUpdate.Name + "字段规则错误"
+							return errors.New(msg)
+						}
+					default:
+						msg := toUpdate.Name + "字段规则错误"
+						return errors.New(msg)
+					}
+
 				}
 				err := componentRepo.SaveComponent(toUpdate.ID, componentInfo.Value, info.User)
 				if err != nil {
