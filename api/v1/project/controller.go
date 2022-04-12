@@ -210,3 +210,61 @@ func WxGetAssignedProjects(c *gin.Context) {
 	}
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
 }
+
+// @Summary 新建项目
+// @Id 89
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_info body ProjectNew true "项目信息"
+// @Success 200 object response.SuccessRes{data=Project} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projects [POST]
+func WxNewProject(c *gin.Context) {
+	NewProject(c)
+}
+
+// @Summary 根据ID获取项目
+// @Id 90
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目ID"
+// @Success 200 object response.SuccessRes{data=Project} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projects/:id [GET]
+func WxGetProjectByID(c *gin.Context) {
+	GetProjectByID(c)
+
+}
+
+// @Summary 根据ID更新项目
+// @Id 88
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目ID"
+// @Param project_info body ProjectUpdate true "项目信息"
+// @Success 200 object response.SuccessRes{data=Project} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projects/:id [PUT]
+func WxUpdateProject(c *gin.Context) {
+	UpdateProject(c)
+}
+
+// @Summary 根据ID删除项目
+// @Id 82
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projects/:id [DELETE]
+func WxDeleteProject(c *gin.Context) {
+	DeleteProject(c)
+}

@@ -11,5 +11,8 @@ func Routers(g *gin.RouterGroup) {
 func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/events", WxGetEvents)
 	g.GET("/wx/myevents", WxGetMyEvents)
-	g.PUT("/wx/events/:id", WxSaveEvent)
+	g.PUT("/wx/saveevents/:id", WxSaveEvent)
+
+	g.GET("/wx/events/:id", WxGetEventByID)
+	g.PUT("/wx/events/:id", WxUpdateEvent)
 }

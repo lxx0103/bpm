@@ -8,3 +8,7 @@ func Routers(g *gin.RouterGroup) {
 	g.PUT("/positions/:id", UpdatePosition)
 	g.POST("/positions", NewPosition)
 }
+
+func WxRouters(g *gin.RouterGroup) {
+	g.GET("/wx/positions", WxGetPositionList)
+}

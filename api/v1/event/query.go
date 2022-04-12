@@ -27,7 +27,7 @@ type EventQuery interface {
 	GetAssigned(int64, int64) ([]int64, error)
 	CheckActive(int64) (bool, error)
 	GetAssignedEventByID(int64, string) (*MyEvent, error)
-	GetMyEvent(MyEventFilter, string) (*[]MyEvent, error)
+	GetProjectEvent(MyEventFilter) (*[]MyEvent, error)
 }
 
 func (r *eventQuery) GetEventByID(id int64) (*Event, error) {
@@ -149,15 +149,15 @@ func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*MyEvent, er
 	return &event, nil
 }
 
-func (r *eventQuery) GetMyEvent(filter MyEventFilter, userName string) (*[]MyEvent, error) {
+func (r *eventQuery) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 	var event []MyEvent
-	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.status FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.project_id = ? AND e.created_by = ? and p.created_by = ? "
+	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.status FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.project_id = ?  "
 	if filter.Status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
 		sql = sql + " AND e.status = 1"
 	}
-	err := r.conn.Select(&event, sql, filter.ProjectID, userName, userName)
+	err := r.conn.Select(&event, sql, filter.ProjectID)
 	return &event, err
 
 }

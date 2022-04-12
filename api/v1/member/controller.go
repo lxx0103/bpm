@@ -62,3 +62,31 @@ func NewMember(c *gin.Context) {
 	}
 	response.Response(c, members)
 }
+
+// @Summary 项目成员列表
+// @Id 82
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_id query int true "项目ID"
+// @Success 200 object response.SuccessRes{data=[]MemberResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/members [GET]
+func WxGetMemberList(c *gin.Context) {
+	GetMemberList(c)
+}
+
+// @Summary 新建项目成员
+// @Id 83
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param member_info body MemberNew true "成员信息"
+// @Success 200 object response.SuccessRes{data=[]MemberResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/members [POST]
+func WxNewMember(c *gin.Context) {
+	NewMember(c)
+}

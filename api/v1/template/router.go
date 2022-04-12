@@ -9,3 +9,7 @@ func Routers(g *gin.RouterGroup) {
 	g.POST("/templates", NewTemplate)
 	g.DELETE("/templates/:id", DeleteTemplate)
 }
+func WxRouters(g *gin.RouterGroup) {
+	g.GET("/wx/templates", WxGetTemplateList)
+	g.GET("/wx/templates/:id", WxGetTemplateByID)
+}

@@ -752,3 +752,34 @@ func DeleteRole(c *gin.Context) {
 	}
 	response.Response(c, "OK")
 }
+
+// @Summary 用户列表
+// @Id 81
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数（5/10/15/20）"
+// @Param name query string false "用户名称"
+// @Success 200 object response.ListRes{data=[]Role} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/users [GET]
+func WxGetUserList(c *gin.Context) {
+	GetUserList(c)
+}
+
+// @Summary 根据ID更新用户
+// @Id 88
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "用户ID"
+// @Param menu_info body UserUpdate true "用户信息"
+// @Success 200 object response.SuccessRes{data=User} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/users/:id [PUT]
+func WxUpdateUser(c *gin.Context) {
+	UpdateUser(c)
+}

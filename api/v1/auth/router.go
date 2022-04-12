@@ -37,3 +37,7 @@ func AuthRouter(g *gin.RouterGroup) {
 	g.GET("/mymenu", GetMyMenu)
 
 }
+func WxRouters(g *gin.RouterGroup) {
+	g.GET("/wx/users", WxGetUserList)
+	g.PUT("/wx/users/:id", WxUpdateUser)
+}

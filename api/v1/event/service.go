@@ -25,7 +25,7 @@ type EventService interface {
 	DeleteEventByProjectID(int64, int64, string) error
 	//WX API
 	GetAssignedEvent(AssignedEventFilter, int64, int64, int64) (*[]MyEvent, error)
-	GetMyEvent(MyEventFilter, string) (*[]MyEvent, error)
+	GetProjectEvent(MyEventFilter) (*[]MyEvent, error)
 	SaveEvent(int64, SaveEventInfo) error
 }
 
@@ -211,10 +211,10 @@ func (s *eventService) GetAssignedEvent(filter AssignedEventFilter, userID int64
 	return &activeEvents, err
 }
 
-func (s *eventService) GetMyEvent(filter MyEventFilter, createdBy string) (*[]MyEvent, error) {
+func (s *eventService) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 	db := database.InitMySQL()
 	query := NewEventQuery(db)
-	myEvents, err := query.GetMyEvent(filter, createdBy)
+	myEvents, err := query.GetProjectEvent(filter)
 	if err != nil {
 		if err.Error() != "sql: no rows in result set" {
 			return nil, err

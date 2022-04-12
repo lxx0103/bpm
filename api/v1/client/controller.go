@@ -134,3 +134,63 @@ func UpdateClient(c *gin.Context) {
 	}
 	response.Response(c, new)
 }
+
+// @Summary 客户列表
+// @Id 75
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param name query string false "客户名称"
+// @Success 200 object response.ListRes{data=[]Client} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/clients [GET]
+func WxGetClientList(c *gin.Context) {
+	GetClientList(c)
+}
+
+// @Summary 新建客户
+// @Id 76
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param client_info body ClientNew true "客户信息"
+// @Success 200 object response.SuccessRes{data=Client} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/clients [POST]
+func WxNewClient(c *gin.Context) {
+	NewClient(c)
+}
+
+// @Summary 根据ID获取客户
+// @Id 77
+// @Tags 客户管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "客户ID"
+// @Success 200 object response.SuccessRes{data=Client} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/clients/:id [GET]
+func WxGetClientByID(c *gin.Context) {
+	GetClientByID(c)
+
+}
+
+// @Summary 根据ID更新客户
+// @Id 78
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "客户ID"
+// @Param client_info body ClientNew true "客户信息"
+// @Success 200 object response.SuccessRes{data=Client} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /clients/:id [PUT]
+func WxUpdateClient(c *gin.Context) {
+	UpdateClient(c)
+}

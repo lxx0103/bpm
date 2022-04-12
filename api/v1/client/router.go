@@ -8,3 +8,10 @@ func Routers(g *gin.RouterGroup) {
 	g.PUT("/clients/:id", UpdateClient)
 	g.POST("/clients", NewClient)
 }
+
+func WxRouters(g *gin.RouterGroup) {
+	g.GET("/wx/clients", WxGetClientList)
+	g.GET("/wx/clients/:id", WxGetClientByID)
+	g.PUT("/wx/clients/:id", WxUpdateClient)
+	g.POST("/wx/clients", WxNewClient)
+}

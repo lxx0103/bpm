@@ -60,3 +60,20 @@ func GetComponentByID(c *gin.Context) {
 	response.Response(c, component)
 
 }
+
+// @Summary 组件列表
+// @Id 87
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param event_id query int true "事件ID"
+// @Param name query string false "组件编码"
+// @Success 200 object response.ListRes{data=[]Component} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/components [GET]
+func WxGetComponentList(c *gin.Context) {
+	GetComponentList(c)
+}

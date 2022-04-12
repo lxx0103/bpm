@@ -1201,7 +1201,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "27"
+      operationId: "78"
       parameters:
       - description: 客户ID
         in: path
@@ -1232,7 +1232,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新客户
       tags:
-      - 客户管理
+      - 小程序接口
   /components:
     get:
       consumes:
@@ -3172,16 +3172,25 @@ paths:
       summary: 获取我参加的项目
       tags:
       - 小程序接口
-  /wx/events:
+  /wx/clients:
     get:
       consumes:
       - application/json
-      operationId: "53"
+      operationId: "75"
       parameters:
-      - description: 显示所有all/激活active
+      - description: 页码
         in: query
-        name: status
+        name: page_id
         required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 客户名称
+        in: query
+        name: name
         type: string
       produces:
       - application/json
@@ -3190,37 +3199,31 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.SuccessRes'
+            - $ref: '#/definitions/response.ListRes'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/event.MyEvent'
+                    $ref: '#/definitions/client.Client'
                   type: array
               type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 获取我的当前任务
+      summary: 客户列表
       tags:
       - 小程序接口
-  /wx/events/:id:
-    put:
+    post:
       consumes:
       - application/json
-      operationId: "71"
+      operationId: "76"
       parameters:
-      - description: 事件ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 组件内容
+      - description: 客户信息
         in: body
-        name: info
+        name: client_info
         required: true
         schema:
-          $ref: '#/definitions/event.SaveEventInfo'
+          $ref: '#/definitions/client.ClientNew'
       produces:
       - application/json
       responses:
@@ -3231,16 +3234,92 @@ paths:
             - $ref: '#/definitions/response.SuccessRes'
             - properties:
                 data:
-                  type: string
+                  $ref: '#/definitions/client.Client'
               type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 保存事件
+      summary: 新建客户
       tags:
       - 小程序接口
-  /wx/myevents:
+  /wx/clients/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "77"
+      parameters:
+      - description: 客户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/client.Client'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取客户
+      tags:
+      - 客户管理
+  /wx/components:
+    get:
+      consumes:
+      - application/json
+      operationId: "87"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 事件ID
+        in: query
+        name: event_id
+        required: true
+        type: integer
+      - description: 组件编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/component.Component'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 组件列表
+      tags:
+      - 小程序接口
+  /wx/events:
     get:
       consumes:
       - application/json
@@ -3274,7 +3353,168 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 获取我创建的任务
+      summary: 获取项目中的任务
+      tags:
+      - 小程序接口
+  /wx/events/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "84"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/event.Event'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取事件
+      tags:
+      - 小程序接口
+    put:
+      consumes:
+      - application/json
+      operationId: "85"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 事件信息
+        in: body
+        name: event_info
+        required: true
+        schema:
+          $ref: '#/definitions/event.EventUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/event.Event'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新事件
+      tags:
+      - 小程序接口
+  /wx/members:
+    get:
+      consumes:
+      - application/json
+      operationId: "82"
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/member.MemberResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目成员列表
+      tags:
+      - 小程序接口
+    post:
+      consumes:
+      - application/json
+      operationId: "83"
+      parameters:
+      - description: 成员信息
+        in: body
+        name: member_info
+        required: true
+        schema:
+          $ref: '#/definitions/member.MemberNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/member.MemberResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目成员
+      tags:
+      - 小程序接口
+  /wx/myevents:
+    get:
+      consumes:
+      - application/json
+      operationId: "53"
+      parameters:
+      - description: 显示所有all/激活active
+        in: query
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.MyEvent'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取我的当前任务
       tags:
       - 小程序接口
   /wx/myprojects:
@@ -3319,6 +3559,283 @@ paths:
       summary: 获取我创建的项目
       tags:
       - 小程序接口
+  /wx/positions:
+    get:
+      consumes:
+      - application/json
+      operationId: "86"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 职位编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/position.Position'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 职位列表
+      tags:
+      - 小程序接口
+  /wx/projects:
+    post:
+      consumes:
+      - application/json
+      operationId: "89"
+      parameters:
+      - description: 项目信息
+        in: body
+        name: project_info
+        required: true
+        schema:
+          $ref: '#/definitions/project.ProjectNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/project.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目
+      tags:
+      - 小程序接口
+  /wx/projects/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "82"
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除项目
+      tags:
+      - 小程序接口
+    get:
+      consumes:
+      - application/json
+      operationId: "90"
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/project.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取项目
+      tags:
+      - 小程序接口
+    put:
+      consumes:
+      - application/json
+      operationId: "88"
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 项目信息
+        in: body
+        name: project_info
+        required: true
+        schema:
+          $ref: '#/definitions/project.ProjectUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/project.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新项目
+      tags:
+      - 小程序接口
+  /wx/saveevents/:id:
+    put:
+      consumes:
+      - application/json
+      operationId: "71"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 组件内容
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/event.SaveEventInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 保存事件
+      tags:
+      - 小程序接口
+  /wx/templates:
+    get:
+      consumes:
+      - application/json
+      operationId: "79"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 模板编码
+        in: query
+        name: name
+        type: string
+      - description: 模板编码
+        in: query
+        name: name
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/template.Template'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 模板列表
+      tags:
+      - 小程序接口
+  /wx/templates/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "80"
+      parameters:
+      - description: 模板ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/template.Template'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取模板
+      tags:
+      - 小程序接口
   /wx/uploads:
     post:
       consumes:
@@ -3349,4 +3866,81 @@ paths:
       summary: 上传文件
       tags:
       - 文件管理
+  /wx/users:
+    get:
+      consumes:
+      - application/json
+      operationId: "81"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数（5/10/15/20）
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 用户名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/auth.Role'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 用户列表
+      tags:
+      - 小程序接口
+  /wx/users/:id:
+    put:
+      consumes:
+      - application/json
+      operationId: "88"
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 用户信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新用户
+      tags:
+      - 小程序接口
 swagger: "2.0"

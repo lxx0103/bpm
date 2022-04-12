@@ -126,3 +126,19 @@ func UpdatePosition(c *gin.Context) {
 	}
 	response.Response(c, new)
 }
+
+// @Summary 职位列表
+// @Id 86
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param name query string false "职位编码"
+// @Success 200 object response.ListRes{data=[]Position} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/positions [GET]
+func WxGetPositionList(c *gin.Context) {
+	GetPositionList(c)
+}

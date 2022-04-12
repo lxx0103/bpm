@@ -153,3 +153,35 @@ func DeleteTemplate(c *gin.Context) {
 	}
 	response.Response(c, "OK")
 }
+
+// @Summary 模板列表
+// @Id 79
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param name query string false "模板编码"
+// @Param name query int64 false "模板编码"
+// @Success 200 object response.ListRes{data=[]Template} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/templates [GET]
+func WxGetTemplateList(c *gin.Context) {
+	GetTemplateList(c)
+}
+
+// @Summary 根据ID获取模板
+// @Id 80
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "模板ID"
+// @Success 200 object response.SuccessRes{data=Template} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/templates/:id [GET]
+func WxGetTemplateByID(c *gin.Context) {
+	GetTemplateByID(c)
+
+}

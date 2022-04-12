@@ -135,8 +135,8 @@ func UpdateEvent(c *gin.Context) {
 // @Param status query string true "显示所有all/激活active"
 // @Success 200 object response.SuccessRes{data=[]MyEvent} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /wx/events [GET]
-func WxGetEvents(c *gin.Context) {
+// @Router /wx/myevents [GET]
+func WxGetMyEvents(c *gin.Context) {
 	var filter AssignedEventFilter
 	err := c.ShouldBindQuery(&filter)
 	if err != nil {
@@ -153,7 +153,7 @@ func WxGetEvents(c *gin.Context) {
 	response.Response(c, list)
 }
 
-// @Summary 获取我创建的任务
+// @Summary 获取项目中的任务
 // @Id 70
 // @Tags 小程序接口
 // @version 1.0
@@ -163,8 +163,8 @@ func WxGetEvents(c *gin.Context) {
 // @Param project_id query int64 true "项目id"
 // @Success 200 object response.SuccessRes{data=[]MyEvent} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /wx/myevents [GET]
-func WxGetMyEvents(c *gin.Context) {
+// @Router /wx/events [GET]
+func WxGetEvents(c *gin.Context) {
 	var filter MyEventFilter
 	err := c.ShouldBindQuery(&filter)
 	if err != nil {
@@ -172,8 +172,7 @@ func WxGetMyEvents(c *gin.Context) {
 		return
 	}
 	eventService := NewEventService()
-	claims := c.MustGet("claims").(*service.CustomClaims)
-	list, err := eventService.GetMyEvent(filter, claims.Username)
+	list, err := eventService.GetProjectEvent(filter)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -191,7 +190,7 @@ func WxGetMyEvents(c *gin.Context) {
 // @Param info body SaveEventInfo true "组件内容"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /wx/events/:id [PUT]
+// @Router /wx/saveevents/:id [PUT]
 func WxSaveEvent(c *gin.Context) {
 	var uri EventID
 	if err := c.ShouldBindUri(&uri); err != nil {
@@ -214,4 +213,33 @@ func WxSaveEvent(c *gin.Context) {
 		return
 	}
 	response.Response(c, "ok")
+}
+
+// @Summary 根据ID获取事件
+// @Id 84
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Success 200 object response.SuccessRes{data=Event} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/events/:id [GET]
+func WxGetEventByID(c *gin.Context) {
+	GetEventByID(c)
+}
+
+// @Summary 根据ID更新事件
+// @Id 85
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Param event_info body EventUpdate true "事件信息"
+// @Success 200 object response.SuccessRes{data=Event} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/events/:id [PUT]
+func WxUpdateEvent(c *gin.Context) {
+	UpdateEvent(c)
 }
