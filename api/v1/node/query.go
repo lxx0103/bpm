@@ -21,6 +21,7 @@ type NodeQuery interface {
 	GetNodeByID(id int64) (*Node, error)
 	GetAssignsByNodeID(int64) (*[]NodeAssign, error)
 	GetPresByNodeID(int64) (*[]NodePre, error)
+	GetAuditsByNodeID(int64) (*[]NodeAudit, error)
 	GetNodeCount(NodeFilter, int64) (int, error)
 	GetNodeList(NodeFilter, int64) (*[]Node, error)
 }
@@ -102,4 +103,13 @@ func (r *nodeQuery) GetPresByNodeID(nodeID int64) (*[]NodePre, error) {
 		return nil, err
 	}
 	return &pres, nil
+}
+
+func (r *nodeQuery) GetAuditsByNodeID(nodeID int64) (*[]NodeAudit, error) {
+	var audits []NodeAudit
+	err := r.conn.Select(&audits, "SELECT * FROM node_audits WHERE node_id = ? AND status = ?", nodeID, 1)
+	if err != nil {
+		return nil, err
+	}
+	return &audits, nil
 }

@@ -39,6 +39,11 @@ func (s *nodeService) GetNodeByID(id int64) (*Node, error) {
 		return nil, err
 	}
 	node.PreID = pres
+	audits, err := query.GetAuditsByNodeID(node.ID)
+	if err != nil {
+		return nil, err
+	}
+	node.Audit = audits
 	return node, err
 }
 
@@ -94,6 +99,17 @@ func (s *nodeService) NewNode(info NodeNew, organizationID int64) (*Node, error)
 		return nil, err
 	}
 	node.PreID = pres
+	if info.NeedAudit == 1 {
+		err = repo.CreateNodeAudit(nodeID, info.AuditType, info.AuditTo, info.User)
+		if err != nil {
+			return nil, err
+		}
+	}
+	audits, err := repo.GetAuditsByNodeID(nodeID)
+	if err != nil {
+		return nil, err
+	}
+	node.Audit = audits
 	tx.Commit()
 	return node, err
 }
@@ -181,6 +197,22 @@ func (s *nodeService) UpdateNode(nodeID int64, info NodeUpdate, organizationID i
 		return nil, err
 	}
 	node.PreID = pres
+
+	err = repo.DeleteNodeAudit(nodeID, info.User)
+	if err != nil {
+		return nil, err
+	}
+	if info.AuditType != 0 {
+		err = repo.CreateNodeAudit(nodeID, info.AuditType, info.AuditTo, info.User)
+		if err != nil {
+			return nil, err
+		}
+	}
+	audits, err := repo.GetAuditsByNodeID(nodeID)
+	if err != nil {
+		return nil, err
+	}
+	node.Audit = audits
 	tx.Commit()
 	return node, err
 }
@@ -194,6 +226,18 @@ func (s *nodeService) DeleteNode(nodeID int64, organizationID int64, user string
 	defer tx.Rollback()
 	repo := NewNodeRepository(tx)
 	_, err = repo.GetNodeByID(nodeID, organizationID)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteNodeAssign(nodeID, user)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteNodePre(nodeID, user)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteNodeAudit(nodeID, user)
 	if err != nil {
 		return err
 	}

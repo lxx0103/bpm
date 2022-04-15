@@ -31,6 +31,9 @@ type NodeRepository interface {
 	CheckTemplateExist(int64, int64) (int, error)
 	CheckNameExist(string, int64, int64) (int, error)
 	GetNodesByTemplateID(int64) (*[]Node, error)
+	CreateNodeAudit(int64, int, []int64, string) error
+	DeleteNodeAudit(int64, string) error
+	GetAuditsByNodeID(int64) (*[]NodeAudit, error)
 }
 
 func (r *nodeRepository) CreateNode(info NodeNew) (int64, error) {
@@ -41,6 +44,8 @@ func (r *nodeRepository) CreateNode(info NodeNew) (int64, error) {
 			name,
 			assignable,
 			assign_type,
+			need_audit,
+			audit_type,
 			status,
 			json_data,
 			created,
@@ -48,12 +53,28 @@ func (r *nodeRepository) CreateNode(info NodeNew) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.TemplateID, info.Name, info.Assignable, info.AssignType, 1, "{}", time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.TemplateID, info.Name, info.Assignable, info.AssignType, info.NeedAudit, info.AuditType, 1, "{}", time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
 	return result.LastInsertId()
+}
+
+func (r *nodeRepository) UpdateNode(id int64, info Node, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update nodes SET 
+		name = ?,
+		assignable = ?,
+		assign_type = ?,
+		need_audit = ?,
+		audit_type = ?,
+		json_data = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, info.Name, info.Assignable, info.AssignType, info.NeedAudit, info.AuditType, info.JsonData, time.Now(), byUser, id)
+	return err
 }
 
 func (r *nodeRepository) CreateNodeAssign(nodeID int64, assignType int, assignTo []int64, user string) error {
@@ -88,20 +109,6 @@ func (r *nodeRepository) CreateNodeAssign(nodeID int64, assignType int, assignTo
 	}
 	return nil
 }
-func (r *nodeRepository) UpdateNode(id int64, info Node, byUser string) error {
-	_, err := r.tx.Exec(`
-		Update nodes SET 
-		name = ?,
-		assignable = ?,
-		assign_type = ?,
-		json_data = ?,
-		updated = ?,
-		updated_by = ? 
-		WHERE id = ?
-	`, info.Name, info.Assignable, info.AssignType, info.JsonData, time.Now(), byUser, id)
-	return err
-}
-
 func (r *nodeRepository) DeleteNodeAssign(node_id int64, user string) error {
 	_, err := r.tx.Exec(`
 		Update node_assigns SET
@@ -113,15 +120,32 @@ func (r *nodeRepository) DeleteNodeAssign(node_id int64, user string) error {
 	return err
 }
 
+func (r *nodeRepository) GetAssignsByNodeID(nodeID int64) (*[]NodeAssign, error) {
+	var res []NodeAssign
+	rows, err := r.tx.Query(`SELECT id, node_id, assign_type, assign_to, status, created, created_by, updated, updated_by FROM node_assigns WHERE node_id = ? AND status > 0 `, nodeID)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var rowRes NodeAssign
+		err = rows.Scan(&rowRes.ID, &rowRes.NodeID, &rowRes.AssignType, &rowRes.AssignTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, rowRes)
+	}
+	return &res, nil
+}
+
 func (r *nodeRepository) GetNodeByID(id int64, organizationID int64) (*Node, error) {
 	var res Node
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT e.id, e.template_id, e.name, e.assign_type, e.status, e.json_data, e.created, e.created_by, e.updated, e.updated_by FROM nodes e LEFT JOIN templates p ON e.template_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT e.id, e.template_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.status, e.json_data, e.created, e.created_by, e.updated, e.updated_by FROM nodes e LEFT JOIN templates p ON e.template_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, template_id, name, assign_type, status, json_data, created, created_by, updated, updated_by FROM nodes WHERE id = ? AND status > 0 LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, template_id, name, assignable, assign_type, need_audit, audit_type, status, json_data, created, created_by, updated, updated_by FROM nodes WHERE id = ? AND status > 0 LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.TemplateID, &res.Name, &res.AssignType, &res.Status, &res.JsonData, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.TemplateID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.Status, &res.JsonData, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
@@ -145,23 +169,6 @@ func (r *nodeRepository) CheckNameExist(name string, templateID int64, selfID in
 	row := r.tx.QueryRow(`SELECT count(1) FROM nodes WHERE name = ? AND template_id = ? AND id != ? AND status > 0  LIMIT 1`, name, templateID, selfID)
 	err := row.Scan(&res)
 	return res, err
-}
-
-func (r *nodeRepository) GetAssignsByNodeID(nodeID int64) (*[]NodeAssign, error) {
-	var res []NodeAssign
-	rows, err := r.tx.Query(`SELECT id, node_id, assign_type, assign_to, status, created, created_by, updated, updated_by FROM node_assigns WHERE node_id = ? AND status > 0 `, nodeID)
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		var rowRes NodeAssign
-		err = rows.Scan(&rowRes.ID, &rowRes.NodeID, &rowRes.AssignType, &rowRes.AssignTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, rowRes)
-	}
-	return &res, nil
 }
 
 func (r *nodeRepository) CreateNodePre(nodeID int64, preIDs []int64, user string) error {
@@ -254,6 +261,66 @@ func (r *nodeRepository) GetNodesByTemplateID(templateID int64) (*[]Node, error)
 	for rows.Next() {
 		var rowRes Node
 		err = rows.Scan(&rowRes.ID, &rowRes.TemplateID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, rowRes)
+	}
+	return &res, nil
+}
+
+func (r *nodeRepository) CreateNodeAudit(nodeID int64, auditType int, auditTo []int64, user string) error {
+	for i := 0; i < len(auditTo); i++ {
+		var exist int
+		row := r.tx.QueryRow(`SELECT count(1) FROM node_audits WHERE node_id = ? AND audit_type = ? AND audit_to = ? AND status > 0  LIMIT 1`, nodeID, auditType, auditTo[i])
+		err := row.Scan(&exist)
+		if err != nil {
+			return err
+		}
+		if exist != 0 {
+			msg := "审核对象有重复"
+			return errors.New(msg)
+		}
+		_, err = r.tx.Exec(`
+			INSERT INTO node_audits
+			(
+				node_id,
+				audit_type,
+				audit_to,
+				status,
+				created,
+				created_by,
+				updated,
+				updated_by
+			)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		`, nodeID, auditType, auditTo[i], 1, time.Now(), user, time.Now(), user)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (r *nodeRepository) DeleteNodeAudit(node_id int64, user string) error {
+	_, err := r.tx.Exec(`
+		Update node_audits SET
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE node_id = ?
+	`, -1, time.Now(), user, node_id)
+	return err
+}
+
+func (r *nodeRepository) GetAuditsByNodeID(nodeID int64) (*[]NodeAudit, error) {
+	var res []NodeAudit
+	rows, err := r.tx.Query(`SELECT id, node_id, audit_type, audit_to, status, created, created_by, updated, updated_by FROM node_audits WHERE node_id = ? AND status > 0 `, nodeID)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var rowRes NodeAudit
+		err = rows.Scan(&rowRes.ID, &rowRes.NodeID, &rowRes.AuditType, &rowRes.AuditTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
 		if err != nil {
 			return nil, err
 		}

@@ -14,6 +14,9 @@ type NodeNew struct {
 	Assignable int     `json:"assignable" binding:"required,oneof=1 2"`
 	AssignType int     `json:"assign_type" binding:"required,oneof=1 2 3"`
 	AssignTo   []int64 `json:"assign_to" binding:"required"`
+	NeedAudit  int     `json:"need_audit" binding:"required,oneof=1 2"`
+	AuditType  int     `json:"audit_type" binding:"required,oneof=1 2"`
+	AuditTo    []int64 `json:"audit_to" binding:"required"`
 	User       string  `json:"user" swaggerignore:"true"`
 }
 type NodeUpdate struct {
@@ -22,6 +25,9 @@ type NodeUpdate struct {
 	Assignable int     `json:"assignable" binding:"omitempty,oneof=1 2"`
 	AssignType int     `json:"assign_type" binding:"omitempty,oneof=1 2 3"`
 	AssignTo   []int64 `json:"assign_to" binding:"omitempty"`
+	NeedAudit  int     `json:"need_audit" binding:"omitempty,oneof=1 2"`
+	AuditType  int     `json:"audit_type" binding:"omitempty,oneof=1 2"`
+	AuditTo    []int64 `json:"audit_to" binding:"omitempty"`
 	JsonData   string  `json:"json_data" binding:"required,json"`
 	User       string  `json:"user" swaggerignore:"true"`
 }
