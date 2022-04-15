@@ -16,6 +16,7 @@ type Event struct {
 	CompleteTime string         `db:"complete_time" json:"complete_time"`
 	CompleteUser string         `db:"complete_user" json:"complete_user"`
 	AuditTime    string         `db:"audit_time" json:"audit_time"`
+	AuditContent string         `db:"audit_content" json:"audit_content"`
 	AuditUser    string         `db:"audit_user" json:"audit_user"`
 	Status       int            `db:"status" json:"status"`
 	Assign       *[]EventAssign `json:"assign"`

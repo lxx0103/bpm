@@ -241,7 +241,7 @@ func WxGetProjectByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新项目
-// @Id 88
+// @Id 92
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -256,7 +256,7 @@ func WxUpdateProject(c *gin.Context) {
 }
 
 // @Summary 根据ID删除项目
-// @Id 82
+// @Id 93
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json

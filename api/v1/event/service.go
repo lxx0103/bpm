@@ -22,11 +22,11 @@ type EventService interface {
 	// NewEvent(EventNew, int64) (*Event, error)
 	GetEventList(EventFilter, int64) (int, *[]Event, error)
 	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
-	DeleteEventByProjectID(int64, int64, string) error
 	//WX API
 	GetAssignedEvent(AssignedEventFilter, int64, int64, int64) (*[]MyEvent, error)
 	GetProjectEvent(MyEventFilter) (*[]MyEvent, error)
 	SaveEvent(int64, SaveEventInfo) error
+	AuditEvent(int64, AuditEventInfo) error
 }
 
 func (s *eventService) GetEventByID(id int64) (*Event, error) {
@@ -46,62 +46,13 @@ func (s *eventService) GetEventByID(id int64) (*Event, error) {
 		return nil, err
 	}
 	event.PreID = pres
+	audits, err := query.GetAuditsByEventID(event.ID)
+	if err != nil {
+		return nil, err
+	}
+	event.Audit = audits
 	return event, err
 }
-
-// func (s *eventService) NewEvent(info EventNew, organizationID int64) (*Event, error) {
-// 	db := database.InitMySQL()
-// 	tx, err := db.Begin()
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer tx.Rollback()
-// 	repo := NewEventRepository(tx)
-// 	projectExist, err := repo.CheckProjectExist(info.ProjectID, organizationID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if projectExist == 0 {
-// 		msg := "项目不存在"
-// 		return nil, errors.New(msg)
-// 	}
-// 	exist, err := repo.CheckNameExist(info.Name, info.ProjectID, 0)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if exist != 0 {
-// 		msg := "事件名称重复"
-// 		return nil, errors.New(msg)
-// 	}
-// 	eventID, err := repo.CreateEvent(info)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	event, err := repo.GetEventByID(eventID, organizationID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	err = repo.CreateEventAssign(eventID, info.AssignType, info.AssignTo, info.User)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	assigns, err := repo.GetAssignsByEventID(eventID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	event.Assign = assigns
-// 	err = repo.CreateEventPre(eventID, info.PreID, info.User)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	pres, err := repo.GetPresByEventID(eventID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	event.PreID = pres
-// 	tx.Commit()
-// 	return event, err
-// }
 
 func (s *eventService) GetEventList(filter EventFilter, organizationID int64) (int, *[]Event, error) {
 	db := database.InitMySQL()
@@ -129,10 +80,7 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	if err != nil {
 		return nil, err
 	}
-	if oldEvent.Assignable != 1 {
-		msg := "不能修改分配"
-		return nil, errors.New(msg)
-	} else {
+	if oldEvent.Assignable == 1 {
 		if info.AssignType != 0 {
 			oldEvent.AssignType = info.AssignType
 			err = repo.DeleteEventAssign(eventID, info.User)
@@ -143,11 +91,20 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 			if err != nil {
 				return nil, err
 			}
-			err = repo.UpdateEvent(eventID, *oldEvent, info.User)
-			if err != nil {
-				return nil, err
-			}
 		}
+	}
+	oldEvent.NeedAudit = info.NeedAudit
+	err = repo.DeleteEventAudit(eventID, info.User)
+	if err != nil {
+		return nil, err
+	}
+	err = repo.CreateEventAudit(eventID, info.AuditType, info.AuditTo, info.User)
+	if err != nil {
+		return nil, err
+	}
+	err = repo.UpdateEvent(eventID, *oldEvent, info.User)
+	if err != nil {
+		return nil, err
 	}
 	event, err := repo.GetEventByID(eventID, organizationID)
 	if err != nil {
@@ -163,26 +120,14 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 		return nil, err
 	}
 	event.PreID = pres
+	audits, err := repo.GetAuditsByEventID(eventID)
+	if err != nil {
+		return nil, err
+	}
+	event.Audit = audits
 	tx.Commit()
 	return event, err
 }
-
-func (s *eventService) DeleteEventByProjectID(projectID int64, organizationID int64, user string) error {
-	db := database.InitMySQL()
-	tx, err := db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-	repo := NewEventRepository(tx)
-	err = repo.DeleteEventByProjectID(projectID, user)
-	if err != nil {
-		return err
-	}
-	tx.Commit()
-	return nil
-}
-
 func (s *eventService) GetAssignedEvent(filter AssignedEventFilter, userID int64, positionID int64, organizationID int64) (*[]MyEvent, error) {
 	var activeEvents []MyEvent
 	db := database.InitMySQL()
@@ -245,7 +190,7 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 	if err != nil {
 		return err
 	}
-	if event.Status != 1 {
+	if event.Status != 1 && event.Status != 3 {
 		msg := "此事件已完成"
 		return errors.New(msg)
 	}
@@ -324,6 +269,48 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 		return errors.New(msg)
 	}
 	err = repo.CompleteEvent(eventID, info.User)
+	if err != nil {
+		return err
+	}
+	if event.NeedAudit == 2 {
+		err = repo.AuditEvent(eventID, true, "SYSTEM", "无需审核")
+		if err != nil {
+			return err
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *eventService) AuditEvent(eventID int64, info AuditEventInfo) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewEventRepository(tx)
+	event, err := repo.GetEventByID(eventID, 0)
+	if err != nil {
+		return err
+	}
+	if event.Status != 2 {
+		msg := "此事件无法审核"
+		return errors.New(msg)
+	}
+	assignExist, err := repo.CheckAudit(eventID, info.UserID, info.PositionID)
+	if err != nil {
+		return err
+	}
+	if assignExist == 0 {
+		msg := "此事件未分配给你"
+		return errors.New(msg)
+	}
+	approved := true
+	if info.Result != 1 {
+		approved = false
+	}
+	err = repo.AuditEvent(eventID, approved, info.User, info.Content)
 	if err != nil {
 		return err
 	}

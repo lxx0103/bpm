@@ -459,6 +459,20 @@ definitions:
     required:
     - json_data
     type: object
+  event.AuditEventInfo:
+    properties:
+      approved:
+        enum:
+        - 1
+        - 2
+        type: integer
+      content:
+        maxLength: 255
+        type: string
+    required:
+    - approved
+    - content
+    type: object
   event.ComponentInfo:
     properties:
       id:
@@ -480,6 +494,18 @@ definitions:
         type: integer
       assignable:
         type: integer
+      audit:
+        items:
+          $ref: '#/definitions/event.EventAudit'
+        type: array
+      audit_content:
+        type: string
+      audit_time:
+        type: string
+      audit_type:
+        type: integer
+      audit_user:
+        type: string
       complete_time:
         type: string
       complete_user:
@@ -492,6 +518,8 @@ definitions:
         type: integer
       name:
         type: string
+      need_audit:
+        type: integer
       node_id:
         type: integer
       pre_id:
@@ -512,6 +540,27 @@ definitions:
       assign_to:
         type: integer
       assign_type:
+        type: integer
+      created:
+        type: string
+      created_by:
+        type: string
+      event_id:
+        type: integer
+      id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  event.EventAudit:
+    properties:
+      audit_to:
+        type: integer
+      audit_type:
         type: integer
       created:
         type: string
@@ -554,6 +603,20 @@ definitions:
           type: integer
         type: array
       assign_type:
+        enum:
+        - 1
+        - 2
+        type: integer
+      audit_to:
+        items:
+          type: integer
+        type: array
+      audit_type:
+        enum:
+        - 1
+        - 2
+        type: integer
+      need_audit:
         enum:
         - 1
         - 2
@@ -615,6 +678,12 @@ definitions:
         type: integer
       assignable:
         type: integer
+      audit:
+        items:
+          $ref: '#/definitions/node.NodeAudit'
+        type: array
+      audit_type:
+        type: integer
       created:
         type: string
       created_by:
@@ -625,6 +694,8 @@ definitions:
         type: string
       name:
         type: string
+      need_audit:
+        type: integer
       pre_id:
         items:
           $ref: '#/definitions/node.NodePre'
@@ -659,6 +730,27 @@ definitions:
       updated_by:
         type: string
     type: object
+  node.NodeAudit:
+    properties:
+      audit_to:
+        type: integer
+      audit_type:
+        type: integer
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      node_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
   node.NodeNew:
     properties:
       assign_to:
@@ -676,10 +768,24 @@ definitions:
         - 1
         - 2
         type: integer
+      audit_to:
+        items:
+          type: integer
+        type: array
+      audit_type:
+        enum:
+        - 1
+        - 2
+        type: integer
       name:
         maxLength: 64
         minLength: 1
         type: string
+      need_audit:
+        enum:
+        - 1
+        - 2
+        type: integer
       pre_id:
         items:
           type: integer
@@ -691,7 +797,10 @@ definitions:
     - assign_to
     - assign_type
     - assignable
+    - audit_to
+    - audit_type
     - name
+    - need_audit
     - pre_id
     - template_id
     type: object
@@ -731,12 +840,26 @@ definitions:
         - 1
         - 2
         type: integer
+      audit_to:
+        items:
+          type: integer
+        type: array
+      audit_type:
+        enum:
+        - 1
+        - 2
+        type: integer
       json_data:
         type: string
       name:
         maxLength: 64
         minLength: 1
         type: string
+      need_audit:
+        enum:
+        - 1
+        - 2
+        type: integer
       pre_id:
         items:
           type: integer
@@ -3180,6 +3303,42 @@ paths:
       summary: 获取我参加的项目
       tags:
       - 小程序接口
+  /wx/auditevents/:id:
+    put:
+      consumes:
+      - application/json
+      operationId: "91"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 组件内容
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/event.AuditEventInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 审核事件
+      tags:
+      - 小程序接口
   /wx/clients:
     get:
       consumes:
@@ -3643,7 +3802,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "82"
+      operationId: "93"
       parameters:
       - description: 项目ID
         in: path
@@ -3701,7 +3860,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "88"
+      operationId: "92"
       parameters:
       - description: 项目ID
         in: path

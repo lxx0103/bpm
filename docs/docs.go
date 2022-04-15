@@ -3656,6 +3656,65 @@ var doc = `{
                 }
             }
         },
+        "/wx/auditevents/:id": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "审核事件",
+                "operationId": "91",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "组件内容",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/event.AuditEventInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/clients": {
             "get": {
                 "consumes": [
@@ -4466,7 +4525,7 @@ var doc = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID更新项目",
-                "operationId": "88",
+                "operationId": "92",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4523,7 +4582,7 @@ var doc = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID删除项目",
-                "operationId": "82",
+                "operationId": "93",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5579,6 +5638,26 @@ var doc = `{
                 }
             }
         },
+        "event.AuditEventInfo": {
+            "type": "object",
+            "required": [
+                "approved",
+                "content"
+            ],
+            "properties": {
+                "approved": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "content": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "event.ComponentInfo": {
             "type": "object",
             "required": [
@@ -5610,6 +5689,24 @@ var doc = `{
                 "assignable": {
                     "type": "integer"
                 },
+                "audit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event.EventAudit"
+                    }
+                },
+                "audit_content": {
+                    "type": "string"
+                },
+                "audit_time": {
+                    "type": "string"
+                },
+                "audit_type": {
+                    "type": "integer"
+                },
+                "audit_user": {
+                    "type": "string"
+                },
                 "complete_time": {
                     "type": "string"
                 },
@@ -5627,6 +5724,9 @@ var doc = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "need_audit": {
+                    "type": "integer"
                 },
                 "node_id": {
                     "type": "integer"
@@ -5658,6 +5758,38 @@ var doc = `{
                     "type": "integer"
                 },
                 "assign_type": {
+                    "type": "integer"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "event_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "event.EventAudit": {
+            "type": "object",
+            "properties": {
+                "audit_to": {
+                    "type": "integer"
+                },
+                "audit_type": {
                     "type": "integer"
                 },
                 "created": {
@@ -5722,6 +5854,26 @@ var doc = `{
                     }
                 },
                 "assign_type": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "audit_to": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "audit_type": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "need_audit": {
                     "type": "integer",
                     "enum": [
                         1,
@@ -5815,6 +5967,15 @@ var doc = `{
                 "assignable": {
                     "type": "integer"
                 },
+                "audit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/node.NodeAudit"
+                    }
+                },
+                "audit_type": {
+                    "type": "integer"
+                },
                 "created": {
                     "type": "string"
                 },
@@ -5829,6 +5990,9 @@ var doc = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "need_audit": {
+                    "type": "integer"
                 },
                 "pre_id": {
                     "type": "array",
@@ -5882,13 +6046,48 @@ var doc = `{
                 }
             }
         },
+        "node.NodeAudit": {
+            "type": "object",
+            "properties": {
+                "audit_to": {
+                    "type": "integer"
+                },
+                "audit_type": {
+                    "type": "integer"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "node_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
         "node.NodeNew": {
             "type": "object",
             "required": [
                 "assign_to",
                 "assign_type",
                 "assignable",
+                "audit_to",
+                "audit_type",
                 "name",
+                "need_audit",
                 "pre_id",
                 "template_id"
             ],
@@ -5914,10 +6113,30 @@ var doc = `{
                         2
                     ]
                 },
+                "audit_to": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "audit_type": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
+                },
+                "need_audit": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
                 },
                 "pre_id": {
                     "type": "array",
@@ -5987,6 +6206,19 @@ var doc = `{
                         2
                     ]
                 },
+                "audit_to": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "audit_type": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
                 "json_data": {
                     "type": "string"
                 },
@@ -5994,6 +6226,13 @@ var doc = `{
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
+                },
+                "need_audit": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
                 },
                 "pre_id": {
                     "type": "array",

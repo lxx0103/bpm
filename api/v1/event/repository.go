@@ -37,6 +37,8 @@ type EventRepository interface {
 	GetEventIDByProjectAndNode(int64, int64) (int64, error)
 	CheckAssign(int64, int64, int64) (int, error)
 	CompleteEvent(int64, string) error
+	AuditEvent(int64, bool, string, string) error
+	CheckAudit(int64, int64, int64) (int, error)
 }
 
 func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
@@ -320,12 +322,18 @@ func (r *eventRepository) CheckAssign(eventID int64, userID int64, positionID in
 	return res, err
 }
 
+func (r *eventRepository) CheckAudit(eventID int64, userID int64, positionID int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND ( ( assign_type = 1 AND assign_to = ? ) OR ( assign_type = 2 and assign_to = ? ) ) AND status > 0  LIMIT 1`, eventID, positionID, userID)
+	err := row.Scan(&res)
+	return res, err
+}
 func (r *eventRepository) CompleteEvent(eventID int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update events SET 
 		complete_user = ?,
 		complete_time = ?,
-		status = 3,
+		status = 2,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
@@ -395,4 +403,22 @@ func (r *eventRepository) GetAuditsByEventID(eventID int64) (*[]EventAudit, erro
 		res = append(res, rowRes)
 	}
 	return &res, nil
+}
+
+func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string, auditContent string) error {
+	status := 9
+	if !approved {
+		status = 3
+	}
+	_, err := r.tx.Exec(`
+		Update events SET 
+		audit_user = ?,
+		audit_time = ?,
+		audit_content = ?,
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, status, time.Now(), byUser, eventID)
+	return err
 }

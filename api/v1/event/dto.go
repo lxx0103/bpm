@@ -63,3 +63,11 @@ type ComponentInfo struct {
 	ID    int64  `json:"id" binding:"required,min=1"`
 	Value string `json:"value" binding:"required"`
 }
+
+type AuditEventInfo struct {
+	Result     int    `json:"approved" binding:"required,oneof=1 2"`
+	Content    string `json:"content" binding:"required,max=255"`
+	User       string `json:"user" swaggerignore:"true"`
+	UserID     int64  `json:"user_id" swaggerignore:"true"`
+	PositionID int64  `json:"position_id" swaggerignore:"true"`
+}

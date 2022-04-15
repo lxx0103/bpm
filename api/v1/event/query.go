@@ -21,6 +21,7 @@ type EventQuery interface {
 	GetEventByID(id int64) (*Event, error)
 	GetAssignsByEventID(int64) (*[]EventAssign, error)
 	GetPresByEventID(int64) (*[]EventPre, error)
+	GetAuditsByEventID(int64) (*[]EventAudit, error)
 	GetEventCount(EventFilter, int64) (int, error)
 	GetEventList(EventFilter, int64) (*[]Event, error)
 	//WX
@@ -109,9 +110,17 @@ func (r *eventQuery) GetPresByEventID(eventID int64) (*[]EventPre, error) {
 	return &pres, nil
 }
 
+func (r *eventQuery) GetAuditsByEventID(eventID int64) (*[]EventAudit, error) {
+	var pres []EventAudit
+	err := r.conn.Select(&pres, "SELECT * FROM event_audits WHERE event_id = ? AND status = ?", eventID, 1)
+	if err != nil {
+		return nil, err
+	}
+	return &pres, nil
+}
 func (r *eventQuery) GetAssigned(userID int64, positionID int64) ([]int64, error) {
 	var assigns []int64
-	err := r.conn.Select(&assigns, "SELECT event_id FROM event_assigns WHERE ((assign_type = 2 AND assign_to  = ?) OR (assign_type = 1 AND assign_to = ?)) AND status = ?", userID, positionID, 1)
+	err := r.conn.Select(&assigns, "SELECT event_id FROM event_assigns WHERE ((assign_type = 2 AND assign_to  = ?) OR (assign_type = 1 AND assign_to = ?)) AND status in (1, 3)", userID, positionID)
 	return assigns, err
 }
 
@@ -123,7 +132,7 @@ func (r *eventQuery) CheckActive(eventID int64) (bool, error) {
 		ON ep.pre_id = e.id 
 		WHERE ep.status > 0  
 		AND ep.event_id = ?
-		AND e.status = 1`, eventID)
+		AND e.status not in (-1, 9)`, eventID)
 	if err != nil {
 		return false, err
 	}
@@ -140,7 +149,7 @@ func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*MyEvent, er
 	if status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
-		sql = sql + " AND e.status = 1"
+		sql = sql + " AND e.status in (1,3)"
 	}
 	err := r.conn.Get(&event, sql, id)
 	if err != nil {
@@ -155,7 +164,7 @@ func (r *eventQuery) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 	if filter.Status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
-		sql = sql + " AND e.status = 1"
+		sql = sql + " AND e.status in (1,3)"
 	}
 	err := r.conn.Select(&event, sql, filter.ProjectID)
 	return &event, err
