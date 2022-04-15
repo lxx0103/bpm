@@ -480,6 +480,10 @@ definitions:
         type: integer
       assignable:
         type: integer
+      complete_time:
+        type: string
+      complete_user:
+        type: string
       created:
         type: string
       created_by:
@@ -557,6 +561,10 @@ definitions:
     type: object
   event.MyEvent:
     properties:
+      complete_time:
+        type: string
+      complete_user:
+        type: string
       id:
         type: integer
       name:

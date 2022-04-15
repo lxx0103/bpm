@@ -5610,6 +5610,12 @@ var doc = `{
                 "assignable": {
                     "type": "integer"
                 },
+                "complete_time": {
+                    "type": "string"
+                },
+                "complete_user": {
+                    "type": "string"
+                },
                 "created": {
                     "type": "string"
                 },
@@ -5727,6 +5733,12 @@ var doc = `{
         "event.MyEvent": {
             "type": "object",
             "properties": {
+                "complete_time": {
+                    "type": "string"
+                },
+                "complete_user": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },

@@ -29,6 +29,6 @@ func Run() {
 	r := router.InitRouter()
 	router.InitPublicRouter(r, auth.Routers)
 	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers, position.Routers, member.Routers, template.Routers, node.Routers, element.Routers, upload.Routers)
-	router.InitWxRouter(r, event.WxRouters, project.WxRouters, upload.WxRouters)
+	router.InitWxRouter(r, event.WxRouters, project.WxRouters, upload.WxRouters, component.WxRouters, position.WxRouters, auth.WxRouters, client.WxRouters, member.WxRouters, template.WxRouters)
 	router.RunServer(r)
 }

@@ -38,11 +38,13 @@ type MyEventResponse struct {
 }
 
 type MyEvent struct {
-	ID          int64  `db:"id" json:"id"`
-	ProjectID   int64  `db:"project_id" json:"project_id"`
-	ProjectName string `db:"project_name" json:"project_name"`
-	Name        string `db:"name" json:"name"`
-	Status      int    `db:"status" json:"status"`
+	ID           int64  `db:"id" json:"id"`
+	ProjectID    int64  `db:"project_id" json:"project_id"`
+	ProjectName  string `db:"project_name" json:"project_name"`
+	Name         string `db:"name" json:"name"`
+	CompleteTime string `db:"complete_time" json:"complete_time"`
+	CompleteUser string `db:"complete_user" json:"complete_user"`
+	Status       int    `db:"status" json:"status"`
 }
 
 type SaveEventInfo struct {

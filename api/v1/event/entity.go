@@ -3,19 +3,21 @@ package event
 import "time"
 
 type Event struct {
-	ID         int64          `db:"id" json:"id"`
-	ProjectID  int64          `db:"project_id" json:"project_id"`
-	Name       string         `db:"name" json:"name"`
-	Assignable int            `db:"assignable" json:"assignable"`
-	AssignType int            `db:"assign_type" json:"assign_type"`
-	NodeID     int64          `db:"node_id" json:"node_id"`
-	PreID      *[]EventPre    `json:"pre_id"`
-	Status     int            `db:"status" json:"status"`
-	Assign     *[]EventAssign `json:"assign"`
-	Created    time.Time      `db:"created" json:"created"`
-	CreatedBy  string         `db:"created_by" json:"created_by"`
-	Updated    time.Time      `db:"updated" json:"updated"`
-	UpdatedBy  string         `db:"updated_by" json:"updated_by"`
+	ID           int64          `db:"id" json:"id"`
+	ProjectID    int64          `db:"project_id" json:"project_id"`
+	Name         string         `db:"name" json:"name"`
+	Assignable   int            `db:"assignable" json:"assignable"`
+	AssignType   int            `db:"assign_type" json:"assign_type"`
+	NodeID       int64          `db:"node_id" json:"node_id"`
+	PreID        *[]EventPre    `json:"pre_id"`
+	CompleteTime string         `db:"complete_time" json:"complete_time"`
+	CompleteUser string         `db:"complete_user" json:"complete_user"`
+	Status       int            `db:"status" json:"status"`
+	Assign       *[]EventAssign `json:"assign"`
+	Created      time.Time      `db:"created" json:"created"`
+	CreatedBy    string         `db:"created_by" json:"created_by"`
+	Updated      time.Time      `db:"updated" json:"updated"`
+	UpdatedBy    string         `db:"updated_by" json:"updated_by"`
 }
 
 type EventAssign struct {

@@ -53,13 +53,9 @@ func (s *elementService) NewElement(info ElementNew, organizationID int64) (*Ele
 		msg := "元素名称重复"
 		return nil, errors.New(msg)
 	}
-	exist, err = repo.CheckSortExist(info.Sort, info.NodeID, 0)
+	err = repo.UpdateSort(info.Sort, info.NodeID, 0, info.User)
 	if err != nil {
 		return nil, err
-	}
-	if exist != 0 {
-		msg := "排序重复"
-		return nil, errors.New(msg)
 	}
 	elementID, err := repo.CreateElement(info)
 	if err != nil {
@@ -122,13 +118,9 @@ func (s *elementService) UpdateElement(elementID int64, info ElementUpdate, orga
 		oldElement.ElementType = info.Type
 	}
 	if info.Sort != 0 {
-		exist, err := repo.CheckSortExist(info.Sort, oldElement.NodeID, elementID)
+		err := repo.UpdateSort(info.Sort, oldElement.NodeID, oldElement.Sort, info.User)
 		if err != nil {
 			return nil, err
-		}
-		if exist != 0 {
-			msg := "排序重复"
-			return nil, errors.New(msg)
 		}
 		oldElement.Sort = info.Sort
 	}

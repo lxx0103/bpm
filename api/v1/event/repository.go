@@ -315,10 +315,12 @@ func (r *eventRepository) CheckAssign(eventID int64, userID int64, positionID in
 func (r *eventRepository) CompleteEvent(eventID int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update events SET 
+		complete_user = ?,
+		complete_time = ?,
 		status = 3,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, time.Now(), byUser, eventID)
+	`, byUser, time.Now().Format("2006-01-02 15:04:05"), time.Now(), byUser, eventID)
 	return err
 }

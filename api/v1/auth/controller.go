@@ -58,7 +58,7 @@ func Signin(c *gin.Context) {
 	}
 	claims := service.CustomClaims{
 		UserID:         userInfo.ID,
-		Username:       userInfo.Identifier,
+		Username:       userInfo.Name,
 		RoleID:         userInfo.RoleID,
 		OrganizationID: userInfo.OrganizationID,
 		PositionID:     userInfo.PositionID,

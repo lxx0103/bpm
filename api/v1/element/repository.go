@@ -23,7 +23,7 @@ type ElementRepository interface {
 	DeleteElement(int64, string) error
 	CheckNodeExist(int64, int64) (int, error)
 	CheckNameExist(string, int64, int64) (int, error)
-	CheckSortExist(int, int64, int64) (int, error)
+	UpdateSort(int, int64, int, string) error
 	GetElementsByNodeID(int64) (*[]Element, error)
 }
 
@@ -111,12 +111,51 @@ func (r *elementRepository) CheckNameExist(name string, nodeID int64, selfID int
 	return res, err
 }
 
-func (r *elementRepository) CheckSortExist(sorting int, nodeID int64, selfID int64) (int, error) {
-	var res int
-	// fmt.Println("sort:", sorting, ";node:", nodeID, ";selfid:", selfID)
-	row := r.tx.QueryRow(`SELECT count(1) FROM elements WHERE sort = ? AND node_id = ? AND id != ? AND status > 0  LIMIT 1`, sorting, nodeID, selfID)
-	err := row.Scan(&res)
-	return res, err
+func (r *elementRepository) UpdateSort(newSort int, nodeID int64, oldSort int, byUser string) error {
+	if oldSort == 0 {
+		_, err := r.tx.Exec(`
+			Update elements SET 
+			sort = sort + 1,
+			updated = ?,
+			updated_by = ? 
+			WHERE node_id = ? 
+			AND sort >= ?
+		`, time.Now(), byUser, nodeID, newSort)
+		if err != nil {
+			return err
+		}
+	} else {
+		if newSort > oldSort {
+			_, err := r.tx.Exec(`
+				Update elements SET 
+				sort = sort - 1,
+				updated = ?,
+				updated_by = ? 
+				WHERE node_id = ? 
+				AND sort > ?
+				AND sort <= ?
+			`, time.Now(), byUser, nodeID, oldSort, newSort)
+			if err != nil {
+				return err
+			}
+		}
+		if newSort < oldSort {
+			_, err := r.tx.Exec(`
+				Update elements SET 
+				sort = sort + 1,
+				updated = ?,
+				updated_by = ? 
+				WHERE node_id = ? 
+				AND sort >= ?
+				AND sort < ?
+			`, time.Now(), byUser, nodeID, newSort, oldSort)
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+	return nil
 }
 
 func (r *elementRepository) GetElementsByNodeID(nodeID int64) (*[]Element, error) {
