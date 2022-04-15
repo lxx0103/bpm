@@ -78,6 +78,7 @@ func (s authService) CreateAuth(signupInfo SignupRequest) (int64, error) {
 	newUser.Identifier = signupInfo.Identifier
 	newUser.Type = 1
 	newUser.OrganizationID = signupInfo.OrganizationID
+	newUser.Birthday = "1980-01-01"
 	authID, err := repo.CreateUser(newUser)
 	if err != nil {
 		return 0, err
@@ -242,9 +243,15 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 		oldUser.Address = info.Address
 	}
 	if info.Status != 0 {
-		oldUser.Status = info.Status
+		if oldUser.ID != byUserID { //不能自己更新自己的状态
+			oldUser.Status = info.Status
+		}
 	}
-	err = repo.UpdateUser(userID, *oldUser, (*byUser).Identifier)
+	if oldUser.Name == "" && oldUser.Status == 1 {
+		msg := "必须有姓名才能启用用户"
+		return nil, errors.New(msg)
+	}
+	err = repo.UpdateUser(userID, *oldUser, (*byUser).Name)
 	if err != nil {
 		return nil, err
 	}

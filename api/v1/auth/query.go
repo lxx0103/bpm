@@ -51,6 +51,7 @@ func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+	user.Credential = ""
 	return &user, nil
 }
 

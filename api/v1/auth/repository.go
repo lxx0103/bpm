@@ -53,14 +53,15 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 			identifier,
 			organization_id,
 			credential,
+			birthday,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, 2, ?, "SIGNUP", ?, "SIGNUP")
-	`, newUser.Type, newUser.Identifier, newUser.OrganizationID, newUser.Credential, time.Now(), time.Now())
+		VALUES (?, ?, ?, ?, ?, 2, ?, "SIGNUP", ?, "SIGNUP")
+	`, newUser.Type, newUser.Identifier, newUser.OrganizationID, newUser.Credential, newUser.Birthday, time.Now(), time.Now())
 	if err != nil {
 		return 0, err
 	}
@@ -73,7 +74,7 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 
 func (r *authRepository) GetUserByID(id int64) (*User, error) {
 	var res User
-	row := r.tx.QueryRow(`SELECT id, organization_id, type, identifier, credential, role_id, position_id, name, email, gender, phone, birthday, address, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
+	row := r.tx.QueryRow(`SELECT id, organization_id, type, identifier, "", role_id, position_id, name, email, gender, phone, birthday, address, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
 	err := row.Scan(&res.ID, &res.OrganizationID, &res.Type, &res.Identifier, &res.Credential, &res.RoleID, &res.PositionID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		msg := "用户不存在:" + err.Error()
