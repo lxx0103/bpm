@@ -22,6 +22,9 @@ type EventRepository interface {
 	CreateEventAssign(int64, int, []int64, string) error
 	DeleteEventAssign(int64, string) error
 	GetAssignsByEventID(int64) (*[]EventAssign, error)
+	CreateEventAudit(int64, int, []int64, string) error
+	DeleteEventAudit(int64, string) error
+	GetAuditsByEventID(int64) (*[]EventAudit, error)
 	CreateEventPre(int64, []int64, string) error
 	DeleteEventPre(int64, string) error
 	GetPresByEventID(int64) (*[]EventPre, error)
@@ -37,6 +40,9 @@ type EventRepository interface {
 }
 
 func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
+	if info.AssignType == 3 {
+		info.AssignType = 2
+	}
 	result, err := r.tx.Exec(`
 		INSERT INTO events
 		(
@@ -45,14 +51,16 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 			name,
 			assign_type,
 			assignable,
+			need_audit,
+			audit_type,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -99,17 +107,6 @@ func (r *eventRepository) CreateEventAssign(eventID int64, assignType int, assig
 	return nil
 }
 
-func (r *eventRepository) UpdateEvent(id int64, info Event, byUser string) error {
-	_, err := r.tx.Exec(`
-		Update events SET 
-		assign_type = ?,
-		updated = ?,
-		updated_by = ? 
-		WHERE id = ?
-	`, info.AssignType, time.Now(), byUser, id)
-	return err
-}
-
 func (r *eventRepository) DeleteEventAssign(event_id int64, user string) error {
 	_, err := r.tx.Exec(`
 		Update event_assigns SET
@@ -122,6 +119,34 @@ func (r *eventRepository) DeleteEventAssign(event_id int64, user string) error {
 		return err
 	}
 	return nil
+}
+
+func (r *eventRepository) GetAssignsByEventID(eventID int64) (*[]EventAssign, error) {
+	var res []EventAssign
+	rows, err := r.tx.Query(`SELECT id, event_id, assign_type, assign_to, status, created, created_by, updated, updated_by FROM event_assigns WHERE event_id = ? AND status = ? `, eventID, 1)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var rowRes EventAssign
+		err = rows.Scan(&rowRes.ID, &rowRes.EventID, &rowRes.AssignType, &rowRes.AssignTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, rowRes)
+	}
+	return &res, nil
+}
+
+func (r *eventRepository) UpdateEvent(id int64, info Event, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update events SET 
+		assign_type = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, info.AssignType, time.Now(), byUser, id)
+	return err
 }
 
 func (r *eventRepository) GetEventByID(id int64, organizationID int64) (*Event, error) {
@@ -157,23 +182,6 @@ func (r *eventRepository) CheckNameExist(name string, projectID int64, selfID in
 		return 0, err
 	}
 	return res, nil
-}
-
-func (r *eventRepository) GetAssignsByEventID(eventID int64) (*[]EventAssign, error) {
-	var res []EventAssign
-	rows, err := r.tx.Query(`SELECT id, event_id, assign_type, assign_to, status, created, created_by, updated, updated_by FROM event_assigns WHERE event_id = ? AND status = ? `, eventID, 1)
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		var rowRes EventAssign
-		err = rows.Scan(&rowRes.ID, &rowRes.EventID, &rowRes.AssignType, &rowRes.AssignTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, rowRes)
-	}
-	return &res, nil
 }
 
 func (r *eventRepository) CreateEventPre(eventID int64, preIDs []int64, user string) error {
@@ -283,13 +291,13 @@ func (r *eventRepository) DeleteEventByProjectID(id int64, byUser string) error 
 
 func (r *eventRepository) GetEventsByProjectID(projectID int64) (*[]Event, error) {
 	var res []Event
-	rows, err := r.tx.Query(`SELECT id, project_id, node_id, name, assign_type FROM events WHERE project_id = ? AND status > 0`, projectID)
+	rows, err := r.tx.Query(`SELECT id, project_id, node_id, name, assign_type, assignable, need_audit, audit_type FROM events WHERE project_id = ? AND status > 0`, projectID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var rowRes Event
-		err = rows.Scan(&rowRes.ID, &rowRes.ProjectID, &rowRes.NodeID, &rowRes.Name, &rowRes.AssignType)
+		err = rows.Scan(&rowRes.ID, &rowRes.ProjectID, &rowRes.NodeID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable, &rowRes.NeedAudit, &rowRes.AuditType)
 		if err != nil {
 			return nil, err
 		}
@@ -323,4 +331,68 @@ func (r *eventRepository) CompleteEvent(eventID int64, byUser string) error {
 		WHERE id = ?
 	`, byUser, time.Now().Format("2006-01-02 15:04:05"), time.Now(), byUser, eventID)
 	return err
+}
+
+func (r *eventRepository) CreateEventAudit(eventID int64, auditType int, auditTo []int64, user string) error {
+	for i := 0; i < len(auditTo); i++ {
+		var exist int
+		row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND audit_type = ? AND audit_to = ? AND status > 0  LIMIT 1`, eventID, auditType, auditTo[i])
+		err := row.Scan(&exist)
+		if err != nil {
+			return err
+		}
+		if exist != 0 {
+			msg := "指派对象有重复"
+			return errors.New(msg)
+		}
+		_, err = r.tx.Exec(`
+			INSERT INTO event_audits
+			(
+				event_id,
+				audit_type,
+				audit_to,
+				status,
+				created,
+				created_by,
+				updated,
+				updated_by
+			)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		`, eventID, auditType, auditTo[i], 1, time.Now(), user, time.Now(), user)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r *eventRepository) DeleteEventAudit(event_id int64, user string) error {
+	_, err := r.tx.Exec(`
+		Update event_audits SET
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE event_id = ?
+	`, time.Now(), user, event_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *eventRepository) GetAuditsByEventID(eventID int64) (*[]EventAudit, error) {
+	var res []EventAudit
+	rows, err := r.tx.Query(`SELECT id, event_id, audit_type, audit_to, status, created, created_by, updated, updated_by FROM event_audits WHERE event_id = ? AND status = ? `, eventID, 1)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var rowRes EventAudit
+		err = rows.Scan(&rowRes.ID, &rowRes.EventID, &rowRes.AuditType, &rowRes.AuditTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, rowRes)
+	}
+	return &res, nil
 }

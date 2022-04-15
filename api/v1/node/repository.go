@@ -254,13 +254,13 @@ func (r *nodeRepository) DeleteNode(id int64, byUser string) error {
 
 func (r *nodeRepository) GetNodesByTemplateID(templateID int64) (*[]Node, error) {
 	var res []Node
-	rows, err := r.tx.Query(`SELECT id, template_id, name, assign_type, assignable FROM nodes  WHERE template_id = ? AND status > 0`, templateID)
+	rows, err := r.tx.Query(`SELECT id, template_id, name, assign_type, assignable, need_audit, audit_type FROM nodes  WHERE template_id = ? AND status > 0`, templateID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var rowRes Node
-		err = rows.Scan(&rowRes.ID, &rowRes.TemplateID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable)
+		err = rows.Scan(&rowRes.ID, &rowRes.TemplateID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable, &rowRes.NeedAudit, &rowRes.AuditType)
 		if err != nil {
 			return nil, err
 		}

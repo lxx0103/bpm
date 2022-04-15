@@ -157,6 +157,12 @@ func (s *nodeService) UpdateNode(nodeID int64, info NodeUpdate, organizationID i
 	if info.AssignType != 0 {
 		oldNode.AssignType = info.AssignType
 	}
+	if info.NeedAudit != 0 {
+		oldNode.NeedAudit = info.NeedAudit
+	}
+	if info.AuditType != 0 {
+		oldNode.AuditType = info.AuditType
+	}
 	oldNode.JsonData = info.JsonData
 	err = repo.UpdateNode(nodeID, *oldNode, info.User)
 	if err != nil {

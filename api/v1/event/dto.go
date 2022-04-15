@@ -12,12 +12,17 @@ type EventNew struct {
 	Name       string `json:"name" binding:"required,min=1,max=64"`
 	Assignable int    `json:"assignable" binding:"required,oneof=1 2"`
 	AssignType int    `json:"assign_type" binding:"required,oneof=1 2 3"`
+	NeedAudit  int    `json:"need_audit" binding:"required,oneof=1 2"`
+	AuditType  int    `json:"audit_type" binding:"required,oneof=1 2"`
 	NodeID     int64  `json:"node_id" binding:"required,min=1"`
 	User       string `json:"user" swaggerignore:"true"`
 }
 type EventUpdate struct {
 	AssignType int     `json:"assign_type" binding:"omitempty,oneof=1 2"`
 	AssignTo   []int64 `json:"assign_to" binding:"omitempty"`
+	NeedAudit  int     `json:"need_audit" binding:"omitempty,oneof=1 2"`
+	AuditType  int     `json:"audit_type" binding:"omitempty,oneof=1 2"`
+	AuditTo    []int64 `json:"audit_to" binding:"omitempty"`
 	User       string  `json:"user" swaggerignore:"true"`
 }
 

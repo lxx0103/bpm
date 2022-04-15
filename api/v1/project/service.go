@@ -81,6 +81,8 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		eventInfo.Name = (*nodes)[i].Name
 		eventInfo.AssignType = (*nodes)[i].AssignType
 		eventInfo.Assignable = (*nodes)[i].Assignable
+		eventInfo.NeedAudit = (*nodes)[i].NeedAudit
+		eventInfo.AuditType = (*nodes)[i].AuditType
 		eventInfo.NodeID = (*nodes)[i].ID
 		eventInfo.User = info.User
 		eventID, err := eventRepo.CreateEvent(eventInfo)
@@ -114,6 +116,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 	for k := 0; k < len(*events); k++ {
 		var pres []int64
 		var assigns []int64
+		var audits []int64
 		nodePres, err := nodeRepo.GetPresByNodeID((*events)[k].NodeID)
 		if err != nil {
 			return nil, err
@@ -126,6 +129,17 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 			pres = append(pres, preEventID)
 		}
 		err = eventRepo.CreateEventPre((*events)[k].ID, pres, info.User)
+		if err != nil {
+			return nil, err
+		}
+		nodeAudits, err := nodeRepo.GetAuditsByNodeID((*events)[k].NodeID)
+		if err != nil {
+			return nil, err
+		}
+		for n := 0; n < len(*nodeAudits); n++ {
+			audits = append(audits, (*nodeAudits)[n].AuditTo)
+		}
+		err = eventRepo.CreateEventAudit((*events)[k].ID, (*events)[k].AuditType, audits, info.User)
 		if err != nil {
 			return nil, err
 		}
