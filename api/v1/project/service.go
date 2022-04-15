@@ -143,7 +143,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		if err != nil {
 			return nil, err
 		}
-		if (*events)[k].AssignType == 3 {
+		if (*events)[k].AssignType == 2 {
 			assigns = append(assigns, info.UserID)
 		} else {
 			nodeAssigns, err := nodeRepo.GetAssignsByNodeID((*events)[k].NodeID)

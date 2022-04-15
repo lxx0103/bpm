@@ -461,17 +461,17 @@ definitions:
     type: object
   event.AuditEventInfo:
     properties:
-      approved:
+      content:
+        maxLength: 255
+        type: string
+      result:
         enum:
         - 1
         - 2
         type: integer
-      content:
-        maxLength: 255
-        type: string
     required:
-    - approved
     - content
+    - result
     type: object
   event.ComponentInfo:
     properties:
@@ -624,6 +624,12 @@ definitions:
     type: object
   event.MyEvent:
     properties:
+      audit_content:
+        type: string
+      audit_time:
+        type: string
+      audit_user:
+        type: string
       complete_time:
         type: string
       complete_user:
@@ -3656,7 +3662,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "53"
+      operationId: "94"
       parameters:
       - description: 显示所有all/激活active
         in: query
@@ -3681,7 +3687,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 获取我的当前任务
+      summary: 获取我的审核任务
       tags:
       - 小程序接口
   /wx/myprojects:

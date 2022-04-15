@@ -324,7 +324,7 @@ func (r *eventRepository) CheckAssign(eventID int64, userID int64, positionID in
 
 func (r *eventRepository) CheckAudit(eventID int64, userID int64, positionID int64) (int, error) {
 	var res int
-	row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND ( ( assign_type = 1 AND assign_to = ? ) OR ( assign_type = 2 and assign_to = ? ) ) AND status > 0  LIMIT 1`, eventID, positionID, userID)
+	row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) AND status > 0  LIMIT 1`, eventID, positionID, userID)
 	err := row.Scan(&res)
 	return res, err
 }

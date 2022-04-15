@@ -278,3 +278,30 @@ func WxAuditEvent(c *gin.Context) {
 	}
 	response.Response(c, "ok")
 }
+
+// @Summary 获取我的审核任务
+// @Id 94
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param status query string true "显示所有all/激活active"
+// @Success 200 object response.SuccessRes{data=[]MyEvent} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/myevents [GET]
+func WxGetMyAudits(c *gin.Context) {
+	var filter AssignedAuditFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	list, err := eventService.GetAssignedAudit(filter, claims.UserID, claims.PositionID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, list)
+}

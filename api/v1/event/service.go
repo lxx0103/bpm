@@ -24,6 +24,7 @@ type EventService interface {
 	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
 	//WX API
 	GetAssignedEvent(AssignedEventFilter, int64, int64, int64) (*[]MyEvent, error)
+	GetAssignedAudit(AssignedAuditFilter, int64, int64, int64) (*[]MyEvent, error)
 	GetProjectEvent(MyEventFilter) (*[]MyEvent, error)
 	SaveEvent(int64, SaveEventInfo) error
 	AuditEvent(int64, AuditEventInfo) error
@@ -128,6 +129,7 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	tx.Commit()
 	return event, err
 }
+
 func (s *eventService) GetAssignedEvent(filter AssignedEventFilter, userID int64, positionID int64, organizationID int64) (*[]MyEvent, error) {
 	var activeEvents []MyEvent
 	db := database.InitMySQL()
@@ -316,4 +318,31 @@ func (s *eventService) AuditEvent(eventID int64, info AuditEventInfo) error {
 	}
 	tx.Commit()
 	return nil
+}
+func (s *eventService) GetAssignedAudit(filter AssignedAuditFilter, userID int64, positionID int64, organizationID int64) (*[]MyEvent, error) {
+	var activeEvents []MyEvent
+	db := database.InitMySQL()
+	query := NewEventQuery(db)
+	assignedAudit, err := query.GetAssignedAudit(userID, positionID)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < len(assignedAudit); i++ {
+		active, err := query.CheckActive(assignedAudit[i])
+		if err != nil {
+			return nil, err
+		}
+		if !active {
+			continue
+		}
+		activeEvent, err := query.GetAssignedAuditByID(assignedAudit[i], filter.Status)
+		if err != nil {
+			if err.Error() != "sql: no rows in result set" {
+				return nil, err
+			}
+			continue
+		}
+		activeEvents = append(activeEvents, *activeEvent)
+	}
+	return &activeEvents, err
 }

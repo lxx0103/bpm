@@ -49,6 +49,9 @@ type MyEvent struct {
 	Name         string `db:"name" json:"name"`
 	CompleteTime string `db:"complete_time" json:"complete_time"`
 	CompleteUser string `db:"complete_user" json:"complete_user"`
+	AuditTime    string `db:"audit_time" json:"audit_time"`
+	AuditUser    string `db:"audit_user" json:"audit_user"`
+	AuditContent string `db:"audit_content" json:"audit_content"`
 	Status       int    `db:"status" json:"status"`
 }
 
@@ -65,9 +68,12 @@ type ComponentInfo struct {
 }
 
 type AuditEventInfo struct {
-	Result     int    `json:"approved" binding:"required,oneof=1 2"`
+	Result     int    `json:"result" binding:"required,oneof=1 2"`
 	Content    string `json:"content" binding:"required,max=255"`
 	User       string `json:"user" swaggerignore:"true"`
 	UserID     int64  `json:"user_id" swaggerignore:"true"`
 	PositionID int64  `json:"position_id" swaggerignore:"true"`
+}
+type AssignedAuditFilter struct {
+	Status string `form:"status" binding:"required,oneof=all active"`
 }

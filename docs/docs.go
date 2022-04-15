@@ -4238,8 +4238,8 @@ var doc = `{
                 "tags": [
                     "小程序接口"
                 ],
-                "summary": "获取我的当前任务",
-                "operationId": "53",
+                "summary": "获取我的审核任务",
+                "operationId": "94",
                 "parameters": [
                     {
                         "type": "string",
@@ -5641,20 +5641,20 @@ var doc = `{
         "event.AuditEventInfo": {
             "type": "object",
             "required": [
-                "approved",
-                "content"
+                "content",
+                "result"
             ],
             "properties": {
-                "approved": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "result": {
                     "type": "integer",
                     "enum": [
                         1,
                         2
                     ]
-                },
-                "content": {
-                    "type": "string",
-                    "maxLength": 255
                 }
             }
         },
@@ -5885,6 +5885,15 @@ var doc = `{
         "event.MyEvent": {
             "type": "object",
             "properties": {
+                "audit_content": {
+                    "type": "string"
+                },
+                "audit_time": {
+                    "type": "string"
+                },
+                "audit_user": {
+                    "type": "string"
+                },
                 "complete_time": {
                     "type": "string"
                 },
