@@ -288,7 +288,7 @@ func WxAuditEvent(c *gin.Context) {
 // @Param status query string true "显示所有all/激活active"
 // @Success 200 object response.SuccessRes{data=[]MyEvent} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /wx/myevents [GET]
+// @Router /wx/myaudits [GET]
 func WxGetMyAudits(c *gin.Context) {
 	var filter AssignedAuditFilter
 	err := c.ShouldBindQuery(&filter)

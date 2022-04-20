@@ -167,7 +167,7 @@ func WxNewClient(c *gin.Context) {
 
 // @Summary 根据ID获取客户
 // @Id 77
-// @Tags 客户管理
+// @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -190,7 +190,7 @@ func WxGetClientByID(c *gin.Context) {
 // @Param client_info body ClientNew true "客户信息"
 // @Success 200 object response.SuccessRes{data=Client} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /clients/:id [PUT]
+// @Router /wx/clients/:id [PUT]
 func WxUpdateClient(c *gin.Context) {
 	UpdateClient(c)
 }

@@ -1338,7 +1338,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "78"
+      operationId: "27"
       parameters:
       - description: 客户ID
         in: path
@@ -1369,7 +1369,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新客户
       tags:
-      - 小程序接口
+      - 客户管理
   /components:
     get:
       consumes:
@@ -3445,7 +3445,42 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID获取客户
       tags:
-      - 客户管理
+      - 小程序接口
+    put:
+      consumes:
+      - application/json
+      operationId: "78"
+      parameters:
+      - description: 客户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 客户信息
+        in: body
+        name: client_info
+        required: true
+        schema:
+          $ref: '#/definitions/client.ClientNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/client.Client'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新客户
+      tags:
+      - 小程序接口
   /wx/components:
     get:
       consumes:
@@ -3658,7 +3693,7 @@ paths:
       summary: 新建项目成员
       tags:
       - 小程序接口
-  /wx/myevents:
+  /wx/myaudits:
     get:
       consumes:
       - application/json
@@ -3688,6 +3723,38 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 获取我的审核任务
+      tags:
+      - 小程序接口
+  /wx/myevents:
+    get:
+      consumes:
+      - application/json
+      operationId: "53"
+      parameters:
+      - description: 显示所有all/激活active
+        in: query
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.MyEvent'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取我的当前任务
       tags:
       - 小程序接口
   /wx/myprojects:

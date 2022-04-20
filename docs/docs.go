@@ -428,10 +428,10 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "客户管理"
                 ],
                 "summary": "根据ID更新客户",
-                "operationId": "78",
+                "operationId": "27",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3840,7 +3840,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "客户管理"
+                    "小程序接口"
                 ],
                 "summary": "根据ID获取客户",
                 "operationId": "77",
@@ -3851,6 +3851,63 @@ var doc = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/client.Client"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "根据ID更新客户",
+                "operationId": "78",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "客户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "客户信息",
+                        "name": "client_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.ClientNew"
+                        }
                     }
                 ],
                 "responses": {
@@ -4227,7 +4284,7 @@ var doc = `{
                 }
             }
         },
-        "/wx/myevents": {
+        "/wx/myaudits": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -4240,6 +4297,59 @@ var doc = `{
                 ],
                 "summary": "获取我的审核任务",
                 "operationId": "94",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "显示所有all/激活active",
+                        "name": "status",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/event.MyEvent"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/wx/myevents": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "获取我的当前任务",
+                "operationId": "53",
                 "parameters": [
                     {
                         "type": "string",
