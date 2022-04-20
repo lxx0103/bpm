@@ -33,8 +33,7 @@ func (r *memberRepository) CreateProjectMember(projectID int64, userID []int64, 
 			return err
 		}
 		if exist != 0 {
-			msg := "指派对象有重复"
-			return errors.New(msg)
+			continue
 		}
 		if organizationID == 0 {
 			row = r.tx.QueryRow(`SELECT count(1) FROM users WHERE  id = ? AND status > 0  LIMIT 1`, userID[i])

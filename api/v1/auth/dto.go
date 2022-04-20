@@ -43,6 +43,7 @@ type RoleID struct {
 
 type UserFilter struct {
 	Name     string `form:"name" binding:"omitempty,max=64,min=1"`
+	Type     string `form:"type" binding:"omitempty,oneof=wx admin"`
 	PageId   int    `form:"page_id" binding:"required,min=1"`
 	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
 }

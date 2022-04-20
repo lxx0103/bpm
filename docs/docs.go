@@ -3456,6 +3456,12 @@ var doc = `{
                         "description": "用户名称",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户类型wx/admin",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {

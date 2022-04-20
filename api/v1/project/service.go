@@ -4,6 +4,7 @@ import (
 	"bpm/api/v1/component"
 	"bpm/api/v1/element"
 	"bpm/api/v1/event"
+	"bpm/api/v1/member"
 	"bpm/api/v1/node"
 	"bpm/api/v1/template"
 	"bpm/core/database"
@@ -51,7 +52,10 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 	elementRepo := element.NewElementRepository(tx)
 	eventRepo := event.NewEventRepository(tx)
 	componentRepo := component.NewComponentRepository(tx)
+	memberRepo := member.NewMemberRepository(tx)
 	template, err := templateRepo.GetTemplateByID(info.TemplateID)
+	var projectMember []int64
+	projectMember = append(projectMember, info.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -138,12 +142,15 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		}
 		for n := 0; n < len(*nodeAudits); n++ {
 			audits = append(audits, (*nodeAudits)[n].AuditTo)
+			if (*nodeAudits)[n].AuditType == 2 {
+				projectMember = append(projectMember, (*nodeAudits)[n].AuditTo)
+			}
 		}
 		err = eventRepo.CreateEventAudit((*events)[k].ID, (*events)[k].AuditType, audits, info.User)
 		if err != nil {
 			return nil, err
 		}
-		if (*events)[k].AssignType == 2 {
+		if (*events)[k].AssignType == 3 {
 			assigns = append(assigns, info.UserID)
 		} else {
 			nodeAssigns, err := nodeRepo.GetAssignsByNodeID((*events)[k].NodeID)
@@ -152,6 +159,9 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 			}
 			for m := 0; m < len(*nodeAssigns); m++ {
 				assigns = append(assigns, (*nodeAssigns)[m].AssignTo)
+				if (*nodeAssigns)[m].AssignType == 2 {
+					projectMember = append(projectMember, (*nodeAssigns)[m].AssignTo)
+				}
 			}
 		}
 		err = eventRepo.CreateEventAssign((*events)[k].ID, (*events)[k].AssignType, assigns, info.User)
@@ -159,6 +169,11 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 			return nil, err
 		}
 	}
+	err = memberRepo.DeleteProjectMember(projectID, info.User)
+	if err != nil {
+		return nil, err
+	}
+	memberRepo.CreateProjectMember(projectID, projectMember, organizationID, info.User)
 	project, err := repo.GetProjectByID(projectID, organizationID)
 	if err != nil {
 		return nil, err

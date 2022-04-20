@@ -78,6 +78,12 @@ func (r *authQuery) GetUserCount(filter UserFilter, organizationID int64) (int, 
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
+	if v := filter.Type; v == "wx" {
+		where, args = append(where, "type = ?"), append(args, 2)
+	}
+	if v := filter.Type; v == "admin" {
+		where, args = append(where, "type = ?"), append(args, 1)
+	}
 	if v := organizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
@@ -96,6 +102,12 @@ func (r *authQuery) GetUserList(filter UserFilter, organizationID int64) (*[]Use
 	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.Type; v == "wx" {
+		where, args = append(where, "type = ?"), append(args, 2)
+	}
+	if v := filter.Type; v == "admin" {
+		where, args = append(where, "type = ?"), append(args, 1)
 	}
 	if v := organizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
