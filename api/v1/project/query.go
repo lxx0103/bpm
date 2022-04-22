@@ -146,9 +146,14 @@ func (r *projectQuery) GetProjectCountByCreate(userName string, organization_id 
 
 func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (*[]Project, error) {
 	where, args := []string{"1=1"}, []interface{}{}
+	args = append(args, positionID)
+	args = append(args, userID)
 	if v := filter.Type; v != 0 {
 		where, args = append(where, "type = ?"), append(args, v)
 	}
+	args = append(args, organizationID)
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
 	var projects []Project
 	err := r.conn.Select(&projects, `
 		SELECT * FROM projects WHERE id IN 
@@ -162,15 +167,18 @@ func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, us
 		AND status > 0 AND organization_id = ? 
 		ORDER BY ID DESC
 		LIMIT ?, ?
-	`, positionID, userID, args, organizationID, filter.PageId*filter.PageSize-filter.PageSize, filter.PageSize)
+	`, args...)
 	return &projects, err
 }
 
 func (r *projectQuery) GetProjectCountByAssigned(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (int, error) {
 	where, args := []string{"1=1"}, []interface{}{}
+	args = append(args, positionID)
+	args = append(args, userID)
 	if v := filter.Type; v != 0 {
 		where, args = append(where, "type = ?"), append(args, v)
 	}
+	args = append(args, organizationID)
 	var count int
 	err := r.conn.Get(&count, `
 		SELECT count(1) FROM projects WHERE id IN 
@@ -182,6 +190,6 @@ func (r *projectQuery) GetProjectCountByAssigned(filter AssignedProjectFilter, u
 		)
 		AND `+strings.Join(where, " AND ")+`
 		AND status > 0 AND organization_id = ? 
-	`, positionID, userID, args, organizationID)
+	`, args...)
 	return count, err
 }
