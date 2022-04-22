@@ -957,6 +957,8 @@ definitions:
         type: integer
       template_id:
         type: integer
+      type:
+        type: integer
       updated:
         type: string
       updated_by:
@@ -1025,6 +1027,8 @@ definitions:
         type: integer
       status:
         type: integer
+      type:
+        type: integer
       updated:
         type: string
       updated_by:
@@ -1046,11 +1050,17 @@ definitions:
         - 1
         - 2
         type: integer
+      type:
+        enum:
+        - 1
+        - 2
+        type: integer
     required:
     - event_json
     - name
     - organization_id
     - status
+    - type
     type: object
   template.TemplateUpdate:
     properties:
@@ -1061,6 +1071,11 @@ definitions:
         minLength: 1
         type: string
       status:
+        enum:
+        - 1
+        - 2
+        type: integer
+      type:
         enum:
         - 1
         - 2
@@ -2518,6 +2533,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 项目类型
+        in: query
+        name: type
+        type: integer
       produces:
       - application/json
       responses:
@@ -2981,9 +3000,9 @@ paths:
         in: query
         name: name
         type: string
-      - description: 模板编码
+      - description: 模板类型1内部2外部
         in: query
-        name: name
+        name: type
         type: integer
       produces:
       - application/json
@@ -3291,6 +3310,10 @@ paths:
         in: query
         name: page_size
         required: true
+        type: integer
+      - description: 项目类型
+        in: query
+        name: type
         type: integer
       produces:
       - application/json
@@ -3781,6 +3804,10 @@ paths:
         in: query
         name: page_size
         required: true
+        type: integer
+      - description: 项目类型
+        in: query
+        name: type
         type: integer
       produces:
       - application/json

@@ -2358,6 +2358,12 @@ var doc = `{
                         "description": "项目名称",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目类型",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3123,8 +3129,8 @@ var doc = `{
                     },
                     {
                         "type": "integer",
-                        "description": "模板编码",
-                        "name": "name",
+                        "description": "模板类型1内部2外部",
+                        "name": "type",
                         "in": "query"
                     }
                 ],
@@ -3629,6 +3635,12 @@ var doc = `{
                         "name": "page_size",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目类型",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4430,6 +4442,12 @@ var doc = `{
                         "name": "page_size",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目类型",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -6491,6 +6509,9 @@ var doc = `{
                 "template_id": {
                     "type": "integer"
                 },
+                "type": {
+                    "type": "integer"
+                },
                 "updated": {
                     "type": "string"
                 },
@@ -6591,6 +6612,9 @@ var doc = `{
                 "status": {
                     "type": "integer"
                 },
+                "type": {
+                    "type": "integer"
+                },
                 "updated": {
                     "type": "string"
                 },
@@ -6605,7 +6629,8 @@ var doc = `{
                 "event_json",
                 "name",
                 "organization_id",
-                "status"
+                "status",
+                "type"
             ],
             "properties": {
                 "event_json": {
@@ -6626,6 +6651,13 @@ var doc = `{
                         1,
                         2
                     ]
+                },
+                "type": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
                 }
             }
         },
@@ -6641,6 +6673,13 @@ var doc = `{
                     "minLength": 1
                 },
                 "status": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "type": {
                     "type": "integer",
                     "enum": [
                         1,

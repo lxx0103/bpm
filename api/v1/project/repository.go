@@ -32,14 +32,15 @@ func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64)
 			template_id,
 			client_id,
 			name,
+			type,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, organizationID, info.TemplateID, info.ClientID, info.Name, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, organizationID, info.TemplateID, info.ClientID, info.Name, info.Type, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -66,11 +67,11 @@ func (r *projectRepository) GetProjectByID(id int64, organizationID int64) (*Pro
 	var res Project
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT id, organization_id, name, status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT id, organization_id, name, type, status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, organization_id, name, status, created, created_by, updated, updated_by FROM projects WHERE id = ? LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, organization_id, name, type, status, created, created_by, updated, updated_by FROM projects WHERE id = ? LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.Type, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}

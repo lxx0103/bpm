@@ -8,6 +8,7 @@ type Project struct {
 	TemplateID     int64     `db:"template_id" json:"template_id"`
 	ClientID       int64     `db:"client_id" json:"client_id"`
 	Name           string    `db:"name" json:"name"`
+	Type           int       `db:"type" json:"type"`
 	Status         int       `db:"status" json:"status"`
 	Created        time.Time `db:"created" json:"created"`
 	CreatedBy      string    `db:"created_by" json:"created_by"`

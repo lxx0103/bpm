@@ -42,6 +42,9 @@ func (r *templateQuery) GetTemplateCount(filter TemplateFilter, organizationID i
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
+	if v := filter.Type; v != 0 {
+		where, args = append(where, "type = ?"), append(args, v)
+	}
 	if v := organizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	} else if v := filter.OrganizationID; v != 0 {
@@ -62,6 +65,9 @@ func (r *templateQuery) GetTemplateList(filter TemplateFilter, organizationID in
 	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.Type; v != 0 {
+		where, args = append(where, "type = ?"), append(args, v)
 	}
 	if v := organizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)

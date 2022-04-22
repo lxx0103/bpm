@@ -16,6 +16,7 @@ import (
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Param name query string false "项目名称"
+// @Param type query int false "项目类型"
 // @Success 200 object response.ListRes{data=[]Project} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /projects [GET]
@@ -163,6 +164,7 @@ func DeleteProject(c *gin.Context) {
 // @Param status query string true "显示所有all/激活active"
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
+// @Param type query int false "项目类型"
 // @Success 200 object response.ListRes{data=[]Project} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/myprojects [GET]
@@ -191,6 +193,7 @@ func WxGetMyProjects(c *gin.Context) {
 // @Produce application/json
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
+// @Param type query int false "项目类型"
 // @Success 200 object response.ListRes{data=[]Project} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/assignedprojects [GET]

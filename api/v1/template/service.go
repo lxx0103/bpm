@@ -102,6 +102,9 @@ func (s *templateService) UpdateTemplate(templateID int64, info TemplateUpdate, 
 	if info.Name != "" {
 		oldTemplate.Name = info.Name
 	}
+	if info.Type != 0 {
+		oldTemplate.Type = info.Type
+	}
 	if info.Status != 0 {
 		oldTemplate.Status = info.Status
 	}

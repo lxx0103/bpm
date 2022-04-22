@@ -31,14 +31,15 @@ func (r *templateRepository) CreateTemplate(info TemplateNew) (int64, error) {
 			organization_id,
 			name,
 			event_json,
+			type,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.OrganizationID, info.Name, info.EventJson, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.Name, info.EventJson, info.Type, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -53,20 +54,21 @@ func (r *templateRepository) UpdateTemplate(id int64, info Template, byUser stri
 	_, err := r.tx.Exec(`
 		Update templates SET 
 		name = ?,
+		type = ?,
 		status = ?,
 		event_json = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Status, info.EventJson, time.Now(), byUser, id)
+	`, info.Name, info.Type, info.Status, info.EventJson, time.Now(), byUser, id)
 	return err
 }
 
 func (r *templateRepository) GetTemplateByID(id int64) (*Template, error) {
 	var res Template
-	row := r.tx.QueryRow(`SELECT id, organization_id, name, event_json, status, created, created_by, updated, updated_by FROM templates WHERE status > 0 AND id = ? LIMIT 1`, id)
+	row := r.tx.QueryRow(`SELECT id, organization_id, name, event_json, status, type, created, created_by, updated, updated_by FROM templates WHERE status > 0 AND id = ? LIMIT 1`, id)
 
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.EventJson, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.EventJson, &res.Status, &res.Type, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	return &res, err
 }
 

@@ -55,7 +55,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 	memberRepo := member.NewMemberRepository(tx)
 	template, err := templateRepo.GetTemplateByID(info.TemplateID)
 	var projectMember []int64
-	projectMember = append(projectMember, info.UserID)
+	// projectMember = append(projectMember, info.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +71,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		msg := "项目名称重复"
 		return nil, errors.New(msg)
 	}
+	info.Type = template.Type
 	projectID, err := repo.CreateProject(info, template.OrganizationID)
 	if err != nil {
 		return nil, err
@@ -152,6 +153,8 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		}
 		if (*events)[k].AssignType == 3 {
 			assigns = append(assigns, info.UserID)
+			projectMember = append(projectMember, info.UserID)
+			(*events)[k].AssignType = 2
 		} else {
 			nodeAssigns, err := nodeRepo.GetAssignsByNodeID((*events)[k].NodeID)
 			if err != nil {
@@ -165,6 +168,10 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 			}
 		}
 		err = eventRepo.CreateEventAssign((*events)[k].ID, (*events)[k].AssignType, assigns, info.User)
+		if err != nil {
+			return nil, err
+		}
+		err = eventRepo.UpdateEvent((*events)[k].ID, (*events)[k], info.User)
 		if err != nil {
 			return nil, err
 		}

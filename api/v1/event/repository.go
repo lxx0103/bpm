@@ -42,9 +42,6 @@ type EventRepository interface {
 }
 
 func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
-	if info.AssignType == 3 {
-		info.AssignType = 2
-	}
 	result, err := r.tx.Exec(`
 		INSERT INTO events
 		(
