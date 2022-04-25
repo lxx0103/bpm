@@ -274,6 +274,7 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("needAudit:", event.NeedAudit)
 	if event.NeedAudit == 2 {
 		err = repo.AuditEvent(eventID, true, "SYSTEM", "无需审核")
 		if err != nil {
