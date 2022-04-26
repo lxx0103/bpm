@@ -3185,6 +3185,35 @@ paths:
       summary: 文件上传列表
       tags:
       - 文件管理
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: "73"
+      parameters:
+      - description: 上传文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 上传文件
+      tags:
+      - 文件管理
   /users:
     get:
       consumes:
@@ -4108,10 +4137,45 @@ paths:
       tags:
       - 小程序接口
   /wx/uploads:
+    get:
+      consumes:
+      - application/json
+      operationId: "95"
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        required: true
+        type: integer
+      - description: 创建人
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/upload.Upload'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: WX文件上传列表
+      tags:
+      - 文件管理
     post:
       consumes:
       - multipart/form-data
-      operationId: "73"
+      operationId: "96"
       parameters:
       - description: 上传文件
         in: formData
@@ -4134,7 +4198,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 上传文件
+      summary: WX上传文件
       tags:
       - 文件管理
   /wx/users:

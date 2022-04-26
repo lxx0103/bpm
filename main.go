@@ -1,6 +1,9 @@
 package main
 
-import "bpm/cmd"
+import (
+	"bpm/cmd"
+	"os"
+)
 
 // @title BPM API
 // @version 1.0
@@ -12,5 +15,5 @@ import "bpm/cmd"
 // @host 0.0.0.0:8080
 // @BasePath /
 func main() {
-	cmd.Run()
+	cmd.Run(os.Args)
 }

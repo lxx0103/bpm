@@ -20,8 +20,8 @@ import (
 	"bpm/core/router"
 )
 
-func Run() {
-	config.LoadConfig("config.toml")
+func Run(args []string) {
+	config.LoadConfig(args[1])
 	log.ConfigLogger()
 	cache.ConfigCache()
 	database.ConfigMysql()

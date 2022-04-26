@@ -8,5 +8,6 @@ func Routers(g *gin.RouterGroup) {
 }
 
 func WxRouters(g *gin.RouterGroup) {
-	g.POST("/wx/uploads", NewUpload)
+	g.POST("/wx/uploads", WxNewUpload)
+	g.GET("/wx/uploads", WxGetUploadList)
 }

@@ -4,7 +4,6 @@ import (
 	"bpm/core/config"
 	"bpm/core/response"
 	"bpm/service"
-	"fmt"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -49,7 +48,7 @@ func GetUploadList(c *gin.Context) {
 // @Param  file formData file true  "上传文件"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /wx/uploads [POST]
+// @Router /uploads [POST]
 func NewUpload(c *gin.Context) {
 	uploaded, err := c.FormFile("file")
 	if err != nil {
@@ -60,7 +59,6 @@ func NewUpload(c *gin.Context) {
 	extension := filepath.Ext(uploaded.Filename)
 	newName := uuid.NewString() + extension
 	path := dest + newName
-	fmt.Println(dest)
 	err = c.SaveUploadedFile(uploaded, path)
 	if err != nil {
 		response.ResponseError(c, "保存文件错误", err)
@@ -74,4 +72,33 @@ func NewUpload(c *gin.Context) {
 		return
 	}
 	response.Response(c, newName)
+}
+
+// @Summary WX文件上传列表
+// @Id 95
+// @Tags 文件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param organization_id query int true "组织ID"
+// @Param name query string false "创建人"
+// @Success 200 object response.ListRes{data=[]Upload} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/uploads [GET]
+func WxGetUploadList(c *gin.Context) {
+	GetUploadList(c)
+}
+
+// @Summary WX上传文件
+// @Id 96
+// @Tags 文件管理
+// @version 1.0
+// @Accept multipart/form-data
+// @Produce application/json
+// @Param  file formData file true  "上传文件"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/uploads [POST]
+func WxNewUpload(c *gin.Context) {
+	NewUpload(c)
 }
