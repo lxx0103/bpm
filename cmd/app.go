@@ -13,7 +13,6 @@ import (
 	"bpm/api/v1/project"
 	"bpm/api/v1/template"
 	"bpm/api/v1/upload"
-	"bpm/core/cache"
 	"bpm/core/config"
 	"bpm/core/database"
 	"bpm/core/log"
@@ -23,7 +22,7 @@ import (
 func Run(args []string) {
 	config.LoadConfig(args[1])
 	log.ConfigLogger()
-	cache.ConfigCache()
+	// cache.ConfigCache()
 	database.ConfigMysql()
 	// event.Subscribe(user.Subscribe, auth.Subscribe, inventory.Subscribe)
 	r := router.InitRouter()
