@@ -2,6 +2,7 @@ package event
 
 import (
 	"bpm/api/v1/component"
+	"bpm/api/v1/project"
 	"bpm/core/database"
 	"errors"
 	"fmt"
@@ -22,6 +23,7 @@ type EventService interface {
 	// NewEvent(EventNew, int64) (*Event, error)
 	GetEventList(EventFilter, int64) (int, *[]Event, error)
 	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
+	NewCheckin(int64, NewCheckin) error
 	//WX API
 	GetAssignedEvent(AssignedEventFilter, int64, int64, int64) (*[]MyEvent, error)
 	GetAssignedAudit(AssignedAuditFilter, int64, int64, int64) (*[]MyEvent, error)
@@ -346,4 +348,81 @@ func (s *eventService) GetAssignedAudit(filter AssignedAuditFilter, userID int64
 		activeEvents = append(activeEvents, *activeEvent)
 	}
 	return &activeEvents, err
+}
+
+func (s *eventService) NewCheckin(eventID int64, info NewCheckin) error {
+	db := database.InitMySQL()
+	query := NewEventQuery(db)
+	active, err := query.CheckActive(eventID)
+	if err != nil {
+		return err
+	}
+	if !active {
+		msg := "此事件尚未激活"
+		return errors.New(msg)
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewEventRepository(tx)
+	projectRepo := project.NewProjectRepository(tx)
+	event, err := repo.GetEventByID(eventID, info.OrganizationID)
+	if err != nil {
+		msg := "此事件不存在"
+		return errors.New(msg)
+	}
+	if event.NeedCheckin == 0 {
+		msg := "此事件无需签到"
+		return errors.New(msg)
+	}
+	if event.Status != 1 && event.Status != 3 {
+		msg := "此事件已完成"
+		return errors.New(msg)
+	}
+	assignExist, err := repo.CheckAssign(eventID, info.UserID, info.PositionID)
+	if err != nil {
+		msg := "检查分配失败"
+		return errors.New(msg)
+	}
+	if assignExist == 0 {
+		msg := "此事件未分配给你"
+		return errors.New(msg)
+	}
+	project, err := projectRepo.GetProjectByID(event.ProjectID, info.OrganizationID)
+	if err != nil {
+		msg := "获取项目失败"
+		return errors.New(msg)
+	}
+	distance := getDistance(project.Latitude, project.Longitude, info.Latitude, info.Longitude)
+	if event.CheckinDistance < distance {
+		msg := "你不在签到位置"
+		return errors.New(msg)
+	}
+	info.Distance = distance
+	checkinExist, err := repo.CheckCheckin(eventID, info.UserID)
+	if err != nil {
+		return err
+	}
+	if checkinExist >= 2 {
+		msg := "你本日已签到签退"
+		return errors.New(msg)
+	}
+	if checkinExist == 1 {
+		info.CheckinType = 2
+	} else {
+		info.CheckinType = 1
+	}
+	err = repo.doCheckin(eventID, info)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func getDistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64) int {
+	dist := 100
+	return dist
 }

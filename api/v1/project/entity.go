@@ -9,6 +9,9 @@ type Project struct {
 	ClientID       int64     `db:"client_id" json:"client_id"`
 	Name           string    `db:"name" json:"name"`
 	Type           int       `db:"type" json:"type"`
+	Location       string    `db:"location" json:"location"`
+	Longitude      float64   `db:"longitude" json:"longitude"`
+	Latitude       float64   `db:"latitude" json:"latitude"`
 	Status         int       `db:"status" json:"status"`
 	Created        time.Time `db:"created" json:"created"`
 	CreatedBy      string    `db:"created_by" json:"created_by"`

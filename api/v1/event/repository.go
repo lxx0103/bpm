@@ -39,6 +39,8 @@ type EventRepository interface {
 	CompleteEvent(int64, string) error
 	AuditEvent(int64, bool, string, string) error
 	CheckAudit(int64, int64, int64) (int, error)
+	CheckCheckin(int64, int64) (int, error)
+	doCheckin(int64, NewCheckin) error
 }
 
 func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
@@ -152,11 +154,11 @@ func (r *eventRepository) GetEventByID(id int64, organizationID int64) (*Event, 
 	var res Event
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.audit_content, e.audit_time, e.audit_user, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.audit_content, e.audit_time, e.audit_user, e.need_checkin, e.checkin_distance, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, project_id, name, assignable, assign_type, need_audit, audit_type, audit_content, audit_time, audit_user, status, created, created_by, updated, updated_by FROM events WHERE id = ? AND status > 0 LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, project_id, name, assignable, assign_type, need_audit, audit_type, audit_content, audit_time, audit_user, need_checkin, checkin_distance, status, created, created_by, updated, updated_by FROM events WHERE id = ? AND status > 0 LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.AuditContent, &res.AuditTime, &res.AuditUser, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.AuditContent, &res.AuditTime, &res.AuditUser, &res.NeedCheckin, &res.CheckinDistance, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
@@ -418,4 +420,37 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 		WHERE id = ?
 	`, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, status, time.Now(), byUser, eventID)
 	return err
+}
+
+func (r *eventRepository) CheckCheckin(eventID int64, userID int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM event_checkins WHERE event_id = ? AND user_id = ? AND status > 0 AND checkin_time > ? AND checkin_time < ? `, eventID, userID, time.Now().Format("2006-01-02")+" 00:00:00", time.Now().Format("2006-01-02")+" 23:59:59")
+	err := row.Scan(&res)
+	return res, err
+}
+
+func (r *eventRepository) doCheckin(eventID int64, info NewCheckin) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO event_checkins
+		(
+			event_id,
+			user_id,
+			user_name,
+			checkin_type,
+			checkin_time,
+			longitude,
+			latitude,
+			distance,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, eventID, info.UserID, info.User, info.CheckinType, time.Now(), info.Longitude, info.Latitude, info.Distance, 1, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		return err
+	}
+	return nil
 }

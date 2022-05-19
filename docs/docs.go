@@ -1058,6 +1058,58 @@ var doc = `{
                 }
             }
         },
+        "/events/:id/checkin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "事件签到",
+                "operationId": "10",
+                "parameters": [
+                    {
+                        "description": "签到信息",
+                        "name": "event_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/event.NewCheckin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "consumes": [
@@ -5967,6 +6019,9 @@ var doc = `{
                 "need_audit": {
                     "type": "integer"
                 },
+                "need_checkin": {
+                    "type": "integer"
+                },
                 "node_id": {
                     "type": "integer"
                 },
@@ -6153,6 +6208,21 @@ var doc = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "event.NewCheckin": {
+            "type": "object",
+            "required": [
+                "latitude",
+                "longitude"
+            ],
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
                 }
             }
         },
@@ -6602,6 +6672,15 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
+                "latitude": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "longitude": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6636,6 +6715,17 @@ var doc = `{
                     "type": "integer",
                     "minimum": 1
                 },
+                "latitude": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "longitude": {
+                    "type": "number"
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,
@@ -6653,6 +6743,17 @@ var doc = `{
                 "client_id": {
                     "type": "integer",
                     "minimum": 1
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "longitude": {
+                    "type": "number"
                 },
                 "name": {
                     "type": "string",

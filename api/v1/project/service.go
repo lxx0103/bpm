@@ -233,6 +233,15 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 	if info.ClientID != 0 {
 		oldProject.ClientID = info.ClientID
 	}
+	if info.Location != "" {
+		oldProject.Location = info.Location
+	}
+	if info.Longitude != 0 {
+		oldProject.Longitude = info.Longitude
+	}
+	if info.Latitude != 0 {
+		oldProject.Latitude = info.Latitude
+	}
 	err = repo.UpdateProject(projectID, *oldProject, info.User)
 	if err != nil {
 		return nil, err

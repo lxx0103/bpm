@@ -3,27 +3,29 @@ package event
 import "time"
 
 type Event struct {
-	ID           int64          `db:"id" json:"id"`
-	ProjectID    int64          `db:"project_id" json:"project_id"`
-	Name         string         `db:"name" json:"name"`
-	Assignable   int            `db:"assignable" json:"assignable"`
-	AssignType   int            `db:"assign_type" json:"assign_type"`
-	NodeID       int64          `db:"node_id" json:"node_id"`
-	PreID        *[]EventPre    `json:"pre_id"`
-	NeedAudit    int            `db:"need_audit" json:"need_audit"`
-	AuditType    int            `db:"audit_type" json:"audit_type"`
-	Audit        *[]EventAudit  `json:"audit"`
-	CompleteTime string         `db:"complete_time" json:"complete_time"`
-	CompleteUser string         `db:"complete_user" json:"complete_user"`
-	AuditTime    string         `db:"audit_time" json:"audit_time"`
-	AuditContent string         `db:"audit_content" json:"audit_content"`
-	AuditUser    string         `db:"audit_user" json:"audit_user"`
-	Status       int            `db:"status" json:"status"`
-	Assign       *[]EventAssign `json:"assign"`
-	Created      time.Time      `db:"created" json:"created"`
-	CreatedBy    string         `db:"created_by" json:"created_by"`
-	Updated      time.Time      `db:"updated" json:"updated"`
-	UpdatedBy    string         `db:"updated_by" json:"updated_by"`
+	ID              int64          `db:"id" json:"id"`
+	ProjectID       int64          `db:"project_id" json:"project_id"`
+	Name            string         `db:"name" json:"name"`
+	Assignable      int            `db:"assignable" json:"assignable"`
+	AssignType      int            `db:"assign_type" json:"assign_type"`
+	NodeID          int64          `db:"node_id" json:"node_id"`
+	PreID           *[]EventPre    `json:"pre_id"`
+	NeedAudit       int            `db:"need_audit" json:"need_audit"`
+	AuditType       int            `db:"audit_type" json:"audit_type"`
+	Audit           *[]EventAudit  `json:"audit"`
+	CompleteTime    string         `db:"complete_time" json:"complete_time"`
+	CompleteUser    string         `db:"complete_user" json:"complete_user"`
+	AuditTime       string         `db:"audit_time" json:"audit_time"`
+	AuditContent    string         `db:"audit_content" json:"audit_content"`
+	AuditUser       string         `db:"audit_user" json:"audit_user"`
+	NeedCheckin     int            `db:"need_checkin" json:"need_checkin"`
+	CheckinDistance int            `db:"checkin_distance" json:"checkin_distance"`
+	Status          int            `db:"status" json:"status"`
+	Assign          *[]EventAssign `json:"assign"`
+	Created         time.Time      `db:"created" json:"created"`
+	CreatedBy       string         `db:"created_by" json:"created_by"`
+	Updated         time.Time      `db:"updated" json:"updated"`
+	UpdatedBy       string         `db:"updated_by" json:"updated_by"`
 }
 
 type EventAssign struct {
@@ -58,4 +60,20 @@ type EventAudit struct {
 	CreatedBy string    `db:"created_by" json:"created_by"`
 	Updated   time.Time `db:"updated" json:"updated"`
 	UpdatedBy string    `db:"updated_by" json:"updated_by"`
+}
+type EventCheckin struct {
+	ID          int64     `db:"id" json:"id"`
+	EventID     int64     `db:"event_id" json:"event_id"`
+	UserID      int64     `db:"user_id" json:"user_id"`
+	UserName    string    `db:"user_name" json:"user_name"`
+	CheckinType int       `db:"checkin_type" json:"checkin_type"`
+	CheckinTime time.Time `db:"checkin_time" json:"checkin_time"`
+	Distance    int       `db:"distance" json:"distance"`
+	Longitude   float64   `db:"longitude" json:"longitude"`
+	Latitude    float64   `db:"latitude" json:"latitude"`
+	Status      int       `db:"status" json:"status"`
+	Created     time.Time `db:"created" json:"created"`
+	CreatedBy   string    `db:"created_by" json:"created_by"`
+	Updated     time.Time `db:"updated" json:"updated"`
+	UpdatedBy   string    `db:"updated_by" json:"updated_by"`
 }

@@ -77,3 +77,14 @@ type AuditEventInfo struct {
 type AssignedAuditFilter struct {
 	Status string `form:"status" binding:"required,oneof=all active"`
 }
+
+type NewCheckin struct {
+	Longitude      float64 `json:"longitude" binding:"required"`
+	Latitude       float64 `json:"latitude" binding:"required"`
+	User           string  `json:"user" swaggerignore:"true"`
+	OrganizationID int64   `json:"organization_id" swaggerignore:"true"`
+	PositionID     int64   `json:"position_id" swaggerignore:"true"`
+	UserID         int64   `json:"user_id" swaggerignore:"true"`
+	CheckinType    int     `json:"checkin_type" swaggerignore:"true"`
+	Distance       int     `json:"distance" swaggerignore:"true"`
+}

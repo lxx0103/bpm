@@ -3,6 +3,7 @@ package event
 import (
 	"bpm/core/response"
 	"bpm/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,34 +38,6 @@ func GetEventList(c *gin.Context) {
 	}
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
 }
-
-// // @Summary 新建事件
-// // @Id 10
-// // @Tags 事件管理
-// // @version 1.0
-// // @Accept application/json
-// // @Produce application/json
-// // @Param event_info body EventNew true "事件信息"
-// // @Success 200 object response.SuccessRes{data=Event} 成功
-// // @Failure 400 object response.ErrorRes 内部错误
-// // @Router /events [POST]
-// func NewEvent(c *gin.Context) {
-// 	var event EventNew
-// 	if err := c.ShouldBindJSON(&event); err != nil {
-// 		response.ResponseError(c, "BindingError", err)
-// 		return
-// 	}
-// 	claims := c.MustGet("claims").(*service.CustomClaims)
-// 	event.User = claims.Username
-// 	organizationID := claims.OrganizationID
-// 	eventService := NewEventService()
-// 	new, err := eventService.NewEvent(event, organizationID)
-// 	if err != nil {
-// 		response.ResponseError(c, "DatabaseError", err)
-// 		return
-// 	}
-// 	response.Response(c, new)
-// }
 
 // @Summary 根据ID获取事件
 // @Id 11
@@ -304,4 +277,40 @@ func WxGetMyAudits(c *gin.Context) {
 		return
 	}
 	response.Response(c, list)
+}
+
+// @Summary 事件签到
+// @Id 10
+// @Tags 事件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param event_info body NewCheckin true "签到信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /events/:id/checkin [POST]
+func NewEventCheckin(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var checkin NewCheckin
+	if err = c.ShouldBindJSON(&checkin); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	checkin.User = claims.Username
+	checkin.PositionID = claims.PositionID
+	checkin.UserID = claims.UserID
+	checkin.OrganizationID = claims.OrganizationID
+	eventService := NewEventService()
+	err = eventService.NewCheckin(id, checkin)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	// new := checkin
+	response.Response(c, "ok")
 }
