@@ -41,6 +41,7 @@ type EventRepository interface {
 	CheckAudit(int64, int64, int64) (int, error)
 	CheckCheckin(int64, int64) (int, error)
 	doCheckin(int64, NewCheckin) error
+	GetProjectLocation(int64, int64) (float64, float64, error)
 }
 
 func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
@@ -54,14 +55,16 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 			assignable,
 			need_audit,
 			audit_type,
+			need_checkin,
+			checkin_distance,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, info.NeedCheckin, info.CheckinDistance, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -453,4 +456,16 @@ func (r *eventRepository) doCheckin(eventID int64, info NewCheckin) error {
 		return err
 	}
 	return nil
+}
+
+func (r *eventRepository) GetProjectLocation(projectID, organizationID int64) (float64, float64, error) {
+	var longitude, latitude float64
+	var row *sql.Row
+	if organizationID == 0 {
+		row = r.tx.QueryRow(`SELECT longitude, latitude FROM projects WHERE id = ? AND status > 0`, projectID)
+	} else {
+		row = r.tx.QueryRow(`SELECT longitude, latitude FROM projects WHERE id = ? AND organization_id = ? AND status > 0`, projectID, organizationID)
+	}
+	err := row.Scan(&longitude, &latitude)
+	return longitude, latitude, err
 }

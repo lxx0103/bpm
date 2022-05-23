@@ -8,14 +8,16 @@ type EventFilter struct {
 }
 
 type EventNew struct {
-	ProjectID  int64  `json:"project_id" binding:"required,min=1"`
-	Name       string `json:"name" binding:"required,min=1,max=64"`
-	Assignable int    `json:"assignable" binding:"required,oneof=1 2"`
-	AssignType int    `json:"assign_type" binding:"required,oneof=1 2 3"`
-	NeedAudit  int    `json:"need_audit" binding:"required,oneof=1 2"`
-	AuditType  int    `json:"audit_type" binding:"required,oneof=1 2"`
-	NodeID     int64  `json:"node_id" binding:"required,min=1"`
-	User       string `json:"user" swaggerignore:"true"`
+	ProjectID       int64  `json:"project_id" binding:"required,min=1"`
+	Name            string `json:"name" binding:"required,min=1,max=64"`
+	Assignable      int    `json:"assignable" binding:"required,oneof=1 2"`
+	AssignType      int    `json:"assign_type" binding:"required,oneof=1 2 3"`
+	NeedAudit       int    `json:"need_audit" binding:"required,oneof=1 2"`
+	AuditType       int    `json:"audit_type" binding:"required,oneof=1 2"`
+	NeedCheckin     int    `json:"need_checkin" binding:"required,oneof=1 2"`
+	CheckinDistance int    `json:"checkin_distance" binding:"omitempty"`
+	NodeID          int64  `json:"node_id" binding:"required,min=1"`
+	User            string `json:"user" swaggerignore:"true"`
 }
 type EventUpdate struct {
 	AssignType int     `json:"assign_type" binding:"omitempty,oneof=1 2"`

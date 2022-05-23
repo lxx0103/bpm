@@ -2,10 +2,10 @@ package event
 
 import (
 	"bpm/api/v1/component"
-	"bpm/api/v1/project"
 	"bpm/core/database"
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -367,7 +367,6 @@ func (s *eventService) NewCheckin(eventID int64, info NewCheckin) error {
 	}
 	defer tx.Rollback()
 	repo := NewEventRepository(tx)
-	projectRepo := project.NewProjectRepository(tx)
 	event, err := repo.GetEventByID(eventID, info.OrganizationID)
 	if err != nil {
 		msg := "此事件不存在"
@@ -390,13 +389,13 @@ func (s *eventService) NewCheckin(eventID int64, info NewCheckin) error {
 		msg := "此事件未分配给你"
 		return errors.New(msg)
 	}
-	project, err := projectRepo.GetProjectByID(event.ProjectID, info.OrganizationID)
+	projectLongitude, projectLatitude, err := repo.GetProjectLocation(event.ProjectID, info.OrganizationID)
 	if err != nil {
 		msg := "获取项目失败"
 		return errors.New(msg)
 	}
-	distance := getDistance(project.Latitude, project.Longitude, info.Latitude, info.Longitude)
-	if event.CheckinDistance < distance {
+	distance := getDistance(projectLatitude, projectLongitude, info.Latitude, info.Longitude)
+	if event.CheckinDistance < distance && event.CheckinDistance != 0 {
 		msg := "你不在签到位置"
 		return errors.New(msg)
 	}
@@ -423,6 +422,22 @@ func (s *eventService) NewCheckin(eventID int64, info NewCheckin) error {
 }
 
 func getDistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64) int {
-	dist := 100
-	return dist
+	// convert to radians
+	// must cast radius as float to multiply later
+	var la1, lo1, la2, lo2, r float64
+	la1 = lat1 * math.Pi / 180
+	lo1 = lng1 * math.Pi / 180
+	la2 = lat2 * math.Pi / 180
+	lo2 = lng2 * math.Pi / 180
+
+	r = 6378100 // Earth radius in METERS
+
+	// calculate
+	h := hsin(la2-la1) + math.Cos(la1)*math.Cos(la2)*hsin(lo2-lo1)
+
+	dist := 2 * r * math.Asin(math.Sqrt(h))
+	return int(dist)
+}
+func hsin(theta float64) float64 {
+	return math.Pow(math.Sin(theta/2), 2)
 }

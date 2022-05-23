@@ -163,6 +163,12 @@ func (s *nodeService) UpdateNode(nodeID int64, info NodeUpdate, organizationID i
 	if info.AuditType != 0 {
 		oldNode.AuditType = info.AuditType
 	}
+	if info.NeedCheckin != 0 {
+		oldNode.NeedCheckin = info.NeedCheckin
+	}
+	if info.CheckinDistance != 0 || oldNode.CheckinDistance != 0 {
+		oldNode.CheckinDistance = info.CheckinDistance
+	}
 	oldNode.JsonData = info.JsonData
 	err = repo.UpdateNode(nodeID, *oldNode, info.User)
 	if err != nil {

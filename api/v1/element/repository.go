@@ -82,7 +82,25 @@ func (r *elementRepository) GetElementByID(id int64) (*Element, error) {
 }
 
 func (r *elementRepository) DeleteElement(id int64, byUser string) error {
-	_, err := r.tx.Exec(`
+	var nodeID int64
+	var sort int
+	row := r.tx.QueryRow(`SELECT node_id, sort FROM elements WHERE id = ? AND status > 0  LIMIT 1`, id)
+	err := row.Scan(&nodeID, sort)
+	if err != nil {
+		return err
+	}
+	_, err = r.tx.Exec(`
+		Update elements SET 
+		sort = sort - 1,
+		updated = ?,
+		updated_by = ? 
+		WHERE node_id = ?
+		AND sort > ?
+	`, time.Now(), byUser, nodeID, sort)
+	if err != nil {
+		return err
+	}
+	_, err = r.tx.Exec(`
 		Update elements SET 
 		status = -1,
 		updated = ?,
