@@ -3,6 +3,7 @@ package event
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -41,7 +42,7 @@ type EventRepository interface {
 	CheckAudit(int64, int64, int64) (int, error)
 	CheckCheckin(int64, int64) (int, error)
 	doCheckin(int64, NewCheckin) error
-	GetProjectLocation(int64, int64) (float64, float64, error)
+	GetProjectLocation(int64, int64) (float64, float64, int, error)
 }
 
 func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
@@ -56,15 +57,14 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 			need_audit,
 			audit_type,
 			need_checkin,
-			checkin_distance,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, info.NeedCheckin, info.CheckinDistance, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, info.NeedCheckin, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -157,12 +157,13 @@ func (r *eventRepository) GetEventByID(id int64, organizationID int64) (*Event, 
 	var res Event
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.audit_content, e.audit_time, e.audit_user, e.need_checkin, e.checkin_distance, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.audit_content, e.audit_time, e.audit_user, e.need_checkin, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, project_id, name, assignable, assign_type, need_audit, audit_type, audit_content, audit_time, audit_user, need_checkin, checkin_distance, status, created, created_by, updated, updated_by FROM events WHERE id = ? AND status > 0 LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, project_id, name, assignable, assign_type, need_audit, audit_type, audit_content, audit_time, audit_user, need_checkin, status, created, created_by, updated, updated_by FROM events WHERE id = ? AND status > 0 LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.AuditContent, &res.AuditTime, &res.AuditUser, &res.NeedCheckin, &res.CheckinDistance, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.AuditContent, &res.AuditTime, &res.AuditUser, &res.NeedCheckin, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	return &res, nil
@@ -458,14 +459,15 @@ func (r *eventRepository) doCheckin(eventID int64, info NewCheckin) error {
 	return nil
 }
 
-func (r *eventRepository) GetProjectLocation(projectID, organizationID int64) (float64, float64, error) {
+func (r *eventRepository) GetProjectLocation(projectID, organizationID int64) (float64, float64, int, error) {
 	var longitude, latitude float64
+	var distance int
 	var row *sql.Row
 	if organizationID == 0 {
-		row = r.tx.QueryRow(`SELECT longitude, latitude FROM projects WHERE id = ? AND status > 0`, projectID)
+		row = r.tx.QueryRow(`SELECT longitude, latitude, checkin_distance FROM projects WHERE id = ? AND status > 0`, projectID)
 	} else {
-		row = r.tx.QueryRow(`SELECT longitude, latitude FROM projects WHERE id = ? AND organization_id = ? AND status > 0`, projectID, organizationID)
+		row = r.tx.QueryRow(`SELECT longitude, latitude, checkin_distance FROM projects WHERE id = ? AND organization_id = ? AND status > 0`, projectID, organizationID)
 	}
-	err := row.Scan(&longitude, &latitude)
-	return longitude, latitude, err
+	err := row.Scan(&longitude, &latitude, &distance)
+	return longitude, latitude, distance, err
 }

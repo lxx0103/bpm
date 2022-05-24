@@ -1058,58 +1058,6 @@ var doc = `{
                 }
             }
         },
-        "/events/:id/checkin": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "事件管理"
-                ],
-                "summary": "事件签到",
-                "operationId": "10",
-                "parameters": [
-                    {
-                        "description": "签到信息",
-                        "name": "event_info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/event.NewCheckin"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            }
-        },
         "/members": {
             "get": {
                 "consumes": [
@@ -4296,6 +4244,58 @@ var doc = `{
                 }
             }
         },
+        "/wx/events/:id/checkin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "事件签到",
+                "operationId": "10",
+                "parameters": [
+                    {
+                        "description": "签到信息",
+                        "name": "event_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/event.NewCheckin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/members": {
             "get": {
                 "consumes": [
@@ -5998,6 +5998,9 @@ var doc = `{
                 "audit_user": {
                     "type": "string"
                 },
+                "checkin_distance": {
+                    "type": "integer"
+                },
                 "complete_time": {
                     "type": "string"
                 },
@@ -6200,6 +6203,9 @@ var doc = `{
                 "name": {
                     "type": "string"
                 },
+                "need_checkin": {
+                    "type": "integer"
+                },
                 "project_id": {
                     "type": "integer"
                 },
@@ -6312,6 +6318,9 @@ var doc = `{
                 "need_audit": {
                     "type": "integer"
                 },
+                "need_checkin": {
+                    "type": "integer"
+                },
                 "pre_id": {
                     "type": "array",
                     "items": {
@@ -6406,6 +6415,7 @@ var doc = `{
                 "audit_type",
                 "name",
                 "need_audit",
+                "need_checkin",
                 "pre_id",
                 "template_id"
             ],
@@ -6450,6 +6460,13 @@ var doc = `{
                     "minLength": 1
                 },
                 "need_audit": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "need_checkin": {
                     "type": "integer",
                     "enum": [
                         1,
@@ -6551,6 +6568,9 @@ var doc = `{
                         1,
                         2
                     ]
+                },
+                "need_checkin": {
+                    "type": "integer"
                 },
                 "pre_id": {
                     "type": "array",
@@ -6660,6 +6680,9 @@ var doc = `{
         "project.Project": {
             "type": "object",
             "properties": {
+                "checkin_distance": {
+                    "type": "integer"
+                },
                 "client_id": {
                     "type": "integer"
                 },
@@ -6711,6 +6734,9 @@ var doc = `{
                 "template_id"
             ],
             "properties": {
+                "checkin_distance": {
+                    "type": "integer"
+                },
                 "client_id": {
                     "type": "integer",
                     "minimum": 1
@@ -6740,6 +6766,9 @@ var doc = `{
         "project.ProjectUpdate": {
             "type": "object",
             "properties": {
+                "checkin_distance": {
+                    "type": "integer"
+                },
                 "client_id": {
                     "type": "integer",
                     "minimum": 1

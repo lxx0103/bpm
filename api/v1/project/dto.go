@@ -9,15 +9,16 @@ type ProjectFilter struct {
 }
 
 type ProjectNew struct {
-	Name       string  `json:"name" binding:"required,min=1,max=64"`
-	TemplateID int64   `json:"template_id" binding:"required,min=1"`
-	ClientID   int64   `json:"client_id" binding:"omitempty,min=1"`
-	Type       int     `json:"type" swaggerignore:"true"`
-	Location   string  `json:"location" binding:"omitempty,min=1,max=64"`
-	Longitude  float64 `json:"longitude" binding:"omitempty"`
-	Latitude   float64 `json:"latitude" binding:"omitempty"`
-	User       string  `json:"user" swaggerignore:"true"`
-	UserID     int64   `json:"user_id" swaggerignore:"true"`
+	Name            string  `json:"name" binding:"required,min=1,max=64"`
+	TemplateID      int64   `json:"template_id" binding:"required,min=1"`
+	ClientID        int64   `json:"client_id" binding:"omitempty,min=1"`
+	Type            int     `json:"type" swaggerignore:"true"`
+	Location        string  `json:"location" binding:"omitempty,min=1,max=64"`
+	Longitude       float64 `json:"longitude" binding:"omitempty"`
+	Latitude        float64 `json:"latitude" binding:"omitempty"`
+	CheckinDistance int     `json:"checkin_distance" binding:"omitempty"`
+	User            string  `json:"user" swaggerignore:"true"`
+	UserID          int64   `json:"user_id" swaggerignore:"true"`
 }
 
 type ProjectID struct {
@@ -25,13 +26,14 @@ type ProjectID struct {
 }
 
 type ProjectUpdate struct {
-	Name      string  `json:"name" binding:"omitempty,min=1,max=64"`
-	ClientID  int64   `json:"client_id" binding:"omitempty,min=1"`
-	Location  string  `form:"location" binding:"omitempty,min=1,max=64"`
-	Longitude float64 `form:"longitude" binding:"omitempty"`
-	Latitude  float64 `form:"latitude" binding:"omitempty"`
-	User      string  `json:"user" swaggerignore:"true"`
-	UserID    int64   `json:"user_id" swaggerignore:"true"`
+	Name            string  `json:"name" binding:"omitempty,min=1,max=64"`
+	ClientID        int64   `json:"client_id" binding:"omitempty,min=1"`
+	Location        string  `json:"location" binding:"omitempty,min=1,max=64"`
+	Longitude       float64 `json:"longitude" binding:"omitempty"`
+	Latitude        float64 `json:"latitude" binding:"omitempty"`
+	CheckinDistance int     `json:"checkin_distance" binding:"omitempty"`
+	User            string  `json:"user" swaggerignore:"true"`
+	UserID          int64   `json:"user_id" swaggerignore:"true"`
 }
 type MyProjectFilter struct {
 	Status   string `form:"status" binding:"required,oneof=all active"`

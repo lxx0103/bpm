@@ -389,14 +389,14 @@ func (s *eventService) NewCheckin(eventID int64, info NewCheckin) error {
 		msg := "此事件未分配给你"
 		return errors.New(msg)
 	}
-	projectLongitude, projectLatitude, err := repo.GetProjectLocation(event.ProjectID, info.OrganizationID)
+	projectLongitude, projectLatitude, projectDistance, err := repo.GetProjectLocation(event.ProjectID, info.OrganizationID)
 	if err != nil {
 		msg := "获取项目失败"
 		return errors.New(msg)
 	}
 	distance := getDistance(projectLatitude, projectLongitude, info.Latitude, info.Longitude)
-	if event.CheckinDistance < distance && event.CheckinDistance != 0 {
-		msg := "你不在签到位置"
+	if projectDistance < distance && projectDistance != 0 {
+		msg := "你不在签到位置:" + fmt.Sprintf("%v", distance) + "米"
 		return errors.New(msg)
 	}
 	info.Distance = distance

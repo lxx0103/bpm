@@ -281,15 +281,15 @@ func WxGetMyAudits(c *gin.Context) {
 
 // @Summary 事件签到
 // @Id 10
-// @Tags 事件管理
+// @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
 // @Param event_info body NewCheckin true "签到信息"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /events/:id/checkin [POST]
-func NewEventCheckin(c *gin.Context) {
+// @Router /wx/events/:id/checkin [POST]
+func WxNewEventCheckin(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)

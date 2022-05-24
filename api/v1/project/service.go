@@ -89,7 +89,6 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		eventInfo.NeedAudit = (*nodes)[i].NeedAudit
 		eventInfo.AuditType = (*nodes)[i].AuditType
 		eventInfo.NeedCheckin = (*nodes)[i].NeedCheckin
-		eventInfo.CheckinDistance = (*nodes)[i].CheckinDistance
 		eventInfo.NodeID = (*nodes)[i].ID
 		eventInfo.User = info.User
 		eventID, err := eventRepo.CreateEvent(eventInfo)
@@ -243,6 +242,9 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 	}
 	if info.Latitude != 0 {
 		oldProject.Latitude = info.Latitude
+	}
+	if info.CheckinDistance != 0 {
+		oldProject.CheckinDistance = info.CheckinDistance
 	}
 	err = repo.UpdateProject(projectID, *oldProject, info.User)
 	if err != nil {
