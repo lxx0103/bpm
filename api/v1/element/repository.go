@@ -85,7 +85,7 @@ func (r *elementRepository) DeleteElement(id int64, byUser string) error {
 	var nodeID int64
 	var sort int
 	row := r.tx.QueryRow(`SELECT node_id, sort FROM elements WHERE id = ? AND status > 0  LIMIT 1`, id)
-	err := row.Scan(&nodeID, sort)
+	err := row.Scan(&nodeID, &sort)
 	if err != nil {
 		return err
 	}
