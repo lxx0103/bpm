@@ -314,3 +314,72 @@ func WxNewEventCheckin(c *gin.Context) {
 	// new := checkin
 	response.Response(c, "ok")
 }
+
+// @Summary 事件签到列表
+// @Id 97
+// @Tags 事件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param project_id query int64 false "项目ID"
+// @Param name query string false "用户名称"
+// @Param organization_id query int64 false "组织ID"
+// @Param event_id query int64 false "事件ID"
+// @Param user_id query int64 false "用户ID"
+// @Success 200 object response.ListRes{data=[]CheckinResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /checkins [GET]
+func GetCheckinList(c *gin.Context) {
+	var filter CheckinFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
+	count, list, err := eventService.GetCheckinList(filter, organizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 事件签到列表
+// @Id 98
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param project_id query int64 false "项目ID"
+// @Param name query string false "用户名称"
+// @Param organization_id query int64 false "组织ID"
+// @Param event_id query int64 false "事件ID"
+// @Param user_id query int64 false "用户ID"
+// @Success 200 object response.ListRes{data=[]CheckinResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/checkins [GET]
+func WxGetCheckinList(c *gin.Context) {
+	var filter CheckinFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
+	filter.UserID = claims.UserID
+	count, list, err := eventService.GetCheckinList(filter, organizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}

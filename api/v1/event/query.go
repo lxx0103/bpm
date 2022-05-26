@@ -1,6 +1,7 @@
 package event
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
@@ -31,6 +32,9 @@ type EventQuery interface {
 	GetAssignedEventByID(int64, string) (*MyEvent, error)
 	GetProjectEvent(MyEventFilter) (*[]MyEvent, error)
 	GetAssignedAuditByID(int64, string) (*MyEvent, error)
+	//Checkin Management
+	GetCheckinCount(CheckinFilter) (int, error)
+	GetCheckinList(CheckinFilter) (*[]CheckinResponse, error)
 }
 
 func (r *eventQuery) GetEventByID(id int64) (*Event, error) {
@@ -193,4 +197,75 @@ func (r *eventQuery) GetAssignedAuditByID(id int64, status string) (*MyEvent, er
 		return nil, err
 	}
 	return &event, nil
+}
+
+func (r *eventQuery) GetCheckinCount(filter CheckinFilter) (int, error) {
+	where, args := []string{"ec.status > 0"}, []interface{}{}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "ec.user_name like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.UserID; v != 0 {
+		where, args = append(where, "ec.user_id = ?"), append(args, v)
+	}
+	if v := filter.EventID; v != 0 {
+		where, args = append(where, "ec.event_id = ?"), append(args, v)
+	}
+	if v := filter.ProjectID; v != 0 {
+		where, args = append(where, "e.project_id = ?"), append(args, v)
+	}
+	if v := filter.OrganizationID; v != 0 {
+		where, args = append(where, "p.organization_id = ?"), append(args, v)
+	}
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) as count 
+		FROM event_checkins ec
+		LEFT JOIN events e
+		ON ec.event_id = e.id
+		LEFT JOIN projects p 
+		ON e.project_id = p.id
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *eventQuery) GetCheckinList(filter CheckinFilter) (*[]CheckinResponse, error) {
+	fmt.Println("----", filter.UserID, "----")
+	where, args := []string{"ec.status > 0"}, []interface{}{}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "ec.user_name like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.UserID; v != 0 {
+		where, args = append(where, "ec.user_id = ?"), append(args, v)
+	}
+	if v := filter.EventID; v != 0 {
+		where, args = append(where, "ec.event_id = ?"), append(args, v)
+	}
+	if v := filter.ProjectID; v != 0 {
+		where, args = append(where, "e.project_id = ?"), append(args, v)
+	}
+	if v := filter.OrganizationID; v != 0 {
+		where, args = append(where, "p.organization_id = ?"), append(args, v)
+	}
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var checkins []CheckinResponse
+	err := r.conn.Select(&checkins, `
+		SELECT ec.user_name as name, e.project_id as project_id, p.name as project_name, ec.event_id as event_id, e.name as event_name, p.organization_id as organization_id, o.name as organization_name, ec.checkin_type as checkin_type, ec.checkin_time as checkin_time, ec.longitude as longitude, ec.latitude as latitude, ec.distance as distance
+		FROM event_checkins ec
+		LEFT JOIN events e
+		ON ec.event_id = e.id
+		LEFT JOIN projects p 
+		ON e.project_id = p.id
+		LEFT JOIN organizations o
+		ON p.organization_id = o.id
+		WHERE `+strings.Join(where, " AND ")+`
+		LIMIT ?, ?
+	`, args...)
+	if err != nil {
+		return nil, err
+	}
+	return &checkins, nil
 }

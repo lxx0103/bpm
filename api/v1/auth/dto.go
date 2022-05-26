@@ -42,10 +42,11 @@ type RoleID struct {
 }
 
 type UserFilter struct {
-	Name     string `form:"name" binding:"omitempty,max=64,min=1"`
-	Type     string `form:"type" binding:"omitempty,oneof=wx admin"`
-	PageId   int    `form:"page_id" binding:"required,min=1"`
-	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
+	Name           string `form:"name" binding:"omitempty,max=64,min=1"`
+	Type           string `form:"type" binding:"omitempty,oneof=wx admin"`
+	OrganizationID int64  `form:"organization_id" binding:"omitempty,min=1"`
+	PageId         int    `form:"page_id" binding:"required,min=1"`
+	PageSize       int    `form:"page_size" binding:"required,min=5,max=200"`
 }
 
 type APIFilter struct {
@@ -144,4 +145,20 @@ type UserUpdate struct {
 	Address    string `json:"address" binding:"omitempty,min=1"`
 	Status     int    `json:"status" binding:"omitempty,min=1"`
 	User       string `json:"user" swaggerignore:"true"`
+}
+type UserResponse struct {
+	ID               int64  `db:"id" json:"id"`
+	Type             int    `db:"type" json:"type"`
+	Identifier       string `db:"identifier" json:"identifier"`
+	OrganizationID   int64  `db:"organization_id" json:"organization_id"`
+	OrganizationName string `db:"organization_name" json:"organization_name"`
+	PositionID       int64  `db:"position_id" json:"position_id"`
+	RoleID           int64  `db:"role_id" json:"role_id"`
+	Name             string `db:"name" json:"name"`
+	Email            string `db:"email" json:"email"`
+	Gender           string `db:"gender" json:"gender"`
+	Phone            string `db:"phone" json:"phone"`
+	Birthday         string `db:"birthday" json:"birthday"`
+	Address          string `db:"address" json:"address"`
+	Status           int    `db:"status" json:"status"`
 }

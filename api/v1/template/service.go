@@ -17,7 +17,7 @@ type TemplateService interface {
 	//Template Management
 	GetTemplateByID(int64, int64) (*Template, error)
 	NewTemplate(TemplateNew, int64) (*Template, error)
-	GetTemplateList(TemplateFilter, int64) (int, *[]Template, error)
+	GetTemplateList(TemplateFilter, int64) (int, *[]TemplateResponse, error)
 	UpdateTemplate(int64, TemplateUpdate, int64) (*Template, error)
 	DeleteTemplate(int64, int64, string) error
 }
@@ -61,7 +61,7 @@ func (s *templateService) NewTemplate(info TemplateNew, organizationID int64) (*
 	return template, err
 }
 
-func (s *templateService) GetTemplateList(filter TemplateFilter, organizationID int64) (int, *[]Template, error) {
+func (s *templateService) GetTemplateList(filter TemplateFilter, organizationID int64) (int, *[]TemplateResponse, error) {
 	db := database.InitMySQL()
 	query := NewTemplateQuery(db)
 	count, err := query.GetTemplateCount(filter, organizationID)

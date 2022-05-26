@@ -17,7 +17,8 @@ import (
 // @Param page_size query int true "每页行数"
 // @Param name query string false "模板编码"
 // @Param type query int false "模板类型1内部2外部"
-// @Success 200 object response.ListRes{data=[]Template} 成功
+// @Param organization_id query int64 false "组织ID"
+// @Success 200 object response.ListRes{data=[]TemplateResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /templates [GET]
 func GetTemplateList(c *gin.Context) {

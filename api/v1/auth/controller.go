@@ -259,7 +259,8 @@ func UpdateUser(c *gin.Context) {
 // @Param page_size query int true "每页行数（5/10/15/20）"
 // @Param name query string false "用户名称"
 // @Param type query string false "用户类型wx/admin"
-// @Success 200 object response.ListRes{data=[]Role} 成功
+// @Param organization_id query int false "用户组织"
+// @Success 200 object response.ListRes{data=[]UserResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /users [GET]
 func GetUserList(c *gin.Context) {

@@ -24,6 +24,7 @@ type EventService interface {
 	GetEventList(EventFilter, int64) (int, *[]Event, error)
 	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
 	NewCheckin(int64, NewCheckin) error
+	GetCheckinList(CheckinFilter, int64) (int, *[]CheckinResponse, error)
 	//WX API
 	GetAssignedEvent(AssignedEventFilter, int64, int64, int64) (*[]MyEvent, error)
 	GetAssignedAudit(AssignedAuditFilter, int64, int64, int64) (*[]MyEvent, error)
@@ -440,4 +441,21 @@ func getDistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64) int {
 }
 func hsin(theta float64) float64 {
 	return math.Pow(math.Sin(theta/2), 2)
+}
+
+func (s *eventService) GetCheckinList(filter CheckinFilter, organizationID int64) (int, *[]CheckinResponse, error) {
+	if organizationID != 0 && organizationID != filter.OrganizationID {
+		filter.OrganizationID = organizationID
+	}
+	db := database.InitMySQL()
+	query := NewEventQuery(db)
+	count, err := query.GetCheckinCount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetCheckinList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	return count, list, err
 }

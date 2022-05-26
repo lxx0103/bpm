@@ -90,3 +90,28 @@ type NewCheckin struct {
 	CheckinType    int     `json:"checkin_type" swaggerignore:"true"`
 	Distance       int     `json:"distance" swaggerignore:"true"`
 }
+
+type CheckinFilter struct {
+	Name           string `form:"name" binding:"omitempty,max=64,min=1"`
+	ProjectID      int64  `form:"project_id" binding:"omitempty,min=1"`
+	OrganizationID int64  `form:"organization_id" binding:"omitempty,min=1"`
+	EventID        int64  `form:"event_id" binding:"omitempty,min=1"`
+	UserID         int64  `form:"user_id" binding:"omitempty,min=1"`
+	PageId         int    `form:"page_id" binding:"required,min=1"`
+	PageSize       int    `form:"page_size" binding:"required,min=5,max=200"`
+}
+
+type CheckinResponse struct {
+	Name             string  `db:"name" json:"name"`
+	ProjectID        int64   `db:"project_id" json:"project_id"`
+	ProjectName      string  `db:"project_name" json:"project_name"`
+	EventID          int64   `db:"event_id" json:"event_id"`
+	EventName        string  `db:"event_name" json:"event_name"`
+	OrganizationID   int64   `db:"organization_id" json:"organization_id"`
+	OrganizationName string  `db:"organization_name" json:"organization_name"`
+	CheckinType      int     `db:"checkin_type" json:"checkin_type"`
+	CheckinTime      string  `db:"checkin_time" json:"checkin_time"`
+	Longitude        float64 `db:"longitude" json:"longitude"`
+	Latitude         float64 `db:"latitude" json:"latitude"`
+	Distance         int     `db:"distance" json:"distance"`
+}

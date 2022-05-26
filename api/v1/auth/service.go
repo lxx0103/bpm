@@ -27,7 +27,7 @@ type AuthService interface {
 	GetUserInfo(string, int64) (*User, error)
 	UpdateUser(int64, UserUpdate, int64) (*User, error)
 	GetUserByID(int64, int64) (*User, error)
-	GetUserList(UserFilter, int64) (int, *[]User, error)
+	GetUserList(UserFilter, int64) (int, *[]UserResponse, error)
 	//Role Management
 	GetRoleByID(int64) (*Role, error)
 	NewRole(RoleNew) (*Role, error)
@@ -322,14 +322,17 @@ func (s *authService) GetUserByID(id int64, organizationID int64) (*User, error)
 	return user, err
 }
 
-func (s *authService) GetUserList(filter UserFilter, organizationID int64) (int, *[]User, error) {
+func (s *authService) GetUserList(filter UserFilter, organizationID int64) (int, *[]UserResponse, error) {
+	if organizationID != 0 && organizationID != filter.OrganizationID {
+		filter.OrganizationID = organizationID
+	}
 	db := database.InitMySQL()
 	query := NewAuthQuery(db)
-	count, err := query.GetUserCount(filter, organizationID)
+	count, err := query.GetUserCount(filter)
 	if err != nil {
 		return 0, nil, err
 	}
-	list, err := query.GetUserList(filter, organizationID)
+	list, err := query.GetUserList(filter)
 	if err != nil {
 		return 0, nil, err
 	}

@@ -255,6 +255,37 @@ definitions:
       updated_by:
         type: string
     type: object
+  auth.UserResponse:
+    properties:
+      address:
+        type: string
+      birthday:
+        type: string
+      email:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      identifier:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      phone:
+        type: string
+      position_id:
+        type: integer
+      role_id:
+        type: integer
+      status:
+        type: integer
+      type:
+        type: integer
+    type: object
   auth.UserUpdate:
     properties:
       address:
@@ -472,6 +503,33 @@ definitions:
     required:
     - content
     - result
+    type: object
+  event.CheckinResponse:
+    properties:
+      checkin_time:
+        type: string
+      checkin_type:
+        type: integer
+      distance:
+        type: integer
+      event_id:
+        type: integer
+      event_name:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      project_id:
+        type: integer
+      project_name:
+        type: string
     type: object
   event.ComponentInfo:
     properties:
@@ -1116,6 +1174,23 @@ definitions:
     - status
     - type
     type: object
+  template.TemplateResponse:
+    properties:
+      event_json:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      status:
+        type: integer
+      type:
+        type: integer
+    type: object
   template.TemplateUpdate:
     properties:
       event_json:
@@ -1303,6 +1378,63 @@ paths:
       summary: 根据ID更新API
       tags:
       - API管理
+  /checkins:
+    get:
+      consumes:
+      - application/json
+      operationId: "97"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      - description: 用户名称
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 事件ID
+        in: query
+        name: event_id
+        type: integer
+      - description: 用户ID
+        in: query
+        name: user_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.CheckinResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 事件签到列表
+      tags:
+      - 事件管理
   /clients:
     get:
       consumes:
@@ -3058,6 +3190,10 @@ paths:
         in: query
         name: type
         type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
       produces:
       - application/json
       responses:
@@ -3069,7 +3205,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/template.Template'
+                    $ref: '#/definitions/template.TemplateResponse'
                   type: array
               type: object
         "400":
@@ -3292,6 +3428,10 @@ paths:
         in: query
         name: type
         type: string
+      - description: 用户组织
+        in: query
+        name: organization_id
+        type: integer
       produces:
       - application/json
       responses:
@@ -3303,7 +3443,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/auth.Role'
+                    $ref: '#/definitions/auth.UserResponse'
                   type: array
               type: object
         "400":
@@ -3453,6 +3593,63 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 审核事件
+      tags:
+      - 小程序接口
+  /wx/checkins:
+    get:
+      consumes:
+      - application/json
+      operationId: "98"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      - description: 用户名称
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 事件ID
+        in: query
+        name: event_id
+        type: integer
+      - description: 用户ID
+        in: query
+        name: user_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.CheckinResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 事件签到列表
       tags:
       - 小程序接口
   /wx/clients:

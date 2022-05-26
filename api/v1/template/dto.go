@@ -28,3 +28,13 @@ type TemplateUpdate struct {
 type TemplateID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
+
+type TemplateResponse struct {
+	ID               int64  `db:"id" json:"id"`
+	OrganizationID   int64  `db:"organization_id" json:"organization_id"`
+	OrganizationName string `db:"organization_name" json:"organization_name"`
+	Name             string `db:"name" json:"name"`
+	Type             int    `db:"type" json:"type"`
+	Status           int    `db:"status" json:"status"`
+	EventJson        string `db:"event_json" json:"event_json"`
+}

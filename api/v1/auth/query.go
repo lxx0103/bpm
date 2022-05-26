@@ -21,8 +21,8 @@ type AuthQuery interface {
 	GetUserByID(int64, int64) (*User, error)
 	GetUserByOpenID(openID string) (*User, error)
 	GetUserByUserName(userName string) (*User, error)
-	GetUserCount(UserFilter, int64) (int, error)
-	GetUserList(UserFilter, int64) (*[]User, error)
+	GetUserCount(UserFilter) (int, error)
+	GetUserList(UserFilter) (*[]UserResponse, error)
 	//Role Management
 	GetRoleByID(id int64) (*Role, error)
 	GetRoleCount(filter RoleFilter) (int, error)
@@ -73,7 +73,7 @@ func (r *authQuery) GetUserByUserName(userName string) (*User, error) {
 	return &user, nil
 }
 
-func (r *authQuery) GetUserCount(filter UserFilter, organizationID int64) (int, error) {
+func (r *authQuery) GetUserCount(filter UserFilter) (int, error) {
 	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
@@ -84,7 +84,7 @@ func (r *authQuery) GetUserCount(filter UserFilter, organizationID int64) (int, 
 	if v := filter.Type; v == "admin" {
 		where, args = append(where, "type = ?"), append(args, 1)
 	}
-	if v := organizationID; v != 0 {
+	if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
 	var count int
@@ -98,26 +98,28 @@ func (r *authQuery) GetUserCount(filter UserFilter, organizationID int64) (int, 
 	return count, nil
 }
 
-func (r *authQuery) GetUserList(filter UserFilter, organizationID int64) (*[]User, error) {
-	where, args := []string{"status > 0"}, []interface{}{}
+func (r *authQuery) GetUserList(filter UserFilter) (*[]UserResponse, error) {
+	where, args := []string{"u.status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
-		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+		where, args = append(where, "u.name like ?"), append(args, "%"+v+"%")
 	}
 	if v := filter.Type; v == "wx" {
-		where, args = append(where, "type = ?"), append(args, 2)
+		where, args = append(where, "u.type = ?"), append(args, 2)
 	}
 	if v := filter.Type; v == "admin" {
-		where, args = append(where, "type = ?"), append(args, 1)
+		where, args = append(where, "u.type = ?"), append(args, 1)
 	}
-	if v := organizationID; v != 0 {
-		where, args = append(where, "organization_id = ?"), append(args, v)
+	if v := filter.OrganizationID; v != 0 {
+		where, args = append(where, "u.organization_id = ?"), append(args, v)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var users []User
+	var users []UserResponse
 	err := r.conn.Select(&users, `
-		SELECT id, type, identifier, organization_id, position_id, role_id, name, email, gender, phone, birthday, address, status
-		FROM users
+		SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
+		FROM users u
+		LEFT JOIN organizations o
+		ON u.organization_id = o.id
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
 	`, args...)
