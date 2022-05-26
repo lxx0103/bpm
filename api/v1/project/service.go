@@ -24,7 +24,7 @@ type ProjectService interface {
 	//Project Management
 	GetProjectByID(int64, int64) (*Project, error)
 	NewProject(ProjectNew, int64) (*Project, error)
-	GetProjectList(ProjectFilter, int64) (int, *[]Project, error)
+	GetProjectList(ProjectFilter, int64) (int, *[]ProjectResponse, error)
 	UpdateProject(int64, ProjectUpdate, int64) (*Project, error)
 	DeleteProject(int64, int64, string) error
 	//WX
@@ -190,7 +190,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 	return project, err
 }
 
-func (s *projectService) GetProjectList(filter ProjectFilter, organizationID int64) (int, *[]Project, error) {
+func (s *projectService) GetProjectList(filter ProjectFilter, organizationID int64) (int, *[]ProjectResponse, error) {
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
 	count, err := query.GetProjectCount(filter, organizationID)

@@ -20,7 +20,7 @@ type PositionQuery interface {
 	//Position Management
 	GetPositionByID(int64, int64) (*Position, error)
 	GetPositionCount(PositionFilter) (int, error)
-	GetPositionList(PositionFilter) (*[]Position, error)
+	GetPositionList(PositionFilter) (*[]PositionResponse, error)
 }
 
 func (r *positionQuery) GetPositionByID(id int64, organizationID int64) (*Position, error) {
@@ -56,20 +56,22 @@ func (r *positionQuery) GetPositionCount(filter PositionFilter) (int, error) {
 	return count, nil
 }
 
-func (r *positionQuery) GetPositionList(filter PositionFilter) (*[]Position, error) {
+func (r *positionQuery) GetPositionList(filter PositionFilter) (*[]PositionResponse, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
-		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+		where, args = append(where, "p.name like ?"), append(args, "%"+v+"%")
 	}
 	if v := filter.OrganizationID; v != 0 {
-		where, args = append(where, "organization_id = ?"), append(args, v)
+		where, args = append(where, "p.organization_id = ?"), append(args, v)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var positions []Position
+	var positions []PositionResponse
 	err := r.conn.Select(&positions, `
-		SELECT * 
-		FROM positions 
+		SELECT p.id as id, p.name as name, p.status as status, p.organization_id as organization_id, o.name as organization_name
+		FROM positions p
+		LEFT JOIN organizations o
+		ON p.organization_id = o.id
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
 	`, args...)

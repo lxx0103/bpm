@@ -20,7 +20,7 @@ type ProjectQuery interface {
 	//Project Management
 	GetProjectByID(int64, int64) (*Project, error)
 	GetProjectCount(ProjectFilter, int64) (int, error)
-	GetProjectList(ProjectFilter, int64) (*[]Project, error)
+	GetProjectList(ProjectFilter, int64) (*[]ProjectResponse, error)
 	//WX
 	GetProjectListByCreate(string, int64, MyProjectFilter) (*[]Project, error)
 	GetProjectCountByCreate(string, int64, MyProjectFilter) (int, error)
@@ -66,25 +66,29 @@ func (r *projectQuery) GetProjectCount(filter ProjectFilter, organizationID int6
 	return count, nil
 }
 
-func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64) (*[]Project, error) {
-	where, args := []string{"status > 0"}, []interface{}{}
+func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64) (*[]ProjectResponse, error) {
+	where, args := []string{"p.status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
-		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+		where, args = append(where, "p.name like ?"), append(args, "%"+v+"%")
 	}
 	if v := filter.Type; v != 0 {
-		where, args = append(where, "type = ?"), append(args, v)
+		where, args = append(where, "p.type = ?"), append(args, v)
 	}
 	if v := organizationID; v != 0 {
-		where, args = append(where, "organization_id = ?"), append(args, v)
+		where, args = append(where, "p.organization_id = ?"), append(args, v)
 	} else if v := filter.OrganizationID; v != 0 {
-		where, args = append(where, "organization_id = ?"), append(args, v)
+		where, args = append(where, "p.organization_id = ?"), append(args, v)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var projects []Project
+	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT * 
-		FROM projects 
+		SELECT p.id as id, p.organization_id as organization_id, o.name as organization_name, p.client_id as client_id, IFNULL(c.name, "内部流程") as client_name, p.name as name, p.type as type, p.location as location, p.longitude as longitude, p.latitude as latitude, p.checkin_distance as checkin_distance, p.status as status
+		FROM projects p
+		LEFT JOIN organizations o
+		ON p.organization_id = o.id
+		LEFT JOIN clients c
+		ON p.client_id = c.id
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
 	`, args...)

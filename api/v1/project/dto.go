@@ -47,3 +47,19 @@ type AssignedProjectFilter struct {
 	PageId   int `form:"page_id" binding:"required,min=1"`
 	PageSize int `form:"page_size" binding:"required,min=5,max=200"`
 }
+
+type ProjectResponse struct {
+	ID               int64   `db:"id" json:"id"`
+	OrganizationID   int64   `db:"organization_id" json:"organization_id"`
+	OrganizationName string  `db:"organization_name" json:"organization_name"`
+	TemplateID       int64   `db:"template_id" json:"template_id"`
+	ClientID         int64   `db:"client_id" json:"client_id"`
+	ClientName       string  `db:"client_name" json:"client_name"`
+	Name             string  `db:"name" json:"name"`
+	Type             int     `db:"type" json:"type"`
+	Location         string  `db:"location" json:"location"`
+	Longitude        float64 `db:"longitude" json:"longitude"`
+	Latitude         float64 `db:"latitude" json:"latitude"`
+	CheckinDistance  int     `db:"checkin_distance" json:"checkin_distance"`
+	Status           int     `db:"status" json:"status"`
+}

@@ -17,7 +17,7 @@ type PositionService interface {
 	//Position Management
 	GetPositionByID(int64, int64) (*Position, error)
 	NewPosition(PositionNew, int64) (*Position, error)
-	GetPositionList(PositionFilter, int64) (int, *[]Position, error)
+	GetPositionList(PositionFilter, int64) (int, *[]PositionResponse, error)
 	UpdatePosition(int64, PositionNew, int64) (*Position, error)
 }
 
@@ -56,7 +56,7 @@ func (s *positionService) NewPosition(info PositionNew, organizationID int64) (*
 	return position, err
 }
 
-func (s *positionService) GetPositionList(filter PositionFilter, organizationID int64) (int, *[]Position, error) {
+func (s *positionService) GetPositionList(filter PositionFilter, organizationID int64) (int, *[]PositionResponse, error) {
 	if organizationID != 0 {
 		filter.OrganizationID = organizationID
 	}

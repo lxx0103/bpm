@@ -17,7 +17,7 @@ import (
 // @Param page_size query int true "每页行数"
 // @Param name query string false "职位编码"
 // @Param organization_id query int64 false "组织ID"
-// @Success 200 object response.ListRes{data=[]Position} 成功
+// @Success 200 object response.ListRes{data=[]PositionResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /positions [GET]
 func GetPositionList(c *gin.Context) {

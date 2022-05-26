@@ -16,3 +16,11 @@ type PositionNew struct {
 type PositionID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
+
+type PositionResponse struct {
+	ID               int64  `db:"id" json:"id"`
+	OrganizationID   int64  `db:"organization_id" json:"organization_id"`
+	OrganizationName string `db:"organization_name" json:"organization_name"`
+	Name             string `db:"name" json:"name"`
+	Status           int    `db:"status" json:"status"`
+}
