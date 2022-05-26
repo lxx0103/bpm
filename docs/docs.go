@@ -2225,6 +2225,12 @@ var doc = `{
                         "description": "职位编码",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {

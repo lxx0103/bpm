@@ -2583,6 +2583,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
       produces:
       - application/json
       responses:

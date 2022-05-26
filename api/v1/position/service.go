@@ -57,13 +57,16 @@ func (s *positionService) NewPosition(info PositionNew, organizationID int64) (*
 }
 
 func (s *positionService) GetPositionList(filter PositionFilter, organizationID int64) (int, *[]Position, error) {
+	if organizationID != 0 {
+		filter.OrganizationID = organizationID
+	}
 	db := database.InitMySQL()
 	query := NewPositionQuery(db)
-	count, err := query.GetPositionCount(filter, organizationID)
+	count, err := query.GetPositionCount(filter)
 	if err != nil {
 		return 0, nil, err
 	}
-	list, err := query.GetPositionList(filter, organizationID)
+	list, err := query.GetPositionList(filter)
 	if err != nil {
 		return 0, nil, err
 	}

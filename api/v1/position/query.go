@@ -19,8 +19,8 @@ func NewPositionQuery(connection *sqlx.DB) PositionQuery {
 type PositionQuery interface {
 	//Position Management
 	GetPositionByID(int64, int64) (*Position, error)
-	GetPositionCount(PositionFilter, int64) (int, error)
-	GetPositionList(PositionFilter, int64) (*[]Position, error)
+	GetPositionCount(PositionFilter) (int, error)
+	GetPositionList(PositionFilter) (*[]Position, error)
 }
 
 func (r *positionQuery) GetPositionByID(id int64, organizationID int64) (*Position, error) {
@@ -37,12 +37,12 @@ func (r *positionQuery) GetPositionByID(id int64, organizationID int64) (*Positi
 	return &position, nil
 }
 
-func (r *positionQuery) GetPositionCount(filter PositionFilter, organizationID int64) (int, error) {
+func (r *positionQuery) GetPositionCount(filter PositionFilter) (int, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
-	if v := organizationID; v != 0 {
+	if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
 	var count int
@@ -56,12 +56,12 @@ func (r *positionQuery) GetPositionCount(filter PositionFilter, organizationID i
 	return count, nil
 }
 
-func (r *positionQuery) GetPositionList(filter PositionFilter, organizationID int64) (*[]Position, error) {
+func (r *positionQuery) GetPositionList(filter PositionFilter) (*[]Position, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
-	if v := organizationID; v != 0 {
+	if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
