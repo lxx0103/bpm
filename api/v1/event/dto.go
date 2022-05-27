@@ -71,7 +71,7 @@ type ComponentInfo struct {
 
 type AuditEventInfo struct {
 	Result     int    `json:"result" binding:"required,oneof=1 2"`
-	Content    string `json:"content" binding:"required,max=255"`
+	Content    string `json:"content" binding:"omitempty,max=255"`
 	User       string `json:"user" swaggerignore:"true"`
 	UserID     int64  `json:"user_id" swaggerignore:"true"`
 	PositionID int64  `json:"position_id" swaggerignore:"true"`
