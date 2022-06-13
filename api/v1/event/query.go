@@ -216,6 +216,12 @@ func (r *eventQuery) GetCheckinCount(filter CheckinFilter) (int, error) {
 	if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "p.organization_id = ?"), append(args, v)
 	}
+	if v := filter.From; v != "" {
+		where, args = append(where, "ec.checkin_time >= ?"), append(args, v+" 00:00:00")
+	}
+	if v := filter.To; v != "" {
+		where, args = append(where, "ec.checkin_time <= ?"), append(args, v+" 23:59:59")
+	}
 	var count int
 	err := r.conn.Get(&count, `
 		SELECT count(1) as count 
@@ -248,6 +254,12 @@ func (r *eventQuery) GetCheckinList(filter CheckinFilter) (*[]CheckinResponse, e
 	}
 	if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "p.organization_id = ?"), append(args, v)
+	}
+	if v := filter.From; v != "" {
+		where, args = append(where, "ec.checkin_time >= ?"), append(args, v+" 00:00:00")
+	}
+	if v := filter.To; v != "" {
+		where, args = append(where, "ec.checkin_time <= ?"), append(args, v+" 23:59:59")
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
