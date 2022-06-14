@@ -328,6 +328,8 @@ func WxNewEventCheckin(c *gin.Context) {
 // @Param organization_id query int64 false "组织ID"
 // @Param event_id query int64 false "事件ID"
 // @Param user_id query int64 false "用户ID"
+// @Param from query string false "开始日期（2016-01-01）"
+// @Param to query string false "结束日期（2016-01-01）"
 // @Success 200 object response.ListRes{data=[]CheckinResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /checkins [GET]
@@ -362,6 +364,8 @@ func GetCheckinList(c *gin.Context) {
 // @Param organization_id query int64 false "组织ID"
 // @Param event_id query int64 false "事件ID"
 // @Param user_id query int64 false "用户ID"
+// @Param from query string false "开始日期（2016-01-01）"
+// @Param to query string false "结束日期（2016-01-01）"
 // @Success 200 object response.ListRes{data=[]CheckinResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/checkins [GET]

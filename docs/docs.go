@@ -312,6 +312,18 @@ var doc = `{
                         "description": "用户ID",
                         "name": "user_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期（2016-01-01）",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期（2016-01-01）",
+                        "name": "to",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2247,7 +2259,7 @@ var doc = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/position.Position"
+                                                "$ref": "#/definitions/position.PositionResponse"
                                             }
                                         }
                                     }
@@ -2476,7 +2488,7 @@ var doc = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/project.Project"
+                                                "$ref": "#/definitions/project.ProjectResponse"
                                             }
                                         }
                                     }
@@ -3945,6 +3957,18 @@ var doc = `{
                         "type": "integer",
                         "description": "用户ID",
                         "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期（2016-01-01）",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期（2016-01-01）",
+                        "name": "to",
                         "in": "query"
                     }
                 ],
@@ -6177,7 +6201,6 @@ var doc = `{
         "event.AuditEventInfo": {
             "type": "object",
             "required": [
-                "content",
                 "result"
             ],
             "properties": {
@@ -6963,6 +6986,26 @@ var doc = `{
                 }
             }
         },
+        "position.PositionResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "project.Project": {
             "type": "object",
             "properties": {
@@ -7046,6 +7089,50 @@ var doc = `{
                 "template_id": {
                     "type": "integer",
                     "minimum": 1
+                }
+            }
+        },
+        "project.ProjectResponse": {
+            "type": "object",
+            "properties": {
+                "checkin_distance": {
+                    "type": "integer"
+                },
+                "client_id": {
+                    "type": "integer"
+                },
+                "client_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "template_id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
                 }
             }
         },

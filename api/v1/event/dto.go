@@ -97,8 +97,8 @@ type CheckinFilter struct {
 	OrganizationID int64  `form:"organization_id" binding:"omitempty,min=1"`
 	EventID        int64  `form:"event_id" binding:"omitempty,min=1"`
 	UserID         int64  `form:"user_id" binding:"omitempty,min=1"`
-	From           string `json:"from" binding:"omitempty,datetime=2006-01-02"`
-	To             string `json:"to" binding:"omitempty,datetime=2006-01-02"`
+	From           string `form:"from" binding:"omitempty,datetime=2006-01-02"`
+	To             string `form:"to" binding:"omitempty,datetime=2006-01-02"`
 	PageId         int    `form:"page_id" binding:"required,min=1"`
 	PageSize       int    `form:"page_size" binding:"required,min=5,max=200"`
 }
