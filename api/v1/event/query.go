@@ -238,7 +238,7 @@ func (r *eventQuery) GetCheckinCount(filter CheckinFilter) (int, error) {
 }
 
 func (r *eventQuery) GetCheckinList(filter CheckinFilter) (*[]CheckinResponse, error) {
-	fmt.Println("----", filter.UserID, "----")
+	fmt.Println("----", filter.From, "----", filter.To)
 	where, args := []string{"ec.status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "ec.user_name like ?"), append(args, "%"+v+"%")
