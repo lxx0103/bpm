@@ -21,6 +21,8 @@ type OrganizationQuery interface {
 	GetOrganizationByID(id int64) (*Organization, error)
 	GetOrganizationCount(filter OrganizationFilter) (int, error)
 	GetOrganizationList(filter OrganizationFilter) (*[]Organization, error)
+	GetQrCodeByPath(string) (string, error)
+	GetAccessToken(string) (string, error)
 }
 
 func (r *organizationQuery) GetOrganizationByID(id int64) (*Organization, error) {
@@ -66,4 +68,22 @@ func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]O
 		return nil, err
 	}
 	return &organizations, nil
+}
+
+func (r *organizationQuery) GetQrCodeByPath(path string) (string, error) {
+	var res string
+	err := r.conn.Get(&res, "SELECT img FROM qr_codes WHERE path = ? ", path)
+	if err != nil {
+		return "", err
+	}
+	return res, nil
+}
+
+func (r *organizationQuery) GetAccessToken(code string) (string, error) {
+	var res string
+	err := r.conn.Get(&res, "SELECT access_token FROM wx_access_token WHERE code = ? AND expires_in > DATE_ADD(now(), INTERVAL 5 MINUTE) order by id desc", code)
+	if err != nil {
+		return "", err
+	}
+	return res, nil
 }

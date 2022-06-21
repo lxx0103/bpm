@@ -120,3 +120,29 @@ func UpdateOrganization(c *gin.Context) {
 	}
 	response.Response(c, new)
 }
+
+// @Summary 获取小程序码
+// @Id 99
+// @Tags 组织管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param info body QrcodeFilter true "页面路径参数"
+// @Success 200 object response.ListRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /qrcode [POST]
+func GetQrCode(c *gin.Context) {
+	var filter QrcodeFilter
+	err := c.ShouldBindJSON(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	organizationService := NewOrganizationService()
+	res, err := organizationService.GetQrCodeByPath(filter.Path)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, res)
+}

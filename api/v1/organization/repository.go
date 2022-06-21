@@ -20,6 +20,8 @@ type OrganizationRepository interface {
 	CreateOrganization(info OrganizationNew) (int64, error)
 	UpdateOrganization(id int64, info OrganizationNew) (int64, error)
 	GetOrganizationByID(id int64) (*Organization, error)
+	NewAccessToken(string, string) error
+	NewQrcode(string, string) error
 }
 
 func (r *organizationRepository) CreateOrganization(info OrganizationNew) (int64, error) {
@@ -72,4 +74,31 @@ func (r *organizationRepository) GetOrganizationByID(id int64) (*Organization, e
 		return nil, err
 	}
 	return &res, nil
+}
+
+func (r *organizationRepository) NewAccessToken(code, token string) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO wx_access_token
+		(
+			code,
+			access_token,
+			expires_in
+		)
+		VALUES (?, ?, DATE_ADD(now(), INTERVAL 2 HOUR))
+	`, code, token)
+	return err
+}
+
+func (r *organizationRepository) NewQrcode(path, img string) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO qr_codes
+		(
+			path,
+			img,
+			created,
+			created_by
+		)
+		VALUES (?, ?, now(), "SYSTEM")
+	`, path, img)
+	return err
 }

@@ -7,4 +7,5 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/organizations/:id", GetOrganizationByID)
 	g.PUT("/organizations/:id", UpdateOrganization)
 	g.POST("/organizations", NewOrganization)
+	g.POST("/qrcode", GetQrCode)
 }
