@@ -988,6 +988,15 @@ definitions:
     - name
     - status
     type: object
+  organization.QrcodeFilter:
+    properties:
+      path:
+        maxLength: 128
+        minLength: 1
+        type: string
+    required:
+    - path
+    type: object
   position.Position:
     properties:
       created:
@@ -2921,6 +2930,37 @@ paths:
       summary: 根据ID更新项目
       tags:
       - 项目管理
+  /qrcode:
+    post:
+      consumes:
+      - application/json
+      operationId: "99"
+      parameters:
+      - description: 页面路径参数
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/organization.QrcodeFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取小程序码
+      tags:
+      - 组织管理
   /rolemenus/:id:
     get:
       consumes:

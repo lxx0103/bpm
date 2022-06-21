@@ -128,7 +128,7 @@ func UpdateOrganization(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param info body QrcodeFilter true "页面路径参数"
-// @Success 200 object response.ListRes{data=string} 成功
+// @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /qrcode [POST]
 func GetQrCode(c *gin.Context) {
