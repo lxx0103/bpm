@@ -20,9 +20,9 @@ func NewAuthRepository(transaction *sql.Tx) AuthRepository {
 type AuthRepository interface {
 	// GetCredential(SigninRequest) (UserAuth, error)
 	CreateUser(User) (int64, error)
-	GetUserByID(int64) (*User, error)
+	GetUserByID(int64) (*UserResponse, error)
 	CheckConfict(int, string) (bool, error)
-	UpdateUser(int64, User, string) error
+	UpdateUser(int64, UserResponse, string) error
 	// GetAuthCount(filter AuthFilter) (int, error)
 	// GetAuthList(filter AuthFilter) ([]Auth, error)
 
@@ -72,10 +72,16 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 	return id, nil
 }
 
-func (r *authRepository) GetUserByID(id int64) (*User, error) {
-	var res User
-	row := r.tx.QueryRow(`SELECT id, organization_id, type, identifier, "", role_id, position_id, name, email, gender, phone, birthday, address, status, created, created_by, updated, updated_by FROM users WHERE id = ? LIMIT 1`, id)
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.Type, &res.Identifier, &res.Credential, &res.RoleID, &res.PositionID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+func (r *authRepository) GetUserByID(id int64) (*UserResponse, error) {
+	var res UserResponse
+	row := r.tx.QueryRow(`	
+	SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
+	FROM users u
+	LEFT JOIN organizations o
+	ON u.organization_id = o.id
+	WHERE id = ?
+	`, id)
+	err := row.Scan(&res.ID, &res.Type, &res.Identifier, &res.OrganizationID, &res.PositionID, &res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.OrganizationName)
 	if err != nil {
 		msg := "用户不存在:" + err.Error()
 		return nil, errors.New(msg)
@@ -92,7 +98,7 @@ func (r *authRepository) CheckConfict(authType int, identifier string) (bool, er
 	}
 	return existed != 0, nil
 }
-func (r *authRepository) UpdateUser(id int64, info User, by string) error {
+func (r *authRepository) UpdateUser(id int64, info UserResponse, by string) error {
 	_, err := r.tx.Exec(`
 		Update users SET
 		name = ?,

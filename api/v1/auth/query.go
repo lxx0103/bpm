@@ -19,8 +19,8 @@ func NewAuthQuery(connection *sqlx.DB) AuthQuery {
 type AuthQuery interface {
 	//User Management
 	GetUserByID(int64, int64) (*User, error)
-	GetUserByOpenID(openID string) (*User, error)
-	GetUserByUserName(userName string) (*User, error)
+	GetUserByOpenID(openID string) (*UserResponse, error)
+	GetUserCredential(int64) (string, error)
 	GetUserCount(UserFilter) (int, error)
 	GetUserList(UserFilter) (*[]UserResponse, error)
 	//Role Management
@@ -55,22 +55,28 @@ func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
 	return &user, nil
 }
 
-func (r *authQuery) GetUserByOpenID(openID string) (*User, error) {
-	var user User
-	err := r.conn.Get(&user, "SELECT * FROM users WHERE identifier = ? ", openID)
+func (r *authQuery) GetUserByOpenID(openID string) (*UserResponse, error) {
+	var user UserResponse
+	err := r.conn.Get(&user, `	
+		SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
+		FROM users u
+		LEFT JOIN organizations o
+		ON u.organization_id = o.id
+		WHERE identifier = ?
+	`, openID)
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *authQuery) GetUserByUserName(userName string) (*User, error) {
-	var user User
-	err := r.conn.Get(&user, "SELECT * FROM users WHERE identifier = ? ", userName)
+func (r *authQuery) GetUserCredential(id int64) (string, error) {
+	var credential string
+	err := r.conn.Get(&credential, "SELECT credential FROM users WHERE id = ? ", id)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return &user, nil
+	return credential, nil
 }
 
 func (r *authQuery) GetUserCount(filter UserFilter) (int, error) {

@@ -20,6 +20,7 @@ type Event struct {
 	AuditUser       string         `db:"audit_user" json:"audit_user"`
 	NeedCheckin     int            `db:"need_checkin" json:"need_checkin"`
 	CheckinDistance int            `db:"checkin_distance" json:"checkin_distance"`
+	Sort            int            `db:"sort" json:"sort"`
 	Status          int            `db:"status" json:"status"`
 	Assign          *[]EventAssign `json:"assign"`
 	Created         time.Time      `db:"created" json:"created"`

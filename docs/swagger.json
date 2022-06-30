@@ -6384,6 +6384,9 @@
                 "project_id": {
                     "type": "integer"
                 },
+                "sort": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -6559,6 +6562,9 @@
                 "project_name": {
                     "type": "string"
                 },
+                "sort": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 }
@@ -6674,6 +6680,9 @@
                         "$ref": "#/definitions/node.NodePre"
                     }
                 },
+                "sort": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -6764,6 +6773,7 @@
                 "need_audit",
                 "need_checkin",
                 "pre_id",
+                "sort",
                 "template_id"
             ],
             "properties": {
@@ -6825,6 +6835,10 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "sort": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "template_id": {
                     "type": "integer",
@@ -6924,6 +6938,10 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "sort": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },

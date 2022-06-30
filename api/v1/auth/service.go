@@ -22,10 +22,10 @@ func NewAuthService() AuthService {
 type AuthService interface {
 	CreateAuth(SignupRequest) (int64, error)
 	VerifyWechatSignin(string) (*WechatCredential, error)
-	VerifyCredential(SigninRequest) (*User, error)
+	VerifyCredential(SigninRequest) (*UserResponse, error)
 	//User Management
-	GetUserInfo(string, int64) (*User, error)
-	UpdateUser(int64, UserUpdate, int64) (*User, error)
+	GetUserInfo(string, int64) (*UserResponse, error)
+	UpdateUser(int64, UserUpdate, int64) (*UserResponse, error)
 	GetUserByID(int64, int64) (*User, error)
 	GetUserList(UserFilter, int64) (int, *[]UserResponse, error)
 	//Role Management
@@ -114,7 +114,7 @@ func (s *authService) VerifyWechatSignin(code string) (*WechatCredential, error)
 	return &credential, nil
 }
 
-func (s *authService) GetUserInfo(openID string, organizationID int64) (*User, error) {
+func (s *authService) GetUserInfo(openID string, organizationID int64) (*UserResponse, error) {
 	db := database.InitMySQL()
 	query := NewAuthQuery(db)
 	user, err := query.GetUserByOpenID(openID)
@@ -149,14 +149,18 @@ func (s *authService) GetUserInfo(openID string, organizationID int64) (*User, e
 	return user, nil
 }
 
-func (s *authService) VerifyCredential(signinInfo SigninRequest) (*User, error) {
+func (s *authService) VerifyCredential(signinInfo SigninRequest) (*UserResponse, error) {
 	db := database.InitMySQL()
 	query := NewAuthQuery(db)
-	userInfo, err := query.GetUserByUserName(signinInfo.Identifier)
+	userInfo, err := query.GetUserByOpenID(signinInfo.Identifier)
 	if err != nil {
 		return nil, err
 	}
-	if !checkPasswordHash(signinInfo.Credential, userInfo.Credential) {
+	credential, err := query.GetUserCredential(userInfo.ID)
+	if err != nil {
+		return nil, err
+	}
+	if !checkPasswordHash(signinInfo.Credential, credential) {
 		errMessage := "密码错误"
 		return nil, errors.New(errMessage)
 	}
@@ -173,7 +177,7 @@ func checkPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
-func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) (*User, error) {
+func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) (*UserResponse, error) {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -244,6 +248,8 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 	}
 	if info.Status != 0 {
 		if oldUser.ID != byUserID { //不能自己更新自己的状态
+			oldUser.Status = info.Status
+		} else if info.Status == 3 {
 			oldUser.Status = info.Status
 		}
 	}

@@ -15,6 +15,7 @@ type EventNew struct {
 	NeedAudit   int    `json:"need_audit" binding:"required,oneof=1 2"`
 	AuditType   int    `json:"audit_type" binding:"required,oneof=1 2"`
 	NeedCheckin int    `json:"need_checkin" binding:"required,oneof=1 2"`
+	Sort        int    `json:"sort" binding:"required, min=1"`
 	NodeID      int64  `json:"node_id" binding:"required,min=1"`
 	User        string `json:"user" swaggerignore:"true"`
 }
@@ -54,6 +55,7 @@ type MyEvent struct {
 	AuditUser    string `db:"audit_user" json:"audit_user"`
 	AuditContent string `db:"audit_content" json:"audit_content"`
 	NeedCheckin  int    `db:"need_checkin" json:"need_checkin"`
+	Sort         int    `db:"sort" json:"sort"`
 	Status       int    `db:"status" json:"status"`
 }
 

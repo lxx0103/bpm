@@ -15,7 +15,7 @@ type SigninRequest struct {
 }
 type SigninResponse struct {
 	Token string `json:"token"`
-	User  User
+	User  UserResponse
 }
 
 type SignupRequest struct {

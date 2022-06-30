@@ -166,6 +166,9 @@ func (s *nodeService) UpdateNode(nodeID int64, info NodeUpdate, organizationID i
 	if info.NeedCheckin != 0 {
 		oldNode.NeedCheckin = info.NeedCheckin
 	}
+	if info.Sort != 0 {
+		oldNode.Sort = info.Sort
+	}
 	oldNode.JsonData = info.JsonData
 	err = repo.UpdateNode(nodeID, *oldNode, info.User)
 	if err != nil {

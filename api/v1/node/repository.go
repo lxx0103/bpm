@@ -47,6 +47,7 @@ func (r *nodeRepository) CreateNode(info NodeNew) (int64, error) {
 			need_audit,
 			audit_type,
 			need_checkin,
+			sort,
 			status,
 			json_data,
 			created,
@@ -54,8 +55,8 @@ func (r *nodeRepository) CreateNode(info NodeNew) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.TemplateID, info.Name, info.Assignable, info.AssignType, info.NeedAudit, info.AuditType, info.NeedCheckin, 1, "{}", time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.TemplateID, info.Name, info.Assignable, info.AssignType, info.NeedAudit, info.AuditType, info.NeedCheckin, info.Sort, 1, "{}", time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -71,11 +72,12 @@ func (r *nodeRepository) UpdateNode(id int64, info Node, byUser string) error {
 		need_audit = ?,
 		audit_type = ?,
 		need_checkin = ?,
+		sort = ?,
 		json_data = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Assignable, info.AssignType, info.NeedAudit, info.AuditType, info.NeedCheckin, info.JsonData, time.Now(), byUser, id)
+	`, info.Name, info.Assignable, info.AssignType, info.NeedAudit, info.AuditType, info.NeedCheckin, info.Sort, info.JsonData, time.Now(), byUser, id)
 	return err
 }
 
@@ -143,11 +145,11 @@ func (r *nodeRepository) GetNodeByID(id int64, organizationID int64) (*Node, err
 	var res Node
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT e.id, e.template_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.need_checkin, e.status, e.json_data, e.created, e.created_by, e.updated, e.updated_by FROM nodes e LEFT JOIN templates p ON e.template_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT e.id, e.template_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.need_checkin, e.sort, e.status, e.json_data, e.created, e.created_by, e.updated, e.updated_by FROM nodes e LEFT JOIN templates p ON e.template_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, template_id, name, assignable, assign_type, need_audit, audit_type, need_checkin, status, json_data, created, created_by, updated, updated_by FROM nodes WHERE id = ? AND status > 0 LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, template_id, name, assignable, assign_type, need_audit, audit_type, need_checkin, sort, status, json_data, created, created_by, updated, updated_by FROM nodes WHERE id = ? AND status > 0 LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.TemplateID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.NeedCheckin, &res.Status, &res.JsonData, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.TemplateID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.NeedCheckin, &res.Sort, &res.Status, &res.JsonData, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
@@ -256,13 +258,13 @@ func (r *nodeRepository) DeleteNode(id int64, byUser string) error {
 
 func (r *nodeRepository) GetNodesByTemplateID(templateID int64) (*[]Node, error) {
 	var res []Node
-	rows, err := r.tx.Query(`SELECT id, template_id, name, assign_type, assignable, need_audit, audit_type, need_checkin FROM nodes  WHERE template_id = ? AND status > 0`, templateID)
+	rows, err := r.tx.Query(`SELECT id, template_id, name, assign_type, assignable, need_audit, audit_type, need_checkin, sort FROM nodes  WHERE template_id = ? AND status > 0`, templateID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var rowRes Node
-		err = rows.Scan(&rowRes.ID, &rowRes.TemplateID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable, &rowRes.NeedAudit, &rowRes.AuditType, &rowRes.NeedCheckin)
+		err = rows.Scan(&rowRes.ID, &rowRes.TemplateID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable, &rowRes.NeedAudit, &rowRes.AuditType, &rowRes.NeedCheckin, &rowRes.Sort)
 		if err != nil {
 			return nil, err
 		}

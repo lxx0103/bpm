@@ -18,6 +18,7 @@ type NodeNew struct {
 	AuditType   int     `json:"audit_type" binding:"required,oneof=1 2"`
 	AuditTo     []int64 `json:"audit_to" binding:"required"`
 	NeedCheckin int     `json:"need_checkin" binding:"required,oneof=1 2"`
+	Sort        int     `json:"sort" binding:"required,min=1"`
 	User        string  `json:"user" swaggerignore:"true"`
 }
 type NodeUpdate struct {
@@ -30,6 +31,7 @@ type NodeUpdate struct {
 	AuditType   int     `json:"audit_type" binding:"omitempty,oneof=1 2"`
 	AuditTo     []int64 `json:"audit_to" binding:"omitempty"`
 	NeedCheckin int     `json:"need_checkin" binding:"omitempty"`
+	Sort        int     `json:"sort" binding:"omitempty,min=1"`
 	JsonData    string  `json:"json_data" binding:"required,json"`
 	User        string  `json:"user" swaggerignore:"true"`
 }

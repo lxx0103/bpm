@@ -589,6 +589,8 @@ definitions:
         type: array
       project_id:
         type: integer
+      sort:
+        type: integer
       status:
         type: integer
       updated:
@@ -705,6 +707,8 @@ definitions:
         type: integer
       project_name:
         type: string
+      sort:
+        type: integer
       status:
         type: integer
     type: object
@@ -781,6 +785,8 @@ definitions:
         items:
           $ref: '#/definitions/node.NodePre'
         type: array
+      sort:
+        type: integer
       status:
         type: integer
       template_id:
@@ -876,6 +882,9 @@ definitions:
         items:
           type: integer
         type: array
+      sort:
+        minimum: 1
+        type: integer
       template_id:
         minimum: 1
         type: integer
@@ -889,6 +898,7 @@ definitions:
     - need_audit
     - need_checkin
     - pre_id
+    - sort
     - template_id
     type: object
   node.NodePre:
@@ -953,6 +963,9 @@ definitions:
         items:
           type: integer
         type: array
+      sort:
+        minimum: 1
+        type: integer
     required:
     - json_data
     type: object

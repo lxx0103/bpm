@@ -152,7 +152,7 @@ func (r *eventQuery) CheckActive(eventID int64) (bool, error) {
 
 func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*MyEvent, error) {
 	var event MyEvent
-	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.status FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.id = ?"
+	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.sort, e.status FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.id = ?"
 	if status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
@@ -167,7 +167,7 @@ func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*MyEvent, er
 
 func (r *eventQuery) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 	var event []MyEvent
-	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.status FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.project_id = ?  "
+	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.sort, e.status FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.project_id = ?  "
 	if filter.Status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
@@ -186,7 +186,7 @@ func (r *eventQuery) GetAssignedAudit(userID int64, positionID int64) ([]int64, 
 
 func (r *eventQuery) GetAssignedAuditByID(id int64, status string) (*MyEvent, error) {
 	var event MyEvent
-	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.status FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.id = ?"
+	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.sort, e.status FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.id = ?"
 	if status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {

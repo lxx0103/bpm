@@ -89,6 +89,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		eventInfo.NeedAudit = (*nodes)[i].NeedAudit
 		eventInfo.AuditType = (*nodes)[i].AuditType
 		eventInfo.NeedCheckin = (*nodes)[i].NeedCheckin
+		eventInfo.Sort = (*nodes)[i].Sort
 		eventInfo.NodeID = (*nodes)[i].ID
 		eventInfo.User = info.User
 		eventID, err := eventRepo.CreateEvent(eventInfo)

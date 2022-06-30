@@ -23,7 +23,7 @@ import (
 // @Router /signin [POST]
 func Signin(c *gin.Context) {
 	var signinInfo SigninRequest
-	var userInfo *User
+	var userInfo *UserResponse
 	err := c.ShouldBindJSON(&signinInfo)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)
@@ -57,11 +57,12 @@ func Signin(c *gin.Context) {
 		return
 	}
 	claims := service.CustomClaims{
-		UserID:         userInfo.ID,
-		Username:       userInfo.Name,
-		RoleID:         userInfo.RoleID,
-		OrganizationID: userInfo.OrganizationID,
-		PositionID:     userInfo.PositionID,
+		UserID:           userInfo.ID,
+		Username:         userInfo.Name,
+		RoleID:           userInfo.RoleID,
+		OrganizationID:   userInfo.OrganizationID,
+		OrganizationName: userInfo.OrganizationName,
+		PositionID:       userInfo.PositionID,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000,
 			ExpiresAt: time.Now().Unix() + 72000,

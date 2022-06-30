@@ -6398,6 +6398,9 @@ var doc = `{
                 "project_id": {
                     "type": "integer"
                 },
+                "sort": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -6573,6 +6576,9 @@ var doc = `{
                 "project_name": {
                     "type": "string"
                 },
+                "sort": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 }
@@ -6688,6 +6694,9 @@ var doc = `{
                         "$ref": "#/definitions/node.NodePre"
                     }
                 },
+                "sort": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -6778,6 +6787,7 @@ var doc = `{
                 "need_audit",
                 "need_checkin",
                 "pre_id",
+                "sort",
                 "template_id"
             ],
             "properties": {
@@ -6839,6 +6849,10 @@ var doc = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "sort": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "template_id": {
                     "type": "integer",
@@ -6938,6 +6952,10 @@ var doc = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "sort": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
