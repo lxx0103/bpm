@@ -9,7 +9,7 @@ type PositionFilter struct {
 
 type PositionNew struct {
 	Name           string `json:"name" binding:"required,min=1,max=64"`
-	OrganizationID int64  `json:"organization_id" binding:"required,min=1"`
+	OrganizationID int64  `json:"organization_id" binding:"omitempty,min=1"`
 	Status         int    `json:"status" binding:"required,oneof=1 2"`
 	User           string `json:"user" swaggerignore:"true"`
 }

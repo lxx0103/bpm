@@ -51,11 +51,12 @@ func (r *positionRepository) UpdatePosition(id int64, info PositionNew) (int64, 
 	result, err := r.tx.Exec(`
 		Update positions SET 
 		name = ?,
+		organization_id = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.OrganizationID, info.Status, time.Now(), info.User, id)
 	if err != nil {
 		return 0, err
 	}

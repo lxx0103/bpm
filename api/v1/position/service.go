@@ -29,9 +29,12 @@ func (s *positionService) GetPositionByID(id int64, organizationID int64) (*Posi
 }
 
 func (s *positionService) NewPosition(info PositionNew, organizationID int64) (*Position, error) {
-	if organizationID != 0 && organizationID != info.OrganizationID {
+	if organizationID == 0 && info.OrganizationID == 0 {
 		msg := "组织ID错误"
 		return nil, errors.New(msg)
+	}
+	if organizationID != 0 {
+		info.OrganizationID = organizationID
 	}
 	db := database.InitMySQL()
 	tx, err := db.Begin()
@@ -78,6 +81,13 @@ func (s *positionService) GetPositionList(filter PositionFilter, organizationID 
 }
 
 func (s *positionService) UpdatePosition(positionID int64, info PositionNew, organizationID int64) (*Position, error) {
+	if organizationID == 0 && info.OrganizationID == 0 {
+		msg := "组织ID错误"
+		return nil, errors.New(msg)
+	}
+	if organizationID != 0 {
+		info.OrganizationID = organizationID
+	}
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -85,15 +95,15 @@ func (s *positionService) UpdatePosition(positionID int64, info PositionNew, org
 	}
 	defer tx.Rollback()
 	repo := NewPositionRepository(tx)
-	oldPosition, err := repo.GetPositionByID(positionID, organizationID)
-	if err != nil {
-		return nil, err
-	}
-	if organizationID != 0 && organizationID != oldPosition.OrganizationID {
-		msg := "你无权修改此职位"
-		return nil, errors.New(msg)
-	}
-	exist, err := repo.CheckNameExist(info.Name, organizationID, positionID)
+	// oldPosition, err := repo.GetPositionByID(positionID, info.OrganizationID)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if organizationID != 0 && organizationID != oldPosition.OrganizationID {
+	// 	msg := "你无权修改此职位"
+	// 	return nil, errors.New(msg)
+	// }
+	exist, err := repo.CheckNameExist(info.Name, info.OrganizationID, positionID)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +115,7 @@ func (s *positionService) UpdatePosition(positionID int64, info PositionNew, org
 	if err != nil {
 		return nil, err
 	}
-	position, err := repo.GetPositionByID(positionID, organizationID)
+	position, err := repo.GetPositionByID(positionID, info.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
