@@ -5827,7 +5827,7 @@ var doc = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/auth.User"
+                    "$ref": "#/definitions/auth.UserResponse"
                 }
             }
         },
@@ -7052,6 +7052,7 @@ var doc = `{
             "type": "object",
             "required": [
                 "name",
+                "organization_id",
                 "status"
             ],
             "properties": {
@@ -7059,6 +7060,10 @@ var doc = `{
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
+                },
+                "organization_id": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "status": {
                     "type": "integer",

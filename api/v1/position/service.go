@@ -29,6 +29,10 @@ func (s *positionService) GetPositionByID(id int64, organizationID int64) (*Posi
 }
 
 func (s *positionService) NewPosition(info PositionNew, organizationID int64) (*Position, error) {
+	if organizationID != 0 && organizationID != info.OrganizationID {
+		msg := "组织ID错误"
+		return nil, errors.New(msg)
+	}
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -36,7 +40,7 @@ func (s *positionService) NewPosition(info PositionNew, organizationID int64) (*
 	}
 	defer tx.Rollback()
 	repo := NewPositionRepository(tx)
-	exist, err := repo.CheckNameExist(info.Name, organizationID, 0)
+	exist, err := repo.CheckNameExist(info.Name, info.OrganizationID, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -44,11 +48,11 @@ func (s *positionService) NewPosition(info PositionNew, organizationID int64) (*
 		msg := "职位名称重复"
 		return nil, errors.New(msg)
 	}
-	positionID, err := repo.CreatePosition(info, organizationID)
+	positionID, err := repo.CreatePosition(info)
 	if err != nil {
 		return nil, err
 	}
-	position, err := repo.GetPositionByID(positionID, organizationID)
+	position, err := repo.GetPositionByID(positionID, info.OrganizationID)
 	if err != nil {
 		return nil, err
 	}

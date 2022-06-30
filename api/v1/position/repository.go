@@ -17,13 +17,13 @@ func NewPositionRepository(transaction *sql.Tx) PositionRepository {
 
 type PositionRepository interface {
 	//Position Management
-	CreatePosition(PositionNew, int64) (int64, error)
+	CreatePosition(PositionNew) (int64, error)
 	UpdatePosition(int64, PositionNew) (int64, error)
 	GetPositionByID(int64, int64) (*Position, error)
 	CheckNameExist(string, int64, int64) (int, error)
 }
 
-func (r *positionRepository) CreatePosition(info PositionNew, organizationID int64) (int64, error) {
+func (r *positionRepository) CreatePosition(info PositionNew) (int64, error) {
 	result, err := r.tx.Exec(`
 		INSERT INTO positions
 		(
@@ -36,7 +36,7 @@ func (r *positionRepository) CreatePosition(info PositionNew, organizationID int
 			updated_by
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`, organizationID, info.Name, info.Status, time.Now(), info.User, time.Now(), info.User)
+	`, info.OrganizationID, info.Name, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
