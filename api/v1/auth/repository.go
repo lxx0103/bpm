@@ -79,7 +79,7 @@ func (r *authRepository) GetUserByID(id int64) (*UserResponse, error) {
 	FROM users u
 	LEFT JOIN organizations o
 	ON u.organization_id = o.id
-	WHERE id = ?
+	WHERE u.id = ?
 	`, id)
 	err := row.Scan(&res.ID, &res.Type, &res.Identifier, &res.OrganizationID, &res.PositionID, &res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.OrganizationName)
 	if err != nil {
