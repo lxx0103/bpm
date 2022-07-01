@@ -30,7 +30,7 @@ func Signin(c *gin.Context) {
 		return
 	}
 	authService := NewAuthService()
-	if signinInfo.AuthType == 2 {
+	if signinInfo.AuthType == 2 || signinInfo.AuthType == 3 {
 		wechatCredential, err := authService.VerifyWechatSignin(signinInfo.Identifier)
 		if err != nil {
 			response.ResponseUnauthorized(c, "AuthError", err)
@@ -40,7 +40,7 @@ func Signin(c *gin.Context) {
 			response.ResponseUnauthorized(c, "AuthError", errors.New(wechatCredential.ErrMsg))
 			return
 		}
-		userInfo, err = authService.GetUserInfo(wechatCredential.OpenID, signinInfo.OrganizationID)
+		userInfo, err = authService.GetUserInfo(wechatCredential.OpenID, signinInfo.AuthType, signinInfo.OrganizationID)
 		if err != nil {
 			response.ResponseUnauthorized(c, "AuthError", err)
 			return
@@ -58,6 +58,7 @@ func Signin(c *gin.Context) {
 	}
 	claims := service.CustomClaims{
 		UserID:           userInfo.ID,
+		UserType:         userInfo.Type,
 		Username:         userInfo.Name,
 		RoleID:           userInfo.RoleID,
 		OrganizationID:   userInfo.OrganizationID,

@@ -102,6 +102,12 @@ func (s *clientService) UpdateClient(clientID int64, info ClientNew, organizatio
 	if err != nil {
 		return nil, err
 	}
+	if client.UserID != 0 {
+		err := repo.UpdateClientUser(client.UserID, info)
+		if err != nil {
+			return nil, err
+		}
+	}
 	tx.Commit()
 	return client, err
 }

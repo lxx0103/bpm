@@ -5804,7 +5804,8 @@ var doc = `{
                     "type": "integer",
                     "enum": [
                         1,
-                        2
+                        2,
+                        3
                     ]
                 },
                 "credential": {
@@ -6029,6 +6030,9 @@ var doc = `{
                 },
                 "updated_by": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -7052,7 +7056,6 @@ var doc = `{
             "type": "object",
             "required": [
                 "name",
-                "organization_id",
                 "status"
             ],
             "properties": {

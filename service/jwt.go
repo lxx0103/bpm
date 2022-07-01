@@ -10,6 +10,7 @@ import (
 
 type CustomClaims struct {
 	UserID           int64
+	UserType         int
 	OrganizationID   int64
 	OrganizationName string
 	Username         string

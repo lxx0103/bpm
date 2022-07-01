@@ -181,6 +181,7 @@ definitions:
         enum:
         - 1
         - 2
+        - 3
         type: integer
       credential:
         minLength: 6
@@ -336,6 +337,8 @@ definitions:
         type: string
       updated_by:
         type: string
+      user_id:
+        type: integer
     type: object
   client.ClientNew:
     properties:
@@ -1045,7 +1048,6 @@ definitions:
         type: integer
     required:
     - name
-    - organization_id
     - status
     type: object
   position.PositionResponse:

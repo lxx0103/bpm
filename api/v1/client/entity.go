@@ -4,6 +4,7 @@ import "time"
 
 type Client struct {
 	ID             int64     `db:"id" json:"id"`
+	UserID         int64     `db:"user_id" json:"user_id"`
 	OrganizationID int64     `db:"organization_id" json:"organization_id"`
 	Phone          string    `db:"phone" json:"phone"`
 	Address        string    `db:"address" json:"address"`

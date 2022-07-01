@@ -69,6 +69,24 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	if newUser.Type == 3 {
+		_, err := r.tx.Exec(`
+			INSERT INTO clients
+			(
+				user_id,
+				organization_id,
+				status,
+				created,
+				created_by,
+				updated,
+				updated_by
+			)
+			VALUES (?, ?, 2, ?, "SIGNUP", ?, "SIGNUP")
+		`, id, newUser.OrganizationID, time.Now(), time.Now())
+		if err != nil {
+			return 0, err
+		}
+	}
 	return id, nil
 }
 

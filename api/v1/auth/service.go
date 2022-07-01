@@ -24,7 +24,7 @@ type AuthService interface {
 	VerifyWechatSignin(string) (*WechatCredential, error)
 	VerifyCredential(SigninRequest) (*UserResponse, error)
 	//User Management
-	GetUserInfo(string, int64) (*UserResponse, error)
+	GetUserInfo(string, int, int64) (*UserResponse, error)
 	UpdateUser(int64, UserUpdate, int64) (*UserResponse, error)
 	GetUserByID(int64, int64) (*User, error)
 	GetUserList(UserFilter, int64) (int, *[]UserResponse, error)
@@ -114,7 +114,7 @@ func (s *authService) VerifyWechatSignin(code string) (*WechatCredential, error)
 	return &credential, nil
 }
 
-func (s *authService) GetUserInfo(openID string, organizationID int64) (*UserResponse, error) {
+func (s *authService) GetUserInfo(openID string, authType int, organizationID int64) (*UserResponse, error) {
 	db := database.InitMySQL()
 	query := NewAuthQuery(db)
 	user, err := query.GetUserByOpenID(openID)
@@ -132,7 +132,7 @@ func (s *authService) GetUserInfo(openID string, organizationID int64) (*UserRes
 		}
 		defer tx.Rollback()
 		var newUser User
-		newUser.Type = 2
+		newUser.Type = authType
 		newUser.Identifier = openID
 		newUser.OrganizationID = organizationID
 		repo := NewAuthRepository(tx)
@@ -190,6 +190,10 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 	oldUser, err := repo.GetUserByID(userID)
 	if err != nil {
 		return nil, err
+	}
+	if oldUser.Type != 1 && oldUser.Type != 2 {
+		msg := "用户类型错误"
+		return nil, errors.New(msg)
 	}
 	byUser, err := repo.GetUserByID(byUserID)
 	if err != nil {

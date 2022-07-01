@@ -19,6 +19,7 @@ type ClientRepository interface {
 	//Client Management
 	CreateClient(ClientNew, int64) (int64, error)
 	UpdateClient(int64, ClientNew) (int64, error)
+	UpdateClientUser(int64, ClientNew) error
 	GetClientByID(int64, int64) (*Client, error)
 	CheckNameExist(string, int64, int64) (int, error)
 }
@@ -93,4 +94,18 @@ func (r *clientRepository) CheckNameExist(name string, organizationID int64, sel
 		return 0, err
 	}
 	return res, nil
+}
+
+func (r *clientRepository) UpdateClientUser(id int64, info ClientNew) error {
+	_, err := r.tx.Exec(`
+		Update users SET 
+		name = ?,
+		phone = ?,
+		address = ?,
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, info.Name, info.Phone, info.Address, info.Status, time.Now(), info.User, id)
+	return err
 }
