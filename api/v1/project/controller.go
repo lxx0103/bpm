@@ -177,9 +177,22 @@ func WxGetMyProjects(c *gin.Context) {
 	}
 	projectService := NewProjectService()
 	claims := c.MustGet("claims").(*service.CustomClaims)
-	count, list, err := projectService.GetMyProject(filter, claims.Username, claims.OrganizationID)
-	if err != nil {
-		response.ResponseError(c, "DatabaseError", err)
+	var count int
+	var list *[]Project
+	if claims.UserType == 2 {
+		count, list, err = projectService.GetMyProject(filter, claims.Username, claims.OrganizationID)
+		if err != nil {
+			response.ResponseError(c, "DatabaseError", err)
+			return
+		}
+	} else if claims.UserType == 3 {
+		count, list, err = projectService.GetClientProject(filter, claims.UserID, claims.OrganizationID)
+		if err != nil {
+			response.ResponseError(c, "DatabaseError", err)
+			return
+		}
+	} else {
+		response.ResponseError(c, "用户类型错误", err)
 		return
 	}
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)

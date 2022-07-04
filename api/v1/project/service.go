@@ -30,6 +30,7 @@ type ProjectService interface {
 	//WX
 	GetMyProject(MyProjectFilter, string, int64) (int, *[]Project, error)
 	GetAssignedProject(AssignedProjectFilter, int64, int64, int64) (int, *[]Project, error)
+	GetClientProject(MyProjectFilter, int64, int64) (int, *[]Project, error)
 }
 
 func (s *projectService) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -311,6 +312,21 @@ func (s *projectService) GetAssignedProject(filter AssignedProjectFilter, userID
 	myProjectsCount, err := query.GetProjectCountByAssigned(filter, userID, positionID, organizationID)
 	if err != nil {
 		fmt.Println("bbb")
+		return 0, nil, err
+	}
+	return myProjectsCount, myProjects, err
+}
+
+func (s *projectService) GetClientProject(filter MyProjectFilter, userID int64, organizationID int64) (int, *[]Project, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+
+	myProjects, err := query.GetProjectListByClientID(userID, organizationID, filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	myProjectsCount, err := query.GetProjectCountByClientID(userID, organizationID, filter)
+	if err != nil {
 		return 0, nil, err
 	}
 	return myProjectsCount, myProjects, err

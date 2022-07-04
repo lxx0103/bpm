@@ -26,6 +26,8 @@ type ProjectQuery interface {
 	GetProjectCountByCreate(string, int64, MyProjectFilter) (int, error)
 	GetProjectListByAssigned(AssignedProjectFilter, int64, int64, int64) (*[]Project, error)
 	GetProjectCountByAssigned(AssignedProjectFilter, int64, int64, int64) (int, error)
+	GetProjectListByClientID(int64, int64, MyProjectFilter) (*[]Project, error)
+	GetProjectCountByClientID(int64, int64, MyProjectFilter) (int, error)
 }
 
 func (r *projectQuery) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -196,4 +198,58 @@ func (r *projectQuery) GetProjectCountByAssigned(filter AssignedProjectFilter, u
 		AND status > 0 AND organization_id = ? 
 	`, args...)
 	return count, err
+}
+
+func (r *projectQuery) GetProjectListByClientID(userID int64, organization_id int64, filter MyProjectFilter) (*[]Project, error) {
+	where, args := []string{"1=1"}, []interface{}{}
+	if filter.Status == "all" {
+		where, args = append(where, "p.status > ?"), append(args, 0)
+	} else {
+		where, args = append(where, "p.status = ?"), append(args, 1)
+	}
+	if v := filter.Type; v != 0 {
+		where, args = append(where, "p.type = ?"), append(args, v)
+	}
+	where, args = append(where, "c.user_id = ?"), append(args, userID)
+	where, args = append(where, "p.organization_id = ?"), append(args, organization_id)
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var projects []Project
+	err := r.conn.Select(&projects, `
+		SELECT p.* 
+		FROM projects p
+		LEFT JOIN clients c
+		ON p.client_id = c.id
+		WHERE `+strings.Join(where, " AND ")+`
+		LIMIT ?, ?
+	`, args...)
+	if err != nil {
+		return nil, err
+	}
+	return &projects, nil
+}
+
+func (r *projectQuery) GetProjectCountByClientID(userID int64, organization_id int64, filter MyProjectFilter) (int, error) {
+	where, args := []string{"1=1"}, []interface{}{}
+	if filter.Status == "all" {
+		where, args = append(where, "p.status > ?"), append(args, 0)
+	} else {
+		where, args = append(where, "p.status = ?"), append(args, 1)
+	}
+	if v := filter.Type; v != 0 {
+		where, args = append(where, "p.type = ?"), append(args, v)
+	}
+	where, args = append(where, "c.user_id = ?"), append(args, userID)
+	where, args = append(where, "p.organization_id = ?"), append(args, organization_id)
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) as count 
+		FROM projects p
+		LEFT JOIN clients c
+		ON p.client_id = c.id
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
