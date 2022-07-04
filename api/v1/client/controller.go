@@ -194,3 +194,46 @@ func WxGetClientByID(c *gin.Context) {
 func WxUpdateClient(c *gin.Context) {
 	UpdateClient(c)
 }
+
+// @Summary 根据UserID获取客户
+// @Id 100
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "用户ID"
+// @Success 200 object response.SuccessRes{data=Client} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/clients/user/:id [GET]
+func WxGetClientByUserID(c *gin.Context) {
+	GetClientByUserID(c)
+
+}
+
+// @Summary 根据ID获取客户
+// @Id 101
+// @Tags 客户管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "用户ID"
+// @Success 200 object response.SuccessRes{data=Client} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /clients/user/:id [GET]
+func GetClientByUserID(c *gin.Context) {
+	var uri ClientID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	clientService := NewClientService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
+	client, err := clientService.GetClientByUserID(uri.ID, organizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, client)
+
+}

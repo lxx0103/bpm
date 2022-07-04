@@ -21,6 +21,7 @@ type ClientQuery interface {
 	GetClientByID(int64, int64) (*Client, error)
 	GetClientCount(ClientFilter, int64) (int, error)
 	GetClientList(ClientFilter, int64) (*[]Client, error)
+	GetClientByUserID(int64, int64) (*Client, error)
 }
 
 func (r *clientQuery) GetClientByID(id int64, organizationID int64) (*Client, error) {
@@ -77,4 +78,18 @@ func (r *clientQuery) GetClientList(filter ClientFilter, organizationID int64) (
 		return nil, err
 	}
 	return &clients, nil
+}
+
+func (r *clientQuery) GetClientByUserID(id int64, organizationID int64) (*Client, error) {
+	var client Client
+	var err error
+	if organizationID != 0 {
+		err = r.conn.Get(&client, "SELECT * FROM clients WHERE user_id = ? AND organization_id = ?", id, organizationID)
+	} else {
+		err = r.conn.Get(&client, "SELECT * FROM clients WHERE user_id = ? ", id)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &client, nil
 }

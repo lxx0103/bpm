@@ -19,6 +19,7 @@ type ClientService interface {
 	NewClient(ClientNew, int64) (*Client, error)
 	GetClientList(ClientFilter, int64) (int, *[]Client, error)
 	UpdateClient(int64, ClientNew, int64) (*Client, error)
+	GetClientByUserID(int64, int64) (*Client, error)
 }
 
 func (s *clientService) GetClientByID(id int64, organizationID int64) (*Client, error) {
@@ -109,5 +110,12 @@ func (s *clientService) UpdateClient(clientID int64, info ClientNew, organizatio
 		}
 	}
 	tx.Commit()
+	return client, err
+}
+
+func (s *clientService) GetClientByUserID(id int64, organizationID int64) (*Client, error) {
+	db := database.InitMySQL()
+	query := NewClientQuery(db)
+	client, err := query.GetClientByUserID(id, organizationID)
 	return client, err
 }

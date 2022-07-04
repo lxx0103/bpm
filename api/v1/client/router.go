@@ -14,4 +14,5 @@ func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/clients/:id", WxGetClientByID)
 	g.PUT("/wx/clients/:id", WxUpdateClient)
 	g.POST("/wx/clients", WxNewClient)
+	g.GET("/wx/clients/user/:id", WxGetClientByUserID)
 }
