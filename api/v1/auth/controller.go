@@ -787,3 +787,31 @@ func WxGetUserList(c *gin.Context) {
 func WxUpdateUser(c *gin.Context) {
 	UpdateUser(c)
 }
+
+// @Summary 更新密码
+// @Id 102
+// @Tags 用户管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param menu_info body UserUpdate true "用户信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /password [POST]
+func UpdatePassword(c *gin.Context) {
+	var info PasswordUpdate
+	if err := c.ShouldBindJSON(&info); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	authService := NewAuthService()
+	err := authService.UpdatePassword(info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}

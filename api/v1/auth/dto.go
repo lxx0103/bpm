@@ -162,3 +162,10 @@ type UserResponse struct {
 	Address          string `db:"address" json:"address"`
 	Status           int    `db:"status" json:"status"`
 }
+
+type PasswordUpdate struct {
+	OldPassword string `json:"old_password" binding:"required,min=6"`
+	NewPassword string `json:"new_password" binding:"required,min=6"`
+	User        string `json:"user" swaggerignore:"true"`
+	UserID      int64  `json:"user_id" swaggerignore:"true"`
+}

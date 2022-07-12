@@ -2670,6 +2670,37 @@ paths:
       summary: 根据ID更新组织
       tags:
       - 组织管理
+  /password:
+    post:
+      consumes:
+      - application/json
+      operationId: "102"
+      parameters:
+      - description: 用户信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新密码
+      tags:
+      - 用户管理
   /positions:
     get:
       consumes:

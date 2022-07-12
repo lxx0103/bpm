@@ -23,6 +23,7 @@ type AuthRepository interface {
 	GetUserByID(int64) (*UserResponse, error)
 	CheckConfict(int, string) (bool, error)
 	UpdateUser(int64, UserResponse, string) error
+	UpdatePassword(int64, string, string) error
 	// GetAuthCount(filter AuthFilter) (int, error)
 	// GetAuthList(filter AuthFilter) ([]Auth, error)
 
@@ -384,4 +385,19 @@ func (r *authRepository) DeleteRole(id int64, byUser string) error {
 		WHERE id = ?
 	`, time.Now(), byUser, id)
 	return err
+}
+
+func (r *authRepository) UpdatePassword(id int64, password, by string) error {
+	_, err := r.tx.Exec(`
+		Update users SET
+		credential = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, password, time.Now(), by, id)
+	if err != nil {
+		msg := "更新失败:" + err.Error()
+		return errors.New(msg)
+	}
+	return nil
 }

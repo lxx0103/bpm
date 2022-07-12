@@ -28,6 +28,7 @@ type AuthService interface {
 	UpdateUser(int64, UserUpdate, int64) (*UserResponse, error)
 	GetUserByID(int64, int64) (*User, error)
 	GetUserList(UserFilter, int64) (int, *[]UserResponse, error)
+	UpdatePassword(PasswordUpdate) error
 	//Role Management
 	GetRoleByID(int64) (*Role, error)
 	NewRole(RoleNew) (*Role, error)
@@ -573,6 +574,39 @@ func (s *authService) DeleteRole(roleID int64, user string) error {
 	err = repo.DeleteRole(roleID, user)
 	if err != nil {
 		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *authService) UpdatePassword(info PasswordUpdate) error {
+	db := database.InitMySQL()
+
+	query := NewAuthQuery(db)
+	credential, err := query.GetUserCredential(info.UserID)
+	if err != nil {
+		return err
+	}
+	if !checkPasswordHash(info.OldPassword, credential) {
+		errMessage := "旧密码错误"
+		return errors.New(errMessage)
+	}
+	tx, err := db.Begin()
+	if err != nil {
+		msg := "事务开启错误" + err.Error()
+		return errors.New(msg)
+	}
+	defer tx.Rollback()
+	hashed, err := hashPassword(info.NewPassword)
+	if err != nil {
+		msg := "密码加密错误" + err.Error()
+		return errors.New(msg)
+	}
+	repo := NewAuthRepository(tx)
+	err = repo.UpdatePassword(info.UserID, hashed, info.User)
+	if err != nil {
+		msg := "密码更新错误" + err.Error()
+		return errors.New(msg)
 	}
 	tx.Commit()
 	return nil

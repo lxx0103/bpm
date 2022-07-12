@@ -3,9 +3,10 @@ package database
 import (
 	"log"
 
+	"bpm/core/config"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"bpm/core/config"
 )
 
 var db *sqlx.DB
