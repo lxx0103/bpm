@@ -7,9 +7,10 @@ type OrganizationFilter struct {
 }
 
 type OrganizationNew struct {
-	Name   string `json:"name" binding:"required,min=1,max=64"`
-	Status int    `json:"status" binding:"required,oneof=1 2"`
-	User   string `json:"user" swaggerignore:"true"`
+	Name        string `json:"name" binding:"required,min=1,max=64"`
+	Description string `json:"description" binding:"required"`
+	Status      int    `json:"status" binding:"required,oneof=1 2"`
+	User        string `json:"user" swaggerignore:"true"`
 }
 
 type OrganizationID struct {

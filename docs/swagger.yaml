@@ -734,6 +734,92 @@ definitions:
     required:
     - component_info
     type: object
+  example.Example:
+    properties:
+      cover:
+        type: string
+      created:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      notes:
+        type: string
+      organization_id:
+        type: integer
+      room:
+        type: string
+      status:
+        type: integer
+      style:
+        type: string
+      type:
+        type: string
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  example.ExampleNew:
+    properties:
+      cover:
+        type: string
+      description:
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      notes:
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      room:
+        type: string
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+      style:
+        type: string
+      type:
+        type: string
+    required:
+    - name
+    - status
+    type: object
+  example.ExampleResponse:
+    properties:
+      cover:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      notes:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      room:
+        type: string
+      status:
+        type: integer
+      style:
+        type: string
+      type:
+        type: string
+    type: object
   member.MemberNew:
     properties:
       project_id:
@@ -978,6 +1064,8 @@ definitions:
         type: string
       created_by:
         type: string
+      description:
+        type: string
       id:
         type: integer
       name:
@@ -991,6 +1079,8 @@ definitions:
     type: object
   organization.OrganizationNew:
     properties:
+      description:
+        type: string
       name:
         maxLength: 64
         minLength: 1
@@ -1001,6 +1091,7 @@ definitions:
         - 2
         type: integer
     required:
+    - description
     - name
     - status
     type: object
@@ -2034,6 +2125,158 @@ paths:
       summary: 根据ID更新事件
       tags:
       - 事件管理
+  /examples:
+    get:
+      consumes:
+      - application/json
+      operationId: "103"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 案例编码
+        in: query
+        name: name
+        type: string
+      - description: 装修风格
+        in: query
+        name: style
+        type: string
+      - description: 类型
+        in: query
+        name: type
+        type: string
+      - description: 居室
+        in: query
+        name: room
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/example.ExampleResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 案例列表
+      tags:
+      - 案例管理
+    post:
+      consumes:
+      - application/json
+      operationId: "104"
+      parameters:
+      - description: 案例信息
+        in: body
+        name: example_info
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExampleNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.Example'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建案例
+      tags:
+      - 案例管理
+  /examples/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "105"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.Example'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取案例
+      tags:
+      - 案例管理
+    put:
+      consumes:
+      - application/json
+      operationId: "106"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 案例信息
+        in: body
+        name: example_info
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExampleNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.Example'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新案例
+      tags:
+      - 案例管理
   /members:
     get:
       consumes:
@@ -4176,6 +4419,47 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 事件签到
+      tags:
+      - 小程序接口
+  /wx/examples:
+    get:
+      consumes:
+      - application/json
+      operationId: "107"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 案例编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/example.Example'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 案例列表
       tags:
       - 小程序接口
   /wx/members:
