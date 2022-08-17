@@ -20,7 +20,7 @@ type ExampleQuery interface {
 	//Example Management
 	GetExampleByID(int64, int64) (*Example, error)
 	GetExampleCount(ExampleFilter) (int, error)
-	GetExampleList(ExampleFilter) (*[]ExampleResponse, error)
+	GetExampleList(ExampleFilter) (*[]ExampleListResponse, error)
 }
 
 func (r *exampleQuery) GetExampleByID(id int64, organizationID int64) (*Example, error) {
@@ -65,7 +65,7 @@ func (r *exampleQuery) GetExampleCount(filter ExampleFilter) (int, error) {
 	return count, nil
 }
 
-func (r *exampleQuery) GetExampleList(filter ExampleFilter) (*[]ExampleResponse, error) {
+func (r *exampleQuery) GetExampleList(filter ExampleFilter) (*[]ExampleListResponse, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "e.name like ?"), append(args, "%"+v+"%")
@@ -84,9 +84,9 @@ func (r *exampleQuery) GetExampleList(filter ExampleFilter) (*[]ExampleResponse,
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var examples []ExampleResponse
+	var examples []ExampleListResponse
 	err := r.conn.Select(&examples, `
-		SELECT e.id, e.name, e.cover, e.style, e.type, e.room, e.notes, e.description, e.status, e.organization_id, o.name as organization_name
+		SELECT e.id, e.name, e.cover, e.style, e.type, e.room, e.notes, e.status, e.organization_id, o.name as organization_name
 		FROM examples e
 		LEFT JOIN organizations o
 		ON e.organization_id = o.id

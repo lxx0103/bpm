@@ -11,4 +11,5 @@ func Routers(g *gin.RouterGroup) {
 
 func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/examples", WxGetExampleList)
+	g.GET("/wx/examples/:id", WxGetExampleByID)
 }

@@ -17,7 +17,7 @@ type ExampleService interface {
 	//Example Management
 	GetExampleByID(int64, int64) (*Example, error)
 	NewExample(ExampleNew, int64) (*Example, error)
-	GetExampleList(ExampleFilter, int64) (int, *[]ExampleResponse, error)
+	GetExampleList(ExampleFilter, int64) (int, *[]ExampleListResponse, error)
 	UpdateExample(int64, ExampleNew, int64) (*Example, error)
 }
 
@@ -63,7 +63,7 @@ func (s *exampleService) NewExample(info ExampleNew, organizationID int64) (*Exa
 	return example, err
 }
 
-func (s *exampleService) GetExampleList(filter ExampleFilter, organizationID int64) (int, *[]ExampleResponse, error) {
+func (s *exampleService) GetExampleList(filter ExampleFilter, organizationID int64) (int, *[]ExampleListResponse, error) {
 	if organizationID != 0 {
 		filter.OrganizationID = organizationID
 	}

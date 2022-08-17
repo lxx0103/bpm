@@ -765,6 +765,29 @@ definitions:
       updated_by:
         type: string
     type: object
+  example.ExampleListResponse:
+    properties:
+      cover:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      notes:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      room:
+        type: string
+      status:
+        type: integer
+      style:
+        type: string
+      type:
+        type: string
+    type: object
   example.ExampleNew:
     properties:
       cover:
@@ -4452,7 +4475,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/example.Example'
+                    $ref: '#/definitions/example.ExampleListResponse'
                   type: array
               type: object
         "400":
@@ -4460,6 +4483,36 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 案例列表
+      tags:
+      - 小程序接口
+  /wx/examples/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "108"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.ExampleResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取案例
       tags:
       - 小程序接口
   /wx/members:

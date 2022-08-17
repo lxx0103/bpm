@@ -140,9 +140,23 @@ func UpdateExample(c *gin.Context) {
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Param name query string false "案例编码"
-// @Success 200 object response.ListRes{data=[]Example} 成功
+// @Success 200 object response.ListRes{data=[]ExampleListResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/examples [GET]
 func WxGetExampleList(c *gin.Context) {
 	GetExampleList(c)
+}
+
+// @Summary 根据ID获取案例
+// @Id 108
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "案例ID"
+// @Success 200 object response.SuccessRes{data=ExampleResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/examples/:id [GET]
+func WxGetExampleByID(c *gin.Context) {
+	GetExampleByID(c)
 }
