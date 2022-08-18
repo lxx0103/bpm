@@ -10,7 +10,7 @@ type ClientNew struct {
 	Name    string `json:"name" binding:"required,min=1,max=64"`
 	Phone   string `json:"phone" binding:"required,min=6,max=64"`
 	Address string `json:"address" binding:"omitempty,max=255"`
-	Status  int    `json:"status" binding:"required,oneof=1 2"`
+	Status  int    `json:"status" binding:"required,oneof=1 2 3"`
 	User    string `json:"user" swaggerignore:"true"`
 }
 
