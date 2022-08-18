@@ -146,3 +146,17 @@ func GetQrCode(c *gin.Context) {
 	}
 	response.Response(c, res)
 }
+
+// @Summary 根据ID获取组织
+// @Id 109
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "组织ID"
+// @Success 200 object response.SuccessRes{data=Organization} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/organizations/:id [GET]
+func WxGetOrganizationByID(c *gin.Context) {
+	GetOrganizationByID(c)
+}

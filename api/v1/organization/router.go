@@ -9,3 +9,7 @@ func Routers(g *gin.RouterGroup) {
 	g.POST("/organizations", NewOrganization)
 	g.POST("/qrcode", GetQrCode)
 }
+
+func WxRouters(g *gin.RouterGroup) {
+	g.GET("/wx/organizations/:id", WxGetOrganizationByID)
+}
