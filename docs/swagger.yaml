@@ -2193,6 +2193,10 @@ paths:
         in: query
         name: room
         type: string
+      - description: 状态
+        in: query
+        name: status
+        type: integer
       - description: 组织ID
         in: query
         name: organization_id
@@ -4477,6 +4481,26 @@ paths:
         in: query
         name: name
         type: string
+      - description: 装修风格
+        in: query
+        name: style
+        type: string
+      - description: 类型
+        in: query
+        name: type
+        type: string
+      - description: 居室
+        in: query
+        name: room
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
       produces:
       - application/json
       responses:

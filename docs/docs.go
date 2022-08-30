@@ -1264,6 +1264,12 @@ var doc = `{
                     },
                     {
                         "type": "integer",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "组织ID",
                         "name": "organization_id",
                         "in": "query"
@@ -5001,6 +5007,36 @@ var doc = `{
                         "type": "string",
                         "description": "案例编码",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "装修风格",
+                        "name": "style",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "类型",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "居室",
+                        "name": "room",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
                         "in": "query"
                     }
                 ],

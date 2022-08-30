@@ -19,6 +19,7 @@ import (
 // @Param style query string false "装修风格"
 // @Param type query string false "类型"
 // @Param room query string false "居室"
+// @Param status query int false "状态"
 // @Param organization_id query int64 false "组织ID"
 // @Success 200 object response.ListRes{data=[]ExampleResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
@@ -140,6 +141,11 @@ func UpdateExample(c *gin.Context) {
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Param name query string false "案例编码"
+// @Param style query string false "装修风格"
+// @Param type query string false "类型"
+// @Param room query string false "居室"
+// @Param status query int false "状态"
+// @Param organization_id query int64 false "组织ID"
 // @Success 200 object response.ListRes{data=[]ExampleListResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/examples [GET]

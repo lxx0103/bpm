@@ -5,6 +5,7 @@ type ExampleFilter struct {
 	Style          string `form:"style" binding:"omitempty"`
 	Type           string `form:"type" binding:"omitempty"`
 	Room           string `form:"room" binding:"omitempty"`
+	Status         int    `form:"status" binding:"omitempty"`
 	OrganizationID int64  `form:"organization_id" binding:"omitempty,min=1"`
 	PageId         int    `form:"page_id" binding:"required,min=1"`
 	PageSize       int    `form:"page_size" binding:"required,min=5,max=200"`

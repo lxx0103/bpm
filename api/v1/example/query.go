@@ -54,6 +54,9 @@ func (r *exampleQuery) GetExampleCount(filter ExampleFilter) (int, error) {
 	if v := filter.Room; v != "" {
 		where, args = append(where, "room = ?"), append(args, v)
 	}
+	if v := filter.Status; v != 0 {
+		where, args = append(where, "e.status = ?"), append(args, v)
+	}
 	var count int
 	err := r.conn.Get(&count, `
 		SELECT count(1) as count 
@@ -81,6 +84,9 @@ func (r *exampleQuery) GetExampleList(filter ExampleFilter) (*[]ExampleListRespo
 	}
 	if v := filter.Room; v != "" {
 		where, args = append(where, "e.room = ?"), append(args, v)
+	}
+	if v := filter.Status; v != 0 {
+		where, args = append(where, "e.status = ?"), append(args, v)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
