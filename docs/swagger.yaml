@@ -357,6 +357,7 @@ definitions:
         enum:
         - 1
         - 2
+        - 3
         type: integer
     required:
     - name
@@ -1083,6 +1084,10 @@ definitions:
     type: object
   organization.Organization:
     properties:
+      address:
+        type: string
+      contact:
+        type: string
       created:
         type: string
       created_by:
@@ -1093,6 +1098,8 @@ definitions:
         type: integer
       name:
         type: string
+      phone:
+        type: string
       status:
         type: integer
       updated:
@@ -1102,11 +1109,17 @@ definitions:
     type: object
   organization.OrganizationNew:
     properties:
+      address:
+        type: string
+      contact:
+        type: string
       description:
         type: string
       name:
         maxLength: 64
         minLength: 1
+        type: string
+      phone:
         type: string
       status:
         enum:
@@ -4687,6 +4700,36 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 获取我创建的项目
+      tags:
+      - 小程序接口
+  /wx/organizations/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "109"
+      parameters:
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/organization.Organization'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取组织
       tags:
       - 小程序接口
   /wx/positions:

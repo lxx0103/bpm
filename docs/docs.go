@@ -5370,6 +5370,56 @@ var doc = `{
                 }
             }
         },
+        "/wx/organizations/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "根据ID获取组织",
+                "operationId": "109",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/organization.Organization"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/positions": {
             "get": {
                 "consumes": [
@@ -6577,7 +6627,8 @@ var doc = `{
                     "type": "integer",
                     "enum": [
                         1,
-                        2
+                        2,
+                        3
                     ]
                 }
             }
@@ -7644,6 +7695,12 @@ var doc = `{
         "organization.Organization": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contact": {
+                    "type": "string"
+                },
                 "created": {
                     "type": "string"
                 },
@@ -7657,6 +7714,9 @@ var doc = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "status": {
@@ -7678,6 +7738,12 @@ var doc = `{
                 "status"
             ],
             "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contact": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -7685,6 +7751,9 @@ var doc = `{
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
+                },
+                "phone": {
+                    "type": "string"
                 },
                 "status": {
                     "type": "integer",

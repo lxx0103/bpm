@@ -30,14 +30,17 @@ func (r *organizationRepository) CreateOrganization(info OrganizationNew) (int64
 		(
 			name,
 			description,
+			contact,
+			phone,
+			address,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`, info.Name, info.Description, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Description, info.Contact, info.Phone, info.Address, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -53,11 +56,14 @@ func (r *organizationRepository) UpdateOrganization(id int64, info OrganizationN
 		Update organizations SET 
 		name = ?,
 		description = ?, 
+		contact = ?,
+		phone = ?,
+		address = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Description, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Description, info.Contact, info.Phone, info.Address, info.Status, time.Now(), info.User, id)
 	if err != nil {
 		return 0, err
 	}
@@ -70,8 +76,8 @@ func (r *organizationRepository) UpdateOrganization(id int64, info OrganizationN
 
 func (r *organizationRepository) GetOrganizationByID(id int64) (*Organization, error) {
 	var res Organization
-	row := r.tx.QueryRow(`SELECT id, name, description, status, created, created_by, updated, updated_by FROM organizations WHERE id = ? LIMIT 1`, id)
-	err := row.Scan(&res.ID, &res.Name, &res.Description, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	row := r.tx.QueryRow(`SELECT id, name, description, contact, phone, address, status, created, created_by, updated, updated_by FROM organizations WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Name, &res.Description, &res.Contact, &res.Phone, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
