@@ -55,7 +55,7 @@ func (r *exampleQuery) GetExampleCount(filter ExampleFilter) (int, error) {
 		where, args = append(where, "room = ?"), append(args, v)
 	}
 	if v := filter.Status; v != 0 {
-		where, args = append(where, "e.status = ?"), append(args, v)
+		where, args = append(where, "status = ?"), append(args, v)
 	}
 	var count int
 	err := r.conn.Get(&count, `
