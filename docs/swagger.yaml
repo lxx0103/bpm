@@ -1659,6 +1659,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 客户名称
+        in: query
+        name: organization_id
+        type: integer
       produces:
       - application/json
       responses:

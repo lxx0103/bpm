@@ -390,6 +390,12 @@ var doc = `{
                         "description": "客户名称",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "客户名称",
+                        "name": "organization_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {

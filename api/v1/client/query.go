@@ -39,6 +39,9 @@ func (r *clientQuery) GetClientByID(id int64, organizationID int64) (*Client, er
 }
 
 func (r *clientQuery) GetClientCount(filter ClientFilter, organizationID int64) (int, error) {
+	if organizationID == 0 && filter.OrganizationID != 0 {
+		organizationID = filter.OrganizationID
+	}
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
@@ -58,6 +61,9 @@ func (r *clientQuery) GetClientCount(filter ClientFilter, organizationID int64) 
 }
 
 func (r *clientQuery) GetClientList(filter ClientFilter, organizationID int64) (*[]Client, error) {
+	if organizationID == 0 && filter.OrganizationID != 0 {
+		organizationID = filter.OrganizationID
+	}
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
