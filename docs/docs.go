@@ -7243,6 +7243,9 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
+                "link": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -7318,6 +7321,9 @@ var doc = `{
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "link": {
                     "type": "string"
                 },
                 "name": {

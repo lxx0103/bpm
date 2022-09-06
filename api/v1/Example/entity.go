@@ -12,6 +12,7 @@ type Example struct {
 	Style          string    `db:"style" json:"style"`
 	Type           string    `db:"type" json:"type"`
 	Room           string    `db:"room" json:"room"`
+	Link           string    `db:"link" json:"link"`
 	Status         int       `db:"status" json:"status"`
 	Created        time.Time `db:"created" json:"created"`
 	CreatedBy      string    `db:"created_by" json:"created_by"`

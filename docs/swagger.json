@@ -7229,6 +7229,9 @@
                 "id": {
                     "type": "integer"
                 },
+                "link": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -7304,6 +7307,9 @@
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "link": {
                     "type": "string"
                 },
                 "name": {

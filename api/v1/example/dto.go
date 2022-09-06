@@ -20,6 +20,7 @@ type ExampleNew struct {
 	Style          string `json:"style" binding:"omitempty"`
 	Type           string `json:"type" binding:"omitempty"`
 	Room           string `json:"room" binding:"omitempty"`
+	Link           string `json:"link" binding:"omitempty"`
 	Status         int    `json:"status" binding:"required,oneof=1 2"`
 	User           string `json:"user" swaggerignore:"true"`
 }
