@@ -7240,11 +7240,11 @@ var doc = `{
                 "description": {
                     "type": "string"
                 },
-                "id": {
+                "example_type": {
                     "type": "integer"
                 },
-                "link": {
-                    "type": "string"
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -7323,8 +7323,8 @@ var doc = `{
                 "description": {
                     "type": "string"
                 },
-                "link": {
-                    "type": "string"
+                "example_type": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string",
@@ -7364,6 +7364,9 @@ var doc = `{
                 },
                 "description": {
                     "type": "string"
+                },
+                "example_type": {
+                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"

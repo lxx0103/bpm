@@ -745,10 +745,10 @@ definitions:
         type: string
       description:
         type: string
+      example_type:
+        type: integer
       id:
         type: integer
-      link:
-        type: string
       name:
         type: string
       notes:
@@ -797,8 +797,8 @@ definitions:
         type: string
       description:
         type: string
-      link:
-        type: string
+      example_type:
+        type: integer
       name:
         maxLength: 64
         minLength: 1
@@ -829,6 +829,8 @@ definitions:
         type: string
       description:
         type: string
+      example_type:
+        type: integer
       id:
         type: integer
       name:

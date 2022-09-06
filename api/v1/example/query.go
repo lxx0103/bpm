@@ -45,6 +45,9 @@ func (r *exampleQuery) GetExampleCount(filter ExampleFilter) (int, error) {
 	if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
+	if v := filter.ExampleType; v != 0 {
+		where, args = append(where, "example_type = ?"), append(args, v)
+	}
 	if v := filter.Style; v != "" {
 		where, args = append(where, "style = ?"), append(args, v)
 	}
@@ -75,6 +78,9 @@ func (r *exampleQuery) GetExampleList(filter ExampleFilter) (*[]ExampleListRespo
 	}
 	if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "e.organization_id = ?"), append(args, v)
+	}
+	if v := filter.ExampleType; v != 0 {
+		where, args = append(where, "example_type = ?"), append(args, v)
 	}
 	if v := filter.Style; v != "" {
 		where, args = append(where, "e.style = ?"), append(args, v)
