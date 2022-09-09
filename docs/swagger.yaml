@@ -747,6 +747,10 @@ definitions:
         type: string
       example_type:
         type: integer
+      feed_id:
+        type: string
+      finder_user_name:
+        type: string
       id:
         type: integer
       name:
@@ -799,6 +803,10 @@ definitions:
         type: string
       example_type:
         type: integer
+      feed_id:
+        type: string
+      finderUserName:
+        type: string
       name:
         maxLength: 64
         minLength: 1
@@ -831,6 +839,10 @@ definitions:
         type: string
       example_type:
         type: integer
+      feed_id:
+        type: string
+      finder_user_name:
+        type: string
       id:
         type: integer
       name:

@@ -7243,6 +7243,12 @@ var doc = `{
                 "example_type": {
                     "type": "integer"
                 },
+                "feed_id": {
+                    "type": "string"
+                },
+                "finder_user_name": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -7326,6 +7332,12 @@ var doc = `{
                 "example_type": {
                     "type": "integer"
                 },
+                "feed_id": {
+                    "type": "string"
+                },
+                "finderUserName": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,
@@ -7367,6 +7379,12 @@ var doc = `{
                 },
                 "example_type": {
                     "type": "integer"
+                },
+                "feed_id": {
+                    "type": "string"
+                },
+                "finder_user_name": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

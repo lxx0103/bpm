@@ -21,6 +21,8 @@ type ExampleNew struct {
 	Style          string `json:"style" binding:"omitempty"`
 	Type           string `json:"type" binding:"omitempty"`
 	Room           string `json:"room" binding:"omitempty"`
+	FinderUserName string `finder_user_name:"room" binding:"omitempty"`
+	FeedID         string `json:"feed_id" binding:"omitempty"`
 	ExampleType    int    `json:"example_type" binding:"omitempty"`
 	Status         int    `json:"status" binding:"required,oneof=1 2"`
 	User           string `json:"user" swaggerignore:"true"`
@@ -41,6 +43,8 @@ type ExampleResponse struct {
 	Style            string `db:"style" json:"style"`
 	Type             string `db:"type" json:"type"`
 	Room             string `db:"room" json:"room"`
+	FinderUserName   string `db:"finder_user_name" json:"finder_user_name"`
+	FeedID           string `db:"feed_id" json:"feed_id"`
 	Status           int    `db:"status" json:"status"`
 	Description      string `db:"description" json:"description"`
 }

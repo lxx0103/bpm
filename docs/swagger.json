@@ -7229,6 +7229,12 @@
                 "example_type": {
                     "type": "integer"
                 },
+                "feed_id": {
+                    "type": "string"
+                },
+                "finder_user_name": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -7312,6 +7318,12 @@
                 "example_type": {
                     "type": "integer"
                 },
+                "feed_id": {
+                    "type": "string"
+                },
+                "finderUserName": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 64,
@@ -7353,6 +7365,12 @@
                 },
                 "example_type": {
                     "type": "integer"
+                },
+                "feed_id": {
+                    "type": "string"
+                },
+                "finder_user_name": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
