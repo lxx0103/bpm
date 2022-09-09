@@ -43,14 +43,14 @@ func (s *exampleService) NewExample(info ExampleNew, organizationID int64) (*Exa
 	}
 	defer tx.Rollback()
 	repo := NewExampleRepository(tx)
-	exist, err := repo.CheckNameExist(info.Name, info.OrganizationID, 0)
-	if err != nil {
-		return nil, err
-	}
-	if exist != 0 {
-		msg := "案例名称重复"
-		return nil, errors.New(msg)
-	}
+	// exist, err := repo.CheckNameExist(info.Name, info.OrganizationID, 0)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if exist != 0 {
+	// 	msg := "案例名称重复"
+	// 	return nil, errors.New(msg)
+	// }
 	exampleID, err := repo.CreateExample(info)
 	if err != nil {
 		return nil, err
@@ -95,14 +95,14 @@ func (s *exampleService) UpdateExample(exampleID int64, info ExampleNew, organiz
 	}
 	defer tx.Rollback()
 	repo := NewExampleRepository(tx)
-	exist, err := repo.CheckNameExist(info.Name, info.OrganizationID, exampleID)
-	if err != nil {
-		return nil, err
-	}
-	if exist != 0 {
-		msg := "案例名称重复"
-		return nil, errors.New(msg)
-	}
+	// exist, err := repo.CheckNameExist(info.Name, info.OrganizationID, exampleID)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if exist != 0 {
+	// 	msg := "案例名称重复"
+	// 	return nil, errors.New(msg)
+	// }
 	_, err = repo.UpdateExample(exampleID, info)
 	if err != nil {
 		return nil, err
