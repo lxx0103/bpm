@@ -7335,7 +7335,7 @@ var doc = `{
                 "feed_id": {
                     "type": "string"
                 },
-                "finderUserName": {
+                "finder_user_name": {
                     "type": "string"
                 },
                 "name": {

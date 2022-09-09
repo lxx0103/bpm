@@ -21,7 +21,7 @@ type ExampleNew struct {
 	Style          string `json:"style" binding:"omitempty"`
 	Type           string `json:"type" binding:"omitempty"`
 	Room           string `json:"room" binding:"omitempty"`
-	FinderUserName string `finder_user_name:"room" binding:"omitempty"`
+	FinderUserName string `json:"finder_user_name" binding:"omitempty"`
 	FeedID         string `json:"feed_id" binding:"omitempty"`
 	ExampleType    int    `json:"example_type" binding:"omitempty"`
 	Status         int    `json:"status" binding:"required,oneof=1 2"`
