@@ -103,6 +103,7 @@ func (r *exampleQuery) GetExampleList(filter ExampleFilter) (*[]ExampleListRespo
 		LEFT JOIN organizations o
 		ON e.organization_id = o.id
 		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY e.id DESC
 		LIMIT ?, ?
 	`, args...)
 	if err != nil {
