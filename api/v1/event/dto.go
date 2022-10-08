@@ -16,6 +16,7 @@ type EventNew struct {
 	AuditType   int    `json:"audit_type" binding:"required,oneof=1 2"`
 	NeedCheckin int    `json:"need_checkin" binding:"required,oneof=1 2"`
 	Sort        int    `json:"sort" binding:"required, min=1"`
+	CanReview   int    `json:"can_review" binding:"required,oneof=1 2"`
 	NodeID      int64  `json:"node_id" binding:"required,min=1"`
 	User        string `json:"user" swaggerignore:"true"`
 }
@@ -126,4 +127,22 @@ type EventAuditHistoryResponse struct {
 	AuditContent string `db:"audit_content" json:"audit_content"`
 	AuditUser    string `db:"audit_user" json:"audit_user"`
 	Status       int    `db:"status" json:"status"`
+}
+
+type EventReviewNew struct {
+	Result     int    `json:"result" binding:"required,oneof=1 2"`
+	Content    string `json:"content" binding:"omitempty,max=255"`
+	Link       string `json:"link" binding:"omitempty"`
+	User       string `json:"user" swaggerignore:"true"`
+	UserID     int64  `json:"user_id" swaggerignore:"true"`
+	PositionID int64  `json:"position_id" swaggerignore:"true"`
+}
+
+type EventReviewResponse struct {
+	ID      int64  `db:"id" json:"id"`
+	EventID int64  `db:"event_id" json:"event_id"`
+	Result  string `db:"result" json:"result"`
+	Content string `db:"content" json:"content"`
+	Link    string `db:"link" json:"link"`
+	Status  int    `db:"status" json:"status"`
 }

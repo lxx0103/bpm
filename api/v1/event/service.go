@@ -454,3 +454,39 @@ func (s *eventService) GetEventAuditHistory(eventID, organizationID int64) (*[]E
 	list, err := query.GetAuditHistoryList(eventID)
 	return list, err
 }
+
+func (s *eventService) ReviewEvent(eventID int64, info EventReviewNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewEventRepository(tx)
+	event, err := repo.GetEventByID(eventID, 0)
+	if err != nil {
+		return err
+	}
+	if event.CanReview != 1 {
+		msg := "此事件无法反馈"
+		return errors.New(msg)
+	}
+	err = repo.CreateEventReview(eventID, info)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *eventService) GetEventReview(eventID, organizationID int64) (*[]EventReviewResponse, error) {
+	db := database.InitMySQL()
+	query := NewEventQuery(db)
+	_, err := query.GetEventByID(eventID, organizationID)
+	if err != nil {
+		msg := "事件不存在"
+		return nil, errors.New(msg)
+	}
+	list, err := query.GetReviewList(eventID)
+	return list, err
+}

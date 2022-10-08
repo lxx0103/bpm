@@ -16,6 +16,7 @@ type Node struct {
 	PreID       *[]NodePre    `json:"pre_id"`
 	NeedCheckin int           `db:"need_checkin" json:"need_checkin"`
 	Sort        int           `db:"sort" json:"sort"`
+	CanReview   int           `db:"can_review" json:"can_review"`
 	Status      int           `db:"status" json:"status"`
 	Created     time.Time     `db:"created" json:"created"`
 	CreatedBy   string        `db:"created_by" json:"created_by"`

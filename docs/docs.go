@@ -1269,6 +1269,59 @@ var doc = `{
                 }
             }
         },
+        "/events/:id/reviews": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "获取顾客反馈历史",
+                "operationId": "113",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/event.EventReviewResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/examples": {
             "get": {
                 "consumes": [
@@ -5037,6 +5090,116 @@ var doc = `{
                 }
             }
         },
+        "/wx/events/:id/reviews": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "获取顾客反馈历史",
+                "operationId": "114",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/event.EventReviewResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "顾客反馈",
+                "operationId": "112",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "组件内容",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/event.EventReviewNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/examples": {
             "get": {
                 "consumes": [
@@ -7027,6 +7190,9 @@ var doc = `{
                 "audit_user": {
                     "type": "string"
                 },
+                "can_review": {
+                    "type": "integer"
+                },
                 "checkin_distance": {
                     "type": "integer"
                 },
@@ -7193,6 +7359,51 @@ var doc = `{
                 },
                 "updated_by": {
                     "type": "string"
+                }
+            }
+        },
+        "event.EventReviewNew": {
+            "type": "object",
+            "required": [
+                "result"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "link": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "event.EventReviewResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "event_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },
@@ -7548,6 +7759,9 @@ var doc = `{
                 "audit_type": {
                     "type": "integer"
                 },
+                "can_review": {
+                    "type": "integer"
+                },
                 "created": {
                     "type": "string"
                 },
@@ -7664,6 +7878,7 @@ var doc = `{
                 "assignable",
                 "audit_to",
                 "audit_type",
+                "can_review",
                 "name",
                 "need_audit",
                 "need_checkin",
@@ -7700,6 +7915,13 @@ var doc = `{
                     }
                 },
                 "audit_type": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "can_review": {
                     "type": "integer",
                     "enum": [
                         1,
@@ -7804,6 +8026,13 @@ var doc = `{
                     }
                 },
                 "audit_type": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "can_review": {
                     "type": "integer",
                     "enum": [
                         1,

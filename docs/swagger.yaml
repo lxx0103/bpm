@@ -567,6 +567,8 @@ definitions:
         type: integer
       audit_user:
         type: string
+      can_review:
+        type: integer
       checkin_distance:
         type: integer
       complete_time:
@@ -677,6 +679,36 @@ definitions:
         type: string
       updated_by:
         type: string
+    type: object
+  event.EventReviewNew:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      link:
+        type: string
+      result:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - result
+    type: object
+  event.EventReviewResponse:
+    properties:
+      content:
+        type: string
+      event_id:
+        type: integer
+      id:
+        type: integer
+      link:
+        type: string
+      result:
+        type: string
+      status:
+        type: integer
     type: object
   event.EventUpdate:
     properties:
@@ -913,6 +945,8 @@ definitions:
         type: array
       audit_type:
         type: integer
+      can_review:
+        type: integer
       created:
         type: string
       created_by:
@@ -1010,6 +1044,11 @@ definitions:
         - 1
         - 2
         type: integer
+      can_review:
+        enum:
+        - 1
+        - 2
+        type: integer
       name:
         maxLength: 64
         minLength: 1
@@ -1040,6 +1079,7 @@ definitions:
     - assignable
     - audit_to
     - audit_type
+    - can_review
     - name
     - need_audit
     - need_checkin
@@ -1088,6 +1128,11 @@ definitions:
           type: integer
         type: array
       audit_type:
+        enum:
+        - 1
+        - 2
+        type: integer
+      can_review:
         enum:
         - 1
         - 2
@@ -2245,6 +2290,38 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 获取事件审核历史
+      tags:
+      - 事件管理
+  /events/:id/reviews:
+    get:
+      consumes:
+      - application/json
+      operationId: "113"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.EventReviewResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取顾客反馈历史
       tags:
       - 事件管理
   /examples:
@@ -4547,6 +4624,73 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 事件签到
+      tags:
+      - 小程序接口
+  /wx/events/:id/reviews:
+    get:
+      consumes:
+      - application/json
+      operationId: "114"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.EventReviewResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取顾客反馈历史
+      tags:
+      - 小程序接口
+    post:
+      consumes:
+      - application/json
+      operationId: "112"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 组件内容
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/event.EventReviewNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 顾客反馈
       tags:
       - 小程序接口
   /wx/examples:

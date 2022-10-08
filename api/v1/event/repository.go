@@ -30,14 +30,15 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 			audit_type,
 			need_checkin,
 			sort,
+			can_review,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, info.NeedCheckin, info.Sort, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, info.NeedCheckin, info.Sort, info.CanReview, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -130,11 +131,11 @@ func (r *eventRepository) GetEventByID(id int64, organizationID int64) (*Event, 
 	var res Event
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.audit_content, e.audit_time, e.audit_user, e.need_checkin, e.sort, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.audit_content, e.audit_time, e.audit_user, e.need_checkin, e.sort, e.can_review, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, project_id, name, assignable, assign_type, need_audit, audit_type, audit_content, audit_time, audit_user, need_checkin, sort, status, created, created_by, updated, updated_by FROM events WHERE id = ? AND status > 0 LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, project_id, name, assignable, assign_type, need_audit, audit_type, audit_content, audit_time, audit_user, need_checkin, sort, can_review, status, created, created_by, updated, updated_by FROM events WHERE id = ? AND status > 0 LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.AuditContent, &res.AuditTime, &res.AuditUser, &res.NeedCheckin, &res.Sort, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.AuditContent, &res.AuditTime, &res.AuditUser, &res.NeedCheckin, &res.Sort, &res.CanReview, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -269,13 +270,13 @@ func (r *eventRepository) DeleteEventByProjectID(id int64, byUser string) error 
 
 func (r *eventRepository) GetEventsByProjectID(projectID int64) (*[]Event, error) {
 	var res []Event
-	rows, err := r.tx.Query(`SELECT id, project_id, node_id, name, assign_type, assignable, need_audit, audit_type FROM events WHERE project_id = ? AND status > 0`, projectID)
+	rows, err := r.tx.Query(`SELECT id, project_id, node_id, name, assign_type, assignable, need_audit, audit_type, can_review FROM events WHERE project_id = ? AND status > 0`, projectID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var rowRes Event
-		err = rows.Scan(&rowRes.ID, &rowRes.ProjectID, &rowRes.NodeID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable, &rowRes.NeedAudit, &rowRes.AuditType)
+		err = rows.Scan(&rowRes.ID, &rowRes.ProjectID, &rowRes.NodeID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable, &rowRes.NeedAudit, &rowRes.AuditType, &rowRes.CanReview)
 		if err != nil {
 			return nil, err
 		}
@@ -457,4 +458,23 @@ func (r *eventRepository) GetProjectLocation(projectID, organizationID int64) (f
 	}
 	err := row.Scan(&longitude, &latitude, &distance)
 	return longitude, latitude, distance, err
+}
+
+func (r *eventRepository) CreateEventReview(eventID int64, info EventReviewNew) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO event_reviews
+		(
+			event_id,
+			result,
+			content,
+			link,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, eventID, info.Result, info.Content, info.Link, 1, time.Now(), info.User, time.Now(), info.User)
+	return err
 }

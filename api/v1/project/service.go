@@ -77,6 +77,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		eventInfo.AuditType = (*nodes)[i].AuditType
 		eventInfo.NeedCheckin = (*nodes)[i].NeedCheckin
 		eventInfo.Sort = (*nodes)[i].Sort
+		eventInfo.CanReview = (*nodes)[i].CanReview
 		eventInfo.NodeID = (*nodes)[i].ID
 		eventInfo.User = info.User
 		eventID, err := eventRepo.CreateEvent(eventInfo)

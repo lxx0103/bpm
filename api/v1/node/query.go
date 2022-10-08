@@ -10,20 +10,10 @@ type nodeQuery struct {
 	conn *sqlx.DB
 }
 
-func NewNodeQuery(connection *sqlx.DB) NodeQuery {
+func NewNodeQuery(connection *sqlx.DB) *nodeQuery {
 	return &nodeQuery{
 		conn: connection,
 	}
-}
-
-type NodeQuery interface {
-	//Node Management
-	GetNodeByID(id int64) (*Node, error)
-	GetAssignsByNodeID(int64) (*[]NodeAssign, error)
-	GetPresByNodeID(int64) (*[]NodePre, error)
-	GetAuditsByNodeID(int64) (*[]NodeAudit, error)
-	GetNodeCount(NodeFilter, int64) (int, error)
-	GetNodeList(NodeFilter, int64) (*[]Node, error)
 }
 
 func (r *nodeQuery) GetNodeByID(id int64) (*Node, error) {

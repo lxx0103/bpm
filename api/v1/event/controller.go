@@ -429,3 +429,79 @@ func GetAuditHistory(c *gin.Context) {
 func WxGetAuditHistory(c *gin.Context) {
 	GetAuditHistory(c)
 }
+
+// @Summary 顾客反馈
+// @Id 112
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Param info body EventReviewNew true "组件内容"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/events/:id/reviews [POST]
+func WxReviewEvent(c *gin.Context) {
+	var uri EventID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info EventReviewNew
+	if err := c.ShouldBindJSON(&info); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	info.PositionID = claims.PositionID
+	err := eventService.ReviewEvent(uri.ID, info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 获取顾客反馈历史
+// @Id 113
+// @Tags 事件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Success 200 object response.SuccessRes{data=[]EventReviewResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /events/:id/reviews [GET]
+func GetReview(c *gin.Context) {
+	var uri EventID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	reviews, err := eventService.GetEventReview(uri.ID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, reviews)
+
+}
+
+// @Summary 获取顾客反馈历史
+// @Id 114
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Success 200 object response.SuccessRes{data=[]EventReviewResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/events/:id/reviews [GET]
+func WxGetReview(c *gin.Context) {
+	GetReview(c)
+}

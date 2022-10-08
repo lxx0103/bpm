@@ -8,18 +8,8 @@ import (
 type nodeService struct {
 }
 
-func NewNodeService() NodeService {
+func NewNodeService() *nodeService {
 	return &nodeService{}
-}
-
-// NodeService represents a service for managing nodes.
-type NodeService interface {
-	//Node Management
-	GetNodeByID(int64) (*Node, error)
-	NewNode(NodeNew, int64) (*Node, error)
-	GetNodeList(NodeFilter, int64) (int, *[]Node, error)
-	UpdateNode(int64, NodeUpdate, int64) (*Node, error)
-	DeleteNode(int64, int64, string) error
 }
 
 func (s *nodeService) GetNodeByID(id int64) (*Node, error) {
@@ -168,6 +158,9 @@ func (s *nodeService) UpdateNode(nodeID int64, info NodeUpdate, organizationID i
 	}
 	if info.Sort != 0 {
 		oldNode.Sort = info.Sort
+	}
+	if info.CanReview != 0 {
+		oldNode.CanReview = info.CanReview
 	}
 	oldNode.JsonData = info.JsonData
 	err = repo.UpdateNode(nodeID, *oldNode, info.User)
