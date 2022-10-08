@@ -55,8 +55,9 @@ func GetEventByID(c *gin.Context) {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
 	eventService := NewEventService()
-	event, err := eventService.GetEventByID(uri.ID)
+	event, err := eventService.GetEventByID(uri.ID, claims.OrganizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -386,4 +387,45 @@ func WxGetCheckinList(c *gin.Context) {
 		return
 	}
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 获取事件审核历史
+// @Id 110
+// @Tags 事件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Success 200 object response.SuccessRes{data=[]EventAuditHistoryResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /events/:id/audits [GET]
+func GetAuditHistory(c *gin.Context) {
+	var uri EventID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	historys, err := eventService.GetEventAuditHistory(uri.ID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, historys)
+
+}
+
+// @Summary 获取事件审核历史
+// @Id 111
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Success 200 object response.SuccessRes{data=[]EventAuditHistoryResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/events/:id [GET]
+func WxGetAuditHistory(c *gin.Context) {
+	GetAuditHistory(c)
 }

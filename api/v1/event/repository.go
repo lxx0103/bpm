@@ -11,38 +11,10 @@ type eventRepository struct {
 	tx *sql.Tx
 }
 
-func NewEventRepository(transaction *sql.Tx) EventRepository {
+func NewEventRepository(transaction *sql.Tx) *eventRepository {
 	return &eventRepository{
 		tx: transaction,
 	}
-}
-
-type EventRepository interface {
-	//Event Management
-	CreateEvent(info EventNew) (int64, error)
-	CreateEventAssign(int64, int, []int64, string) error
-	DeleteEventAssign(int64, string) error
-	GetAssignsByEventID(int64) (*[]EventAssign, error)
-	CreateEventAudit(int64, int, []int64, string) error
-	DeleteEventAudit(int64, string) error
-	GetAuditsByEventID(int64) (*[]EventAudit, error)
-	CreateEventPre(int64, []int64, string) error
-	DeleteEventPre(int64, string) error
-	GetPresByEventID(int64) (*[]EventPre, error)
-	UpdateEvent(int64, Event, string) error
-	GetEventByID(int64, int64) (*Event, error)
-	DeleteEventByProjectID(int64, string) error
-	CheckProjectExist(int64, int64) (int, error)
-	CheckNameExist(string, int64, int64) (int, error)
-	GetEventsByProjectID(int64) (*[]Event, error)
-	GetEventIDByProjectAndNode(int64, int64) (int64, error)
-	CheckAssign(int64, int64, int64) (int, error)
-	CompleteEvent(int64, string) error
-	AuditEvent(int64, bool, string, string) error
-	CheckAudit(int64, int64, int64) (int, error)
-	CheckCheckin(int64, int64) (int, error)
-	doCheckin(int64, NewCheckin) error
-	GetProjectLocation(int64, int64) (float64, float64, int, error)
 }
 
 func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
@@ -424,6 +396,20 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 		updated_by = ? 
 		WHERE id = ?
 	`, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, status, time.Now(), byUser, eventID)
+	if err != nil {
+		return err
+	}
+	if status == 9 {
+		status = 1
+	} else {
+		status = 2
+	}
+	_, err = r.tx.Exec(`
+		INSERT INTO event_audit_historys 
+		(event_id, audit_user, audit_content, audit_time, status, created, created_by, updated, updated_by)
+		VALUES
+		(?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, eventID, byUser, auditContent, time.Now(), status, time.Now(), byUser, time.Now(), byUser)
 	return err
 }
 

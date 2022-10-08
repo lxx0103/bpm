@@ -119,3 +119,11 @@ type CheckinResponse struct {
 	Latitude         float64 `db:"latitude" json:"latitude"`
 	Distance         int     `db:"distance" json:"distance"`
 }
+type EventAuditHistoryResponse struct {
+	ID           int64  `db:"id" json:"id"`
+	EventID      int64  `db:"event_id" json:"event_id"`
+	AuditTime    string `db:"audit_time" json:"audit_time"`
+	AuditContent string `db:"audit_content" json:"audit_content"`
+	AuditUser    string `db:"audit_user" json:"audit_user"`
+	Status       int    `db:"status" json:"status"`
+}

@@ -1216,6 +1216,59 @@ var doc = `{
                 }
             }
         },
+        "/events/:id/audits": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "获取事件审核历史",
+                "operationId": "110",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/event.EventAuditHistoryResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/examples": {
             "get": {
                 "consumes": [
@@ -4833,8 +4886,8 @@ var doc = `{
                 "tags": [
                     "小程序接口"
                 ],
-                "summary": "根据ID获取事件",
-                "operationId": "84",
+                "summary": "获取事件审核历史",
+                "operationId": "111",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4856,7 +4909,10 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/event.Event"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/event.EventAuditHistoryResponse"
+                                            }
                                         }
                                     }
                                 }
@@ -7085,6 +7141,29 @@ var doc = `{
                 },
                 "updated_by": {
                     "type": "string"
+                }
+            }
+        },
+        "event.EventAuditHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "audit_content": {
+                    "type": "string"
+                },
+                "audit_time": {
+                    "type": "string"
+                },
+                "audit_user": {
+                    "type": "string"
+                },
+                "event_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },

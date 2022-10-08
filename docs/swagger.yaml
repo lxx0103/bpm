@@ -644,6 +644,21 @@ definitions:
       updated_by:
         type: string
     type: object
+  event.EventAuditHistoryResponse:
+    properties:
+      audit_content:
+        type: string
+      audit_time:
+        type: string
+      audit_user:
+        type: string
+      event_id:
+        type: integer
+      id:
+        type: integer
+      status:
+        type: integer
+    type: object
   event.EventPre:
     properties:
       created:
@@ -2181,6 +2196,38 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新事件
+      tags:
+      - 事件管理
+  /events/:id/audits:
+    get:
+      consumes:
+      - application/json
+      operationId: "110"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.EventAuditHistoryResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取事件审核历史
       tags:
       - 事件管理
   /examples:
@@ -4391,7 +4438,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "84"
+      operationId: "111"
       parameters:
       - description: 事件ID
         in: path
@@ -4408,13 +4455,15 @@ paths:
             - $ref: '#/definitions/response.SuccessRes'
             - properties:
                 data:
-                  $ref: '#/definitions/event.Event'
+                  items:
+                    $ref: '#/definitions/event.EventAuditHistoryResponse'
+                  type: array
               type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID获取事件
+      summary: 获取事件审核历史
       tags:
       - 小程序接口
     put:

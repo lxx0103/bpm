@@ -11,37 +11,26 @@ type eventQuery struct {
 	conn *sqlx.DB
 }
 
-func NewEventQuery(connection *sqlx.DB) EventQuery {
+func NewEventQuery(connection *sqlx.DB) *eventQuery {
 	return &eventQuery{
 		conn: connection,
 	}
 }
 
-type EventQuery interface {
-	//Event Management
-	GetEventByID(id int64) (*Event, error)
-	GetAssignsByEventID(int64) (*[]EventAssign, error)
-	GetPresByEventID(int64) (*[]EventPre, error)
-	GetAuditsByEventID(int64) (*[]EventAudit, error)
-	GetEventCount(EventFilter, int64) (int, error)
-	GetEventList(EventFilter, int64) (*[]Event, error)
-	//WX
-	GetAssigned(int64, int64) ([]int64, error)
-	GetAssignedAudit(int64, int64) ([]int64, error)
-	CheckActive(int64) (bool, error)
-	GetAssignedEventByID(int64, string) (*MyEvent, error)
-	GetProjectEvent(MyEventFilter) (*[]MyEvent, error)
-	GetAssignedAuditByID(int64, string) (*MyEvent, error)
-	//Checkin Management
-	GetCheckinCount(CheckinFilter) (int, error)
-	GetCheckinList(CheckinFilter) (*[]CheckinResponse, error)
-}
-
-func (r *eventQuery) GetEventByID(id int64) (*Event, error) {
+func (r *eventQuery) GetEventByID(id, organizationID int64) (*Event, error) {
 	var event Event
-	err := r.conn.Get(&event, "SELECT * FROM events WHERE id = ? AND status > 0 ", id)
-	if err != nil {
-		return nil, err
+	sql := "SELECT e.* FROM events e LEFT JOIN projects p ON e.project_id = p.id WHERE e.id = ? AND e.status > 0 "
+	if organizationID != 0 {
+		sql += " AND p.organization_id = ? "
+		err := r.conn.Get(&event, sql, id, organizationID)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := r.conn.Get(&event, sql, id)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return &event, nil
 }
@@ -280,4 +269,15 @@ func (r *eventQuery) GetCheckinList(filter CheckinFilter) (*[]CheckinResponse, e
 		return nil, err
 	}
 	return &checkins, nil
+}
+
+func (r *eventQuery) GetAuditHistoryList(eventID int64) (*[]EventAuditHistoryResponse, error) {
+	var historys []EventAuditHistoryResponse
+	err := r.conn.Select(&historys, `
+		SELECT id, event_id, audit_user, audit_time, audit_content, status
+		FROM event_audit_historys
+		WHERE event_id = ? AND status > 0
+		ORDER BY audit_time desc
+	`, eventID)
+	return &historys, err
 }

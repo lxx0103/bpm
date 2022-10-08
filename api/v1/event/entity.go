@@ -78,3 +78,16 @@ type EventCheckin struct {
 	Updated     time.Time `db:"updated" json:"updated"`
 	UpdatedBy   string    `db:"updated_by" json:"updated_by"`
 }
+
+type EventAuditHistory struct {
+	ID           int64     `db:"id" json:"id"`
+	EventID      int64     `db:"event_id" json:"event_id"`
+	AuditTime    string    `db:"audit_time" json:"audit_time"`
+	AuditContent string    `db:"audit_content" json:"audit_content"`
+	AuditUser    string    `db:"audit_user" json:"audit_user"`
+	Status       int       `db:"status" json:"status"`
+	Created      time.Time `db:"created" json:"created"`
+	CreatedBy    string    `db:"created_by" json:"created_by"`
+	Updated      time.Time `db:"updated" json:"updated"`
+	UpdatedBy    string    `db:"updated_by" json:"updated_by"`
+}

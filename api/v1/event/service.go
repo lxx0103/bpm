@@ -12,31 +12,14 @@ import (
 type eventService struct {
 }
 
-func NewEventService() EventService {
+func NewEventService() *eventService {
 	return &eventService{}
 }
 
-// EventService represents a service for managing events.
-type EventService interface {
-	//Event Management
-	GetEventByID(int64) (*Event, error)
-	// NewEvent(EventNew, int64) (*Event, error)
-	GetEventList(EventFilter, int64) (int, *[]Event, error)
-	UpdateEvent(int64, EventUpdate, int64) (*Event, error)
-	NewCheckin(int64, NewCheckin) error
-	GetCheckinList(CheckinFilter, int64) (int, *[]CheckinResponse, error)
-	//WX API
-	GetAssignedEvent(AssignedEventFilter, int64, int64, int64) (*[]MyEvent, error)
-	GetAssignedAudit(AssignedAuditFilter, int64, int64, int64) (*[]MyEvent, error)
-	GetProjectEvent(MyEventFilter) (*[]MyEvent, error)
-	SaveEvent(int64, SaveEventInfo) error
-	AuditEvent(int64, AuditEventInfo) error
-}
-
-func (s *eventService) GetEventByID(id int64) (*Event, error) {
+func (s *eventService) GetEventByID(id, organizationID int64) (*Event, error) {
 	db := database.InitMySQL()
 	query := NewEventQuery(db)
-	event, err := query.GetEventByID(id)
+	event, err := query.GetEventByID(id, organizationID)
 	if err != nil {
 		return nil, err
 	}
@@ -458,4 +441,16 @@ func (s *eventService) GetCheckinList(filter CheckinFilter, organizationID int64
 		return 0, nil, err
 	}
 	return count, list, err
+}
+
+func (s *eventService) GetEventAuditHistory(eventID, organizationID int64) (*[]EventAuditHistoryResponse, error) {
+	db := database.InitMySQL()
+	query := NewEventQuery(db)
+	_, err := query.GetEventByID(eventID, organizationID)
+	if err != nil {
+		msg := "事件不存在"
+		return nil, errors.New(msg)
+	}
+	list, err := query.GetAuditHistoryList(eventID)
+	return list, err
 }

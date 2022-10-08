@@ -11,39 +11,10 @@ type authRepository struct {
 	tx *sql.Tx
 }
 
-func NewAuthRepository(transaction *sql.Tx) AuthRepository {
+func NewAuthRepository(transaction *sql.Tx) *authRepository {
 	return &authRepository{
 		tx: transaction,
 	}
-}
-
-type AuthRepository interface {
-	// GetCredential(SigninRequest) (UserAuth, error)
-	CreateUser(User) (int64, error)
-	GetUserByID(int64) (*UserResponse, error)
-	CheckConfict(int, string) (bool, error)
-	UpdateUser(int64, UserResponse, string) error
-	UpdatePassword(int64, string, string) error
-	// GetAuthCount(filter AuthFilter) (int, error)
-	// GetAuthList(filter AuthFilter) ([]Auth, error)
-
-	//  Role Management
-	CreateRole(info RoleNew) (int64, error)
-	UpdateRole(int64, RoleNew) (int64, error)
-	GetRoleByID(int64) (*Role, error)
-	DeleteRole(int64, string) error
-	// API Management
-	CreateAPI(APINew) (int64, error)
-	UpdateAPI(int64, APINew) (int64, error)
-	GetAPIByID(int64) (*API, error)
-	// Menu Management
-	GetMenuByID(id int64) (*Menu, error)
-	CreateMenu(info MenuNew) (int64, error)
-	UpdateMenu(int64, Menu, string) error
-	DeleteMenu(int64, string) error
-	// Privilege Management
-	NewMenuAPI(int64, MenuAPINew) error
-	NewRoleMenu(int64, RoleMenuNew) error
 }
 
 func (r *authRepository) CreateUser(newUser User) (int64, error) {
