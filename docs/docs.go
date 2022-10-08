@@ -8032,6 +8032,9 @@ var doc = `{
                 "organization_id": {
                     "type": "integer"
                 },
+                "priority": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -8053,6 +8056,7 @@ var doc = `{
             "type": "object",
             "required": [
                 "name",
+                "priority",
                 "template_id"
             ],
             "properties": {
@@ -8078,6 +8082,14 @@ var doc = `{
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
+                },
+                "priority": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ]
                 },
                 "template_id": {
                     "type": "integer",
@@ -8118,6 +8130,9 @@ var doc = `{
                 "organization_name": {
                     "type": "string"
                 },
+                "priority": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -8154,6 +8169,14 @@ var doc = `{
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 1
+                },
+                "priority": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3
+                    ]
                 }
             }
         },

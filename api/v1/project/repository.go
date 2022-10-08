@@ -9,19 +9,10 @@ type projectRepository struct {
 	tx *sql.Tx
 }
 
-func NewProjectRepository(transaction *sql.Tx) ProjectRepository {
+func NewProjectRepository(transaction *sql.Tx) *projectRepository {
 	return &projectRepository{
 		tx: transaction,
 	}
-}
-
-type ProjectRepository interface {
-	//Project Management
-	CreateProject(ProjectNew, int64) (int64, error)
-	UpdateProject(int64, Project, string) error
-	GetProjectByID(int64, int64) (*Project, error)
-	CheckNameExist(string, int64, int64) (int, error)
-	DeleteProject(int64, string) error
 }
 
 func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64) (int64, error) {
@@ -37,14 +28,15 @@ func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64)
 			longitude,
 			latitude,
 			checkin_distance,
+			priority,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, organizationID, info.TemplateID, info.ClientID, info.Name, info.Type, info.Location, info.Longitude, info.Latitude, info.CheckinDistance, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, organizationID, info.TemplateID, info.ClientID, info.Name, info.Type, info.Location, info.Longitude, info.Latitude, info.CheckinDistance, info.Priority, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -64,10 +56,11 @@ func (r *projectRepository) UpdateProject(id int64, info Project, byUser string)
 		longitude = ?,
 		latitude = ?,
 		checkin_distance = ?,
+		priority = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.ClientID, info.Location, info.Longitude, info.Latitude, info.CheckinDistance, time.Now(), byUser, id)
+	`, info.Name, info.ClientID, info.Location, info.Longitude, info.Latitude, info.CheckinDistance, info.Priority, time.Now(), byUser, id)
 	return err
 }
 

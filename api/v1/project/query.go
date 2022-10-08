@@ -10,24 +10,10 @@ type projectQuery struct {
 	conn *sqlx.DB
 }
 
-func NewProjectQuery(connection *sqlx.DB) ProjectQuery {
+func NewProjectQuery(connection *sqlx.DB) *projectQuery {
 	return &projectQuery{
 		conn: connection,
 	}
-}
-
-type ProjectQuery interface {
-	//Project Management
-	GetProjectByID(int64, int64) (*Project, error)
-	GetProjectCount(ProjectFilter, int64) (int, error)
-	GetProjectList(ProjectFilter, int64) (*[]ProjectResponse, error)
-	//WX
-	GetProjectListByCreate(string, int64, MyProjectFilter) (*[]Project, error)
-	GetProjectCountByCreate(string, int64, MyProjectFilter) (int, error)
-	GetProjectListByAssigned(AssignedProjectFilter, int64, int64, int64) (*[]Project, error)
-	GetProjectCountByAssigned(AssignedProjectFilter, int64, int64, int64) (int, error)
-	GetProjectListByClientID(int64, int64, MyProjectFilter) (*[]Project, error)
-	GetProjectCountByClientID(int64, int64, MyProjectFilter) (int, error)
 }
 
 func (r *projectQuery) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -85,7 +71,7 @@ func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64
 	args = append(args, filter.PageSize)
 	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT p.id as id, p.organization_id as organization_id, o.name as organization_name, p.client_id as client_id, IFNULL(c.name, "内部流程") as client_name, p.name as name, p.type as type, p.location as location, p.longitude as longitude, p.latitude as latitude, p.checkin_distance as checkin_distance, p.status as status
+		SELECT p.id as id, p.organization_id as organization_id, o.name as organization_name, p.client_id as client_id, IFNULL(c.name, "内部流程") as client_name, p.name as name, p.type as type, p.location as location, p.longitude as longitude, p.latitude as latitude, p.checkin_distance as checkin_distance, p.priority, p.status as status
 		FROM projects p
 		LEFT JOIN organizations o
 		ON p.organization_id = o.id

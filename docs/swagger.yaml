@@ -1245,6 +1245,8 @@ definitions:
         type: string
       organization_id:
         type: integer
+      priority:
+        type: integer
       status:
         type: integer
       template_id:
@@ -1275,11 +1277,18 @@ definitions:
         maxLength: 64
         minLength: 1
         type: string
+      priority:
+        enum:
+        - 1
+        - 2
+        - 3
+        type: integer
       template_id:
         minimum: 1
         type: integer
     required:
     - name
+    - priority
     - template_id
     type: object
   project.ProjectResponse:
@@ -1304,6 +1313,8 @@ definitions:
         type: integer
       organization_name:
         type: string
+      priority:
+        type: integer
       status:
         type: integer
       template_id:
@@ -1330,6 +1341,12 @@ definitions:
         maxLength: 64
         minLength: 1
         type: string
+      priority:
+        enum:
+        - 1
+        - 2
+        - 3
+        type: integer
     type: object
   response.ErrorRes:
     properties:

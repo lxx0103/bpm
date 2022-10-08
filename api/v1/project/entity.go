@@ -13,6 +13,7 @@ type Project struct {
 	Longitude       float64   `db:"longitude" json:"longitude"`
 	Latitude        float64   `db:"latitude" json:"latitude"`
 	CheckinDistance int       `db:"checkin_distance" json:"checkin_distance"`
+	Priority        int       `db:"priority" json:"priority"`
 	Status          int       `db:"status" json:"status"`
 	Created         time.Time `db:"created" json:"created"`
 	CreatedBy       string    `db:"created_by" json:"created_by"`

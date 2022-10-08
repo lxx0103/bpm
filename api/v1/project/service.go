@@ -15,22 +15,8 @@ import (
 type projectService struct {
 }
 
-func NewProjectService() ProjectService {
+func NewProjectService() *projectService {
 	return &projectService{}
-}
-
-// ProjectService represents a service for managing projects.
-type ProjectService interface {
-	//Project Management
-	GetProjectByID(int64, int64) (*Project, error)
-	NewProject(ProjectNew, int64) (*Project, error)
-	GetProjectList(ProjectFilter, int64) (int, *[]ProjectResponse, error)
-	UpdateProject(int64, ProjectUpdate, int64) (*Project, error)
-	DeleteProject(int64, int64, string) error
-	//WX
-	GetMyProject(MyProjectFilter, string, int64) (int, *[]Project, error)
-	GetAssignedProject(AssignedProjectFilter, int64, int64, int64) (int, *[]Project, error)
-	GetClientProject(MyProjectFilter, int64, int64) (int, *[]Project, error)
 }
 
 func (s *projectService) GetProjectByID(id int64, organizationID int64) (*Project, error) {
@@ -247,6 +233,9 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 	}
 	if info.CheckinDistance != 0 {
 		oldProject.CheckinDistance = info.CheckinDistance
+	}
+	if info.Priority != 0 {
+		oldProject.Priority = info.Priority
 	}
 	err = repo.UpdateProject(projectID, *oldProject, info.User)
 	if err != nil {

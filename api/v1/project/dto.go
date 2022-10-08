@@ -4,6 +4,7 @@ type ProjectFilter struct {
 	Name           string `form:"name" binding:"omitempty,max=64,min=1"`
 	OrganizationID int64  `form:"organization_id" binding:"omitempty,min=1"`
 	Type           int    `form:"type" binding:"omitempty,oneof=1 2"`
+	Priority       int    `form:"priority" binding:"omitempty,oneof=1 2 3"`
 	PageId         int    `form:"page_id" binding:"required,min=1"`
 	PageSize       int    `form:"page_size" binding:"required,min=5,max=200"`
 }
@@ -17,6 +18,7 @@ type ProjectNew struct {
 	Longitude       float64 `json:"longitude" binding:"omitempty"`
 	Latitude        float64 `json:"latitude" binding:"omitempty"`
 	CheckinDistance int     `json:"checkin_distance" binding:"omitempty"`
+	Priority        int     `json:"priority" binding:"required,oneof=1 2 3"`
 	User            string  `json:"user" swaggerignore:"true"`
 	UserID          int64   `json:"user_id" swaggerignore:"true"`
 }
@@ -32,6 +34,7 @@ type ProjectUpdate struct {
 	Longitude       float64 `json:"longitude" binding:"omitempty"`
 	Latitude        float64 `json:"latitude" binding:"omitempty"`
 	CheckinDistance int     `json:"checkin_distance" binding:"omitempty"`
+	Priority        int     `json:"priority" binding:"omitempty,oneof=1 2 3"`
 	User            string  `json:"user" swaggerignore:"true"`
 	UserID          int64   `json:"user_id" swaggerignore:"true"`
 }
@@ -61,5 +64,6 @@ type ProjectResponse struct {
 	Longitude        float64 `db:"longitude" json:"longitude"`
 	Latitude         float64 `db:"latitude" json:"latitude"`
 	CheckinDistance  int     `db:"checkin_distance" json:"checkin_distance"`
+	Priority         int     `db:"priority" json:"priority"`
 	Status           int     `db:"status" json:"status"`
 }
