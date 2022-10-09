@@ -505,3 +505,52 @@ func GetReview(c *gin.Context) {
 func WxGetReview(c *gin.Context) {
 	GetReview(c)
 }
+
+// @Summary 根据ID更新事件截止日期
+// @Id 115
+// @Tags 事件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Param event_info body EventDeadlineNew true "事件信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /events/:id/deadline [PUT]
+func UpdateEventDeadline(c *gin.Context) {
+	var uri EventID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var event EventDeadlineNew
+	if err := c.ShouldBindJSON(&event); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	event.User = claims.Username
+	organizationID := claims.OrganizationID
+	eventService := NewEventService()
+	err := eventService.UpdateEventDeadline(uri.ID, event, organizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 根据ID更新事件截止日期
+// @Id 116
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "事件ID"
+// @Param event_info body EventDeadlineNew true "事件信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/events/:id/deadline [PUT]
+func WxUpdateEventDeadline(c *gin.Context) {
+	UpdateEventDeadline(c)
+}

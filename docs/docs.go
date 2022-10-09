@@ -1269,6 +1269,65 @@ var doc = `{
                 }
             }
         },
+        "/events/:id/deadline": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "事件管理"
+                ],
+                "summary": "根据ID更新事件截止日期",
+                "operationId": "115",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "事件信息",
+                        "name": "event_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/event.EventDeadlineNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/events/:id/reviews": {
             "get": {
                 "consumes": [
@@ -5090,6 +5149,65 @@ var doc = `{
                 }
             }
         },
+        "/wx/events/:id/deadline": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "根据ID更新事件截止日期",
+                "operationId": "116",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "事件信息",
+                        "name": "event_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/event.EventDeadlineNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/events/:id/reviews": {
             "get": {
                 "consumes": [
@@ -7208,6 +7326,9 @@ var doc = `{
                 "created_by": {
                     "type": "string"
                 },
+                "deadline": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -7330,6 +7451,17 @@ var doc = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "event.EventDeadlineNew": {
+            "type": "object",
+            "required": [
+                "deadline"
+            ],
+            "properties": {
+                "deadline": {
+                    "type": "string"
                 }
             }
         },
@@ -7461,6 +7593,9 @@ var doc = `{
                     "type": "string"
                 },
                 "complete_user": {
+                    "type": "string"
+                },
+                "deadline": {
                     "type": "string"
                 },
                 "id": {

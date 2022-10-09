@@ -59,6 +59,7 @@ type MyEvent struct {
 	Sort         int    `db:"sort" json:"sort"`
 	Status       int    `db:"status" json:"status"`
 	Priority     int    `db:"priority" json:"priority"`
+	Deadline     string `db:"deadline" json:"deadline"`
 }
 
 type SaveEventInfo struct {
@@ -146,4 +147,9 @@ type EventReviewResponse struct {
 	Content string `db:"content" json:"content"`
 	Link    string `db:"link" json:"link"`
 	Status  int    `db:"status" json:"status"`
+}
+
+type EventDeadlineNew struct {
+	Deadline string `json:"deadline" binding:"required,datetime=2006-01-02"`
+	User     string `json:"user" swaggerignore:"true"`
 }

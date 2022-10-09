@@ -490,3 +490,23 @@ func (s *eventService) GetEventReview(eventID, organizationID int64) (*[]EventRe
 	list, err := query.GetReviewList(eventID)
 	return list, err
 }
+
+func (s *eventService) UpdateEventDeadline(eventID int64, info EventDeadlineNew, organizationID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewEventRepository(tx)
+	_, err = repo.GetEventByID(eventID, organizationID)
+	if err != nil {
+		return err
+	}
+	err = repo.UpdateEventDeadline(eventID, info.Deadline, info.User)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}

@@ -579,6 +579,8 @@ definitions:
         type: string
       created_by:
         type: string
+      deadline:
+        type: string
       id:
         type: integer
       name:
@@ -660,6 +662,13 @@ definitions:
         type: integer
       status:
         type: integer
+    type: object
+  event.EventDeadlineNew:
+    properties:
+      deadline:
+        type: string
+    required:
+    - deadline
     type: object
   event.EventPre:
     properties:
@@ -747,6 +756,8 @@ definitions:
       complete_time:
         type: string
       complete_user:
+        type: string
+      deadline:
         type: string
       id:
         type: integer
@@ -2292,6 +2303,42 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 获取事件审核历史
+      tags:
+      - 事件管理
+  /events/:id/deadline:
+    put:
+      consumes:
+      - application/json
+      operationId: "115"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 事件信息
+        in: body
+        name: event_info
+        required: true
+        schema:
+          $ref: '#/definitions/event.EventDeadlineNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新事件截止日期
       tags:
       - 事件管理
   /events/:id/reviews:
@@ -4626,6 +4673,42 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 事件签到
+      tags:
+      - 小程序接口
+  /wx/events/:id/deadline:
+    put:
+      consumes:
+      - application/json
+      operationId: "116"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 事件信息
+        in: body
+        name: event_info
+        required: true
+        schema:
+          $ref: '#/definitions/event.EventDeadlineNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新事件截止日期
       tags:
       - 小程序接口
   /wx/events/:id/reviews:

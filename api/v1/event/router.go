@@ -9,6 +9,7 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/checkins", GetCheckinList)
 	g.GET("/events/:id/audits", GetAuditHistory)
 	g.GET("/events/:id/reviews", GetReview)
+	g.PUT("/events/:id/deadline", UpdateEventDeadline)
 }
 
 func WxRouters(g *gin.RouterGroup) {
@@ -24,4 +25,5 @@ func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/events/:id/audits", WxGetAuditHistory)
 	g.POST("/wx/events/:id/reviews", WxReviewEvent)
 	g.GET("/wx/events/:id/reviews", WxGetReview)
+	g.PUT("/wx/events/:id/deadline", WxUpdateEventDeadline)
 }
