@@ -58,6 +58,7 @@ type MyEvent struct {
 	NeedCheckin  int    `db:"need_checkin" json:"need_checkin"`
 	Sort         int    `db:"sort" json:"sort"`
 	Status       int    `db:"status" json:"status"`
+	Priority     int    `db:"priority" json:"priority"`
 }
 
 type SaveEventInfo struct {

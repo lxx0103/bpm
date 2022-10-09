@@ -7472,6 +7472,9 @@ var doc = `{
                 "need_checkin": {
                     "type": "integer"
                 },
+                "priority": {
+                    "type": "integer"
+                },
                 "project_id": {
                     "type": "integer"
                 },

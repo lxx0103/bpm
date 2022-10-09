@@ -78,6 +78,7 @@ func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64
 		LEFT JOIN clients c
 		ON p.client_id = c.id
 		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY p.id desc
 		LIMIT ?, ?
 	`, args...)
 	if err != nil {
@@ -105,6 +106,7 @@ func (r *projectQuery) GetProjectListByCreate(userName string, organization_id i
 		SELECT * 
 		FROM projects 
 		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY id desc
 		LIMIT ?, ?
 	`, args...)
 	if err != nil {
