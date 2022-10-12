@@ -73,7 +73,7 @@ func (r *eventQuery) GetEventList(filter EventFilter, organizationID int64) (*[]
 	args = append(args, filter.PageSize)
 	var events []Event
 	err := r.conn.Select(&events, `
-		SELECT e.* 
+		SELECT e.id, e.project_id, e.name, e.assign_type, e.node_id, e.assignable, e.need_audit, e.audit_type, e.complete_user, e.complete_time, e.audit_user, e.audit_content, e.audit_time, e.status, e.created, e.created_by, e.updated, e.updated_by, e.need_checkin, e.sort, e.can_review, IFNULL(e.deadline,"") as deadline
 		FROM events e
 		LEFT JOIN projects p
 		ON e.project_id = p.id
@@ -149,7 +149,7 @@ func (r *eventQuery) CheckActive(eventID int64) (bool, error) {
 
 func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*MyEvent, error) {
 	var event MyEvent
-	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.sort, e.status, p.priority, e.deadline FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.id = ?"
+	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.sort, e.status, p.priority, IFNULL(e.deadline, '') as deadline, e.can_review FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.id = ?"
 	if status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
@@ -164,7 +164,7 @@ func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*MyEvent, er
 
 func (r *eventQuery) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 	var event []MyEvent
-	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, p.priority, e.deadline, e.sort, e.status, p.priority FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.project_id = ?  "
+	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, p.priority, IFNULL(e.deadline, '') as deadline, e.sort, e.status, p.priority, e.can_review FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.project_id = ?  "
 	if filter.Status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
@@ -184,7 +184,7 @@ func (r *eventQuery) GetAssignedAudit(userID int64, positionID int64) ([]int64, 
 
 func (r *eventQuery) GetAssignedAuditByID(id int64, status string) (*MyEvent, error) {
 	var event MyEvent
-	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.sort, e.status, p.priority, e.deadline FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.id = ?"
+	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, e.sort, e.status, p.priority, IFNULL(e.deadline, '') as deadline, e.can_review FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.id = ?"
 	if status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
@@ -285,7 +285,7 @@ func (r *eventQuery) GetAuditHistoryList(eventID int64) (*[]EventAuditHistoryRes
 		SELECT id, event_id, audit_user, audit_time, audit_content, status
 		FROM event_audit_historys
 		WHERE event_id = ? AND status > 0
-		ORDER BY audit_time desc
+		ORDER BY audit_time asc
 	`, eventID)
 	return &historys, err
 }
@@ -293,7 +293,7 @@ func (r *eventQuery) GetAuditHistoryList(eventID int64) (*[]EventAuditHistoryRes
 func (r *eventQuery) GetReviewList(eventID int64) (*[]EventReviewResponse, error) {
 	var reviews []EventReviewResponse
 	err := r.conn.Select(&reviews, `
-		SELECT id, event_id, result, content, link, status
+		SELECT id, event_id, result, content, link, status, created
 		FROM event_reviews
 		WHERE event_id = ? AND status > 0
 		ORDER BY id desc

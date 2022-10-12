@@ -36,7 +36,7 @@ func (r *nodeRepository) CreateNode(info NodeNew) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, info.TemplateID, info.Name, info.Assignable, info.AssignType, info.NeedAudit, info.AuditType, info.NeedCheckin, info.Sort, 1, "{}", info.CanReview, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
@@ -240,13 +240,13 @@ func (r *nodeRepository) DeleteNode(id int64, byUser string) error {
 
 func (r *nodeRepository) GetNodesByTemplateID(templateID int64) (*[]Node, error) {
 	var res []Node
-	rows, err := r.tx.Query(`SELECT id, template_id, name, assign_type, assignable, need_audit, audit_type, need_checkin, sort FROM nodes  WHERE template_id = ? AND status > 0`, templateID)
+	rows, err := r.tx.Query(`SELECT id, template_id, name, assign_type, assignable, need_audit, audit_type, need_checkin, sort, can_review FROM nodes  WHERE template_id = ? AND status > 0`, templateID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var rowRes Node
-		err = rows.Scan(&rowRes.ID, &rowRes.TemplateID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable, &rowRes.NeedAudit, &rowRes.AuditType, &rowRes.NeedCheckin, &rowRes.Sort)
+		err = rows.Scan(&rowRes.ID, &rowRes.TemplateID, &rowRes.Name, &rowRes.AssignType, &rowRes.Assignable, &rowRes.NeedAudit, &rowRes.AuditType, &rowRes.NeedCheckin, &rowRes.Sort, &rowRes.CanReview)
 		if err != nil {
 			return nil, err
 		}

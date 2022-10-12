@@ -410,7 +410,7 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 		(event_id, audit_user, audit_content, audit_time, status, created, created_by, updated, updated_by)
 		VALUES
 		(?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, eventID, byUser, auditContent, time.Now(), status, time.Now(), byUser, time.Now(), byUser)
+	`, eventID, byUser, auditContent, time.Now().Format("2006-01-02 15:04:05"), status, time.Now(), byUser, time.Now(), byUser)
 	return err
 }
 
