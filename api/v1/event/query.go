@@ -18,7 +18,34 @@ func NewEventQuery(connection *sqlx.DB) *eventQuery {
 
 func (r *eventQuery) GetEventByID(id, organizationID int64) (*Event, error) {
 	var event Event
-	sql := "SELECT e.* FROM events e LEFT JOIN projects p ON e.project_id = p.id WHERE e.id = ? AND e.status > 0 "
+	sql := `
+	SELECT
+    e.id,
+    e.project_id,
+    e.name,
+    e.assignable,
+    e.assign_type,
+    e.node_id,
+    e.need_audit,
+    e.audit_type,
+    e.complete_time,
+    e.complete_user,
+    e.audit_time,
+    e.audit_content,
+    e.audit_user,
+    e.need_checkin,
+    e.sort,
+    e.can_review,
+    IFNULL(e.deadline,"") as deadline,
+    e.status,
+    e.created,
+    e.created_by,
+    e.updated,
+    e.updated_by
+	FROM events e 
+	LEFT JOIN projects p 
+	ON e.project_id = p.id 
+	WHERE e.id = ? AND e.status > 0 `
 	if organizationID != 0 {
 		sql += " AND p.organization_id = ? "
 		err := r.conn.Get(&event, sql, id, organizationID)

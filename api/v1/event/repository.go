@@ -480,12 +480,23 @@ func (r *eventRepository) CreateEventReview(eventID int64, info EventReviewNew) 
 }
 
 func (r *eventRepository) UpdateEventDeadline(id int64, deadline, byUser string) error {
-	_, err := r.tx.Exec(`
-		Update events SET 
-		deadline = ?,
-		updated = ?,
-		updated_by = ? 
-		WHERE id = ?
-	`, deadline, time.Now(), byUser, id)
-	return err
+	if deadline == "" {
+		_, err := r.tx.Exec(`
+			Update events SET 
+			deadline = null,
+			updated = ?,
+			updated_by = ? 
+			WHERE id = ?
+		`, time.Now(), byUser, id)
+		return err
+	} else {
+		_, err := r.tx.Exec(`
+			Update events SET 
+			deadline = ?,
+			updated = ?,
+			updated_by = ? 
+			WHERE id = ?
+		`, deadline, time.Now(), byUser, id)
+		return err
+	}
 }

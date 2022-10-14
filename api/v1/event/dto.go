@@ -152,6 +152,6 @@ type EventReviewResponse struct {
 }
 
 type EventDeadlineNew struct {
-	Deadline string `json:"deadline" binding:"required,datetime=2006-01-02"`
+	Deadline string `json:"deadline" binding:"omitempty,datetime=2006-01-02"`
 	User     string `json:"user" swaggerignore:"true"`
 }
