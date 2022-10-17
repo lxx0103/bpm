@@ -8,6 +8,7 @@ import (
 	"bpm/api/v1/event"
 	"bpm/api/v1/example"
 	"bpm/api/v1/member"
+	"bpm/api/v1/message"
 	"bpm/api/v1/node"
 	"bpm/api/v1/organization"
 	"bpm/api/v1/position"
@@ -16,6 +17,7 @@ import (
 	"bpm/api/v1/upload"
 	"bpm/core/config"
 	"bpm/core/database"
+	event2 "bpm/core/event"
 	"bpm/core/log"
 	"bpm/core/router"
 )
@@ -25,7 +27,7 @@ func Run(args []string) {
 	log.ConfigLogger()
 	// cache.ConfigCache()
 	database.ConfigMysql()
-	// event.Subscribe(user.Subscribe, auth.Subscribe, inventory.Subscribe)
+	event2.Subscribe(message.Subscribe)
 	r := router.InitRouter()
 	router.InitPublicRouter(r, auth.Routers)
 	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers, position.Routers, member.Routers, template.Routers, node.Routers, element.Routers, upload.Routers, example.Routers)

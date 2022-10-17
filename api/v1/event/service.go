@@ -3,6 +3,8 @@ package event
 import (
 	"bpm/api/v1/component"
 	"bpm/core/database"
+	"bpm/core/queue"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -113,6 +115,19 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	}
 	event.Audit = audits
 	tx.Commit()
+
+	type NewEventUpdated struct {
+		EventID int64 `json:"event_id"`
+	}
+	var newEvent NewEventUpdated
+	newEvent.EventID = eventID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewEventUpdated", msg)
+	if err != nil {
+		msg := "create event NewEventUpdated error"
+		return nil, errors.New(msg)
+	}
 	return event, err
 }
 

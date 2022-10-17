@@ -8,6 +8,8 @@ import (
 	"bpm/api/v1/node"
 	"bpm/api/v1/template"
 	"bpm/core/database"
+	"bpm/core/queue"
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -176,6 +178,19 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		return nil, err
 	}
 	tx.Commit()
+
+	type NewProjectCreated struct {
+		ProjectID int64 `json:"project_id"`
+	}
+	var newEvent NewProjectCreated
+	newEvent.ProjectID = projectID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewProjectCreated", msg)
+	if err != nil {
+		msg := "create event NewProjectCreated error"
+		return nil, errors.New(msg)
+	}
 	return project, err
 }
 
