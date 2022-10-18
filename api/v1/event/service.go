@@ -82,14 +82,16 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 			}
 		}
 	}
-	oldEvent.NeedAudit = info.NeedAudit
-	err = repo.DeleteEventAudit(eventID, info.User)
-	if err != nil {
-		return nil, err
-	}
-	err = repo.CreateEventAudit(eventID, info.AuditType, info.AuditTo, info.User)
-	if err != nil {
-		return nil, err
+	if info.NeedAudit != 0 {
+		oldEvent.NeedAudit = info.NeedAudit
+		err = repo.DeleteEventAudit(eventID, info.User)
+		if err != nil {
+			return nil, err
+		}
+		err = repo.CreateEventAudit(eventID, info.AuditType, info.AuditTo, info.User)
+		if err != nil {
+			return nil, err
+		}
 	}
 	err = repo.UpdateEvent(eventID, *oldEvent, info.User)
 	if err != nil {
@@ -275,7 +277,6 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("needAudit:", event.NeedAudit)
 	if event.NeedAudit == 2 {
 		err = repo.AuditEvent(eventID, true, "SYSTEM", "无需审核")
 		if err != nil {
@@ -283,6 +284,19 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 		}
 	}
 	tx.Commit()
+
+	type NewEventCompleted struct {
+		EventID int64 `json:"event_id"`
+	}
+	var newEvent NewEventCompleted
+	newEvent.EventID = eventID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewEventCompleted", msg)
+	if err != nil {
+		msg := "create event NewEventCompleted error"
+		return errors.New(msg)
+	}
 	return nil
 }
 
@@ -319,6 +333,18 @@ func (s *eventService) AuditEvent(eventID int64, info AuditEventInfo) error {
 		return err
 	}
 	tx.Commit()
+	type NewEventAudited struct {
+		EventID int64 `json:"event_id"`
+	}
+	var newEvent NewEventAudited
+	newEvent.EventID = eventID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewEventAudited", msg)
+	if err != nil {
+		msg := "create event NewEventAudited error"
+		return errors.New(msg)
+	}
 	return nil
 }
 func (s *eventService) GetAssignedAudit(filter AssignedAuditFilter, userID int64, positionID int64, organizationID int64) (*[]MyEvent, error) {
