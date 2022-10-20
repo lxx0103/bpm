@@ -170,6 +170,19 @@ func (s *eventService) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error)
 			return nil, err
 		}
 	}
+	for i := 0; i < len(*myEvents); i++ {
+		if (*myEvents)[i].Status == 9 {
+			active, err := query.CheckActive((*myEvents)[i].ID)
+			if err != nil {
+				return nil, err
+			}
+			if !active {
+				(*myEvents)[i].IsActive = 2
+			} else {
+				(*myEvents)[i].IsActive = 1
+			}
+		}
+	}
 	return myEvents, err
 }
 

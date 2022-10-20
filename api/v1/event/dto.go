@@ -61,6 +61,7 @@ type MyEvent struct {
 	Priority     int    `db:"priority" json:"priority"`
 	Deadline     string `db:"deadline" json:"deadline"`
 	CanReview    int    `db:"can_review" json:"can_review"`
+	IsActive     int    `json:"is_active"`
 }
 
 type SaveEventInfo struct {
