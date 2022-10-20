@@ -172,6 +172,8 @@ func (s *eventService) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error)
 	}
 	for i := 0; i < len(*myEvents); i++ {
 		if (*myEvents)[i].Status == 9 {
+			(*myEvents)[i].IsActive = 2
+		} else {
 			active, err := query.CheckActive((*myEvents)[i].ID)
 			if err != nil {
 				return nil, err
