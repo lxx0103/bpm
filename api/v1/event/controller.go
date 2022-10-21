@@ -554,3 +554,38 @@ func UpdateEventDeadline(c *gin.Context) {
 func WxUpdateEventDeadline(c *gin.Context) {
 	UpdateEventDeadline(c)
 }
+
+// @Summary 处理顾客反馈
+// @Id 118
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "反馈ID"
+// @Param info body HandleReviewInfo true "处理内容"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/reviews/:id/handle [PUT]
+func WxHandleReview(c *gin.Context) {
+	var uri EventID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info HandleReviewInfo
+	if err := c.ShouldBindJSON(&info); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	eventService := NewEventService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	info.PositionID = claims.PositionID
+	err := eventService.HandleReview(uri.ID, info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}

@@ -500,3 +500,61 @@ func (r *eventRepository) UpdateEventDeadline(id int64, deadline, byUser string)
 		return err
 	}
 }
+
+func (r *eventRepository) GetReviewByID(id int64) (*EventReviewResponse, error) {
+	var res EventReviewResponse
+	// var row *sql.Row
+	// if organizationID != 0 {
+	// 	row = r.tx.QueryRow(`
+	// 		SELECT
+	// 		er.id,
+	// 		er.event_id,
+	// 		er.result,
+	// 		er.content,
+	// 		er.link,
+	// 		er.status,
+	// 		er.created
+	// 		FROM event_reviews er
+	// 		LEFT JOIN events e
+	// 		ON e.id = er.event_Id
+	// 		LEFT JOIN projects p
+	// 		ON e.project_id = p.id
+	// 		WHERE re.id = ?
+	// 		AND p.organization_id = ?
+	// 		AND er.status > 0
+	// 		LIMIT 1`, id, organizationID)
+	// } else {
+	row := r.tx.QueryRow(`
+			SELECT 
+			id, 
+			event_id, 
+			result, 
+			content, 
+			link, 
+			status, 
+			created,
+			handle_time,
+			handle_content,
+			handle_user
+			FROM event_reviews 
+			WHERE id = ? 
+			AND status > 0 
+			LIMIT 1`, id)
+	// }
+	err := row.Scan(&res.ID, &res.EventID, &res.Result, &res.Content, &res.Link, &res.Status, &res.Created, &res.HandleTime, &res.HandleContent, &res.HandleUser)
+	return &res, err
+}
+
+func (r *eventRepository) HandleReview(reviewID int64, status int, byUser string, handleContent string) error {
+	_, err := r.tx.Exec(`
+		Update event_reviews SET 
+		handle_user = ?,
+		handle_time = ?,
+		handle_content = ?,
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, byUser, time.Now().Format("2006-01-02 15:04:05"), handleContent, status, time.Now(), byUser, reviewID)
+	return err
+}

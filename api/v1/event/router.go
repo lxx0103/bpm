@@ -26,4 +26,5 @@ func WxRouters(g *gin.RouterGroup) {
 	g.POST("/wx/events/:id/reviews", WxReviewEvent)
 	g.GET("/wx/events/:id/reviews", WxGetReview)
 	g.PUT("/wx/events/:id/deadline", WxUpdateEventDeadline)
+	g.PUT("/wx/reviews/:id/handle", WxHandleReview)
 }

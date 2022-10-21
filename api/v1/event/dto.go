@@ -143,16 +143,27 @@ type EventReviewNew struct {
 }
 
 type EventReviewResponse struct {
-	ID      int64  `db:"id" json:"id"`
-	EventID int64  `db:"event_id" json:"event_id"`
-	Result  string `db:"result" json:"result"`
-	Content string `db:"content" json:"content"`
-	Link    string `db:"link" json:"link"`
-	Status  int    `db:"status" json:"status"`
-	Created string `db:"created" json:"created"`
+	ID            int64  `db:"id" json:"id"`
+	EventID       int64  `db:"event_id" json:"event_id"`
+	Result        string `db:"result" json:"result"`
+	Content       string `db:"content" json:"content"`
+	Link          string `db:"link" json:"link"`
+	Status        int    `db:"status" json:"status"`
+	Created       string `db:"created" json:"created"`
+	HandleTime    string `db:"handle_time" json:"handle_time"`
+	HandleContent string `db:"handle_content" json:"handle_content"`
+	HandleUser    string `db:"handle_user" json:"handle_user"`
 }
 
 type EventDeadlineNew struct {
 	Deadline string `json:"deadline" binding:"omitempty,datetime=2006-01-02"`
 	User     string `json:"user" swaggerignore:"true"`
+}
+
+type HandleReviewInfo struct {
+	Result     int    `json:"result" binding:"required,oneof=2 3"`
+	Content    string `json:"content" binding:"omitempty,max=255"`
+	User       string `json:"user" swaggerignore:"true"`
+	UserID     int64  `json:"user_id" swaggerignore:"true"`
+	PositionID int64  `json:"position_id" swaggerignore:"true"`
 }

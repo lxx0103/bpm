@@ -566,3 +566,59 @@ func (s *eventService) UpdateEventDeadline(eventID int64, info EventDeadlineNew,
 	tx.Commit()
 	return nil
 }
+
+func (s *eventService) HandleReview(reviewID int64, info HandleReviewInfo) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewEventRepository(tx)
+	review, err := repo.GetReviewByID(reviewID)
+	if err != nil {
+		msg := "反馈不存在"
+		return errors.New(msg)
+	}
+	event, err := repo.GetEventByID(review.EventID, 0)
+	if err != nil {
+		return err
+	}
+	if event.Status == 1 || event.Status == 2 || event.Status == 3 {
+		assignExist, err := repo.CheckAudit(review.EventID, info.UserID, info.PositionID)
+		if err != nil {
+			return err
+		}
+		if assignExist == 0 {
+			auditExist, err := repo.CheckAudit(review.EventID, info.UserID, info.PositionID)
+			if err != nil {
+				return err
+			}
+			if auditExist == 0 {
+				msg := "此事件未分配给你"
+				return errors.New(msg)
+			}
+		}
+	} else {
+		msg := "此反馈无法处理"
+		return errors.New(msg)
+	}
+	err = repo.HandleReview(reviewID, info.Result, info.User, info.Content)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	// type NewEventAudited struct {
+	// 	EventID int64 `json:"event_id"`
+	// }
+	// var newEvent NewEventAudited
+	// newEvent.EventID = eventID
+	// rabbit, _ := queue.GetConn()
+	// msg, _ := json.Marshal(newEvent)
+	// err = rabbit.Publish("NewEventAudited", msg)
+	// if err != nil {
+	// 	msg := "create event NewEventAudited error"
+	// 	return errors.New(msg)
+	// }
+	return nil
+}

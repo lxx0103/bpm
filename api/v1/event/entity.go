@@ -93,3 +93,19 @@ type EventAuditHistory struct {
 	Updated      time.Time `db:"updated" json:"updated"`
 	UpdatedBy    string    `db:"updated_by" json:"updated_by"`
 }
+
+type EventReview struct {
+	ID            int64     `db:"id" json:"id"`
+	EventID       int64     `db:"event_id" json:"event_id"`
+	Result        int       `db:"result" json:"result"`
+	Content       string    `db:"content" json:"content"`
+	Link          string    `db:"link" json:"link"`
+	Status        int       `db:"status" json:"status"`
+	HandleTime    string    `db:"handle_time" json:"handle_time"`
+	HandleContent string    `db:"handle_content" json:"handle_content"`
+	HandleUser    string    `db:"handle_user" json:"handle_user"`
+	Created       time.Time `db:"created" json:"created"`
+	CreatedBy     string    `db:"created_by" json:"created_by"`
+	Updated       time.Time `db:"updated" json:"updated"`
+	UpdatedBy     string    `db:"updated_by" json:"updated_by"`
+}

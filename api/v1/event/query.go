@@ -320,7 +320,7 @@ func (r *eventQuery) GetAuditHistoryList(eventID int64) (*[]EventAuditHistoryRes
 func (r *eventQuery) GetReviewList(eventID int64) (*[]EventReviewResponse, error) {
 	var reviews []EventReviewResponse
 	err := r.conn.Select(&reviews, `
-		SELECT id, event_id, result, content, link, status, created
+		SELECT id, event_id, result, content, link, status, created, handle_user, handle_content, handle_time
 		FROM event_reviews
 		WHERE event_id = ? AND status > 0
 		ORDER BY id desc
