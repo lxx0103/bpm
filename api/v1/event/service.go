@@ -585,7 +585,7 @@ func (s *eventService) HandleReview(reviewID int64, info HandleReviewInfo) error
 		return err
 	}
 	if event.Status == 1 || event.Status == 2 || event.Status == 3 {
-		assignExist, err := repo.CheckAudit(review.EventID, info.UserID, info.PositionID)
+		assignExist, err := repo.CheckAssign(review.EventID, info.UserID, info.PositionID)
 		if err != nil {
 			return err
 		}
