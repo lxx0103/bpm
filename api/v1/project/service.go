@@ -274,9 +274,13 @@ func (s *projectService) DeleteProject(projectID int64, organizationID int64, us
 	defer tx.Rollback()
 	repo := NewProjectRepository(tx)
 	eventRepo := event.NewEventRepository(tx)
-	_, err = repo.GetProjectByID(projectID, organizationID)
+	oldProject, err := repo.GetProjectByID(projectID, organizationID)
 	if err != nil {
 		return err
+	}
+	if oldProject.CreatedBy != user {
+		msg := "只能删除你创建的项目"
+		return errors.New(msg)
 	}
 	err = repo.DeleteProject(projectID, user)
 	if err != nil {
