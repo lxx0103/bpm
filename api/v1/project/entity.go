@@ -20,3 +20,45 @@ type Project struct {
 	Updated         time.Time `db:"updated" json:"updated"`
 	UpdatedBy       string    `db:"updated_by" json:"updated_by"`
 }
+
+type ProjectReport struct {
+	ID             int64     `db:"id" json:"id"`
+	OrganizationID int64     `db:"organization_id" json:"organization_id"`
+	ProjectID      int64     `db:"project_id" json:"project_id"`
+	ClientID       int64     `db:"client_id" json:"client_id"`
+	ReportDate     string    `db:"report_date" json:"report_date"`
+	Name           string    `db:"name" json:"name"`
+	Content        string    `db:"content" json:"content"`
+	Status         int       `db:"status" json:"status"`
+	Created        time.Time `db:"created" json:"created"`
+	CreatedBy      string    `db:"created_by" json:"created_by"`
+	Updated        time.Time `db:"updated" json:"updated"`
+	UpdatedBy      string    `db:"updated_by" json:"updated_by"`
+}
+
+type ProjectReportLink struct {
+	ID              int64     `db:"id" json:"id"`
+	OrganizationID  int64     `db:"organization_id" json:"organization_id"`
+	ProjectID       int64     `db:"project_id" json:"project_id"`
+	ProjectReportID int64     `db:"project_report_id" json:"project_report_id"`
+	Link            string    `db:"link" json:"link"`
+	Status          int       `db:"status" json:"status"`
+	Created         time.Time `db:"created" json:"created"`
+	CreatedBy       string    `db:"created_by" json:"created_by"`
+	Updated         time.Time `db:"updated" json:"updated"`
+	UpdatedBy       string    `db:"updated_by" json:"updated_by"`
+}
+
+type ProjectReportView struct {
+	ID              int64     `db:"id" json:"id"`
+	OrganizationID  int64     `db:"organization_id" json:"organization_id"`
+	ProjectID       int64     `db:"project_id" json:"project_id"`
+	ProjectReportID int64     `db:"project_report_id" json:"project_report_id"`
+	ViewerID        int64     `db:"viewer_id" json:"viewer_id"`
+	ViewerName      string    `db:"viewer_name" json:"viewer_name"`
+	Status          int       `db:"status" json:"status"`
+	Created         time.Time `db:"created" json:"created"`
+	CreatedBy       string    `db:"created_by" json:"created_by"`
+	Updated         time.Time `db:"updated" json:"updated"`
+	UpdatedBy       string    `db:"updated_by" json:"updated_by"`
+}

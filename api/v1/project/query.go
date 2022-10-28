@@ -241,3 +241,39 @@ func (r *projectQuery) GetProjectCountByClientID(userID int64, organization_id i
 	}
 	return count, nil
 }
+
+func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectReportFilter) (*[]ProjectReportResponse, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "project_id = ?"), append(args, projectID)
+	if filter.Status == "active" {
+		where, args = append(where, "status < ?"), append(args, 3)
+	}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+	}
+	var projectReports []ProjectReportResponse
+	err := r.conn.Select(&projectReports, `
+		SELECT id, name, report_date, status, updated
+		FROM project_reports
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
+}
+
+func (r *projectQuery) GetProjectReportByID(id int64, organizationID int64) (*ProjectReportResponse, error) {
+	var report ProjectReportResponse
+	err := r.conn.Get(&report, "SELECT id, project_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND organization_id = ? AND status > 0 limit 1", id, organizationID)
+	return &report, err
+}
+
+func (r *projectQuery) GetProjectReportLinks(reportID int64) (*[]string, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "project_report_id = ?"), append(args, reportID)
+	var projectReports []string
+	err := r.conn.Select(&projectReports, `
+		SELECT link
+		FROM project_report_links
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
+}

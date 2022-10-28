@@ -1,5 +1,7 @@
 package project
 
+import "time"
+
 type ProjectFilter struct {
 	Name           string `form:"name" binding:"omitempty,max=64,min=1"`
 	OrganizationID int64  `form:"organization_id" binding:"omitempty,min=1"`
@@ -66,4 +68,32 @@ type ProjectResponse struct {
 	CheckinDistance  int     `db:"checkin_distance" json:"checkin_distance"`
 	Priority         int     `db:"priority" json:"priority"`
 	Status           int     `db:"status" json:"status"`
+}
+
+type ProjectReportNew struct {
+	Name           string   `json:"name" binding:"required"`
+	ReportDate     string   `json:"report_date" binding:"required,datetime=2006-01-02"`
+	Content        string   `json:"content" binding:"required"`
+	Links          []string `json:"links" binding:"omitempty"`
+	User           string   `json:"user" swaggerignore:"true"`
+	UserID         int64    `json:"user_id" swaggerignore:"true"`
+	OrganizationID int64    `json:"organization_id" swaggerignore:"true"`
+}
+
+type ProjectReportFilter struct {
+	Name           string `form:"name" binding:"omitempty,max=64,min=1"`
+	Status         string `form:"status" binding:"required,oneof=all active"`
+	OrganizationID int64  `json:"organization_id" swaggerignore:"true"`
+	UserID         int64  `json:"user_id" swaggerignore:"true"`
+}
+
+type ProjectReportResponse struct {
+	ID         int64     `db:"id" json:"id"`
+	ProjectID  int64     `db:"project_id" json:"project_id"`
+	Name       string    `db:"name" json:"name"`
+	ReportDate string    `db:"report_date" json:"report_date"`
+	Content    string    `db:"content" json:"content"`
+	Status     int       `db:"status" json:"status"`
+	Updated    time.Time `db:"updated" json:"updated"`
+	Links      []string  `json:"links"`
 }

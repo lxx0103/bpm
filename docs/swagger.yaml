@@ -1410,6 +1410,44 @@ definitions:
     - priority
     - template_id
     type: object
+  project.ProjectReportNew:
+    properties:
+      content:
+        type: string
+      links:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      report_date:
+        type: string
+    required:
+    - content
+    - name
+    - report_date
+    type: object
+  project.ProjectReportResponse:
+    properties:
+      content:
+        type: string
+      id:
+        type: integer
+      links:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      project_id:
+        type: integer
+      report_date:
+        type: string
+      status:
+        type: integer
+      updated:
+        type: string
+    type: object
   project.ProjectResponse:
     properties:
       checkin_distance:
@@ -3562,6 +3600,100 @@ paths:
       summary: 根据ID更新职位
       tags:
       - 职位管理
+  /projectreports/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "127"
+      parameters:
+      - description: 项目报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除项目报告
+      tags:
+      - 项目管理
+    get:
+      consumes:
+      - application/json
+      operationId: "126"
+      parameters:
+      - description: 报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/project.ProjectReportResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取项目报告
+      tags:
+      - 项目管理
+    put:
+      consumes:
+      - application/json
+      operationId: "130"
+      parameters:
+      - description: 报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 报告信息
+        in: body
+        name: project_info
+        required: true
+        schema:
+          $ref: '#/definitions/project.ProjectReportNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新项目报告
+      tags:
+      - 项目管理
   /projects:
     get:
       consumes:
@@ -3729,6 +3861,71 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新项目
+      tags:
+      - 项目管理
+  /projects/:id/reports:
+    get:
+      consumes:
+      - application/json
+      operationId: "124"
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 状态all/active
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectReportResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目报告列表
+      tags:
+      - 项目管理
+    post:
+      consumes:
+      - application/json
+      operationId: "122"
+      parameters:
+      - description: 项目报告信息
+        in: body
+        name: project_info
+        required: true
+        schema:
+          $ref: '#/definitions/project.ProjectReportNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目报告
       tags:
       - 项目管理
   /qrcode:
@@ -5340,6 +5537,100 @@ paths:
       summary: 职位列表
       tags:
       - 小程序接口
+  /wx/projectreports/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "129"
+      parameters:
+      - description: 项目报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除项目报告
+      tags:
+      - 小程序接口
+    get:
+      consumes:
+      - application/json
+      operationId: "128"
+      parameters:
+      - description: 报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/project.ProjectReportResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取项目报告
+      tags:
+      - 小程序接口
+    put:
+      consumes:
+      - application/json
+      operationId: "131"
+      parameters:
+      - description: 报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 报告信息
+        in: body
+        name: project_info
+        required: true
+        schema:
+          $ref: '#/definitions/project.ProjectReportNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新项目报告
+      tags:
+      - 小程序接口
   /wx/projects:
     post:
       consumes:
@@ -5463,6 +5754,71 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新项目
+      tags:
+      - 小程序接口
+  /wx/projects/:id/reports:
+    get:
+      consumes:
+      - application/json
+      operationId: "125"
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 状态all/active
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectReportResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目报告列表
+      tags:
+      - 小程序接口
+    post:
+      consumes:
+      - application/json
+      operationId: "123"
+      parameters:
+      - description: 项目报告信息
+        in: body
+        name: project_info
+        required: true
+        schema:
+          $ref: '#/definitions/project.ProjectReportNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目报告
       tags:
       - 小程序接口
   /wx/reviews/:id/handle:

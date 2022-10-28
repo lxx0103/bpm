@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 )
 
 type projectService struct {
@@ -339,4 +340,300 @@ func (s *projectService) GetClientProject(filter MyProjectFilter, userID int64, 
 		return 0, nil, err
 	}
 	return myProjectsCount, myProjects, err
+}
+
+func (s *projectService) NewProjectReport(projectID int64, info ProjectReportNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewProjectRepository(tx)
+	memberRepo := member.NewMemberRepository(tx)
+	project, err := repo.GetProjectByID(projectID, info.OrganizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return errors.New(msg)
+	}
+	members, err := memberRepo.GetMembersByProjectID(projectID)
+	if err != nil {
+		msg := "获取项目成员失败"
+		return errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == info.UserID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return errors.New(msg)
+	}
+	var newReport ProjectReport
+	newReport.OrganizationID = info.OrganizationID
+	newReport.ProjectID = projectID
+	newReport.ClientID = project.ClientID
+	newReport.Content = info.Content
+	newReport.ReportDate = info.ReportDate
+	newReport.Name = info.Name
+	newReport.Content = info.Content
+	newReport.Status = 1
+	newReport.Created = time.Now()
+	newReport.CreatedBy = info.User
+	newReport.Updated = time.Now()
+	newReport.UpdatedBy = info.User
+	reportID, err := repo.CreateProjectReport(newReport)
+	if err != nil {
+		msg := "创建报告失败"
+		return errors.New(msg)
+	}
+	for _, link := range info.Links {
+		var reportLink ProjectReportLink
+		reportLink.OrganizationID = info.OrganizationID
+		reportLink.ProjectID = projectID
+		reportLink.ProjectReportID = reportID
+		reportLink.Link = link
+		reportLink.Status = 1
+		reportLink.Created = time.Now()
+		reportLink.CreatedBy = info.User
+		reportLink.Updated = time.Now()
+		reportLink.UpdatedBy = info.User
+		err = repo.CreateProjectReportLink(reportLink)
+		if err != nil {
+			msg := "创建链接失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+
+	type NewProjectReportCreated struct {
+		ProjectID int64 `json:"project_id"`
+	}
+	var newEvent NewProjectReportCreated
+	newEvent.ProjectID = projectID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewProjectReportCreated", msg)
+	if err != nil {
+		msg := "发布消息（NewProjectReportCreated）失败"
+		return errors.New(msg)
+	}
+	return err
+}
+
+func (s *projectService) GetProjectReportList(projectID int64, filter ProjectReportFilter) (*[]ProjectReportResponse, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	memberQuery := member.NewMemberQuery(db)
+	_, err := query.GetProjectByID(projectID, filter.OrganizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return nil, errors.New(msg)
+	}
+	members, err := memberQuery.GetMembersByProjectID(projectID)
+	if err != nil {
+		msg := "获取成员失败" + err.Error()
+		return nil, errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == filter.UserID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return nil, errors.New(msg)
+	}
+	list, err := query.GetProjectReportList(projectID, filter)
+	return list, err
+}
+
+func (s *projectService) GetProjectReportByID(reportID, userID, organizationID int64) (*ProjectReportResponse, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	memberQuery := member.NewMemberQuery(db)
+	report, err := query.GetProjectReportByID(reportID, organizationID)
+	if err != nil {
+		msg := "报告不存在"
+		return nil, errors.New(msg)
+	}
+	project, err := query.GetProjectByID(report.ProjectID, organizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return nil, errors.New(msg)
+	}
+	members, err := memberQuery.GetMembersByProjectID(project.ID)
+	if err != nil {
+		msg := "获取成员失败" + err.Error()
+		return nil, errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == userID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return nil, errors.New(msg)
+	}
+	links, err := query.GetProjectReportLinks(reportID)
+	if err != nil {
+		msg := "获取报告链接失败"
+		return nil, errors.New(msg)
+	}
+	report.Links = *links
+	return report, err
+}
+
+func (s *projectService) DeleteProjectReport(reportID, userID int64, userName string, organizationID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewProjectRepository(tx)
+	memberRepo := member.NewMemberRepository(tx)
+	report, err := repo.GetProjectReportByID(reportID, organizationID)
+	if err != nil {
+		msg := "报告不存在"
+		return errors.New(msg)
+	}
+	project, err := repo.GetProjectByID(report.ProjectID, organizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return errors.New(msg)
+	}
+	members, err := memberRepo.GetMembersByProjectID(project.ID)
+	if err != nil {
+		msg := "获取成员失败" + err.Error()
+		return errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == userID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return errors.New(msg)
+	}
+	err = repo.DeleteProjectReport(reportID, userName)
+	if err != nil {
+		msg := "删除报告失败" + err.Error()
+		return errors.New(msg)
+	}
+	err = repo.DeleteProjectReportLinks(reportID, userName)
+	if err != nil {
+		msg := "删除报告链接失败" + err.Error()
+		return errors.New(msg)
+	}
+	err = repo.DeleteProjectReportViews(reportID, userName)
+	if err != nil {
+		msg := "删除报告阅读记录失败" + err.Error()
+		return errors.New(msg)
+	}
+	tx.Commit()
+	return err
+}
+
+func (s *projectService) UpdateProjectReport(reportID int64, info ProjectReportNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewProjectRepository(tx)
+	memberRepo := member.NewMemberRepository(tx)
+	oldReport, err := repo.GetProjectReportByID(reportID, info.OrganizationID)
+	if err != nil {
+		msg := "报告不存在"
+		return errors.New(msg)
+	}
+	_, err = repo.GetProjectByID(oldReport.ProjectID, info.OrganizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return errors.New(msg)
+	}
+	members, err := memberRepo.GetMembersByProjectID(oldReport.ProjectID)
+	if err != nil {
+		msg := "获取项目成员失败"
+		return errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == info.UserID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return errors.New(msg)
+	}
+	var newReport ProjectReport
+	newReport.Content = info.Content
+	newReport.ReportDate = info.ReportDate
+	newReport.Name = info.Name
+	newReport.Content = info.Content
+	newReport.Status = 1
+	newReport.Updated = time.Now()
+	newReport.UpdatedBy = info.User
+	err = repo.UpdateProjectReport(reportID, newReport)
+	if err != nil {
+		msg := "更新报告失败"
+		return errors.New(msg)
+	}
+	err = repo.DeleteProjectReportLinks(reportID, info.User)
+	if err != nil {
+		msg := "更新报告失败"
+		return errors.New(msg)
+	}
+	err = repo.DeleteProjectReportViews(reportID, info.User)
+	if err != nil {
+		msg := "更新报告失败"
+		return errors.New(msg)
+	}
+	for _, link := range info.Links {
+		var reportLink ProjectReportLink
+		reportLink.OrganizationID = info.OrganizationID
+		reportLink.ProjectID = oldReport.ProjectID
+		reportLink.ProjectReportID = reportID
+		reportLink.Link = link
+		reportLink.Status = 1
+		reportLink.Created = time.Now()
+		reportLink.CreatedBy = info.User
+		reportLink.Updated = time.Now()
+		reportLink.UpdatedBy = info.User
+		err = repo.CreateProjectReportLink(reportLink)
+		if err != nil {
+			msg := "创建链接失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+
+	type NewProjectReportCreated struct {
+		ProjectID int64 `json:"project_id"`
+	}
+	var newEvent NewProjectReportCreated
+	newEvent.ProjectID = oldReport.ProjectID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewProjectReportCreated", msg)
+	if err != nil {
+		msg := "发布消息（NewProjectReportCreated）失败"
+		return errors.New(msg)
+	}
+	return err
 }
