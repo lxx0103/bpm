@@ -2136,277 +2136,6 @@ var doc = `{
                 }
             }
         },
-        "/messages": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "消息管理"
-                ],
-                "summary": "消息列表",
-                "operationId": "117",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "页码",
-                        "name": "page_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页行数（5/10/15/20）",
-                        "name": "page_size",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "消息名称",
-                        "name": "name",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.ListRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/message.Message"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "消息管理"
-                ],
-                "summary": "新建消息",
-                "operationId": "119",
-                "parameters": [
-                    {
-                        "description": "消息信息",
-                        "name": "message_info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/message.MessageNew"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/message.Message"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/messages/:id": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "消息管理"
-                ],
-                "summary": "根据ID获取消息",
-                "operationId": "120",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "消息ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/message.Message"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "消息管理"
-                ],
-                "summary": "根据ID更新消息",
-                "operationId": "121",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "消息ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "消息信息",
-                        "name": "message_info",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/message.MessageNew"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/message.Message"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "菜单管理"
-                ],
-                "summary": "根据ID删除消息",
-                "operationId": "52",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "菜单ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            }
-        },
         "/mymenu": {
             "get": {
                 "consumes": [
@@ -7659,6 +7388,9 @@ var doc = `{
                 "address": {
                     "type": "string"
                 },
+                "avatar": {
+                    "type": "string"
+                },
                 "birthday": {
                     "type": "string"
                 },
@@ -7718,6 +7450,9 @@ var doc = `{
                 "address": {
                     "type": "string"
                 },
+                "avatar": {
+                    "type": "string"
+                },
                 "birthday": {
                     "type": "string"
                 },
@@ -7765,6 +7500,9 @@ var doc = `{
                 "address": {
                     "type": "string",
                     "minLength": 1
+                },
+                "avatar": {
+                    "type": "string"
                 },
                 "birthday": {
                     "type": "string"
@@ -7840,13 +7578,15 @@ var doc = `{
             "type": "object",
             "required": [
                 "name",
-                "phone",
                 "status"
             ],
             "properties": {
                 "address": {
                     "type": "string",
                     "maxLength": 255
+                },
+                "avatar": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string",
@@ -8763,61 +8503,6 @@ var doc = `{
                 }
             }
         },
-        "message.Message": {
-            "type": "object",
-            "properties": {
-                "created": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "priority": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "updated": {
-                    "type": "string"
-                },
-                "updated_by": {
-                    "type": "string"
-                }
-            }
-        },
-        "message.MessageNew": {
-            "type": "object",
-            "required": [
-                "name",
-                "priority",
-                "status"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 1
-                },
-                "priority": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "status": {
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
-                }
-            }
-        },
         "node.Node": {
             "type": "object",
             "properties": {
@@ -9463,6 +9148,9 @@ var doc = `{
                 },
                 "updated": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

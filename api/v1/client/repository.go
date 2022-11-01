@@ -9,19 +9,10 @@ type clientRepository struct {
 	tx *sql.Tx
 }
 
-func NewClientRepository(transaction *sql.Tx) ClientRepository {
+func NewClientRepository(transaction *sql.Tx) *clientRepository {
 	return &clientRepository{
 		tx: transaction,
 	}
-}
-
-type ClientRepository interface {
-	//Client Management
-	CreateClient(ClientNew, int64) (int64, error)
-	UpdateClient(int64, ClientNew) (int64, error)
-	UpdateClientUser(int64, ClientNew) error
-	GetClientByID(int64, int64) (*Client, error)
-	CheckNameExist(string, int64, int64) (int, error)
 }
 
 func (r *clientRepository) CreateClient(info ClientNew, organizationID int64) (int64, error) {
@@ -32,14 +23,15 @@ func (r *clientRepository) CreateClient(info ClientNew, organizationID int64) (i
 			name,
 			phone,
 			address,
+			avatar,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, organizationID, info.Name, info.Phone, info.Address, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, organizationID, info.Name, info.Phone, info.Address, info.Avatar, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -56,11 +48,12 @@ func (r *clientRepository) UpdateClient(id int64, info ClientNew) (int64, error)
 		name = ?,
 		phone = ?,
 		address = ?,
+		avatar = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Phone, info.Address, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Phone, info.Address, info.Avatar, info.Status, time.Now(), info.User, id)
 	if err != nil {
 		return 0, err
 	}
@@ -75,9 +68,9 @@ func (r *clientRepository) GetClientByID(id int64, organizationID int64) (*Clien
 	var res Client
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT id, user_id, organization_id, name, phone, address, status, created, created_by, updated, updated_by FROM clients WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT id, user_id, organization_id, name, phone, address, avatar, status, created, created_by, updated, updated_by FROM clients WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, user_id, organization_id, name, phone, address, status, created, created_by, updated, updated_by FROM clients WHERE id = ? LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, user_id, organization_id, name, phone, address, avatar, status, created, created_by, updated, updated_by FROM clients WHERE id = ? LIMIT 1`, id)
 	}
 	err := row.Scan(&res.ID, &res.UserID, &res.OrganizationID, &res.Name, &res.Phone, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
@@ -102,10 +95,11 @@ func (r *clientRepository) UpdateClientUser(id int64, info ClientNew) error {
 		name = ?,
 		phone = ?,
 		address = ?,
+		avatar = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Phone, info.Address, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Phone, info.Address, info.Avatar, info.Status, time.Now(), info.User, id)
 	return err
 }

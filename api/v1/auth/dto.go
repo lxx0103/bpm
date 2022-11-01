@@ -143,6 +143,7 @@ type UserUpdate struct {
 	Phone      string `json:"phone" binding:"omitempty,min=1"`
 	Birthday   string `json:"birthday" binding:"omitempty,datetime=2006-01-02"`
 	Address    string `json:"address" binding:"omitempty,min=1"`
+	Avatar     string `json:"avatar" binding:"omitempty"`
 	Status     int    `json:"status" binding:"omitempty,min=1"`
 	User       string `json:"user" swaggerignore:"true"`
 }
@@ -160,6 +161,7 @@ type UserResponse struct {
 	Phone            string `db:"phone" json:"phone"`
 	Birthday         string `db:"birthday" json:"birthday"`
 	Address          string `db:"address" json:"address"`
+	Avatar           string `db:"avatar" json:"avatar"`
 	Status           int    `db:"status" json:"status"`
 }
 

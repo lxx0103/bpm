@@ -221,6 +221,8 @@ definitions:
     properties:
       address:
         type: string
+      avatar:
+        type: string
       birthday:
         type: string
       created:
@@ -260,6 +262,8 @@ definitions:
     properties:
       address:
         type: string
+      avatar:
+        type: string
       birthday:
         type: string
       email:
@@ -291,6 +295,8 @@ definitions:
     properties:
       address:
         minLength: 1
+        type: string
+      avatar:
         type: string
       birthday:
         type: string
@@ -345,6 +351,8 @@ definitions:
       address:
         maxLength: 255
         type: string
+      avatar:
+        type: string
       name:
         maxLength: 64
         minLength: 1
@@ -361,7 +369,6 @@ definitions:
         type: integer
     required:
     - name
-    - phone
     - status
     type: object
   component.Component:
@@ -965,44 +972,6 @@ definitions:
       user_id:
         type: integer
     type: object
-  message.Message:
-    properties:
-      created:
-        type: string
-      created_by:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      priority:
-        type: integer
-      status:
-        type: integer
-      updated:
-        type: string
-      updated_by:
-        type: string
-    type: object
-  message.MessageNew:
-    properties:
-      name:
-        maxLength: 64
-        minLength: 1
-        type: string
-      priority:
-        minimum: 1
-        type: integer
-      status:
-        enum:
-        - 1
-        - 2
-        type: integer
-    required:
-    - name
-    - priority
-    - status
-    type: object
   node.Node:
     properties:
       assign:
@@ -1447,6 +1416,8 @@ definitions:
         type: integer
       updated:
         type: string
+      user_id:
+        type: integer
     type: object
   project.ProjectResponse:
     properties:
@@ -2934,171 +2905,6 @@ paths:
       summary: 根据ID更新菜单
       tags:
       - 菜单管理
-  /messages:
-    get:
-      consumes:
-      - application/json
-      operationId: "117"
-      parameters:
-      - description: 页码
-        in: query
-        name: page_id
-        required: true
-        type: integer
-      - description: 每页行数（5/10/15/20）
-        in: query
-        name: page_size
-        required: true
-        type: integer
-      - description: 消息名称
-        in: query
-        name: name
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.ListRes'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/message.Message'
-                  type: array
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 消息列表
-      tags:
-      - 消息管理
-    post:
-      consumes:
-      - application/json
-      operationId: "119"
-      parameters:
-      - description: 消息信息
-        in: body
-        name: message_info
-        required: true
-        schema:
-          $ref: '#/definitions/message.MessageNew'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  $ref: '#/definitions/message.Message'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 新建消息
-      tags:
-      - 消息管理
-  /messages/:id:
-    delete:
-      consumes:
-      - application/json
-      operationId: "52"
-      parameters:
-      - description: 菜单ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID删除消息
-      tags:
-      - 菜单管理
-    get:
-      consumes:
-      - application/json
-      operationId: "120"
-      parameters:
-      - description: 消息ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  $ref: '#/definitions/message.Message'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID获取消息
-      tags:
-      - 消息管理
-    put:
-      consumes:
-      - application/json
-      operationId: "121"
-      parameters:
-      - description: 消息ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 消息信息
-        in: body
-        name: message_info
-        required: true
-        schema:
-          $ref: '#/definitions/message.MessageNew'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.SuccessRes'
-            - properties:
-                data:
-                  $ref: '#/definitions/message.Message'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.ErrorRes'
-      summary: 根据ID更新消息
-      tags:
-      - 消息管理
   /mymenu:
     get:
       consumes:

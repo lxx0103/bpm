@@ -10,34 +10,10 @@ type authQuery struct {
 	conn *sqlx.DB
 }
 
-func NewAuthQuery(connection *sqlx.DB) AuthQuery {
+func NewAuthQuery(connection *sqlx.DB) *authQuery {
 	return &authQuery{
 		conn: connection,
 	}
-}
-
-type AuthQuery interface {
-	//User Management
-	GetUserByID(int64, int64) (*User, error)
-	GetUserByOpenID(openID string) (*UserResponse, error)
-	GetUserCredential(int64) (string, error)
-	GetUserCount(UserFilter) (int, error)
-	GetUserList(UserFilter) (*[]UserResponse, error)
-	//Role Management
-	GetRoleByID(id int64) (*Role, error)
-	GetRoleCount(filter RoleFilter) (int, error)
-	GetRoleList(filter RoleFilter) (*[]Role, error)
-	// //API Management
-	GetAPIByID(id int64) (*API, error)
-	GetAPICount(filter APIFilter) (int, error)
-	GetAPIList(filter APIFilter) (*[]API, error)
-	//Menu Management
-	GetMenuByID(id int64) (*Menu, error)
-	GetMenuCount(filter MenuFilter) (int, error)
-	GetMenuList(filter MenuFilter) (*[]Menu, error)
-	GetMenuAPIByID(int64) ([]int64, error)
-	GetRoleMenuByID(int64) ([]int64, error)
-	GetMyMenu(int64) ([]Menu, error)
 }
 
 func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
@@ -58,7 +34,7 @@ func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
 func (r *authQuery) GetUserByOpenID(openID string) (*UserResponse, error) {
 	var user UserResponse
 	err := r.conn.Get(&user, `	
-		SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
+		SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.avatar as avatar, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
 		FROM users u
 		LEFT JOIN organizations o
 		ON u.organization_id = o.id
@@ -122,7 +98,7 @@ func (r *authQuery) GetUserList(filter UserFilter) (*[]UserResponse, error) {
 	args = append(args, filter.PageSize)
 	var users []UserResponse
 	err := r.conn.Select(&users, `
-		SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
+		SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.avatar as avatar, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
 		FROM users u
 		LEFT JOIN organizations o
 		ON u.organization_id = o.id

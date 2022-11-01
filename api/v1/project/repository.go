@@ -107,6 +107,7 @@ func (r *projectRepository) CreateProjectReport(info ProjectReport) (int64, erro
 			organization_id,
 			project_id,
 			client_id,
+			user_id,
 			report_date,
 			name,
 			content,
@@ -116,8 +117,8 @@ func (r *projectRepository) CreateProjectReport(info ProjectReport) (int64, erro
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.OrganizationID, info.ProjectID, info.ClientID, info.ReportDate, info.Name, info.Content, info.Status, info.Created, info.CreatedBy, info.Updated, info.UpdatedBy)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.ProjectID, info.ClientID, info.UserID, info.ReportDate, info.Name, info.Content, info.Status, info.Created, info.CreatedBy, info.Updated, info.UpdatedBy)
 	if err != nil {
 		return 0, err
 	}

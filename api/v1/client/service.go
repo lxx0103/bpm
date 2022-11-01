@@ -8,18 +8,8 @@ import (
 type clientService struct {
 }
 
-func NewClientService() ClientService {
+func NewClientService() *clientService {
 	return &clientService{}
-}
-
-// ClientService represents a service for managing clients.
-type ClientService interface {
-	//Client Management
-	GetClientByID(int64, int64) (*Client, error)
-	NewClient(ClientNew, int64) (*Client, error)
-	GetClientList(ClientFilter, int64) (int, *[]Client, error)
-	UpdateClient(int64, ClientNew, int64) (*Client, error)
-	GetClientByUserID(int64, int64) (*Client, error)
 }
 
 func (s *clientService) GetClientByID(id int64, organizationID int64) (*Client, error) {

@@ -376,6 +376,7 @@ func (s *projectService) NewProjectReport(projectID int64, info ProjectReportNew
 	newReport.OrganizationID = info.OrganizationID
 	newReport.ProjectID = projectID
 	newReport.ClientID = project.ClientID
+	newReport.UserID = info.UserID
 	newReport.Content = info.Content
 	newReport.ReportDate = info.ReportDate
 	newReport.Name = info.Name
@@ -500,33 +501,37 @@ func (s *projectService) DeleteProjectReport(reportID, userID int64, userName st
 	}
 	defer tx.Rollback()
 	repo := NewProjectRepository(tx)
-	memberRepo := member.NewMemberRepository(tx)
+	// memberRepo := member.NewMemberRepository(tx)
 	report, err := repo.GetProjectReportByID(reportID, organizationID)
 	if err != nil {
 		msg := "报告不存在"
 		return errors.New(msg)
 	}
-	project, err := repo.GetProjectByID(report.ProjectID, organizationID)
-	if err != nil {
-		msg := "项目不存在"
+	if report.UserID != userID {
+		msg := "只能删除自己的报告"
 		return errors.New(msg)
 	}
-	members, err := memberRepo.GetMembersByProjectID(project.ID)
-	if err != nil {
-		msg := "获取成员失败" + err.Error()
-		return errors.New(msg)
-	}
-	memberValid := false
-	for _, member := range *members {
-		if member.UserID == userID {
-			memberValid = true
-			break
-		}
-	}
-	if !memberValid {
-		msg := "你不是此项目的成员"
-		return errors.New(msg)
-	}
+	// project, err := repo.GetProjectByID(report.ProjectID, organizationID)
+	// if err != nil {
+	// 	msg := "项目不存在"
+	// 	return errors.New(msg)
+	// }
+	// members, err := memberRepo.GetMembersByProjectID(project.ID)
+	// if err != nil {
+	// 	msg := "获取成员失败" + err.Error()
+	// 	return errors.New(msg)
+	// }
+	// memberValid := false
+	// for _, member := range *members {
+	// 	if member.UserID == userID {
+	// 		memberValid = true
+	// 		break
+	// 	}
+	// }
+	// if !memberValid {
+	// 	msg := "你不是此项目的成员"
+	// 	return errors.New(msg)
+	// }
 	err = repo.DeleteProjectReport(reportID, userName)
 	if err != nil {
 		msg := "删除报告失败" + err.Error()
@@ -554,33 +559,37 @@ func (s *projectService) UpdateProjectReport(reportID int64, info ProjectReportN
 	}
 	defer tx.Rollback()
 	repo := NewProjectRepository(tx)
-	memberRepo := member.NewMemberRepository(tx)
+	// memberRepo := member.NewMemberRepository(tx)
 	oldReport, err := repo.GetProjectReportByID(reportID, info.OrganizationID)
 	if err != nil {
 		msg := "报告不存在"
 		return errors.New(msg)
 	}
-	_, err = repo.GetProjectByID(oldReport.ProjectID, info.OrganizationID)
-	if err != nil {
-		msg := "项目不存在"
+	if oldReport.UserID != info.UserID {
+		msg := "只能更新自己创建的报告"
 		return errors.New(msg)
 	}
-	members, err := memberRepo.GetMembersByProjectID(oldReport.ProjectID)
-	if err != nil {
-		msg := "获取项目成员失败"
-		return errors.New(msg)
-	}
-	memberValid := false
-	for _, member := range *members {
-		if member.UserID == info.UserID {
-			memberValid = true
-			break
-		}
-	}
-	if !memberValid {
-		msg := "你不是此项目的成员"
-		return errors.New(msg)
-	}
+	// _, err = repo.GetProjectByID(oldReport.ProjectID, info.OrganizationID)
+	// if err != nil {
+	// 	msg := "项目不存在"
+	// 	return errors.New(msg)
+	// }
+	// members, err := memberRepo.GetMembersByProjectID(oldReport.ProjectID)
+	// if err != nil {
+	// 	msg := "获取项目成员失败"
+	// 	return errors.New(msg)
+	// }
+	// memberValid := false
+	// for _, member := range *members {
+	// 	if member.UserID == info.UserID {
+	// 		memberValid = true
+	// 		break
+	// 	}
+	// }
+	// if !memberValid {
+	// 	msg := "你不是此项目的成员"
+	// 	return errors.New(msg)
+	// }
 	var newReport ProjectReport
 	newReport.Content = info.Content
 	newReport.ReportDate = info.ReportDate

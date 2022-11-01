@@ -15,43 +15,8 @@ import (
 type authService struct {
 }
 
-func NewAuthService() AuthService {
+func NewAuthService() *authService {
 	return &authService{}
-}
-
-type AuthService interface {
-	CreateAuth(SignupRequest) (int64, error)
-	VerifyWechatSignin(string) (*WechatCredential, error)
-	VerifyCredential(SigninRequest) (*UserResponse, error)
-	//User Management
-	GetUserInfo(string, int, int64) (*UserResponse, error)
-	UpdateUser(int64, UserUpdate, int64) (*UserResponse, error)
-	GetUserByID(int64, int64) (*User, error)
-	GetUserList(UserFilter, int64) (int, *[]UserResponse, error)
-	UpdatePassword(PasswordUpdate) error
-	//Role Management
-	GetRoleByID(int64) (*Role, error)
-	NewRole(RoleNew) (*Role, error)
-	GetRoleList(RoleFilter) (int, *[]Role, error)
-	UpdateRole(int64, RoleNew) (*Role, error)
-	DeleteRole(int64, string) error
-	// //API Management
-	GetAPIByID(int64) (*API, error)
-	NewAPI(APINew) (*API, error)
-	GetAPIList(APIFilter) (int, *[]API, error)
-	UpdateAPI(int64, APINew) (*API, error)
-	//Menu Management
-	GetMenuByID(int64) (*Menu, error)
-	NewMenu(MenuNew) (*Menu, error)
-	GetMenuList(MenuFilter) (int, *[]Menu, error)
-	UpdateMenu(int64, MenuUpdate) (*Menu, error)
-	DeleteMenu(int64, string) error
-	// Privilege Management
-	GetRoleMenuByID(int64) ([]int64, error)
-	NewRoleMenu(int64, RoleMenuNew) error
-	GetMenuAPIByID(int64) ([]int64, error)
-	NewMenuAPI(int64, MenuAPINew) error
-	GetMyMenu(int64) ([]Menu, error)
 }
 
 func (s authService) CreateAuth(signupInfo SignupRequest) (int64, error) {
@@ -250,6 +215,9 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 	}
 	if info.Address != "" {
 		oldUser.Address = info.Address
+	}
+	if info.Avatar != "" {
+		oldUser.Avatar = info.Avatar
 	}
 	if info.Status != 0 {
 		if oldUser.ID != byUserID { //不能自己更新自己的状态

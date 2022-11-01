@@ -26,6 +26,7 @@ type ProjectReport struct {
 	OrganizationID int64     `db:"organization_id" json:"organization_id"`
 	ProjectID      int64     `db:"project_id" json:"project_id"`
 	ClientID       int64     `db:"client_id" json:"client_id"`
+	UserID         int64     `db:"user_id" json:"user_id"`
 	ReportDate     string    `db:"report_date" json:"report_date"`
 	Name           string    `db:"name" json:"name"`
 	Content        string    `db:"content" json:"content"`

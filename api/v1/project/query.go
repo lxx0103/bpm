@@ -253,7 +253,7 @@ func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectRepor
 	}
 	var projectReports []ProjectReportResponse
 	err := r.conn.Select(&projectReports, `
-		SELECT id, name, report_date, status, updated
+		SELECT id, user_id, name, report_date, status, updated
 		FROM project_reports
 		WHERE `+strings.Join(where, " AND ")+`
 	`, args...)
@@ -262,7 +262,7 @@ func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectRepor
 
 func (r *projectQuery) GetProjectReportByID(id int64, organizationID int64) (*ProjectReportResponse, error) {
 	var report ProjectReportResponse
-	err := r.conn.Get(&report, "SELECT id, project_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND organization_id = ? AND status > 0 limit 1", id, organizationID)
+	err := r.conn.Get(&report, "SELECT id, project_id, user_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND organization_id = ? AND status > 0 limit 1", id, organizationID)
 	return &report, err
 }
 

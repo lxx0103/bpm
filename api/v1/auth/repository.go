@@ -65,13 +65,13 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 func (r *authRepository) GetUserByID(id int64) (*UserResponse, error) {
 	var res UserResponse
 	row := r.tx.QueryRow(`	
-	SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
+	SELECT u.id as id, u.type as type, u.identifier as identifier, u.organization_id as organization_id, u.position_id as position_id, u.role_id as role_id, u.name as name, u.email as email, u.gender as gender, u.phone as phone, u.birthday as birthday, u.address as address, u.avatar as avatar, u.status as status, IFNULL(o.name, "ADMIN") as organization_name
 	FROM users u
 	LEFT JOIN organizations o
 	ON u.organization_id = o.id
 	WHERE u.id = ?
 	`, id)
-	err := row.Scan(&res.ID, &res.Type, &res.Identifier, &res.OrganizationID, &res.PositionID, &res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Status, &res.OrganizationName)
+	err := row.Scan(&res.ID, &res.Type, &res.Identifier, &res.OrganizationID, &res.PositionID, &res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Avatar, &res.Status, &res.OrganizationName)
 	if err != nil {
 		msg := "用户不存在:" + err.Error()
 		return nil, errors.New(msg)
@@ -99,11 +99,12 @@ func (r *authRepository) UpdateUser(id int64, info UserResponse, by string) erro
 		phone = ?,
 		birthday = ?,
 		address = ?,
+		avatar = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Email, info.RoleID, info.PositionID, info.Gender, info.Phone, info.Birthday, info.Address, info.Status, time.Now(), by, id)
+	`, info.Name, info.Email, info.RoleID, info.PositionID, info.Gender, info.Phone, info.Birthday, info.Address, info.Avatar, info.Status, time.Now(), by, id)
 	if err != nil {
 		msg := "更新失败:" + err.Error()
 		return errors.New(msg)
