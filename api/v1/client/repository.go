@@ -72,7 +72,7 @@ func (r *clientRepository) GetClientByID(id int64, organizationID int64) (*Clien
 	} else {
 		row = r.tx.QueryRow(`SELECT id, user_id, organization_id, name, phone, address, avatar, status, created, created_by, updated, updated_by FROM clients WHERE id = ? LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.UserID, &res.OrganizationID, &res.Name, &res.Phone, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.UserID, &res.OrganizationID, &res.Name, &res.Phone, &res.Address, &res.Avatar, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,7 @@ type Client struct {
 	OrganizationID int64     `db:"organization_id" json:"organization_id"`
 	Phone          string    `db:"phone" json:"phone"`
 	Address        string    `db:"address" json:"address"`
+	Avatar         string    `db:"avatar" json:"avatar"`
 	Name           string    `db:"name" json:"name"`
 	Status         int       `db:"status" json:"status"`
 	Created        time.Time `db:"created" json:"created"`
