@@ -60,23 +60,41 @@ func (r *messageQuery) GetMessageList(filter MessageFilter) (*[]Message, error) 
 	return &messages, nil
 }
 
-func (r *messageQuery) GetUserByPosition(positionID int64) (*[]string, error) {
+// func (r *messageQuery) GetUserByPosition(positionID int64) (*[]string, error) {
+// 	var openIDs []string
+// 	err := r.conn.Select(&openIDs, `
+// 		SELECT identifier
+// 		FROM users
+// 		WHERE position_id = ?
+// 		AND status = 1
+// 	`, positionID)
+// 	return &openIDs, err
+// }
+
+func (r *messageQuery) GetUserByIDAndProject(userID, projectID int64) (string, error) {
+	var openID string
+	err := r.conn.Get(&openID, `
+		SELECT identifier
+		FROM users
+		WHERE id = ?
+		AND status = 1
+		AND id IN (
+			SELECT  user_id from project_members where project_id  = ? and status > 0
+		)
+		`, userID, projectID)
+	return openID, err
+}
+
+func (r *messageQuery) GetUserByPositionAndProject(positionID, projectID int64) (*[]string, error) {
 	var openIDs []string
 	err := r.conn.Select(&openIDs, `
 		SELECT identifier
 		FROM users
 		WHERE position_id = ?
 		AND status = 1
-	`, positionID)
+		AND id IN (
+			SELECT  user_id from project_members where project_id  = ? and status > 0
+		)
+	`, positionID, projectID)
 	return &openIDs, err
-}
-
-func (r *messageQuery) GetUserByID(userID int64) (string, error) {
-	var openID string
-	err := r.conn.Get(&openID, `
-		SELECT identifier
-		FROM users
-		WHERE id = ?
-		`, userID)
-	return openID, err
 }

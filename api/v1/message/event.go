@@ -52,7 +52,8 @@ type messageRes struct {
 }
 
 func Subscribe(conn *queue.Conn) {
-	conn.StartConsumer("NewTodo", "NewProjectCreated", NewTodo)
+	// conn.StartConsumer("NewTodo", "NewProjectCreated", NewTodo)
+	conn.StartConsumer("NewTodo", "NewProjectMember", NewTodo)
 	conn.StartConsumer("NewEventTodo", "NewEventUpdated", NewEventTodo)
 	conn.StartConsumer("NewEventAudit", "NewEventCompleted", NewEventAudit)
 	conn.StartConsumer("NewEventAudited", "NewEventAudited", NextEventTodo)
@@ -230,7 +231,7 @@ func sendMessageToActive(projectID int64) error {
 		}
 		for _, assignTo := range *assigned {
 			if assignTo.AssignType == 1 { //user
-				users, err := query.GetUserByPosition(assignTo.AssignTo)
+				users, err := query.GetUserByPositionAndProject(assignTo.AssignTo, projectID)
 				if err != nil {
 					fmt.Println(err.Error() + "1")
 					return err
@@ -252,7 +253,7 @@ func sendMessageToActive(projectID int64) error {
 					}
 				}
 			} else {
-				openID, err := query.GetUserByID(assignTo.AssignTo)
+				openID, err := query.GetUserByIDAndProject(assignTo.AssignTo, projectID)
 				if err != nil {
 					if err != nil {
 						fmt.Println(err.Error() + "6")
@@ -410,7 +411,7 @@ func sendMessageToAudit(eventID int64) error {
 	}
 	for _, assignTo := range *assigned {
 		if assignTo.AuditType == 1 { //position
-			users, err := query.GetUserByPosition(assignTo.AuditTo)
+			users, err := query.GetUserByPositionAndProject(assignTo.AuditTo, event.ProjectID)
 			if err != nil {
 				fmt.Println(err.Error() + "1")
 				return err
@@ -428,7 +429,7 @@ func sendMessageToAudit(eventID int64) error {
 				}
 			}
 		} else {
-			openID, err := query.GetUserByID(assignTo.AuditTo)
+			openID, err := query.GetUserByIDAndProject(assignTo.AuditTo, event.ProjectID)
 			if err != nil {
 				if err != nil {
 					fmt.Println(err.Error() + "6")
@@ -589,7 +590,7 @@ func sendMessageToEvent(eventID int64) error {
 	}
 	for _, assignTo := range *assigned {
 		if assignTo.AssignType == 1 { //user
-			users, err := query.GetUserByPosition(assignTo.AssignTo)
+			users, err := query.GetUserByPositionAndProject(assignTo.AssignTo, event.ProjectID)
 			if err != nil {
 				fmt.Println(err.Error() + "1")
 				return err
@@ -611,7 +612,7 @@ func sendMessageToEvent(eventID int64) error {
 				}
 			}
 		} else {
-			openID, err := query.GetUserByID(assignTo.AssignTo)
+			openID, err := query.GetUserByIDAndProject(assignTo.AssignTo, event.ProjectID)
 			if err != nil {
 				if err != nil {
 					fmt.Println(err.Error() + "6")

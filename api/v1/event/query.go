@@ -150,8 +150,9 @@ func (r *eventQuery) GetAssigned(userID int64, positionID int64) ([]int64, error
 	LEFT JOIN projects p
 	ON e.project_id = p.id
 	WHERE ((ea.assign_type = 2 AND ea.assign_to  = ?) OR (ea.assign_type = 1 AND ea.assign_to = ?)) AND ea.status = 1
+	AND e.project_id in (SELECT project_id from project_members WHERE user_id = ? AND status > 0)
 	ORDER BY p.priority asc
-	`, userID, positionID)
+	`, userID, positionID, userID)
 	return assigns, err
 }
 
@@ -205,7 +206,14 @@ func (r *eventQuery) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 
 func (r *eventQuery) GetAssignedAudit(userID int64, positionID int64) ([]int64, error) {
 	var assigns []int64
-	err := r.conn.Select(&assigns, "SELECT event_id FROM event_audits WHERE ((audit_type = 2 AND audit_to  = ?) OR (audit_type = 1 AND audit_to = ?)) AND status = 1", userID, positionID)
+	err := r.conn.Select(&assigns, `
+		SELECT event_id FROM event_audits ea 
+		LEFT JOIN events e
+		ON ea.event_id = e.id
+		WHERE ((ea.audit_type = 2 AND ea.audit_to  = ?) OR (ea.audit_type = 1 AND ea.audit_to = ?)) 
+		AND e.project_id IN (SELECT project_id from project_members WHERE user_id = ? AND status > 0)
+		AND ea.status = 1
+	`, userID, positionID, userID)
 	return assigns, err
 }
 

@@ -2,21 +2,16 @@ package member
 
 import (
 	"bpm/core/database"
+	"bpm/core/queue"
+	"encoding/json"
 	"errors"
 )
 
 type memberService struct {
 }
 
-func NewMemberService() MemberService {
+func NewMemberService() *memberService {
 	return &memberService{}
-}
-
-// MemberService represents a service for managing members.
-type MemberService interface {
-	//Member Management
-	NewMember(MemberNew, int64) (*[]MemberResponse, error)
-	GetMemberList(int64, int64) (*[]MemberResponse, error)
 }
 
 func (s *memberService) NewMember(info MemberNew, organizationID int64) (*[]MemberResponse, error) {
@@ -48,6 +43,19 @@ func (s *memberService) NewMember(info MemberNew, organizationID int64) (*[]Memb
 		return nil, err
 	}
 	tx.Commit()
+
+	type NewProjectCreated struct {
+		ProjectID int64 `json:"project_id"`
+	}
+	var newEvent NewProjectCreated
+	newEvent.ProjectID = info.ProjectID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewProjectMember", msg)
+	if err != nil {
+		msg := "create event NewProjectMember error"
+		return nil, errors.New(msg)
+	}
 	return members, err
 }
 
