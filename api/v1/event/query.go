@@ -210,9 +210,12 @@ func (r *eventQuery) GetAssignedAudit(userID int64, positionID int64) ([]int64, 
 		SELECT event_id FROM event_audits ea 
 		LEFT JOIN events e
 		ON ea.event_id = e.id
+		LEFT JOIN projects p
+		ON e.project_id = p.id
 		WHERE ((ea.audit_type = 2 AND ea.audit_to  = ?) OR (ea.audit_type = 1 AND ea.audit_to = ?)) 
 		AND e.project_id IN (SELECT project_id from project_members WHERE user_id = ? AND status > 0)
 		AND ea.status = 1
+		ORDER BY p.priority asc
 	`, userID, positionID, userID)
 	return assigns, err
 }
