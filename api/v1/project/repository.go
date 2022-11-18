@@ -150,9 +150,9 @@ func (r *projectRepository) CreateProjectReportLink(info ProjectReportLink) erro
 
 func (r *projectRepository) GetProjectReportByID(id int64, organizationID int64) (*ProjectReportResponse, error) {
 	var res ProjectReportResponse
-	row := r.tx.QueryRow(`SELECT id, project_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND organization_id = ? AND status > 0 LIMIT 1`, id, organizationID)
+	row := r.tx.QueryRow(`SELECT id, project_id, name, report_date, content, updated, status, user_id FROM project_reports WHERE id = ? AND organization_id = ? AND status > 0 LIMIT 1`, id, organizationID)
 
-	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.ReportDate, &res.Content, &res.Updated, &res.Status)
+	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.ReportDate, &res.Content, &res.Updated, &res.Status, &res.UserID)
 	if err != nil {
 		return nil, err
 	}
