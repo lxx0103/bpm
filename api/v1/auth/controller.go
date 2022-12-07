@@ -815,3 +815,240 @@ func UpdatePassword(c *gin.Context) {
 	}
 	response.Response(c, "ok")
 }
+
+// @Summary 小程序模块列表
+// @Id 132
+// @Tags 小程序模块管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数（5/10/15/20）"
+// @Param name query string false "小程序模块名称"
+// @Success 200 object response.ListRes{data=[]Wxmodule} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wxmodules [GET]
+func GetWxmoduleList(c *gin.Context) {
+	var filter WxmoduleFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	authService := NewAuthService()
+	count, list, err := authService.GetWxmoduleList(filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 新建小程序模块
+// @Id 133
+// @Tags 小程序模块管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param wxmodule_info body WxmoduleNew true "小程序模块信息"
+// @Success 200 object response.SuccessRes{data=Wxmodule} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wxmodules [POST]
+func NewWxmodule(c *gin.Context) {
+	var wxmodule WxmoduleNew
+	if err := c.ShouldBindJSON(&wxmodule); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	wxmodule.User = claims.Username
+	authService := NewAuthService()
+	new, err := authService.NewWxmodule(wxmodule)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, new)
+}
+
+// @Summary 根据ID获取小程序模块
+// @Id 134
+// @Tags 小程序模块管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "小程序模块ID"
+// @Success 200 object response.SuccessRes{data=Wxmodule} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wxmodules/:id [GET]
+func GetWxmoduleByID(c *gin.Context) {
+	var uri WxmoduleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	authService := NewAuthService()
+	wxmodule, err := authService.GetWxmoduleByID(uri.ID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, wxmodule)
+
+}
+
+// @Summary 根据ID更新小程序模块
+// @Id 135
+// @Tags 小程序模块管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "小程序模块ID"
+// @Param wxmodule_info body WxmoduleNew true "小程序模块信息"
+// @Success 200 object response.SuccessRes{data=Wxmodule} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wxmodules/:id [PUT]
+func UpdateWxmodule(c *gin.Context) {
+	var uri WxmoduleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var wxmodule WxmoduleUpdate
+	if err := c.ShouldBindJSON(&wxmodule); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	wxmodule.User = claims.Username
+	authService := NewAuthService()
+	new, err := authService.UpdateWxmodule(uri.ID, wxmodule)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, new)
+}
+
+// @Summary 根据ID更新小程序模块
+// @Id 136
+// @Tags 小程序模块管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "小程序模块ID"
+// @Param wxmodule_info body WxmoduleNew true "小程序模块信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wxmodules/:id [DELETE]
+func DeleteWxmodule(c *gin.Context) {
+	var uri WxmoduleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	authService := NewAuthService()
+	err := authService.DeleteWxmodule(uri.ID, claims.Username)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "OK")
+}
+
+// @Summary 根据职位ID获取小程序模块权限
+// @Id 137
+// @Tags 小程序模块管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "职位ID"
+// @Success 200 object response.SuccessRes{data=[]int64} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /positionwxmodules/:id [GET]
+func GetPositionWxmodule(c *gin.Context) {
+	var uri RoleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	authService := NewAuthService()
+	menu, err := authService.GetPositionWxmoduleByID(uri.ID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, menu)
+
+}
+
+// @Summary 根据职位ID更新小程序模块权限
+// @Id 138
+// @Tags 小程序模块管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "职位ID"
+// @Param menu_info body PositionWxmodule true "小程序模块信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /positionwxmodules/:id [POST]
+func NewPositionWxmodule(c *gin.Context) {
+	var uri RoleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var menu PositionWxmoduleNew
+	if err := c.ShouldBindJSON(&menu); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	menu.User = claims.Username
+	authService := NewAuthService()
+	err := authService.NewPositionWxmodule(uri.ID, menu)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "OK")
+}
+
+// @Summary 获取当前用户的小程序模块
+// @Id 139
+// @Tags 小程序模块管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Success 200 object response.SuccessRes{data=interface{}} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /mywxmodule [GET]
+func GetMyWxmodule(c *gin.Context) {
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	positionID := claims.PositionID
+	authService := NewAuthService()
+	new, err := authService.GetMyWxmodule(positionID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	res := make(map[int64]*MyWxmoduleDetail)
+	for i := 0; i < len(new); i++ {
+		if new[i].ParentID == -1 {
+			var m MyWxmoduleDetail
+			m.Code = new[i].Code
+			m.Name = new[i].Name
+			m.Status = new[i].Status
+			res[new[i].ID] = &m
+		} else {
+			var m MyWxmoduleDetail
+			m.Code = new[i].Code
+			m.Name = new[i].Name
+			m.Status = new[i].Status
+			res[new[i].ParentID].Items = append(res[new[i].ParentID].Items, m)
+		}
+	}
+	response.Response(c, res)
+}

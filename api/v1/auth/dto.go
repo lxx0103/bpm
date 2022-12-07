@@ -171,3 +171,44 @@ type PasswordUpdate struct {
 	User        string `json:"user" swaggerignore:"true"`
 	UserID      int64  `json:"user_id" swaggerignore:"true"`
 }
+
+type WxmoduleFilter struct {
+	Name     string `form:"name" binding:"omitempty,max=64,min=1"`
+	PageId   int    `form:"page_id" binding:"required,min=1"`
+	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
+}
+
+type WxmoduleNew struct {
+	Name     string `json:"name" binding:"required,min=1,max=64"`
+	Code     string `json:"code" binding:"omitempty,min=1,max=64"`
+	ParentID int64  `json:"parent_id" binding:"required,min=-1"`
+	Status   int    `json:"status" binding:"required,oneof=1 2"`
+	User     string `json:"user" swaggerignore:"true"`
+}
+
+type WxmoduleUpdate struct {
+	Name     string `json:"name" binding:"omitempty,min=1,max=64"`
+	Code     string `json:"code" binding:"omitempty,min=1,max=64"`
+	ParentID int64  `json:"parent_id" binding:"omitempty,min=-1"`
+	Status   int    `json:"status" binding:"required,oneof=1 2"`
+	User     string `json:"user" swaggerignore:"true"`
+}
+
+type WxmoduleID struct {
+	ID int64 `uri:"id" binding:"required,min=1"`
+}
+
+type PositionWxmodule struct {
+	IDS []int64 `json:"ids" binding:"required"`
+}
+type PositionWxmoduleNew struct {
+	IDS  []int64 `json:"ids" binding:"required"`
+	User string  `json:"_" swaggerignore:"true"`
+}
+
+type MyWxmoduleDetail struct {
+	Name   string             `json:"name" binding:"required,min=1,max=64"`
+	Code   string             `json:"code" binding:"omitempty,min=1,max=64"`
+	Status int                `json:"status" binding:"required,oneof=1 2"`
+	Items  []MyWxmoduleDetail `json:"items"`
+}

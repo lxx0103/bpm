@@ -579,3 +579,126 @@ func (s *authService) UpdatePassword(info PasswordUpdate) error {
 	tx.Commit()
 	return nil
 }
+
+func (s *authService) GetWxmoduleByID(id int64) (*Wxmodule, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	wxmodule, err := query.GetWxmoduleByID(id)
+	return wxmodule, err
+}
+
+func (s *authService) GetWxmoduleList(filter WxmoduleFilter) (int, *[]Wxmodule, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	count, err := query.GetWxmoduleCount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetWxmoduleList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	return count, list, err
+}
+
+func (s *authService) NewWxmodule(info WxmoduleNew) (*Wxmodule, error) {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	wxmoduleID, err := repo.CreateWxmodule(info)
+	if err != nil {
+		return nil, err
+	}
+	wxmodule, err := repo.GetWxmoduleByID(wxmoduleID)
+	if err != nil {
+		return nil, err
+	}
+	tx.Commit()
+	return wxmodule, nil
+}
+
+func (s *authService) UpdateWxmodule(wxmoduleID int64, info WxmoduleUpdate) (*Wxmodule, error) {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	oldWxmodule, err := repo.GetWxmoduleByID(wxmoduleID)
+	if err != nil {
+		return nil, err
+	}
+	if info.Name != "" {
+		oldWxmodule.Name = info.Name
+	}
+	if info.Code != "" {
+		oldWxmodule.Code = info.Code
+	}
+	if info.ParentID != 0 {
+		oldWxmodule.ParentID = info.ParentID
+	}
+	if info.Status != 0 {
+		oldWxmodule.Status = info.Status
+	}
+	err = repo.UpdateWxmodule(wxmoduleID, *oldWxmodule, info.User)
+	if err != nil {
+		return nil, err
+	}
+	wxmodule, err := repo.GetWxmoduleByID(wxmoduleID)
+	if err != nil {
+		return nil, err
+	}
+	tx.Commit()
+	return wxmodule, nil
+}
+
+func (s *authService) DeleteWxmodule(wxmoduleID int64, user string) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	err = repo.DeleteWxmodule(wxmoduleID, user)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *authService) GetPositionWxmoduleByID(id int64) ([]int64, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	wxmodules, err := query.GetPositionWxmoduleByID(id)
+	return wxmodules, err
+}
+
+func (s *authService) NewPositionWxmodule(id int64, info PositionWxmoduleNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+	err = repo.NewPositionWxmodule(id, info)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *authService) GetMyWxmodule(roleID int64) ([]Wxmodule, error) {
+	db := database.InitMySQL()
+	query := NewAuthQuery(db)
+	menu, err := query.GetMyWxmodule(roleID)
+	return menu, err
+}

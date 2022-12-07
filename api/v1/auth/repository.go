@@ -373,3 +373,92 @@ func (r *authRepository) UpdatePassword(id int64, password, by string) error {
 	}
 	return nil
 }
+
+func (r *authRepository) GetWxmoduleByID(id int64) (*Wxmodule, error) {
+	var res Wxmodule
+	row := r.tx.QueryRow(`SELECT id, name, code, parent_id, status, created, created_by, updated, updated_by FROM wxmodules WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Name, &res.Code, &res.ParentID, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	if err != nil {
+		msg := "模块不存在:" + err.Error()
+		return nil, errors.New(msg)
+	}
+	return &res, nil
+}
+
+func (r *authRepository) CreateWxmodule(info WxmoduleNew) (int64, error) {
+	result, err := r.tx.Exec(`
+		INSERT INTO wxmodules
+		(
+			name,
+			code,
+			parent_id,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Code, info.ParentID, 1, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
+}
+
+func (r *authRepository) UpdateWxmodule(id int64, info Wxmodule, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update wxmodules SET
+		name = ?,
+		code = ?,
+		parent_id = ?,
+		status = ?,
+		updated = ?,
+		updated_by = ?
+		WHERE id = ?
+	`, info.Name, info.Code, info.ParentID, info.Status, time.Now(), byUser, id)
+	return err
+}
+
+func (r *authRepository) DeleteWxmodule(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update wxmodules SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, time.Now(), byUser, id)
+	return err
+}
+
+func (r *authRepository) NewPositionWxmodule(position_id int64, info PositionWxmoduleNew) error {
+	_, err := r.tx.Exec(`
+		Update position_wxmodules SET
+		status = -1,
+		updated = ?,
+		updated_by = ?
+		WHERE position_id = ?
+	`, time.Now(), info.User, position_id)
+	if err != nil {
+		return err
+	}
+	sql := `
+	INSERT INTO position_wxmodules
+	(
+		position_id,
+		wxmodule_id,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	)
+	VALUES
+	`
+	for i := 0; i < len(info.IDS); i++ {
+		sql += "(" + fmt.Sprint(position_id) + "," + fmt.Sprint(info.IDS[i]) + ",1,\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\",\"" + time.Now().Format("2006-01-02 15:01:01") + "\",\"" + info.User + "\"),"
+	}
+	sql = sql[:len(sql)-1]
+	_, err = r.tx.Exec(sql)
+	return err
+}

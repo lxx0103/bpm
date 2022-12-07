@@ -128,6 +128,15 @@ definitions:
     - status
     - title
     type: object
+  auth.PositionWxmodule:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
   auth.Role:
     properties:
       created:
@@ -321,9 +330,55 @@ definitions:
         minimum: 1
         type: integer
     type: object
+  auth.Wxmodule:
+    properties:
+      code:
+        type: string
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      parent_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  auth.WxmoduleNew:
+    properties:
+      code:
+        maxLength: 64
+        minLength: 1
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      parent_id:
+        minimum: -1
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - name
+    - parent_id
+    - status
+    type: object
   client.Client:
     properties:
       address:
+        type: string
+      avatar:
         type: string
       created:
         type: string
@@ -2929,6 +2984,30 @@ paths:
       summary: 获取当前用户的前端路由
       tags:
       - 权限管理
+  /mywxmodule:
+    get:
+      consumes:
+      - application/json
+      operationId: "139"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取当前用户的小程序模块
+      tags:
+      - 小程序模块管理
   /nodes:
     get:
       consumes:
@@ -3406,6 +3485,73 @@ paths:
       summary: 根据ID更新职位
       tags:
       - 职位管理
+  /positionwxmodules/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "137"
+      parameters:
+      - description: 职位ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    type: integer
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据职位ID获取小程序模块权限
+      tags:
+      - 小程序模块管理
+    post:
+      consumes:
+      - application/json
+      operationId: "138"
+      parameters:
+      - description: 职位ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 小程序模块信息
+        in: body
+        name: menu_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.PositionWxmodule'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据职位ID更新小程序模块权限
+      tags:
+      - 小程序模块管理
   /projectreports/:id:
     delete:
       consumes:
@@ -5916,4 +6062,175 @@ paths:
       summary: 根据ID更新用户
       tags:
       - 小程序接口
+  /wxmodules:
+    get:
+      consumes:
+      - application/json
+      operationId: "132"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数（5/10/15/20）
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 小程序模块名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/auth.Wxmodule'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 小程序模块列表
+      tags:
+      - 小程序模块管理
+    post:
+      consumes:
+      - application/json
+      operationId: "133"
+      parameters:
+      - description: 小程序模块信息
+        in: body
+        name: wxmodule_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.WxmoduleNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Wxmodule'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建小程序模块
+      tags:
+      - 小程序模块管理
+  /wxmodules/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "136"
+      parameters:
+      - description: 小程序模块ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 小程序模块信息
+        in: body
+        name: wxmodule_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.WxmoduleNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新小程序模块
+      tags:
+      - 小程序模块管理
+    get:
+      consumes:
+      - application/json
+      operationId: "134"
+      parameters:
+      - description: 小程序模块ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Wxmodule'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取小程序模块
+      tags:
+      - 小程序模块管理
+    put:
+      consumes:
+      - application/json
+      operationId: "135"
+      parameters:
+      - description: 小程序模块ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 小程序模块信息
+        in: body
+        name: wxmodule_info
+        required: true
+        schema:
+          $ref: '#/definitions/auth.WxmoduleNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.Wxmodule'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新小程序模块
+      tags:
+      - 小程序模块管理
 swagger: "2.0"

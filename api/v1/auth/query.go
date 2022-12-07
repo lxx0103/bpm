@@ -273,3 +273,62 @@ func (r *authQuery) GetMyMenu(roleID int64) ([]Menu, error) {
 	`, roleID)
 	return menu, err
 }
+
+func (r *authQuery) GetWxmoduleByID(id int64) (*Wxmodule, error) {
+	var wxmodule Wxmodule
+	err := r.conn.Get(&wxmodule, "SELECT * FROM wxmodules WHERE id = ? AND status > 0 ", id)
+	return &wxmodule, err
+}
+
+func (r *authQuery) GetWxmoduleCount(filter WxmoduleFilter) (int, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "code like ?"), append(args, "%"+v+"%")
+	}
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) as count
+		FROM wxmodules
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *authQuery) GetWxmoduleList(filter WxmoduleFilter) (*[]Wxmodule, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	if v := filter.Name; v != "" {
+		where, args = append(where, "code like ?"), append(args, "%"+v+"%")
+	}
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var wxmodules []Wxmodule
+	err := r.conn.Select(&wxmodules, `
+		SELECT *
+		FROM wxmodules
+		WHERE `+strings.Join(where, " AND ")+`
+		LIMIT ?, ?
+	`, args...)
+	return &wxmodules, err
+}
+
+func (r *authQuery) GetPositionWxmoduleByID(positionID int64) ([]int64, error) {
+	var wxmodule []int64
+	err := r.conn.Select(&wxmodule, "SELECT wxmodule_id FROM position_wxmodules WHERE position_id = ? and status > 0", positionID)
+	return wxmodule, err
+}
+
+func (r *authQuery) GetMyWxmodule(positionID int64) ([]Wxmodule, error) {
+	var wxmodule []Wxmodule
+	err := r.conn.Select(&wxmodule, `
+		SELECT m.* FROM position_wxmodules rm
+		LEFT JOIN wxmodules m
+		ON rm.wxmodule_id = m.id
+		WHERE rm.position_id = ?
+		AND m.status > 0
+		AND rm.status > 0
+		ORDER BY parent_id ASC, ID ASC
+	`, positionID)
+	return wxmodule, err
+}
