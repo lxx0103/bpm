@@ -2177,47 +2177,6 @@ var doc = `{
                 }
             }
         },
-        "/mywxmodule": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "小程序模块管理"
-                ],
-                "summary": "获取当前用户的小程序模块",
-                "operationId": "139",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.SuccessRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorRes"
-                        }
-                    }
-                }
-            }
-        },
         "/nodes": {
             "get": {
                 "consumes": [
@@ -4784,6 +4743,12 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
+                        "description": "状态（1进行中2完成不传为全部）",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "页码",
                         "name": "page_id",
                         "in": "query",
@@ -6147,6 +6112,59 @@ var doc = `{
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/project.Project"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/wx/mywxmodule/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序模块管理"
+                ],
+                "summary": "获取当前用户的小程序模块",
+                "operationId": "139",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "父级id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/auth.Wxmodule"
                                             }
                                         }
                                     }
@@ -9369,6 +9387,9 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
+                "logo": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -9401,6 +9422,9 @@ var doc = `{
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "logo": {
                     "type": "string"
                 },
                 "name": {

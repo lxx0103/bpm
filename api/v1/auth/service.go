@@ -696,9 +696,9 @@ func (s *authService) NewPositionWxmodule(id int64, info PositionWxmoduleNew) er
 	return nil
 }
 
-func (s *authService) GetMyWxmodule(roleID int64) ([]Wxmodule, error) {
+func (s *authService) GetMyWxmodule(positionID, parentID int64) ([]Wxmodule, error) {
 	db := database.InitMySQL()
 	query := NewAuthQuery(db)
-	menu, err := query.GetMyWxmodule(roleID)
+	menu, err := query.GetMyWxmodule(positionID, parentID)
 	return menu, err
 }

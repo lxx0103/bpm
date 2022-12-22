@@ -14,18 +14,8 @@ import (
 type organizationService struct {
 }
 
-func NewOrganizationService() OrganizationService {
+func NewOrganizationService() *organizationService {
 	return &organizationService{}
-}
-
-// OrganizationService represents a service for managing organizations.
-type OrganizationService interface {
-	//Organization Management
-	GetOrganizationByID(int64) (*Organization, error)
-	NewOrganization(OrganizationNew) (*Organization, error)
-	GetOrganizationList(OrganizationFilter) (int, *[]Organization, error)
-	UpdateOrganization(int64, OrganizationNew) (*Organization, error)
-	GetQrCodeByPath(string) (string, error)
 }
 
 func (s *organizationService) GetOrganizationByID(id int64) (*Organization, error) {

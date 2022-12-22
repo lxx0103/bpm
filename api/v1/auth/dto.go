@@ -206,9 +206,13 @@ type PositionWxmoduleNew struct {
 	User string  `json:"_" swaggerignore:"true"`
 }
 
-type MyWxmoduleDetail struct {
-	Name   string             `json:"name" binding:"required,min=1,max=64"`
-	Code   string             `json:"code" binding:"omitempty,min=1,max=64"`
-	Status int                `json:"status" binding:"required,oneof=1 2"`
-	Items  []MyWxmoduleDetail `json:"items"`
+// type MyWxmoduleDetail struct {
+// 	ID     int64  `json:"id"`
+// 	Name   string `json:"name"`
+// 	Code   string `json:"code"`
+// 	Status int    `json:"status"`
+// }
+
+type ParentID struct {
+	ID int64 `uri:"id" binding:"required"`
 }

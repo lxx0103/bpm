@@ -204,6 +204,7 @@ func WxGetMyProjects(c *gin.Context) {
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
+// @Param status query int false "状态（1进行中2完成不传为全部）"
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Param type query int false "项目类型"

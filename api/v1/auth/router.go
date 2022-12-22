@@ -46,9 +46,9 @@ func AuthRouter(g *gin.RouterGroup) {
 	g.GET("/positionwxmodules/:id", GetPositionWxmodule)
 	g.POST("/positionwxmodules/:id", NewPositionWxmodule)
 
-	g.GET("/mywxmodule", GetMyWxmodule)
 }
 func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/users", WxGetUserList)
 	g.PUT("/wx/users/:id", WxUpdateUser)
+	g.GET("/wx/mywxmodule/:id", GetMyWxmodule)
 }

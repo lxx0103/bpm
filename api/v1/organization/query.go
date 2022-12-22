@@ -10,19 +10,10 @@ type organizationQuery struct {
 	conn *sqlx.DB
 }
 
-func NewOrganizationQuery(connection *sqlx.DB) OrganizationQuery {
+func NewOrganizationQuery(connection *sqlx.DB) *organizationQuery {
 	return &organizationQuery{
 		conn: connection,
 	}
-}
-
-type OrganizationQuery interface {
-	//Organization Management
-	GetOrganizationByID(id int64) (*Organization, error)
-	GetOrganizationCount(filter OrganizationFilter) (int, error)
-	GetOrganizationList(filter OrganizationFilter) (*[]Organization, error)
-	GetQrCodeByPath(string) (string, error)
-	GetAccessToken(string) (string, error)
 }
 
 func (r *organizationQuery) GetOrganizationByID(id int64) (*Organization, error) {

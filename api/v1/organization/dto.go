@@ -9,6 +9,7 @@ type OrganizationFilter struct {
 type OrganizationNew struct {
 	Name        string `json:"name" binding:"required,min=1,max=64"`
 	Description string `json:"description" binding:"required"`
+	Logo        string `json:"logo" binding:"omitempty"`
 	Contact     string `json:"contact" binding:"omitempty"`
 	Phone       string `json:"phone" binding:"omitempty"`
 	Address     string `json:"address" binding:"omitempty"`

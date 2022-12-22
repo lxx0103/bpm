@@ -47,7 +47,7 @@ type MyProjectFilter struct {
 	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
 }
 type AssignedProjectFilter struct {
-	// Status   string `form:"status" binding:"required,oneof=all active"`
+	Status   int `form:"status" binding:"omitempty,oneof=1 2"`
 	Type     int `form:"type" binding:"omitempty,oneof=1 2"`
 	PageId   int `form:"page_id" binding:"required,min=1"`
 	PageSize int `form:"page_size" binding:"required,min=5,max=200"`

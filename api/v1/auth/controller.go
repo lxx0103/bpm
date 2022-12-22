@@ -1022,33 +1022,39 @@ func NewPositionWxmodule(c *gin.Context) {
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Success 200 object response.SuccessRes{data=interface{}} 成功
+// @Param id path int true "父级id"
+// @Success 200 object response.SuccessRes{data=[]Wxmodule} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /mywxmodule [GET]
+// @Router /wx/mywxmodule/:id [GET]
 func GetMyWxmodule(c *gin.Context) {
+	var uri ParentID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	positionID := claims.PositionID
 	authService := NewAuthService()
-	new, err := authService.GetMyWxmodule(positionID)
+	new, err := authService.GetMyWxmodule(positionID, uri.ID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
 	}
-	res := make(map[int64]*MyWxmoduleDetail)
-	for i := 0; i < len(new); i++ {
-		if new[i].ParentID == -1 {
-			var m MyWxmoduleDetail
-			m.Code = new[i].Code
-			m.Name = new[i].Name
-			m.Status = new[i].Status
-			res[new[i].ID] = &m
-		} else {
-			var m MyWxmoduleDetail
-			m.Code = new[i].Code
-			m.Name = new[i].Name
-			m.Status = new[i].Status
-			res[new[i].ParentID].Items = append(res[new[i].ParentID].Items, m)
-		}
-	}
-	response.Response(c, res)
+	// res := make(map[int64]*MyWxmoduleDetail)
+	// for i := 0; i < len(new); i++ {
+	// 	if new[i].ParentID == -1 {
+	// 		var m MyWxmoduleDetail
+	// 		m.Code = new[i].Code
+	// 		m.Name = new[i].Name
+	// 		m.Status = new[i].Status
+	// 		res[new[i].ID] = &m
+	// 	} else {
+	// 		var m MyWxmoduleDetail
+	// 		m.Code = new[i].Code
+	// 		m.Name = new[i].Name
+	// 		m.Status = new[i].Status
+	// 		res[new[i].ParentID].Items = append(res[new[i].ParentID].Items, m)
+	// 	}
+	// }
+	response.Response(c, new)
 }

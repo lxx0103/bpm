@@ -9,19 +9,10 @@ type organizationRepository struct {
 	tx *sql.Tx
 }
 
-func NewOrganizationRepository(transaction *sql.Tx) OrganizationRepository {
+func NewOrganizationRepository(transaction *sql.Tx) *organizationRepository {
 	return &organizationRepository{
 		tx: transaction,
 	}
-}
-
-type OrganizationRepository interface {
-	//Organization Management
-	CreateOrganization(info OrganizationNew) (int64, error)
-	UpdateOrganization(id int64, info OrganizationNew) (int64, error)
-	GetOrganizationByID(id int64) (*Organization, error)
-	NewAccessToken(string, string) error
-	NewQrcode(string, string) error
 }
 
 func (r *organizationRepository) CreateOrganization(info OrganizationNew) (int64, error) {
@@ -29,6 +20,7 @@ func (r *organizationRepository) CreateOrganization(info OrganizationNew) (int64
 		INSERT INTO organizations
 		(
 			name,
+			logo,
 			description,
 			contact,
 			phone,
@@ -39,8 +31,8 @@ func (r *organizationRepository) CreateOrganization(info OrganizationNew) (int64
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.Name, info.Description, info.Contact, info.Phone, info.Address, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Logo, info.Description, info.Contact, info.Phone, info.Address, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -76,8 +68,8 @@ func (r *organizationRepository) UpdateOrganization(id int64, info OrganizationN
 
 func (r *organizationRepository) GetOrganizationByID(id int64) (*Organization, error) {
 	var res Organization
-	row := r.tx.QueryRow(`SELECT id, name, description, contact, phone, address, status, created, created_by, updated, updated_by FROM organizations WHERE id = ? LIMIT 1`, id)
-	err := row.Scan(&res.ID, &res.Name, &res.Description, &res.Contact, &res.Phone, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	row := r.tx.QueryRow(`SELECT id, name, logo, description, contact, phone, address, status, created, created_by, updated, updated_by FROM organizations WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Name, &res.Logo, &res.Description, &res.Contact, &res.Phone, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}

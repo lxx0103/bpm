@@ -319,7 +319,7 @@ func (r *authQuery) GetPositionWxmoduleByID(positionID int64) ([]int64, error) {
 	return wxmodule, err
 }
 
-func (r *authQuery) GetMyWxmodule(positionID int64) ([]Wxmodule, error) {
+func (r *authQuery) GetMyWxmodule(positionID, parentID int64) ([]Wxmodule, error) {
 	var wxmodule []Wxmodule
 	err := r.conn.Select(&wxmodule, `
 		SELECT m.* FROM position_wxmodules rm
@@ -328,7 +328,8 @@ func (r *authQuery) GetMyWxmodule(positionID int64) ([]Wxmodule, error) {
 		WHERE rm.position_id = ?
 		AND m.status > 0
 		AND rm.status > 0
+		AND m.parent_id = ?
 		ORDER BY parent_id ASC, ID ASC
-	`, positionID)
+	`, positionID, parentID)
 	return wxmodule, err
 }
