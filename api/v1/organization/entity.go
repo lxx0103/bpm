@@ -10,6 +10,8 @@ type Organization struct {
 	Phone       string    `db:"phone" json:"phone"`
 	Contact     string    `db:"contact" json:"contact"`
 	Address     string    `db:"address" json:"address"`
+	City        string    `db:"city" json:"city"`
+	Type        int       `db:"type" json:"type"`
 	Status      int       `db:"status" json:"status"`
 	Created     time.Time `db:"created" json:"created"`
 	CreatedBy   string    `db:"created_by" json:"created_by"`

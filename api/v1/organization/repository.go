@@ -25,14 +25,16 @@ func (r *organizationRepository) CreateOrganization(info OrganizationNew) (int64
 			contact,
 			phone,
 			address,
+			city,
+			type,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.Name, info.Logo, info.Description, info.Contact, info.Phone, info.Address, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Logo, info.Description, info.Contact, info.Phone, info.Address, info.City, info.Type, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -51,11 +53,13 @@ func (r *organizationRepository) UpdateOrganization(id int64, info OrganizationN
 		contact = ?,
 		phone = ?,
 		address = ?,
+		city = ?,
+		type = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Description, info.Contact, info.Phone, info.Address, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Description, info.Contact, info.Phone, info.Address, info.City, info.Type, info.Status, time.Now(), info.User, id)
 	if err != nil {
 		return 0, err
 	}
@@ -68,8 +72,8 @@ func (r *organizationRepository) UpdateOrganization(id int64, info OrganizationN
 
 func (r *organizationRepository) GetOrganizationByID(id int64) (*Organization, error) {
 	var res Organization
-	row := r.tx.QueryRow(`SELECT id, name, logo, description, contact, phone, address, status, created, created_by, updated, updated_by FROM organizations WHERE id = ? LIMIT 1`, id)
-	err := row.Scan(&res.ID, &res.Name, &res.Logo, &res.Description, &res.Contact, &res.Phone, &res.Address, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	row := r.tx.QueryRow(`SELECT id, name, logo, description, contact, phone, address, city, type, status, created, created_by, updated, updated_by FROM organizations WHERE id = ? LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Name, &res.Logo, &res.Description, &res.Contact, &res.Phone, &res.Address, &res.City, &res.Type, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}

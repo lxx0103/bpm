@@ -2730,6 +2730,84 @@ var doc = `{
                 }
             }
         },
+        "/portal/organizations": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门户接口"
+                ],
+                "summary": "组织列表",
+                "operationId": "140",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "组织名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "区域",
+                        "name": "city",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "类型1/2",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/organization.OrganizationExampleResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/positions": {
             "get": {
                 "consumes": [
@@ -9366,10 +9444,30 @@ var doc = `{
                 }
             }
         },
+        "organization.ExampleResponse": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "organization.Organization": {
             "type": "object",
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "city": {
                     "type": "string"
                 },
                 "contact": {
@@ -9399,6 +9497,9 @@ var doc = `{
                 "status": {
                     "type": "integer"
                 },
+                "type": {
+                    "type": "integer"
+                },
                 "updated": {
                     "type": "string"
                 },
@@ -9407,15 +9508,61 @@ var doc = `{
                 }
             }
         },
+        "organization.OrganizationExampleResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "examples": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/organization.ExampleResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
         "organization.OrganizationNew": {
             "type": "object",
             "required": [
+                "city",
                 "description",
                 "name",
-                "status"
+                "status",
+                "type"
             ],
             "properties": {
                 "address": {
+                    "type": "string"
+                },
+                "city": {
                     "type": "string"
                 },
                 "contact": {
@@ -9436,6 +9583,13 @@ var doc = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "type": {
                     "type": "integer",
                     "enum": [
                         1,

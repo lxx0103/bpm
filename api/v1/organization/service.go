@@ -170,3 +170,37 @@ func (s *organizationService) GetQrCodeByPath(path string) (string, error) {
 	}
 	return res, nil
 }
+
+func (s *organizationService) GetPortalOrganizationList(filter OrganizationFilter) (int, *[]OrganizationExampleResponse, error) {
+	db := database.InitMySQL()
+	query := NewOrganizationQuery(db)
+	count, err := query.GetOrganizationCount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetOrganizationList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	var res []OrganizationExampleResponse
+	for _, organization := range *list {
+		var resRow OrganizationExampleResponse
+		resRow.ID = organization.ID
+		resRow.Name = organization.Name
+		resRow.Logo = organization.Logo
+		resRow.Description = organization.Description
+		resRow.Phone = organization.Phone
+		resRow.Contact = organization.Contact
+		resRow.Address = organization.Address
+		resRow.City = organization.City
+		resRow.Type = organization.Type
+		resRow.Status = organization.Status
+		examples, err := query.GetOrganizationTopExamples(organization.ID)
+		if err != nil {
+			return 0, nil, err
+		}
+		resRow.Examples = *examples
+		res = append(res, resRow)
+	}
+	return count, &res, err
+}

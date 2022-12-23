@@ -10,17 +10,10 @@ type exampleQuery struct {
 	conn *sqlx.DB
 }
 
-func NewExampleQuery(connection *sqlx.DB) ExampleQuery {
+func NewExampleQuery(connection *sqlx.DB) *exampleQuery {
 	return &exampleQuery{
 		conn: connection,
 	}
-}
-
-type ExampleQuery interface {
-	//Example Management
-	GetExampleByID(int64, int64) (*Example, error)
-	GetExampleCount(ExampleFilter) (int, error)
-	GetExampleList(ExampleFilter) (*[]ExampleListResponse, error)
 }
 
 func (r *exampleQuery) GetExampleByID(id int64, organizationID int64) (*Example, error) {

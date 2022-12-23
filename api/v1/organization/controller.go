@@ -160,3 +160,33 @@ func GetQrCode(c *gin.Context) {
 func WxGetOrganizationByID(c *gin.Context) {
 	GetOrganizationByID(c)
 }
+
+// @Summary 组织列表
+// @Id 140
+// @Tags 门户接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param name query string false "组织名称"
+// @Param city query string false "区域"
+// @Param type query string false "类型1/2"
+// @Success 200 object response.ListRes{data=[]OrganizationExampleResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /portal/organizations [GET]
+func GetPortalOrganizationList(c *gin.Context) {
+	var filter OrganizationFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	organizationService := NewOrganizationService()
+	count, list, err := organizationService.GetPortalOrganizationList(filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}

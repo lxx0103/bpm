@@ -30,6 +30,12 @@ func (r *organizationQuery) GetOrganizationCount(filter OrganizationFilter) (int
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
+	if v := filter.City; v != "" {
+		where, args = append(where, "city like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.Type; v != 0 {
+		where, args = append(where, "type = ?"), append(args, v)
+	}
 	var count int
 	err := r.conn.Get(&count, `
 		SELECT count(1) as count 
@@ -45,6 +51,12 @@ func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]O
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.City; v != "" {
+		where, args = append(where, "city like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.Type; v != 0 {
+		where, args = append(where, "type = ?"), append(args, v)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
@@ -77,4 +89,18 @@ func (r *organizationQuery) GetAccessToken(code string) (string, error) {
 		return "", err
 	}
 	return res, nil
+}
+
+func (r *organizationQuery) GetOrganizationTopExamples(organizationID int64) (*[]ExampleResponse, error) {
+	var examples []ExampleResponse
+	err := r.conn.Select(&examples, `
+		SELECT id, name, cover, status
+		FROM examples 
+		WHERE organization_id = ?
+		AND example_type = 1
+		AND status > 0 
+		ORDER BY id desc
+		LIMIT 3
+	`, organizationID)
+	return &examples, err
 }

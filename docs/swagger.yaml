@@ -1258,9 +1258,22 @@ definitions:
     required:
     - json_data
     type: object
+  organization.ExampleResponse:
+    properties:
+      cover:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: integer
+    type: object
   organization.Organization:
     properties:
       address:
+        type: string
+      city:
         type: string
       contact:
         type: string
@@ -1280,14 +1293,45 @@ definitions:
         type: string
       status:
         type: integer
+      type:
+        type: integer
       updated:
         type: string
       updated_by:
         type: string
     type: object
+  organization.OrganizationExampleResponse:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      contact:
+        type: string
+      description:
+        type: string
+      examples:
+        items:
+          $ref: '#/definitions/organization.ExampleResponse'
+        type: array
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      status:
+        type: integer
+      type:
+        type: integer
+    type: object
   organization.OrganizationNew:
     properties:
       address:
+        type: string
+      city:
         type: string
       contact:
         type: string
@@ -1306,10 +1350,17 @@ definitions:
         - 1
         - 2
         type: integer
+      type:
+        enum:
+        - 1
+        - 2
+        type: integer
     required:
+    - city
     - description
     - name
     - status
+    - type
     type: object
   organization.QrcodeFilter:
     properties:
@@ -3325,6 +3376,55 @@ paths:
       summary: 更新密码
       tags:
       - 用户管理
+  /portal/organizations:
+    get:
+      consumes:
+      - application/json
+      operationId: "140"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 组织名称
+        in: query
+        name: name
+        type: string
+      - description: 区域
+        in: query
+        name: city
+        type: string
+      - description: 类型1/2
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/organization.OrganizationExampleResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 组织列表
+      tags:
+      - 门户接口
   /positions:
     get:
       consumes:

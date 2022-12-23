@@ -2,6 +2,8 @@ package organization
 
 type OrganizationFilter struct {
 	Name     string `form:"name" binding:"omitempty,max=64,min=1"`
+	City     string `form:"city" binding:"omitempty"`
+	Type     int    `form:"type" binding:"omitempty,oneof=1 2"`
 	PageId   int    `form:"page_id" binding:"required,min=1"`
 	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
 }
@@ -13,6 +15,8 @@ type OrganizationNew struct {
 	Contact     string `json:"contact" binding:"omitempty"`
 	Phone       string `json:"phone" binding:"omitempty"`
 	Address     string `json:"address" binding:"omitempty"`
+	City        string `json:"city" binding:"required"`
+	Type        int    `json:"type" binding:"required,oneof=1 2"`
 	Status      int    `json:"status" binding:"required,oneof=1 2"`
 	User        string `json:"user" swaggerignore:"true"`
 }
@@ -30,4 +34,24 @@ type WechatToken struct {
 	ExpiresIn   int    `json:"expires_in"`
 	ErrCode     int64  `json:"errcode"`
 	ErrMsg      string `json:"errmsg"`
+}
+
+type OrganizationExampleResponse struct {
+	ID          int64             `db:"id" json:"id"`
+	Name        string            `db:"name" json:"name"`
+	Logo        string            `db:"logo" json:"logo"`
+	Description string            `db:"description" json:"description"`
+	Phone       string            `db:"phone" json:"phone"`
+	Contact     string            `db:"contact" json:"contact"`
+	Address     string            `db:"address" json:"address"`
+	City        string            `db:"city" json:"city"`
+	Type        int               `db:"type" json:"type"`
+	Status      int               `db:"status" json:"status"`
+	Examples    []ExampleResponse `json:"examples"`
+}
+type ExampleResponse struct {
+	ID     int64  `db:"id" json:"id"`
+	Name   string `db:"name" json:"name"`
+	Cover  string `db:"cover" json:"cover"`
+	Status int    `db:"status" json:"status"`
 }
