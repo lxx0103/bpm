@@ -53,13 +53,14 @@ func (r *organizationRepository) UpdateOrganization(id int64, info OrganizationN
 		contact = ?,
 		phone = ?,
 		address = ?,
+		logo = ?,
 		city = ?,
 		type = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Description, info.Contact, info.Phone, info.Address, info.City, info.Type, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Description, info.Contact, info.Phone, info.Address, info.Logo, info.City, info.Type, info.Status, time.Now(), info.User, id)
 	if err != nil {
 		return 0, err
 	}
