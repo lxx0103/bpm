@@ -3376,6 +3376,97 @@ paths:
       summary: 更新密码
       tags:
       - 用户管理
+  /portal/examples:
+    get:
+      consumes:
+      - application/json
+      operationId: "141"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 案例编码
+        in: query
+        name: name
+        type: string
+      - description: 装修风格
+        in: query
+        name: style
+        type: string
+      - description: 类型
+        in: query
+        name: type
+        type: string
+      - description: 居室
+        in: query
+        name: room
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/example.ExampleListResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 案例列表
+      tags:
+      - 门户接口
+  /portal/examples/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "142"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.ExampleResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取案例
+      tags:
+      - 门户接口
   /portal/organizations:
     get:
       consumes:
@@ -3423,6 +3514,36 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 组织列表
+      tags:
+      - 门户接口
+  /portal/organizations/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "143"
+      parameters:
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/organization.Organization'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取组织
       tags:
       - 门户接口
   /positions:

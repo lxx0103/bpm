@@ -8,17 +8,8 @@ import (
 type exampleService struct {
 }
 
-func NewExampleService() ExampleService {
+func NewExampleService() *exampleService {
 	return &exampleService{}
-}
-
-// ExampleService represents a service for managing examples.
-type ExampleService interface {
-	//Example Management
-	GetExampleByID(int64, int64) (*Example, error)
-	NewExample(ExampleNew, int64) (*Example, error)
-	GetExampleList(ExampleFilter, int64) (int, *[]ExampleListResponse, error)
-	UpdateExample(int64, ExampleNew, int64) (*Example, error)
 }
 
 func (s *exampleService) GetExampleByID(id int64, organizationID int64) (*Example, error) {

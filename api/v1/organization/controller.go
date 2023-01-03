@@ -175,7 +175,7 @@ func WxGetOrganizationByID(c *gin.Context) {
 // @Success 200 object response.ListRes{data=[]OrganizationExampleResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /portal/organizations [GET]
-func GetPortalOrganizationList(c *gin.Context) {
+func PortalGetOrganizationList(c *gin.Context) {
 	var filter OrganizationFilter
 	err := c.ShouldBindQuery(&filter)
 	if err != nil {
@@ -189,4 +189,18 @@ func GetPortalOrganizationList(c *gin.Context) {
 		return
 	}
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 根据ID获取组织
+// @Id 143
+// @Tags 门户接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "组织ID"
+// @Success 200 object response.SuccessRes{data=Organization} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /portal/organizations/:id [GET]
+func PortalGetOrganizationByID(c *gin.Context) {
+	GetOrganizationByID(c)
 }

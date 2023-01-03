@@ -15,5 +15,6 @@ func WxRouters(g *gin.RouterGroup) {
 }
 
 func PortalRouters(g *gin.RouterGroup) {
-	g.GET("portal/organizations", GetPortalOrganizationList)
+	g.GET("/portal/organizations", PortalGetOrganizationList)
+	g.GET("/portal/organizations/:id", PortalGetOrganizationByID)
 }
