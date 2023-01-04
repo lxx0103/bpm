@@ -426,6 +426,42 @@ definitions:
     - name
     - status
     type: object
+  common.BrandNew:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  common.BrandResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: integer
+    type: object
+  common.MaterialNew:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  common.MaterialResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: integer
+    type: object
   component.Component:
     properties:
       component_type:
@@ -1862,6 +1898,171 @@ paths:
       summary: 根据ID更新API
       tags:
       - API管理
+  /brands:
+    get:
+      consumes:
+      - application/json
+      operationId: "1001"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 品牌名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/common.BrandResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 品牌列表
+      tags:
+      - 基础信息管理
+    post:
+      consumes:
+      - application/json
+      operationId: "1002"
+      parameters:
+      - description: 品牌信息
+        in: body
+        name: brand_info
+        required: true
+        schema:
+          $ref: '#/definitions/common.BrandNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建品牌
+      tags:
+      - 基础信息管理
+  /brands/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "1005"
+      parameters:
+      - description: 品牌ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除品牌
+      tags:
+      - 基础信息管理
+    get:
+      consumes:
+      - application/json
+      operationId: "1003"
+      parameters:
+      - description: 品牌ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.BrandResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取品牌
+      tags:
+      - 基础信息管理
+    put:
+      consumes:
+      - application/json
+      operationId: "1004"
+      parameters:
+      - description: 品牌ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 品牌信息
+        in: body
+        name: brand_info
+        required: true
+        schema:
+          $ref: '#/definitions/common.BrandNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新品牌
+      tags:
+      - 基础信息管理
   /checkins:
     get:
       consumes:
@@ -2709,6 +2910,171 @@ paths:
       summary: 根据ID更新案例
       tags:
       - 案例管理
+  /materials:
+    get:
+      consumes:
+      - application/json
+      operationId: "1006"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 材料名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/common.MaterialResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 材料列表
+      tags:
+      - 基础信息管理
+    post:
+      consumes:
+      - application/json
+      operationId: "1007"
+      parameters:
+      - description: 材料信息
+        in: body
+        name: material_info
+        required: true
+        schema:
+          $ref: '#/definitions/common.MaterialNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建材料
+      tags:
+      - 基础信息管理
+  /materials/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "1010"
+      parameters:
+      - description: 材料ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除材料
+      tags:
+      - 基础信息管理
+    get:
+      consumes:
+      - application/json
+      operationId: "1008"
+      parameters:
+      - description: 材料ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.MaterialResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取材料
+      tags:
+      - 基础信息管理
+    put:
+      consumes:
+      - application/json
+      operationId: "1009"
+      parameters:
+      - description: 材料ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 材料信息
+        in: body
+        name: material_info
+        required: true
+        schema:
+          $ref: '#/definitions/common.MaterialNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新材料
+      tags:
+      - 基础信息管理
   /members:
     get:
       consumes:
