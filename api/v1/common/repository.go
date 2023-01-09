@@ -60,13 +60,12 @@ func (r *commonRepository) CheckBrandNameExist(name string, selfID int64) (int, 
 }
 
 func (r *commonRepository) CheckBrandActive(brandID int64) (int, error) {
-	// var res int
-	// row := r.tx.QueryRow(`SELECT count(1) FROM material_brands WHERE brand_id = ? AND status > 0 LIMIT 1`, brandID)
-	// err := row.Scan(&res)
-	// if err != nil {
-	// 	return 0, err
-	// }
-	res := 0
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM vendor_brands WHERE brand_id = ? AND status > 0 LIMIT 1`, brandID)
+	err := row.Scan(&res)
+	if err != nil {
+		return 0, err
+	}
 	return res, nil
 }
 
@@ -126,13 +125,12 @@ func (r *commonRepository) CheckMaterialNameExist(name string, selfID int64) (in
 }
 
 func (r *commonRepository) CheckMaterialActive(materialID int64) (int, error) {
-	// var res int
-	// row := r.tx.QueryRow(`SELECT count(1) FROM material_brands WHERE material_id = ? AND status > 0 LIMIT 1`, materialID)
-	// err := row.Scan(&res)
-	// if err != nil {
-	// 	return 0, err
-	// }
-	res := 0
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM vendor_materials WHERE material_id = ? AND status > 0 LIMIT 1`, materialID)
+	err := row.Scan(&res)
+	if err != nil {
+		return 0, err
+	}
 	return res, nil
 }
 

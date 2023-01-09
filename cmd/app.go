@@ -16,6 +16,7 @@ import (
 	"bpm/api/v1/project"
 	"bpm/api/v1/template"
 	"bpm/api/v1/upload"
+	"bpm/api/v1/vendor"
 	"bpm/core/config"
 	"bpm/core/database"
 	event2 "bpm/core/event"
@@ -31,7 +32,7 @@ func Run(args []string) {
 	event2.Subscribe(message.Subscribe)
 	r := router.InitRouter()
 	router.InitPublicRouter(r, auth.Routers, organization.PortalRouters, example.PortalRouters)
-	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers, position.Routers, member.Routers, template.Routers, node.Routers, element.Routers, upload.Routers, example.Routers, common.Routers)
+	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers, position.Routers, member.Routers, template.Routers, node.Routers, element.Routers, upload.Routers, example.Routers, common.Routers, vendor.Routers)
 	router.InitWxRouter(r, event.WxRouters, project.WxRouters, upload.WxRouters, component.WxRouters, position.WxRouters, auth.WxRouters, client.WxRouters, member.WxRouters, template.WxRouters, example.WxRouters, organization.WxRouters)
 	router.RunServer(r)
 }
