@@ -5527,7 +5527,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "111"
+      operationId: "84"
       parameters:
       - description: 事件ID
         in: path
@@ -5544,15 +5544,13 @@ paths:
             - $ref: '#/definitions/response.SuccessRes'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/event.EventAuditHistoryResponse'
-                  type: array
+                  $ref: '#/definitions/event.Event'
               type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrorRes'
-      summary: 获取事件审核历史
+      summary: 根据ID获取事件
       tags:
       - 小程序接口
     put:
@@ -5588,6 +5586,38 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新事件
+      tags:
+      - 小程序接口
+  /wx/events/:id/audits:
+    get:
+      consumes:
+      - application/json
+      operationId: "111"
+      parameters:
+      - description: 事件ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/event.EventAuditHistoryResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取事件审核历史
       tags:
       - 小程序接口
   /wx/events/:id/checkin:

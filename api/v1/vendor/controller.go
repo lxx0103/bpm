@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 商家列表
-// @Id 1021
+// @Id 151
 // @Tags 商家管理
 // @version 1.0
 // @Accept application/json
@@ -38,7 +38,7 @@ func GetVendorList(c *gin.Context) {
 }
 
 // @Summary 新建商家
-// @Id 1022
+// @Id 152
 // @Tags 商家管理
 // @version 1.0
 // @Accept application/json
@@ -65,7 +65,7 @@ func NewVendor(c *gin.Context) {
 }
 
 // @Summary 根据ID获取商家
-// @Id 1023
+// @Id 153
 // @Tags 商家管理
 // @version 1.0
 // @Accept application/json
@@ -91,7 +91,7 @@ func GetVendorByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新商家
-// @Id 1024
+// @Id 154
 // @Tags 商家管理
 // @version 1.0
 // @Accept application/json
@@ -124,7 +124,7 @@ func UpdateVendor(c *gin.Context) {
 }
 
 // @Summary 根据ID删除商家
-// @Id 1025
+// @Id 155
 // @Tags 商家管理
 // @version 1.0
 // @Accept application/json

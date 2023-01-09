@@ -425,7 +425,7 @@ func GetAuditHistory(c *gin.Context) {
 // @Param id path int true "事件ID"
 // @Success 200 object response.SuccessRes{data=[]EventAuditHistoryResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /wx/events/:id [GET]
+// @Router /wx/events/:id/audits [GET]
 func WxGetAuditHistory(c *gin.Context) {
 	GetAuditHistory(c)
 }

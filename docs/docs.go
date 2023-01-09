@@ -6193,8 +6193,8 @@ var doc = `{
                 "tags": [
                     "小程序接口"
                 ],
-                "summary": "获取事件审核历史",
-                "operationId": "111",
+                "summary": "根据ID获取事件",
+                "operationId": "84",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6216,10 +6216,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/event.EventAuditHistoryResponse"
-                                            }
+                                            "$ref": "#/definitions/event.Event"
                                         }
                                     }
                                 }
@@ -6277,6 +6274,59 @@ var doc = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/event.Event"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/wx/events/:id/audits": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "获取事件审核历史",
+                "operationId": "111",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/event.EventAuditHistoryResponse"
+                                            }
                                         }
                                     }
                                 }
