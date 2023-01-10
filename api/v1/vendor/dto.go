@@ -14,8 +14,8 @@ type VendorNew struct {
 	Brand       []int64  `json:"brand"`
 	Phone       string   `json:"phone" binding:"omitempty,max=64"`
 	Address     string   `json:"address" binding:"omitempty,max=255"`
-	Longitude   float64  `json:"longitude" binding:"omitempty,max=64"`
-	Latitude    float64  `json:"latitude" binding:"omitempty,max=64"`
+	Longitude   float64  `json:"longitude" binding:"omitempty"`
+	Latitude    float64  `json:"latitude" binding:"omitempty"`
 	Cover       string   `json:"cover" binding:"omitempty,max=64"`
 	Picture     []string `json:"picture"`
 	Description string   `json:"description" binding:"omitempty"`
