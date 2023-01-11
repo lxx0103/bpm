@@ -9,3 +9,8 @@ func Routers(g *gin.RouterGroup) {
 	g.PUT("/vendors/:id", UpdateVendor)
 	g.DELETE("/vendors/:id", DeleteVendor)
 }
+
+func PortalRouters(g *gin.RouterGroup) {
+	g.GET("/portal/vendors", PortalGetVendorList)
+	g.GET("/portal/vendors/:id", PortalGetVendorByID)
+}

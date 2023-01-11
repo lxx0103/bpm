@@ -16,6 +16,7 @@ func Routers(g *gin.RouterGroup) {
 	g.DELETE("/materials/:id", DeleteMaterial)
 }
 
-func WxRouters(g *gin.RouterGroup) {
-	// g.GET("/wx/commons", WxGetCommonList)
+func PortalRouters(g *gin.RouterGroup) {
+	g.GET("/portal/materials", PortalGetMaterialList)
+	g.GET("/portal/materials/:id", PortalGetMaterialByID)
 }

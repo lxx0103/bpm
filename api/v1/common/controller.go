@@ -286,3 +286,34 @@ func DeleteMaterial(c *gin.Context) {
 	}
 	response.Response(c, "ok")
 }
+
+// @Summary 材料列表
+// @Id 1011
+// @Tags 门户接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param name query string false "材料名称"
+// @Success 200 object response.ListRes{data=[]MaterialResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /portal/materials [GET]
+func PortalGetMaterialList(c *gin.Context) {
+	GetMaterialList(c)
+}
+
+// @Summary 根据ID获取材料
+// @Id 1012
+// @Tags 门户接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "材料ID"
+// @Success 200 object response.SuccessRes{data=MaterialResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /portal/materials/:id [GET]
+func PortalGetMaterialByID(c *gin.Context) {
+	GetMaterialByID(c)
+
+}

@@ -3833,6 +3833,77 @@ paths:
       summary: 根据ID获取案例
       tags:
       - 门户接口
+  /portal/materials:
+    get:
+      consumes:
+      - application/json
+      operationId: "1011"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 材料名称
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/common.MaterialResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 材料列表
+      tags:
+      - 门户接口
+  /portal/materials/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: "1012"
+      parameters:
+      - description: 材料ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.MaterialResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取材料
+      tags:
+      - 门户接口
   /portal/organizations:
     get:
       consumes:
