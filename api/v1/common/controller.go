@@ -317,3 +317,159 @@ func PortalGetMaterialByID(c *gin.Context) {
 	GetMaterialByID(c)
 
 }
+
+// @Summary banner列表
+// @Id 1013
+// @Tags 基础信息管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param type query string false "all所有/index首页"
+// @Success 200 object response.ListRes{data=[]BannerResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /banners [GET]
+func GetBannerList(c *gin.Context) {
+	var filter BannerFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	commonService := NewCommonService()
+	count, list, err := commonService.GetBannerList(filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 新建banner
+// @Id 1014
+// @Tags 基础信息管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param banner_info body BannerNew true "banner信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /banners [POST]
+func NewBanner(c *gin.Context) {
+	var banner BannerNew
+	if err := c.ShouldBindJSON(&banner); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	banner.User = claims.Username
+	commonService := NewCommonService()
+	err := commonService.NewBanner(banner)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 根据ID获取banner
+// @Id 1015
+// @Tags 基础信息管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "bannerID"
+// @Success 200 object response.SuccessRes{data=BannerResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /banners/:id [GET]
+func GetBannerByID(c *gin.Context) {
+	var uri BannerID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	commonService := NewCommonService()
+	common, err := commonService.GetBannerByID(uri.ID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, common)
+
+}
+
+// @Summary 根据ID更新banner
+// @Id 1016
+// @Tags 基础信息管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "bannerID"
+// @Param banner_info body BannerNew true "banner信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /banners/:id [PUT]
+func UpdateBanner(c *gin.Context) {
+	var uri BannerID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var banner BannerNew
+	if err := c.ShouldBindJSON(&banner); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	banner.User = claims.Username
+	commonService := NewCommonService()
+	err := commonService.UpdateBanner(uri.ID, banner)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 根据ID删除banner
+// @Id 1017
+// @Tags 基础信息管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "bannerID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /banners/:id [DELETE]
+func DeleteBanner(c *gin.Context) {
+	var uri BannerID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	commonService := NewCommonService()
+	err := commonService.DeleteBanner(uri.ID, claims.Username)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary banner列表
+// @Id 1018
+// @Tags 门户接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param type query string false "all所有/index首页"
+// @Success 200 object response.ListRes{data=[]BannerResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /portal/banners [GET]
+func PortalGetBannerList(c *gin.Context) {
+	GetBannerList(c)
+}

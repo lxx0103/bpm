@@ -217,3 +217,82 @@ func (s *commonService) DeleteMaterial(brandID int64, byUser string) error {
 	tx.Commit()
 	return nil
 }
+
+func (s *commonService) GetBannerByID(id int64) (*BannerResponse, error) {
+	db := database.InitMySQL()
+	query := NewCommonQuery(db)
+	brand, err := query.GetBannerByID(id)
+	return brand, err
+}
+
+func (s *commonService) NewBanner(info BannerNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCommonRepository(tx)
+	err = repo.CreateBanner(info)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *commonService) GetBannerList(filter BannerFilter) (int, *[]BannerResponse, error) {
+	db := database.InitMySQL()
+	query := NewCommonQuery(db)
+	count, err := query.GetBannerCount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetBannerList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	return count, list, err
+}
+
+func (s *commonService) UpdateBanner(brandID int64, info BannerNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCommonRepository(tx)
+	_, err = repo.GetBannerByID(brandID)
+	if err != nil {
+		msg := "Banner不存在"
+		return errors.New(msg)
+	}
+	err = repo.UpdateBanner(brandID, info)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *commonService) DeleteBanner(brandID int64, byUser string) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCommonRepository(tx)
+	_, err = repo.GetBannerByID(brandID)
+	if err != nil {
+		msg := "Banner不存在"
+		return errors.New(msg)
+	}
+	err = repo.DeleteBanner(brandID, byUser)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}

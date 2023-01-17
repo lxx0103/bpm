@@ -426,6 +426,38 @@ definitions:
     - name
     - status
     type: object
+  common.BannerNew:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      picture:
+        type: string
+      priority:
+        type: integer
+      url:
+        type: string
+    required:
+    - name
+    - picture
+    - url
+    type: object
+  common.BannerResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      picture:
+        type: string
+      priority:
+        type: integer
+      status:
+        type: integer
+      url:
+        type: string
+    type: object
   common.BrandNew:
     properties:
       name:
@@ -1935,6 +1967,171 @@ paths:
       summary: 根据ID更新API
       tags:
       - API管理
+  /banners:
+    get:
+      consumes:
+      - application/json
+      operationId: "1013"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: all所有/index首页
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/common.BannerResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: banner列表
+      tags:
+      - 基础信息管理
+    post:
+      consumes:
+      - application/json
+      operationId: "1014"
+      parameters:
+      - description: banner信息
+        in: body
+        name: banner_info
+        required: true
+        schema:
+          $ref: '#/definitions/common.BannerNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建banner
+      tags:
+      - 基础信息管理
+  /banners/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "1017"
+      parameters:
+      - description: bannerID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除banner
+      tags:
+      - 基础信息管理
+    get:
+      consumes:
+      - application/json
+      operationId: "1015"
+      parameters:
+      - description: bannerID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/common.BannerResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取banner
+      tags:
+      - 基础信息管理
+    put:
+      consumes:
+      - application/json
+      operationId: "1016"
+      parameters:
+      - description: bannerID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: banner信息
+        in: body
+        name: banner_info
+        required: true
+        schema:
+          $ref: '#/definitions/common.BannerNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新banner
+      tags:
+      - 基础信息管理
   /brands:
     get:
       consumes:
@@ -3961,6 +4158,47 @@ paths:
       summary: 更新密码
       tags:
       - 用户管理
+  /portal/banners:
+    get:
+      consumes:
+      - application/json
+      operationId: "1018"
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: all所有/index首页
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/common.BannerResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: banner列表
+      tags:
+      - 门户接口
   /portal/examples:
     get:
       consumes:

@@ -93,3 +93,43 @@ func (r *commonQuery) GetMaterialList(filter MaterialFilter) (*[]MaterialRespons
 	`, args...)
 	return &materials, err
 }
+
+func (r *commonQuery) GetBannerByID(id int64) (*BannerResponse, error) {
+	var banner BannerResponse
+	err := r.conn.Get(&banner, "SELECT id, name, picture, url, priority, status FROM banners WHERE id = ? AND status > 0 ", id)
+	return &banner, err
+}
+
+func (r *commonQuery) GetBannerCount(filter BannerFilter) (int, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	if v := filter.Type; v == "index" {
+		where, args = append(where, "priority > ?"), append(args, 0)
+	}
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) as count 
+		FROM banners 
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *commonQuery) GetBannerList(filter BannerFilter) (*[]BannerResponse, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	if v := filter.Type; v == "index" {
+		where, args = append(where, "priority > ?"), append(args, 0)
+	}
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var banners []BannerResponse
+	err := r.conn.Select(&banners, `
+		SELECT id, name, picture, priority, url, status
+		FROM banners 
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY priority desc
+		LIMIT ?, ?
+	`, args...)
+	return &banners, err
+}

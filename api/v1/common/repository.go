@@ -144,3 +144,54 @@ func (r *commonRepository) DeleteMaterial(id int64, byUser string) error {
 	`, -1, time.Now(), byUser, id)
 	return err
 }
+
+func (r *commonRepository) CreateBanner(info BannerNew) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO banners
+		(
+			name,
+			picture,
+			priority,
+			url,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Picture, info.Priority, info.Url, 1, time.Now(), info.User, time.Now(), info.User)
+	return err
+}
+
+func (r *commonRepository) UpdateBanner(id int64, info BannerNew) error {
+	_, err := r.tx.Exec(`
+		Update banners SET 
+		name = ?,
+		picture = ?,
+		priority = ?,
+		url = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, info.Name, info.Picture, info.Priority, info.Url, time.Now(), info.User, id)
+	return err
+}
+
+func (r *commonRepository) GetBannerByID(id int64) (*BannerResponse, error) {
+	var res BannerResponse
+	row := r.tx.QueryRow(`SELECT id, name, picture, priority, url, status FROM banners WHERE id = ? AND status > 0 LIMIT 1`, id)
+	err := row.Scan(&res.ID, &res.Name, &res.Picture, &res.Priority, &res.Url, &res.Status)
+	return &res, err
+}
+
+func (r *commonRepository) DeleteBanner(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update banners SET 
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, -1, time.Now(), byUser, id)
+	return err
+}

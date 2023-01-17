@@ -14,9 +14,16 @@ func Routers(g *gin.RouterGroup) {
 	g.POST("/materials", NewMaterial)
 	g.PUT("/materials/:id", UpdateMaterial)
 	g.DELETE("/materials/:id", DeleteMaterial)
+
+	g.GET("/banners", GetBannerList)
+	g.GET("/banners/:id", GetBannerByID)
+	g.POST("/banners", NewBanner)
+	g.PUT("/banners/:id", UpdateBanner)
+	g.DELETE("/banners/:id", DeleteBanner)
 }
 
 func PortalRouters(g *gin.RouterGroup) {
 	g.GET("/portal/materials", PortalGetMaterialList)
 	g.GET("/portal/materials/:id", PortalGetMaterialByID)
+	g.GET("/portal/banners", PortalGetBannerList)
 }
