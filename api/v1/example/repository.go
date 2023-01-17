@@ -30,14 +30,16 @@ func (r *exampleRepository) CreateExample(info ExampleNew) (int64, error) {
 			example_type,
 			finder_user_name,
 			feed_id,
+			priority,
+			building,
 			status,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.OrganizationID, info.Name, info.Cover, info.Style, info.Type, info.Room, info.Notes, info.Description, info.ExampleType, info.FinderUserName, info.FeedID, info.Status, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.Name, info.Cover, info.Style, info.Type, info.Room, info.Notes, info.Description, info.ExampleType, info.FinderUserName, info.FeedID, info.Priority, info.Building, info.Status, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -62,11 +64,13 @@ func (r *exampleRepository) UpdateExample(id int64, info ExampleNew) (int64, err
 		example_type = ?,
 		finder_user_name = ?,
 		feed_id = ?,
+		priority = ?,
+		building = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Cover, info.OrganizationID, info.Style, info.Type, info.Room, info.Notes, info.Description, info.ExampleType, info.FinderUserName, info.FeedID, info.Status, time.Now(), info.User, id)
+	`, info.Name, info.Cover, info.OrganizationID, info.Style, info.Type, info.Room, info.Notes, info.Description, info.ExampleType, info.FinderUserName, info.FeedID, info.Priority, info.Building, info.Status, time.Now(), info.User, id)
 	if err != nil {
 		return 0, err
 	}
@@ -81,11 +85,11 @@ func (r *exampleRepository) GetExampleByID(id int64, organizationID int64) (*Exa
 	var res Example
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT id, organization_id, name, cover, style, type, room, notes, description, example_type, finder_user_name, feed_id, status, created, created_by, updated, updated_by FROM examples WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT id, organization_id, name, cover, style, type, room, notes, description, example_type, finder_user_name, feed_id, priority, building, status, created, created_by, updated, updated_by FROM examples WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, organization_id, name, cover, style, type, room, notes, description, example_type, finder_user_name, feed_id, status, created, created_by, updated, updated_by FROM examples WHERE id = ? LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, organization_id, name, cover, style, type, room, notes, description, example_type, finder_user_name, feed_id, priority, building, status, created, created_by, updated, updated_by FROM examples WHERE id = ? LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.Cover, &res.Style, &res.Type, &res.Room, &res.Notes, &res.Description, &res.ExampleType, &res.FinderUserName, &res.FeedID, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.Cover, &res.Style, &res.Type, &res.Room, &res.Notes, &res.Description, &res.ExampleType, &res.FinderUserName, &res.FeedID, &res.Priority, &res.Building, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}

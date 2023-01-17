@@ -8,6 +8,8 @@ type ExampleFilter struct {
 	ExampleType    int    `form:"example_type" binding:"omitempty"`
 	Status         int    `form:"status" binding:"omitempty"`
 	OrganizationID int64  `form:"organization_id" binding:"omitempty,min=1"`
+	Mixed          string `form:"mixed" binding:"omitempty"`
+	Priority       string `form:"priority" binding:"omitempty,oneof=all index"`
 	PageId         int    `form:"page_id" binding:"required,min=1"`
 	PageSize       int    `form:"page_size" binding:"required,min=5,max=200"`
 }
@@ -24,6 +26,8 @@ type ExampleNew struct {
 	FinderUserName string `json:"finder_user_name" binding:"omitempty"`
 	FeedID         string `json:"feed_id" binding:"omitempty"`
 	ExampleType    int    `json:"example_type" binding:"omitempty"`
+	Priority       int    `json:"priority" binding:"omitempty"`
+	Building       string `json:"building" binding:"omitempty"`
 	Status         int    `json:"status" binding:"required,oneof=1 2"`
 	User           string `json:"user" swaggerignore:"true"`
 }
@@ -45,6 +49,8 @@ type ExampleResponse struct {
 	Room             string `db:"room" json:"room"`
 	FinderUserName   string `db:"finder_user_name" json:"finder_user_name"`
 	FeedID           string `db:"feed_id" json:"feed_id"`
+	Priority         int    `db:"priority" json:"priority"`
+	Building         string `db:"building" json:"building"`
 	Status           int    `db:"status" json:"status"`
 	Description      string `db:"description" json:"description"`
 }
@@ -59,6 +65,8 @@ type ExampleListResponse struct {
 	Style            string `db:"style" json:"style"`
 	Type             string `db:"type" json:"type"`
 	Room             string `db:"room" json:"room"`
+	Priority         int    `db:"priority" json:"priority"`
+	Building         string `db:"building" json:"building"`
 	Status           int    `db:"status" json:"status"`
 }
 

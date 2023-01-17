@@ -53,6 +53,14 @@ func (r *exampleQuery) GetExampleCount(filter ExampleFilter) (int, error) {
 	if v := filter.Status; v != 0 {
 		where, args = append(where, "status = ?"), append(args, v)
 	}
+	if v := filter.Mixed; v != "" {
+		where = append(where, "(name like ? or building like ?)")
+		args = append(args, "%"+v+"%")
+		args = append(args, "%"+v+"%")
+	}
+	if v := filter.Priority; v == "index" {
+		where, args = append(where, "priority > ?"), append(args, 0)
+	}
 	var count int
 	err := r.conn.Get(&count, `
 		SELECT count(1) as count 
@@ -87,16 +95,24 @@ func (r *exampleQuery) GetExampleList(filter ExampleFilter) (*[]ExampleListRespo
 	if v := filter.Status; v != 0 {
 		where, args = append(where, "e.status = ?"), append(args, v)
 	}
+	if v := filter.Mixed; v != "" {
+		where = append(where, "(e.name like ? or e.building like ?)")
+		args = append(args, "%"+v+"%")
+		args = append(args, "%"+v+"%")
+	}
+	if v := filter.Priority; v == "index" {
+		where, args = append(where, "e.priority > ?"), append(args, 0)
+	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
 	var examples []ExampleListResponse
 	err := r.conn.Select(&examples, `
-		SELECT e.id, e.name, e.cover, e.style, e.type, e.room, e.notes, e.status, e.organization_id, o.name as organization_name
+		SELECT e.id, e.name, e.cover, e.style, e.type, e.room, e.notes, e.building, e.priority, e.status, e.organization_id, o.name as organization_name
 		FROM examples e
 		LEFT JOIN organizations o
 		ON e.organization_id = o.id
 		WHERE `+strings.Join(where, " AND ")+`
-		ORDER BY e.id DESC
+		ORDER BY e.priority DESC, e.id DESC
 		LIMIT ?, ?
 	`, args...)
 	if err != nil {

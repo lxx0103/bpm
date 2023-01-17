@@ -20,6 +20,7 @@ func (r *vendorRepository) CreateVendor(info VendorNew) (int64, error) {
 		INSERT INTO vendors
 		(
 			name,
+			contact,
 			phone,
 			address,
 			longitude,
@@ -32,8 +33,8 @@ func (r *vendorRepository) CreateVendor(info VendorNew) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.Name, info.Phone, info.Address, info.Longitude, info.Latitude, info.Description, info.Cover, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.Name, info.Contact, info.Phone, info.Address, info.Longitude, info.Latitude, info.Description, info.Cover, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -119,6 +120,7 @@ func (r *vendorRepository) UpdateVendor(id int64, info VendorNew) error {
 	_, err := r.tx.Exec(`
 		Update vendors SET 
 		name = ?,
+		contact = ?,
 		phone = ?,
 		address = ?,
 		longitude = ?,
@@ -128,7 +130,7 @@ func (r *vendorRepository) UpdateVendor(id int64, info VendorNew) error {
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.Phone, info.Address, info.Longitude, info.Latitude, info.Description, info.Cover, time.Now(), info.User, id)
+	`, info.Name, info.Contact, info.Phone, info.Address, info.Longitude, info.Latitude, info.Description, info.Cover, time.Now(), info.User, id)
 	return err
 }
 

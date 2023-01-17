@@ -5,6 +5,7 @@ import "time"
 type Vendor struct {
 	ID          int64     `db:"id" json:"id"`
 	Name        string    `db:"name" json:"name"`
+	Contact     string    `db:"contact" json:"contact"`
 	Phone       string    `db:"phone" json:"phone"`
 	Address     string    `db:"address" json:"address"`
 	Longitude   string    `db:"longitude" json:"longitude"`

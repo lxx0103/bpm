@@ -21,6 +21,8 @@ import (
 // @Param room query string false "居室"
 // @Param status query int false "状态"
 // @Param organization_id query int64 false "组织ID"
+// @Param mixed query string false "搜索名称和楼盘"
+// @Param priority query string false "all所有/index推荐"
 // @Success 200 object response.ListRes{data=[]ExampleResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /examples [GET]
@@ -146,6 +148,8 @@ func UpdateExample(c *gin.Context) {
 // @Param room query string false "居室"
 // @Param status query int false "状态"
 // @Param organization_id query int64 false "组织ID"
+// @Param mixed query string false "搜索名称和楼盘"
+// @Param priority query string false "all所有/index推荐"
 // @Success 200 object response.ListRes{data=[]ExampleListResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/examples [GET]
@@ -181,6 +185,8 @@ func WxGetExampleByID(c *gin.Context) {
 // @Param room query string false "居室"
 // @Param status query int false "状态"
 // @Param organization_id query int64 false "组织ID"
+// @Param mixed query string false "搜索名称和楼盘"
+// @Param priority query string false "all所有/index推荐"
 // @Success 200 object response.ListRes{data=[]ExampleListResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /portal/examples [GET]

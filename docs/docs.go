@@ -1986,6 +1986,18 @@ var doc = `{
                         "description": "组织ID",
                         "name": "organization_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索名称和楼盘",
+                        "name": "mixed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "all所有/index推荐",
+                        "name": "priority",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3966,6 +3978,18 @@ var doc = `{
                         "type": "integer",
                         "description": "组织ID",
                         "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索名称和楼盘",
+                        "name": "mixed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "all所有/index推荐",
+                        "name": "priority",
                         "in": "query"
                     }
                 ],
@@ -7427,6 +7451,18 @@ var doc = `{
                         "description": "组织ID",
                         "name": "organization_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索名称和楼盘",
+                        "name": "mixed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "all所有/index推荐",
+                        "name": "priority",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -10583,6 +10619,9 @@ var doc = `{
         "example.Example": {
             "type": "object",
             "properties": {
+                "building": {
+                    "type": "string"
+                },
                 "cover": {
                     "type": "string"
                 },
@@ -10616,6 +10655,9 @@ var doc = `{
                 "organization_id": {
                     "type": "integer"
                 },
+                "priority": {
+                    "type": "integer"
+                },
                 "room": {
                     "type": "string"
                 },
@@ -10639,6 +10681,9 @@ var doc = `{
         "example.ExampleListResponse": {
             "type": "object",
             "properties": {
+                "building": {
+                    "type": "string"
+                },
                 "cover": {
                     "type": "string"
                 },
@@ -10656,6 +10701,9 @@ var doc = `{
                 },
                 "organization_name": {
                     "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
                 },
                 "room": {
                     "type": "string"
@@ -10733,6 +10781,9 @@ var doc = `{
                 "status"
             ],
             "properties": {
+                "building": {
+                    "type": "string"
+                },
                 "cover": {
                     "type": "string"
                 },
@@ -10760,6 +10811,9 @@ var doc = `{
                     "type": "integer",
                     "minimum": 1
                 },
+                "priority": {
+                    "type": "integer"
+                },
                 "room": {
                     "type": "string"
                 },
@@ -10781,6 +10835,9 @@ var doc = `{
         "example.ExampleResponse": {
             "type": "object",
             "properties": {
+                "building": {
+                    "type": "string"
+                },
                 "cover": {
                     "type": "string"
                 },
@@ -10810,6 +10867,9 @@ var doc = `{
                 },
                 "organization_name": {
                     "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
                 },
                 "room": {
                     "type": "string"

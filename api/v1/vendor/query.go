@@ -18,7 +18,7 @@ func NewVendorQuery(connection *sqlx.DB) *vendorQuery {
 
 func (r *vendorQuery) GetVendorByID(id int64) (*VendorResponse, error) {
 	var vendor VendorResponse
-	err := r.conn.Get(&vendor, "SELECT id, name, phone, address, longitude, latitude, cover, description, status FROM vendors WHERE id = ? AND status > 0 ", id)
+	err := r.conn.Get(&vendor, "SELECT id, contact, name, phone, address, longitude, latitude, cover, description, status FROM vendors WHERE id = ? AND status > 0 ", id)
 	return &vendor, err
 }
 
@@ -59,7 +59,7 @@ func (r *vendorQuery) GetVendorList(filter VendorFilter) (*[]VendorResponse, err
 	args = append(args, filter.PageSize)
 	var vendors []VendorResponse
 	err := r.conn.Select(&vendors, `
-		SELECT id, name, phone, address, longitude, latitude, cover, description, status
+		SELECT id, contact, name, phone, address, longitude, latitude, cover, description, status
 		FROM vendors 
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
