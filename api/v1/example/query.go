@@ -104,3 +104,44 @@ func (r *exampleQuery) GetExampleList(filter ExampleFilter) (*[]ExampleListRespo
 	}
 	return &examples, nil
 }
+
+func (r *exampleQuery) GetExampleMaterialList(exampleID int64) (*[]ExampleMaterialResponse, error) {
+	var examples []ExampleMaterialResponse
+	err := r.conn.Select(&examples, `
+		SELECT em.id, 
+		em.example_id, IFNULL(e.name, "") as example_name,
+		em.material_id, IFNULL(m.name, "") as material_name,
+		em.vendor_id, IFNULL(v.name, "") as vendor_name,
+		em.brand_id, IFNULL(b.name, "") as brand_name,
+		em.status
+		FROM example_materials em 
+		LEFT JOIN examples e ON em.example_id = e.id 
+		LEFT JOIN materials m ON em.material_id = m.id 
+		LEFT JOIN vendors v ON em.vendor_id = v.id 
+		LEFT JOIN brands b ON em.brand_id = b.id 
+		WHERE em.example_id = ?
+		AND em.status > 0
+	`, exampleID)
+	return &examples, err
+}
+
+func (r *exampleQuery) GetExampleMaterialByID(exampleID, ID int64) (*ExampleMaterialResponse, error) {
+	var examples ExampleMaterialResponse
+	err := r.conn.Get(&examples, `
+		SELECT em.id, 
+		em.example_id, IFNULL(e.name, "") as example_name,
+		em.material_id, IFNULL(m.name, "") as material_name,
+		em.vendor_id, IFNULL(v.name, "") as vendor_name,
+		em.brand_id, IFNULL(b.name, "") as brand_name,
+		em.status
+		FROM example_materials em 
+		LEFT JOIN examples e ON em.example_id = e.id 
+		LEFT JOIN materials m ON em.material_id = m.id 
+		LEFT JOIN vendors v ON em.vendor_id = v.id 
+		LEFT JOIN brands b ON em.brand_id = b.id 
+		WHERE em.example_id = ?
+		AND em.id = ?
+		AND em.status > 0
+	`, exampleID, ID)
+	return &examples, err
+}

@@ -9,18 +9,10 @@ type exampleRepository struct {
 	tx *sql.Tx
 }
 
-func NewExampleRepository(transaction *sql.Tx) ExampleRepository {
+func NewExampleRepository(transaction *sql.Tx) *exampleRepository {
 	return &exampleRepository{
 		tx: transaction,
 	}
-}
-
-type ExampleRepository interface {
-	//Example Management
-	CreateExample(ExampleNew) (int64, error)
-	UpdateExample(int64, ExampleNew) (int64, error)
-	GetExampleByID(int64, int64) (*Example, error)
-	CheckNameExist(string, int64, int64) (int, error)
 }
 
 func (r *exampleRepository) CreateExample(info ExampleNew) (int64, error) {
@@ -108,4 +100,69 @@ func (r *exampleRepository) CheckNameExist(name string, organizationID int64, se
 		return 0, err
 	}
 	return res, nil
+}
+
+func (r *exampleRepository) CreateExampleMaterial(info ExampleMaterialNew, exampleID int64) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO example_materials
+		(
+			example_id,
+			vendor_id,
+			material_id,
+			brand_id,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, exampleID, info.VendorID, info.MaterialID, info.BrandID, 1, time.Now(), info.User, time.Now(), info.User)
+	return err
+}
+
+func (r *exampleRepository) GetExampleMaterialByID(id int64) (*ExampleMaterialResponse, error) {
+	var res ExampleMaterialResponse
+	row := r.tx.QueryRow(`	
+		SELECT em.id, 
+		em.example_id, IFNULL(e.name, "") as example_name,
+		em.material_id, IFNULL(m.name, "") as material_name,
+		em.vendor_id, IFNULL(v.name, "") as vendor_name,
+		em.brand_id, IFNULL(b.name, "") as brand_name,
+		em.status
+		FROM example_materials em 
+		LEFT JOIN examples e ON em.example_id = e.id 
+		LEFT JOIN materials m ON em.material_id = m.id 
+		LEFT JOIN vendors v ON em.vendor_id = v.id 
+		LEFT JOIN brands b ON em.brand_id = b.id 
+		WHERE em.id = ?
+		AND em.status > 0
+	`, id)
+
+	err := row.Scan(&res.ID, &res.ExampleID, &res.ExampleName, &res.MaterialID, &res.MaterialName, &res.VendorID, &res.VendorName, &res.BrandID, &res.BrandName, &res.Status)
+	return &res, err
+}
+
+func (r *exampleRepository) UpdateExampleMaterial(info ExampleMaterialNew, id int64) error {
+	_, err := r.tx.Exec(`
+		Update example_materials SET 
+		material_id = ?,
+		vendor_id = ?,
+		brand_id = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, info.MaterialID, info.VendorID, info.BrandID, time.Now(), info.User, id)
+	return err
+}
+
+func (r *exampleRepository) DeleteExampleMaterial(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update example_materials SET 
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, -1, time.Now(), byUser, id)
+	return err
 }

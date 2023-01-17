@@ -1,6 +1,8 @@
 package example
 
 import (
+	"bpm/api/v1/common"
+	"bpm/api/v1/vendor"
 	"bpm/core/database"
 	"errors"
 )
@@ -104,4 +106,133 @@ func (s *exampleService) UpdateExample(exampleID int64, info ExampleNew, organiz
 	}
 	tx.Commit()
 	return example, err
+}
+
+func (s *exampleService) GetExampleMaterialList(exampleID int64) (*[]ExampleMaterialResponse, error) {
+	db := database.InitMySQL()
+	query := NewExampleQuery(db)
+	list, err := query.GetExampleMaterialList(exampleID)
+	return list, err
+}
+
+func (s *exampleService) GetExampleMaterialByID(id int64, materialID int64) (*ExampleMaterialResponse, error) {
+	db := database.InitMySQL()
+	query := NewExampleQuery(db)
+	example, err := query.GetExampleMaterialByID(id, materialID)
+	return example, err
+}
+
+func (s *exampleService) NewExampleMaterial(info ExampleMaterialNew, exampleID, organizationID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewExampleRepository(tx)
+	vendorRepo := vendor.NewVendorRepository(tx)
+	commonRepo := common.NewCommonRepository(tx)
+	_, err = repo.GetExampleByID(exampleID, organizationID)
+	if err != nil {
+		msg := "案例不存在"
+		return errors.New(msg)
+	}
+	_, err = commonRepo.GetMaterialByID(info.MaterialID)
+	if err != nil {
+		msg := "材料不存在"
+		return errors.New(msg)
+	}
+	if info.VendorID != 0 {
+		_, err = vendorRepo.GetVendorByID(info.VendorID)
+		if err != nil {
+			msg := "供应商不存在"
+			return errors.New(msg)
+		}
+	}
+	if info.BrandID != 0 {
+		_, err = commonRepo.GetBrandByID(info.BrandID)
+		if err != nil {
+			msg := "品牌不存在"
+			return errors.New(msg)
+		}
+	}
+	err = repo.CreateExampleMaterial(info, exampleID)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return err
+}
+
+func (s *exampleService) UpdateExampleMaterial(info ExampleMaterialNew, exampleID, ID, organizationID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewExampleRepository(tx)
+	vendorRepo := vendor.NewVendorRepository(tx)
+	commonRepo := common.NewCommonRepository(tx)
+	_, err = repo.GetExampleByID(exampleID, organizationID)
+	if err != nil {
+		msg := "案例不存在"
+		return errors.New(msg)
+	}
+	_, err = repo.GetExampleMaterialByID(ID)
+	if err != nil {
+		msg := "案例材料不存在"
+		return errors.New(msg)
+	}
+	_, err = commonRepo.GetMaterialByID(info.MaterialID)
+	if err != nil {
+		msg := "材料不存在"
+		return errors.New(msg)
+	}
+	if info.VendorID != 0 {
+		_, err = vendorRepo.GetVendorByID(info.VendorID)
+		if err != nil {
+			msg := "供应商不存在"
+			return errors.New(msg)
+		}
+	}
+	if info.BrandID != 0 {
+		_, err = commonRepo.GetBrandByID(info.BrandID)
+		if err != nil {
+			msg := "品牌不存在"
+			return errors.New(msg)
+		}
+	}
+	err = repo.UpdateExampleMaterial(info, ID)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return err
+}
+
+func (s *exampleService) DeleteExampleMaterial(exampleID, ID, organizationID int64, byUser string) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewExampleRepository(tx)
+	_, err = repo.GetExampleByID(exampleID, organizationID)
+	if err != nil {
+		msg := "案例不存在"
+		return errors.New(msg)
+	}
+	_, err = repo.GetExampleMaterialByID(ID)
+	if err != nil {
+		msg := "案例材料不存在"
+		return errors.New(msg)
+	}
+	err = repo.DeleteExampleMaterial(ID, byUser)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return err
 }

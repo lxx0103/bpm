@@ -224,3 +224,167 @@ func PortalGetExampleByID(c *gin.Context) {
 	}
 	response.Response(c, example)
 }
+
+// @Summary 案例材料列表
+// @Id 158
+// @Tags 案例管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "案例ID"
+// @Success 200 object response.ListRes{data=[]ExampleMaterialResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /examples/:id/materials [GET]
+func GetExampleMaterialList(c *gin.Context) {
+	var uri ExampleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	exampleService := NewExampleService()
+	list, err := exampleService.GetExampleMaterialList(uri.ID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, list)
+}
+
+// @Summary 根据ID获取案例材料
+// @Id 159
+// @Tags 案例管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "案例ID"
+// @Param material_id path int true "案例材料ID"
+// @Success 200 object response.SuccessRes{data=ExampleMaterialResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /examples/:id/materials/:material_id [GET]
+func GetExampleMaterialByID(c *gin.Context) {
+	var uri ExampleMaterialID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	exampleService := NewExampleService()
+	example, err := exampleService.GetExampleMaterialByID(uri.ID, uri.MaterialID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, example)
+
+}
+
+// @Summary 新建案例材料
+// @Id 160
+// @Tags 案例管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "案例ID"
+// @Param material_id path int true "案例材料ID"
+// @Param example_info body ExampleMaterialNew true "案例材料信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /examples/:id/materials [POST]
+func NewExampleMaterial(c *gin.Context) {
+	var uri ExampleID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var material ExampleMaterialNew
+	if err := c.ShouldBindJSON(&material); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	material.User = claims.Username
+	organizationID := claims.OrganizationID
+	exampleService := NewExampleService()
+	err := exampleService.NewExampleMaterial(material, uri.ID, organizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 更新案例材料
+// @Id 161
+// @Tags 案例管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "案例ID"
+// @Param material_id path int true "案例材料ID"
+// @Param example_info body ExampleMaterialNew true "案例材料信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /examples/:id/materials/material_id [PUT]
+func UpdateExampleMaterial(c *gin.Context) {
+	var uri ExampleMaterialID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var material ExampleMaterialNew
+	if err := c.ShouldBindJSON(&material); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	material.User = claims.Username
+	organizationID := claims.OrganizationID
+	exampleService := NewExampleService()
+	err := exampleService.UpdateExampleMaterial(material, uri.ID, uri.MaterialID, organizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 删除案例材料
+// @Id 162
+// @Tags 案例管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "案例ID"
+// @Param material_id path int true "案例材料ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /examples/:id/materials/material_id [DELETE]
+func DeleteExampleMaterial(c *gin.Context) {
+	var uri ExampleMaterialID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	organizationID := claims.OrganizationID
+	exampleService := NewExampleService()
+	err := exampleService.DeleteExampleMaterial(uri.ID, uri.MaterialID, organizationID, claims.Username)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 案例材料列表
+// @Id 163
+// @Tags 门户接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "案例ID"
+// @Success 200 object response.ListRes{data=[]ExampleMaterialResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /portal/examples/:id/materials [GET]
+func PortalGetExampleMaterialList(c *gin.Context) {
+	GetExampleMaterialList(c)
+}

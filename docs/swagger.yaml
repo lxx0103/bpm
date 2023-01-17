@@ -976,6 +976,43 @@ definitions:
       type:
         type: string
     type: object
+  example.ExampleMaterialNew:
+    properties:
+      brand_id:
+        minimum: 1
+        type: integer
+      material_id:
+        minimum: 1
+        type: integer
+      vendor_id:
+        minimum: 1
+        type: integer
+    required:
+    - material_id
+    type: object
+  example.ExampleMaterialResponse:
+    properties:
+      brand_id:
+        type: integer
+      brand_name:
+        type: string
+      example_id:
+        type: integer
+      example_name:
+        type: string
+      id:
+        type: integer
+      material_id:
+        type: integer
+      material_name:
+        type: string
+      status:
+        type: integer
+      vendor_id:
+        type: integer
+      vendor_name:
+        type: string
+    type: object
   example.ExampleNew:
     properties:
       cover:
@@ -2910,6 +2947,188 @@ paths:
       summary: 根据ID更新案例
       tags:
       - 案例管理
+  /examples/:id/materials:
+    get:
+      consumes:
+      - application/json
+      operationId: "158"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/example.ExampleMaterialResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 案例材料列表
+      tags:
+      - 案例管理
+    post:
+      consumes:
+      - application/json
+      operationId: "160"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 案例材料ID
+        in: path
+        name: material_id
+        required: true
+        type: integer
+      - description: 案例材料信息
+        in: body
+        name: example_info
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExampleMaterialNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建案例材料
+      tags:
+      - 案例管理
+  /examples/:id/materials/:material_id:
+    get:
+      consumes:
+      - application/json
+      operationId: "159"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 案例材料ID
+        in: path
+        name: material_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/example.ExampleMaterialResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取案例材料
+      tags:
+      - 案例管理
+  /examples/:id/materials/material_id:
+    delete:
+      consumes:
+      - application/json
+      operationId: "162"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 案例材料ID
+        in: path
+        name: material_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除案例材料
+      tags:
+      - 案例管理
+    put:
+      consumes:
+      - application/json
+      operationId: "161"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 案例材料ID
+        in: path
+        name: material_id
+        required: true
+        type: integer
+      - description: 案例材料信息
+        in: body
+        name: example_info
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExampleMaterialNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新案例材料
+      tags:
+      - 案例管理
   /materials:
     get:
       consumes:
@@ -3831,6 +4050,38 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID获取案例
+      tags:
+      - 门户接口
+  /portal/examples/:id/materials:
+    get:
+      consumes:
+      - application/json
+      operationId: "163"
+      parameters:
+      - description: 案例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/example.ExampleMaterialResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 案例材料列表
       tags:
       - 门户接口
   /portal/materials:

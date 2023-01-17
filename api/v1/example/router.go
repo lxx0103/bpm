@@ -7,6 +7,11 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/examples/:id", GetExampleByID)
 	g.PUT("/examples/:id", UpdateExample)
 	g.POST("/examples", NewExample)
+	g.GET("/examples/:id/materials", GetExampleMaterialList)
+	g.GET("/examples/:id/materials/:material_id", GetExampleMaterialByID)
+	g.POST("/examples/:id/materials", NewExampleMaterial)
+	g.PUT("/examples/:id/materials/:material_id", UpdateExampleMaterial)
+	g.DELETE("/examples/:id/materials/:material_id", DeleteExampleMaterial)
 }
 
 func WxRouters(g *gin.RouterGroup) {
@@ -17,4 +22,5 @@ func WxRouters(g *gin.RouterGroup) {
 func PortalRouters(g *gin.RouterGroup) {
 	g.GET("/portal/examples", PortalGetExampleList)
 	g.GET("/portal/examples/:id", PortalGetExampleByID)
+	g.GET("/portal/examples/:id/materials", PortalGetExampleMaterialList)
 }

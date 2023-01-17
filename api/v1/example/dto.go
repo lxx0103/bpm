@@ -61,3 +61,28 @@ type ExampleListResponse struct {
 	Room             string `db:"room" json:"room"`
 	Status           int    `db:"status" json:"status"`
 }
+
+type ExampleMaterialResponse struct {
+	ID           int64  `db:"id" json:"id"`
+	ExampleID    int64  `db:"example_id" json:"example_id"`
+	ExampleName  string `db:"example_name" json:"example_name"`
+	MaterialID   int64  `db:"material_id" json:"material_id"`
+	MaterialName string `db:"material_name" json:"material_name"`
+	VendorID     int64  `db:"vendor_id" json:"vendor_id"`
+	VendorName   string `db:"vendor_name" json:"vendor_name"`
+	BrandID      int64  `db:"brand_id" json:"brand_id"`
+	BrandName    string `db:"brand_name" json:"brand_name"`
+	Status       int    `db:"status" json:"status"`
+}
+
+type ExampleMaterialID struct {
+	ID         int64 `uri:"id" binding:"required,min=1"`
+	MaterialID int64 `uri:"material_id" binding:"required,min=1"`
+}
+
+type ExampleMaterialNew struct {
+	MaterialID int64  `json:"material_id" binding:"required,min=1"`
+	VendorID   int64  `json:"vendor_id" binding:"omitempty,min=1"`
+	BrandID    int64  `json:"brand_id" binding:"omitempty,min=1"`
+	User       string `json:"user" swaggerignore:"true"`
+}
