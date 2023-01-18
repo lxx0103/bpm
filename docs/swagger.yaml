@@ -1489,8 +1489,14 @@ definitions:
         maxLength: 128
         minLength: 1
         type: string
+      source:
+        enum:
+        - bpm
+        - portal
+        type: string
     required:
     - path
+    - source
     type: object
   position.Position:
     properties:

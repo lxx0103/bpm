@@ -26,7 +26,8 @@ type OrganizationID struct {
 }
 
 type QrcodeFilter struct {
-	Path string `json:"path" binding:"required,max=128,min=1"`
+	Path   string `json:"path" binding:"required,max=128,min=1"`
+	Source string `json:"source" binding:"required,oneof=bpm portal"`
 }
 
 type WechatToken struct {

@@ -73,9 +73,9 @@ func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]O
 	return &organizations, nil
 }
 
-func (r *organizationQuery) GetQrCodeByPath(path string) (string, error) {
+func (r *organizationQuery) GetQrCodeByPath(path, source string) (string, error) {
 	var res string
-	err := r.conn.Get(&res, "SELECT img FROM qr_codes WHERE path = ? ", path)
+	err := r.conn.Get(&res, "SELECT img FROM qr_codes WHERE path = ? AND source = ?", path, source)
 	if err != nil {
 		return "", err
 	}

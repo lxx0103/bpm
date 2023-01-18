@@ -139,7 +139,7 @@ func GetQrCode(c *gin.Context) {
 		return
 	}
 	organizationService := NewOrganizationService()
-	res, err := organizationService.GetQrCodeByPath(filter.Path)
+	res, err := organizationService.GetQrCodeByPath(filter.Path, filter.Source)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

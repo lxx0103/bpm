@@ -79,24 +79,30 @@ func (s *organizationService) UpdateOrganization(organizationID int64, info Orga
 	return organization, err
 }
 
-func (s *organizationService) GetQrCodeByPath(path string) (string, error) {
+func (s *organizationService) GetQrCodeByPath(path, source string) (string, error) {
 	db := database.InitMySQL()
 	query := NewOrganizationQuery(db)
-	res, err := query.GetQrCodeByPath(path)
+	res, err := query.GetQrCodeByPath(path, source)
 	if err != nil {
 		if err.Error() != "sql: no rows in result set" {
 			return "", err
 		} else {
-			accessToken, err := query.GetAccessToken("bpm")
+			accessToken, err := query.GetAccessToken(source)
 			if err != nil {
 				if err.Error() != "sql: no rows in result set" {
 					return "", err
 				} else {
 					var tokenRes WechatToken
 					httpClient := &http.Client{}
+					var appID, appSecret string
 					token_uri := config.ReadConfig("Wechat.token_uri")
-					appID := config.ReadConfig("Wechat.app_id")
-					appSecret := config.ReadConfig("Wechat.app_secret")
+					if source == "bpm" {
+						appID = config.ReadConfig("Wechat.app_id")
+						appSecret = config.ReadConfig("Wechat.app_secret")
+					} else if source == "portal" {
+						appID = config.ReadConfig("PortalWechat.app_id")
+						appSecret = config.ReadConfig("PortalWechat.app_secret")
+					}
 					uri := token_uri + "?appid=" + appID + "&secret=" + appSecret + "&grant_type=client_credential"
 					req, err := http.NewRequest("GET", uri, nil)
 					if err != nil {
@@ -121,7 +127,7 @@ func (s *organizationService) GetQrCodeByPath(path string) (string, error) {
 					}
 					defer tx.Rollback()
 					repo := NewOrganizationRepository(tx)
-					err = repo.NewAccessToken("bpm", tokenRes.AccessToken)
+					err = repo.NewAccessToken(source, tokenRes.AccessToken)
 					if err != nil {
 						return "", err
 					}
@@ -160,7 +166,7 @@ func (s *organizationService) GetQrCodeByPath(path string) (string, error) {
 			}
 			defer tx.Rollback()
 			repo := NewOrganizationRepository(tx)
-			err = repo.NewQrcode(path, newName)
+			err = repo.NewQrcode(path, source, newName)
 			if err != nil {
 				return "", err
 			}

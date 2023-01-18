@@ -11406,13 +11406,21 @@ var doc = `{
         "organization.QrcodeFilter": {
             "type": "object",
             "required": [
-                "path"
+                "path",
+                "source"
             ],
             "properties": {
                 "path": {
                     "type": "string",
                     "maxLength": 128,
                     "minLength": 1
+                },
+                "source": {
+                    "type": "string",
+                    "enum": [
+                        "bpm",
+                        "portal"
+                    ]
                 }
             }
         },

@@ -94,16 +94,17 @@ func (r *organizationRepository) NewAccessToken(code, token string) error {
 	return err
 }
 
-func (r *organizationRepository) NewQrcode(path, img string) error {
+func (r *organizationRepository) NewQrcode(path, source, img string) error {
 	_, err := r.tx.Exec(`
 		INSERT INTO qr_codes
 		(
 			path,
 			img,
+			source,
 			created,
 			created_by
 		)
-		VALUES (?, ?, now(), "SYSTEM")
-	`, path, img)
+		VALUES (?, ?, ?, now(), "SYSTEM")
+	`, path, img, source)
 	return err
 }
