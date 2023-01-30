@@ -149,7 +149,7 @@ func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, us
 		where, args = append(where, "status = ?"), append(args, v)
 	}
 	if v := filter.Name; v != "" {
-		where, args = append(where, "name = ?"), append(args, v)
+		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
 	args = append(args, organizationID)
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
@@ -192,7 +192,7 @@ func (r *projectQuery) GetProjectCountByAssigned(filter AssignedProjectFilter, u
 		where, args = append(where, "status = ?"), append(args, v)
 	}
 	if v := filter.Name; v != "" {
-		where, args = append(where, "name = ?"), append(args, v)
+		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
 	args = append(args, organizationID)
 	var count int
