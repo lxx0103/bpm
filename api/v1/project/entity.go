@@ -63,3 +63,33 @@ type ProjectReportView struct {
 	Updated         time.Time `db:"updated" json:"updated"`
 	UpdatedBy       string    `db:"updated_by" json:"updated_by"`
 }
+
+type ProjectRecord struct {
+	ID             int64     `db:"id" json:"id"`
+	OrganizationID int64     `db:"organization_id" json:"organization_id"`
+	ProjectID      int64     `db:"project_id" json:"project_id"`
+	ClientID       int64     `db:"client_id" json:"client_id"`
+	UserID         int64     `db:"user_id" json:"user_id"`
+	RecordDate     string    `db:"record_date" json:"record_date"`
+	Name           string    `db:"name" json:"name"`
+	Content        string    `db:"content" json:"content"`
+	Plan           string    `db:"plan" json:"plan"`
+	Status         int       `db:"status" json:"status"`
+	Created        time.Time `db:"created" json:"created"`
+	CreatedBy      string    `db:"created_by" json:"created_by"`
+	Updated        time.Time `db:"updated" json:"updated"`
+	UpdatedBy      string    `db:"updated_by" json:"updated_by"`
+}
+
+type ProjectRecordPhoto struct {
+	ID              int64     `db:"id" json:"id"`
+	OrganizationID  int64     `db:"organization_id" json:"organization_id"`
+	ProjectID       int64     `db:"project_id" json:"project_id"`
+	ProjectRecordID int64     `db:"project_record_id" json:"project_record_id"`
+	Link            string    `db:"link" json:"link"`
+	Status          int       `db:"status" json:"status"`
+	Created         time.Time `db:"created" json:"created"`
+	CreatedBy       string    `db:"created_by" json:"created_by"`
+	Updated         time.Time `db:"updated" json:"updated"`
+	UpdatedBy       string    `db:"updated_by" json:"updated_by"`
+}

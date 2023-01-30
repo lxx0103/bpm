@@ -203,3 +203,99 @@ func (r *projectRepository) UpdateProjectReport(id int64, info ProjectReport) er
 	`, info.ReportDate, info.Name, info.Content, info.Status, info.Updated, info.UpdatedBy, id)
 	return err
 }
+
+func (r *projectRepository) CreateProjectRecord(info ProjectRecord) (int64, error) {
+	result, err := r.tx.Exec(`
+		INSERT INTO project_records
+		(
+			organization_id,
+			project_id,
+			client_id,
+			user_id,
+			record_date,
+			name,
+			content,
+			plan,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.ProjectID, info.ClientID, info.UserID, info.RecordDate, info.Name, info.Content, info.Plan, info.Status, info.Created, info.CreatedBy, info.Updated, info.UpdatedBy)
+	if err != nil {
+		return 0, err
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
+func (r *projectRepository) CreateProjectRecordPhoto(info ProjectRecordPhoto) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO project_record_photos
+		(
+			organization_id,
+			project_id,
+			project_record_id,
+			link,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.ProjectID, info.ProjectRecordID, info.Link, info.Status, time.Now(), info.CreatedBy, time.Now(), info.UpdatedBy)
+	return err
+}
+
+func (r *projectRepository) GetProjectRecordByID(id int64, organizationID int64) (*ProjectRecordResponse, error) {
+	var res ProjectRecordResponse
+	row := r.tx.QueryRow(`SELECT id, project_id, name, record_date, content, updated, status, user_id FROM project_records WHERE id = ? AND organization_id = ? AND status > 0 LIMIT 1`, id, organizationID)
+
+	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.RecordDate, &res.Content, &res.Updated, &res.Status, &res.UserID)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
+func (r *projectRepository) DeleteProjectRecord(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update project_records SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, time.Now(), byUser, id)
+	return err
+}
+func (r *projectRepository) DeleteProjectRecordPhotos(recordID int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update project_record_photos SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE project_record_id = ?
+	`, time.Now(), byUser, recordID)
+	return err
+}
+
+func (r *projectRepository) UpdateProjectRecord(id int64, info ProjectRecord) error {
+	_, err := r.tx.Exec(`
+		Update project_records SET
+		record_date = ?,
+		name = ?,
+		content = ?,
+		plan = ?,
+		status = ?,
+		updated = ?,
+		updated_by = ?
+		WHERE id = ?
+	`, info.RecordDate, info.Name, info.Content, info.Plan, info.Status, info.Updated, info.UpdatedBy, id)
+	return err
+}

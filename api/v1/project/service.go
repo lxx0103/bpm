@@ -646,3 +646,299 @@ func (s *projectService) UpdateProjectReport(reportID int64, info ProjectReportN
 	}
 	return err
 }
+
+func (s *projectService) NewProjectRecord(projectID int64, info ProjectRecordNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewProjectRepository(tx)
+	memberRepo := member.NewMemberRepository(tx)
+	project, err := repo.GetProjectByID(projectID, info.OrganizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return errors.New(msg)
+	}
+	members, err := memberRepo.GetMembersByProjectID(projectID)
+	if err != nil {
+		msg := "获取项目成员失败"
+		return errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == info.UserID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return errors.New(msg)
+	}
+	var newRecord ProjectRecord
+	newRecord.OrganizationID = info.OrganizationID
+	newRecord.ProjectID = projectID
+	newRecord.ClientID = project.ClientID
+	newRecord.UserID = info.UserID
+	newRecord.Content = info.Content
+	newRecord.Plan = info.Plan
+	newRecord.RecordDate = info.RecordDate
+	newRecord.Name = info.Name
+	newRecord.Content = info.Content
+	newRecord.Status = 1
+	newRecord.Created = time.Now()
+	newRecord.CreatedBy = info.User
+	newRecord.Updated = time.Now()
+	newRecord.UpdatedBy = info.User
+	recordID, err := repo.CreateProjectRecord(newRecord)
+	if err != nil {
+		msg := "创建报告失败"
+		return errors.New(msg)
+	}
+	for _, link := range info.Photos {
+		var recordPhoto ProjectRecordPhoto
+		recordPhoto.OrganizationID = info.OrganizationID
+		recordPhoto.ProjectID = projectID
+		recordPhoto.ProjectRecordID = recordID
+		recordPhoto.Link = link
+		recordPhoto.Status = 1
+		recordPhoto.Created = time.Now()
+		recordPhoto.CreatedBy = info.User
+		recordPhoto.Updated = time.Now()
+		recordPhoto.UpdatedBy = info.User
+		err = repo.CreateProjectRecordPhoto(recordPhoto)
+		if err != nil {
+			msg := "创建图片失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRecordFilter) (int, *[]ProjectRecordResponse, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	memberQuery := member.NewMemberQuery(db)
+	_, err := query.GetProjectByID(projectID, filter.OrganizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return 0, nil, errors.New(msg)
+	}
+	members, err := memberQuery.GetMembersByProjectID(projectID)
+	if err != nil {
+		msg := "获取成员失败" + err.Error()
+		return 0, nil, errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == filter.UserID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return 0, nil, errors.New(msg)
+	}
+	count, err := query.GetProjectRecordCount(projectID)
+	if err != nil {
+		msg := "获取记录数量失败" + err.Error()
+		return 0, nil, errors.New(msg)
+	}
+	list, err := query.GetProjectRecordList(projectID, filter)
+	if err != nil {
+		msg := "获取记录失败" + err.Error()
+		return 0, nil, errors.New(msg)
+	}
+	for k, v := range *list {
+		photos, err := query.GetProjectRecordPhotos(v.ID)
+		if err != nil {
+			msg := "获取图片失败" + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].Photos = *photos
+	}
+	return count, list, err
+}
+
+func (s *projectService) GetProjectRecordByID(recordID, userID, organizationID int64) (*ProjectRecordResponse, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	memberQuery := member.NewMemberQuery(db)
+	record, err := query.GetProjectRecordByID(recordID, organizationID)
+	if err != nil {
+		msg := "报告不存在"
+		return nil, errors.New(msg)
+	}
+	project, err := query.GetProjectByID(record.ProjectID, organizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return nil, errors.New(msg)
+	}
+	members, err := memberQuery.GetMembersByProjectID(project.ID)
+	if err != nil {
+		msg := "获取成员失败" + err.Error()
+		return nil, errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == userID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return nil, errors.New(msg)
+	}
+	photos, err := query.GetProjectRecordPhotos(recordID)
+	if err != nil {
+		msg := "获取记录图片失败"
+		return nil, errors.New(msg)
+	}
+	record.Photos = *photos
+	return record, err
+}
+
+func (s *projectService) DeleteProjectRecord(recordID, userID int64, userName string, organizationID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewProjectRepository(tx)
+	// memberRepo := member.NewMemberRepository(tx)
+	record, err := repo.GetProjectRecordByID(recordID, organizationID)
+	if err != nil {
+		msg := "记录不存在"
+		return errors.New(msg)
+	}
+	if record.UserID != userID {
+		msg := "只能删除自己的记录"
+		return errors.New(msg)
+	}
+	// project, err := repo.GetProjectByID(record.ProjectID, organizationID)
+	// if err != nil {
+	// 	msg := "项目不存在"
+	// 	return errors.New(msg)
+	// }
+	// members, err := memberRepo.GetMembersByProjectID(project.ID)
+	// if err != nil {
+	// 	msg := "获取成员失败" + err.Error()
+	// 	return errors.New(msg)
+	// }
+	// memberValid := false
+	// for _, member := range *members {
+	// 	if member.UserID == userID {
+	// 		memberValid = true
+	// 		break
+	// 	}
+	// }
+	// if !memberValid {
+	// 	msg := "你不是此项目的成员"
+	// 	return errors.New(msg)
+	// }
+	err = repo.DeleteProjectRecord(recordID, userName)
+	if err != nil {
+		msg := "删除报告失败" + err.Error()
+		return errors.New(msg)
+	}
+	err = repo.DeleteProjectRecordPhotos(recordID, userName)
+	if err != nil {
+		msg := "删除报告图片失败" + err.Error()
+		return errors.New(msg)
+	}
+	tx.Commit()
+	return err
+}
+
+func (s *projectService) UpdateProjectRecord(recordID int64, info ProjectRecordNew) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewProjectRepository(tx)
+	// memberRepo := member.NewMemberRepository(tx)
+	oldRecord, err := repo.GetProjectRecordByID(recordID, info.OrganizationID)
+	if err != nil {
+		msg := "报告不存在"
+		return errors.New(msg)
+	}
+	if oldRecord.UserID != info.UserID {
+		msg := "只能更新自己创建的报告"
+		return errors.New(msg)
+	}
+	var newRecord ProjectRecord
+	newRecord.Content = info.Content
+	newRecord.Plan = info.Plan
+	newRecord.RecordDate = info.RecordDate
+	newRecord.Name = info.Name
+	newRecord.Content = info.Content
+	newRecord.Status = 1
+	newRecord.Updated = time.Now()
+	newRecord.UpdatedBy = info.User
+	err = repo.UpdateProjectRecord(recordID, newRecord)
+	if err != nil {
+		msg := "更新报告失败"
+		return errors.New(msg)
+	}
+	err = repo.DeleteProjectRecordPhotos(recordID, info.User)
+	if err != nil {
+		msg := "更新报告失败"
+		return errors.New(msg)
+	}
+	for _, photo := range info.Photos {
+		var recordPhoto ProjectRecordPhoto
+		recordPhoto.OrganizationID = info.OrganizationID
+		recordPhoto.ProjectID = oldRecord.ProjectID
+		recordPhoto.ProjectRecordID = recordID
+		recordPhoto.Link = photo
+		recordPhoto.Status = 1
+		recordPhoto.Created = time.Now()
+		recordPhoto.CreatedBy = info.User
+		recordPhoto.Updated = time.Now()
+		recordPhoto.UpdatedBy = info.User
+		err = repo.CreateProjectRecordPhoto(recordPhoto)
+		if err != nil {
+			msg := "创建图片失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *projectService) PortalGetProjectRecordList(projectID int64, filter ProjectRecordFilter) (int, *[]ProjectRecordResponse, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	_, err := query.GetProjectByID(projectID, filter.OrganizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return 0, nil, errors.New(msg)
+	}
+	count, err := query.GetProjectRecordCount(projectID)
+	if err != nil {
+		msg := "获取记录数量失败" + err.Error()
+		return 0, nil, errors.New(msg)
+	}
+	list, err := query.GetProjectRecordList(projectID, filter)
+	if err != nil {
+		msg := "获取记录失败" + err.Error()
+		return 0, nil, errors.New(msg)
+	}
+	for k, v := range *list {
+		photos, err := query.GetProjectRecordPhotos(v.ID)
+		if err != nil {
+			msg := "获取图片失败" + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].Photos = *photos
+	}
+	return count, list, err
+}

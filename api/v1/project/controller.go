@@ -535,3 +535,265 @@ func UpdateProjectReport(c *gin.Context) {
 func WxUpdateProjectReport(c *gin.Context) {
 	UpdateProjectReport(c)
 }
+
+// @Summary 新建项目记录
+// @Id 164
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_info body ProjectRecordNew true "项目报告信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projects/:id/records [POST]
+func NewProjectRecord(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var record ProjectRecordNew
+	if err := c.ShouldBindJSON(&record); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	record.User = claims.Username
+	record.UserID = claims.UserID
+	record.OrganizationID = claims.OrganizationID
+	projectService := NewProjectService()
+	err := projectService.NewProjectRecord(uri.ID, record)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 项目记录列表
+// @Id 165
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.SuccessRes{data=[]ProjectRecordResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projects/:id/records [GET]
+func GetProjectRecordList(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var filter ProjectRecordFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	filter.UserID = claims.UserID
+	filter.OrganizationID = claims.OrganizationID
+	count, list, err := projectService.GetProjectRecordList(uri.ID, filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 根据ID获取项目记录
+// @Id 166
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "记录ID"
+// @Success 200 object response.SuccessRes{data=ProjectRecordResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projectrecords/:id [GET]
+func GetProjectRecordByID(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	projectService := NewProjectService()
+	project, err := projectService.GetProjectRecordByID(uri.ID, claims.UserID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, project)
+
+}
+
+// @Summary 根据ID删除项目记录
+// @Id 167
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目记录ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projectrecords/:id [DELETE]
+func DeleteProjectRecord(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	projectService := NewProjectService()
+	err := projectService.DeleteProjectRecord(uri.ID, claims.UserID, claims.Username, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "OK")
+}
+
+// @Summary 根据ID更新项目记录
+// @Id 168
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "记录ID"
+// @Param project_info body ProjectRecordNew true "记录信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projectrecords/:id [PUT]
+func UpdateProjectRecord(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var record ProjectRecordNew
+	if err := c.ShouldBindJSON(&record); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	record.User = claims.Username
+	record.OrganizationID = claims.OrganizationID
+	record.UserID = claims.UserID
+	projectService := NewProjectService()
+	err := projectService.UpdateProjectRecord(uri.ID, record)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 新建项目记录
+// @Id 169
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_info body ProjectRecordNew true "项目记录信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projects/:id/records [POST]
+func WxNewProjectRecord(c *gin.Context) {
+	NewProjectRecord(c)
+}
+
+// @Summary 项目记录列表
+// @Id 170
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param name query string false "名称"
+// @Param status query string false "状态all/active"
+// @Success 200 object response.SuccessRes{data=[]ProjectRecordResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projects/:id/records [GET]
+func WxGetProjectRecordList(c *gin.Context) {
+	GetProjectRecordList(c)
+}
+
+// @Summary 根据ID获取项目记录
+// @Id 171
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "记录ID"
+// @Success 200 object response.SuccessRes{data=ProjectRecordResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projectrecords/:id [GET]
+func WxGetProjectRecordByID(c *gin.Context) {
+	GetProjectRecordByID(c)
+
+}
+
+// @Summary 根据ID删除项目记录
+// @Id 172
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目记录ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projectrecords/:id [DELETE]
+func WxDeleteProjectRecord(c *gin.Context) {
+	DeleteProjectRecord(c)
+}
+
+// @Summary 根据ID更新项目记录
+// @Id 173
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "记录ID"
+// @Param project_info body ProjectRecordNew true "记录信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projectrecords/:id [PUT]
+func WxUpdateProjectRecord(c *gin.Context) {
+	UpdateProjectRecord(c)
+}
+
+// @Summary 项目记录列表
+// @Id 174
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.SuccessRes{data=[]ProjectRecordResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /portal/projects/:id/records [GET]
+func PortalGetProjectRecordList(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var filter ProjectRecordFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	count, list, err := projectService.PortalGetProjectRecordList(uri.ID, filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}

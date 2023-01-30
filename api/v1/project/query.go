@@ -291,3 +291,54 @@ func (r *projectQuery) GetProjectReportLinks(reportID int64) (*[]string, error) 
 	`, args...)
 	return &projectReports, err
 }
+
+func (r *projectQuery) GetProjectRecordList(projectID int64, filter ProjectRecordFilter) (*[]ProjectRecordResponse, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "project_id = ?"), append(args, projectID)
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var records []ProjectRecordResponse
+	err := r.conn.Select(&records, `
+		SELECT id, project_id, user_id, name, record_date, content, plan, status, updated
+		FROM project_records
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY record_date desc, updated desc
+		LIMIT ?, ?
+	`, args...)
+	if err != nil {
+		return nil, err
+	}
+	return &records, nil
+}
+
+func (r *projectQuery) GetProjectRecordCount(projectID int64) (int, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "project_id = ?"), append(args, projectID)
+	var count int
+	err := r.conn.Get(&count, `
+		SELECT count(1) as count 
+		FROM project_records
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *projectQuery) GetProjectRecordByID(id int64, organizationID int64) (*ProjectRecordResponse, error) {
+	var record ProjectRecordResponse
+	err := r.conn.Get(&record, "SELECT id, project_id, user_id, name, record_date, content, plan, updated, status FROM project_records WHERE id = ? AND organization_id = ? AND status > 0 limit 1", id, organizationID)
+	return &record, err
+}
+
+func (r *projectQuery) GetProjectRecordPhotos(recordID int64) (*[]string, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "project_record_id = ?"), append(args, recordID)
+	var projectRecords []string
+	err := r.conn.Select(&projectRecords, `
+		SELECT link
+		FROM project_record_photos
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectRecords, err
+}

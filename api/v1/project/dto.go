@@ -98,3 +98,34 @@ type ProjectReportResponse struct {
 	Updated    time.Time `db:"updated" json:"updated"`
 	Links      []string  `json:"links"`
 }
+
+type ProjectRecordNew struct {
+	Name           string   `json:"name" binding:"required"`
+	RecordDate     string   `json:"record_date" binding:"required,datetime=2006-01-02"`
+	Content        string   `json:"content" binding:"required"`
+	Plan           string   `json:"plan" binding:"omitempty"`
+	Photos         []string `json:"photos" binding:"omitempty"`
+	User           string   `json:"user" swaggerignore:"true"`
+	UserID         int64    `json:"user_id" swaggerignore:"true"`
+	OrganizationID int64    `json:"organization_id" swaggerignore:"true"`
+}
+
+type ProjectRecordFilter struct {
+	PageId         int   `form:"page_id" binding:"required,min=1"`
+	PageSize       int   `form:"page_size" binding:"required,min=5,max=200"`
+	OrganizationID int64 `json:"organization_id" swaggerignore:"true"`
+	UserID         int64 `json:"user_id" swaggerignore:"true"`
+}
+
+type ProjectRecordResponse struct {
+	ID         int64     `db:"id" json:"id"`
+	ProjectID  int64     `db:"project_id" json:"project_id"`
+	UserID     int64     `db:"user_id" json:"user_id"`
+	Name       string    `db:"name" json:"name"`
+	RecordDate string    `db:"record_date" json:"record_date"`
+	Content    string    `db:"content" json:"content"`
+	Plan       string    `db:"plan" json:"plan"`
+	Status     int       `db:"status" json:"status"`
+	Updated    time.Time `db:"updated" json:"updated"`
+	Photos     []string  `json:"photos"`
+}

@@ -40,3 +40,6 @@
     signin_uri = "https://api.weixin.qq.com/sns/jscode2session"
     app_id = "asdf"
     app_secret = "asdfasdfasdfasdf"
+[PortalWechat]
+    app_id = "asdf"
+    app_secret = "asdfasdfasdfasdfasdf"
