@@ -17,7 +17,7 @@ func NewMemberQuery(connection *sqlx.DB) *memberQuery {
 func (r *memberQuery) GetMembersByProjectID(projectID int64) (*[]MemberResponse, error) {
 	var res []MemberResponse
 	err := r.conn.Select(&res, `
-		SELECT m.user_id, IFNULL(u.name, "") as name,
+		SELECT m.user_id, IFNULL(u.name, "") as name
 		FROM project_members m 
 		LEFT JOIN users u 
 		ON m.user_id = u.id 
