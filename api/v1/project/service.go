@@ -722,7 +722,7 @@ func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRec
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
 	memberQuery := member.NewMemberQuery(db)
-	_, err := query.GetProjectByID(projectID, filter.OrganizationID)
+	project, err := query.GetProjectByID(projectID, filter.OrganizationID)
 	if err != nil {
 		msg := "项目不存在"
 		return 0, nil, errors.New(msg)
@@ -733,10 +733,14 @@ func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRec
 		return 0, nil, errors.New(msg)
 	}
 	memberValid := false
-	for _, member := range *members {
-		if member.UserID == filter.UserID {
-			memberValid = true
-			break
+	if filter.UserID == project.ClientID {
+		memberValid = true
+	} else {
+		for _, member := range *members {
+			if member.UserID == filter.UserID {
+				memberValid = true
+				break
+			}
 		}
 	}
 	if !memberValid {
@@ -784,10 +788,14 @@ func (s *projectService) GetProjectRecordByID(recordID, userID, organizationID i
 		return nil, errors.New(msg)
 	}
 	memberValid := false
-	for _, member := range *members {
-		if member.UserID == userID {
-			memberValid = true
-			break
+	if userID == project.ClientID {
+		memberValid = true
+	} else {
+		for _, member := range *members {
+			if member.UserID == userID {
+				memberValid = true
+				break
+			}
 		}
 	}
 	if !memberValid {
