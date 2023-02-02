@@ -299,16 +299,20 @@ func (r *projectQuery) GetProjectReportLinks(reportID int64) (*[]string, error) 
 }
 
 func (r *projectQuery) GetProjectRecordList(projectID int64, filter ProjectRecordFilter) (*[]ProjectRecordResponse, error) {
-	where, args := []string{"status > 0"}, []interface{}{}
-	where, args = append(where, "project_id = ?"), append(args, projectID)
+	where, args := []string{"pr.status > 0"}, []interface{}{}
+	where, args = append(where, "pr.project_id = ?"), append(args, projectID)
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
 	var records []ProjectRecordResponse
 	err := r.conn.Select(&records, `
-		SELECT id, project_id, user_id, name, record_date, content, plan, status, updated
-		FROM project_records
+		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.record_date, pr.content, pr.plan, pr.status, pr.updated, u.name as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		FROM project_records pr
+		LEFT JOIN users u
+		ON pr.user_id = u.id
+		LEFT JOIN positions p
+		ON u.position_id = p.id
 		WHERE `+strings.Join(where, " AND ")+`
-		ORDER BY record_date desc, updated desc
+		ORDER BY pr.record_date desc, pr.updated desc
 		LIMIT ?, ?
 	`, args...)
 	if err != nil {
@@ -333,7 +337,7 @@ func (r *projectQuery) GetProjectRecordCount(projectID int64) (int, error) {
 
 func (r *projectQuery) GetProjectRecordByID(id int64, organizationID int64) (*ProjectRecordResponse, error) {
 	var record ProjectRecordResponse
-	err := r.conn.Get(&record, "SELECT id, project_id, user_id, name, record_date, content, plan, updated, status FROM project_records WHERE id = ? AND organization_id = ? AND status > 0 limit 1", id, organizationID)
+	err := r.conn.Get(&record, `SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.record_date, pr.content, pr.plan, pr.status, pr.updated, u.name as user_name, IFNULL(p.name, "") as position_name, u.avatar FROM project_records pr LEFT JOIN users u ON pr.user_id = u.id LEFT JOIN positions p ON u.position_id = p.id WHERE pr.id = ? AND pr.organization_id = ? AND pr.status > 0 limit 1`, id, organizationID)
 	return &record, err
 }
 

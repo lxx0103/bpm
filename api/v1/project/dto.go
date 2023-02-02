@@ -119,14 +119,17 @@ type ProjectRecordFilter struct {
 }
 
 type ProjectRecordResponse struct {
-	ID         int64     `db:"id" json:"id"`
-	ProjectID  int64     `db:"project_id" json:"project_id"`
-	UserID     int64     `db:"user_id" json:"user_id"`
-	Name       string    `db:"name" json:"name"`
-	RecordDate string    `db:"record_date" json:"record_date"`
-	Content    string    `db:"content" json:"content"`
-	Plan       string    `db:"plan" json:"plan"`
-	Status     int       `db:"status" json:"status"`
-	Updated    time.Time `db:"updated" json:"updated"`
-	Photos     []string  `json:"photos"`
+	ID           int64     `db:"id" json:"id"`
+	ProjectID    int64     `db:"project_id" json:"project_id"`
+	UserID       int64     `db:"user_id" json:"user_id"`
+	Name         string    `db:"name" json:"name"`
+	RecordDate   string    `db:"record_date" json:"record_date"`
+	Content      string    `db:"content" json:"content"`
+	Plan         string    `db:"plan" json:"plan"`
+	Status       int       `db:"status" json:"status"`
+	Updated      time.Time `db:"updated" json:"updated"`
+	Photos       []string  `json:"photos"`
+	Username     string    `db:"user_name" json:"user_name"`
+	PositionName string    `db:"position_name" json:"position_name"`
+	Avatar       string    `db:"avatar" json:"avatar"`
 }
