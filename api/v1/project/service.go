@@ -722,30 +722,33 @@ func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRec
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
 	memberQuery := member.NewMemberQuery(db)
-	project, err := query.GetProjectByID(projectID, filter.OrganizationID)
+	_, err := query.GetProjectByID(projectID, filter.OrganizationID)
 	if err != nil {
 		msg := "项目不存在"
 		return 0, nil, errors.New(msg)
 	}
-	members, err := memberQuery.GetMembersByProjectID(projectID)
+	projectClientUserID, err := query.GetProjectClientUserID(projectID)
 	if err != nil {
-		msg := "获取成员失败" + err.Error()
+		msg := "获取客户失败"
 		return 0, nil, errors.New(msg)
 	}
-	memberValid := false
-	if filter.UserID == project.ClientID {
-		memberValid = true
-	} else {
+	if filter.UserID != projectClientUserID {
+		members, err := memberQuery.GetMembersByProjectID(projectID)
+		if err != nil {
+			msg := "获取成员失败" + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		memberValid := false
 		for _, member := range *members {
 			if member.UserID == filter.UserID {
 				memberValid = true
 				break
 			}
 		}
-	}
-	if !memberValid {
-		msg := "你不是此项目的成员"
-		return 0, nil, errors.New(msg)
+		if !memberValid {
+			msg := "你不是此项目的成员"
+			return 0, nil, errors.New(msg)
+		}
 	}
 	count, err := query.GetProjectRecordCount(projectID)
 	if err != nil {
@@ -782,25 +785,28 @@ func (s *projectService) GetProjectRecordByID(recordID, userID, organizationID i
 		msg := "项目不存在"
 		return nil, errors.New(msg)
 	}
-	members, err := memberQuery.GetMembersByProjectID(project.ID)
+	projectClientUserID, err := query.GetProjectClientUserID(project.ID)
 	if err != nil {
-		msg := "获取成员失败" + err.Error()
+		msg := "获取客户失败"
 		return nil, errors.New(msg)
 	}
-	memberValid := false
-	if userID == project.ClientID {
-		memberValid = true
-	} else {
+	if userID != projectClientUserID {
+		members, err := memberQuery.GetMembersByProjectID(project.ID)
+		if err != nil {
+			msg := "获取成员失败" + err.Error()
+			return nil, errors.New(msg)
+		}
+		memberValid := false
 		for _, member := range *members {
 			if member.UserID == userID {
 				memberValid = true
 				break
 			}
 		}
-	}
-	if !memberValid {
-		msg := "你不是此项目的成员"
-		return nil, errors.New(msg)
+		if !memberValid {
+			msg := "你不是此项目的成员"
+			return nil, errors.New(msg)
+		}
 	}
 	photos, err := query.GetProjectRecordPhotos(recordID)
 	if err != nil {

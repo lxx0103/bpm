@@ -352,3 +352,9 @@ func (r *projectQuery) GetProjectRecordPhotos(recordID int64) (*[]string, error)
 	`, args...)
 	return &projectRecords, err
 }
+
+func (r *projectQuery) GetProjectClientUserID(id int64) (int64, error) {
+	var userID int64
+	err := r.conn.Get(&userID, "SELECT c.user_id FROM projects p LEFT JOIN clients c ON p.client_id = c.id WHERE p.id = ?", id)
+	return userID, err
+}
