@@ -1443,6 +1443,10 @@ definitions:
         type: string
       phone:
         type: string
+      qrcode:
+        items:
+          $ref: '#/definitions/organization.OrganizationQrcode'
+        type: array
       status:
         type: integer
       type:
@@ -1466,6 +1470,10 @@ definitions:
         type: string
       phone:
         type: string
+      qrcode:
+        items:
+          $ref: '#/definitions/organization.OrganizationQrcode'
+        type: array
       status:
         enum:
         - 1
@@ -1482,6 +1490,43 @@ definitions:
     - name
     - status
     - type
+    type: object
+  organization.OrganizationQrcode:
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+    required:
+    - name
+    - type
+    type: object
+  organization.OrganizationResponse:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      contact:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      qrcode:
+        items:
+          $ref: '#/definitions/organization.OrganizationQrcode'
+        type: array
+      status:
+        type: integer
+      type:
+        type: integer
     type: object
   organization.QrcodeFilter:
     properties:
@@ -1637,6 +1682,8 @@ definitions:
     type: object
   project.ProjectRecordResponse:
     properties:
+      avatar:
+        type: string
       content:
         type: string
       id:
@@ -1649,6 +1696,8 @@ definitions:
         type: array
       plan:
         type: string
+      position_name:
+        type: string
       project_id:
         type: integer
       record_date:
@@ -1659,6 +1708,8 @@ definitions:
         type: string
       user_id:
         type: integer
+      user_name:
+        type: string
     type: object
   project.ProjectReportNew:
     properties:
@@ -4096,7 +4147,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/organization.Organization'
+                    $ref: '#/definitions/organization.OrganizationResponse'
                   type: array
               type: object
         "400":
@@ -4127,7 +4178,7 @@ paths:
             - $ref: '#/definitions/response.SuccessRes'
             - properties:
                 data:
-                  $ref: '#/definitions/organization.Organization'
+                  type: string
               type: object
         "400":
           description: Bad Request
@@ -4192,7 +4243,7 @@ paths:
             - $ref: '#/definitions/response.SuccessRes'
             - properties:
                 data:
-                  $ref: '#/definitions/organization.Organization'
+                  type: string
               type: object
         "400":
           description: Bad Request

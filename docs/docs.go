@@ -3624,7 +3624,7 @@ var doc = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/organization.Organization"
+                                                "$ref": "#/definitions/organization.OrganizationResponse"
                                             }
                                         }
                                     }
@@ -3675,7 +3675,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/organization.Organization"
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -3782,7 +3782,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/organization.Organization"
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -11934,6 +11934,12 @@ var doc = `{
                 "phone": {
                     "type": "string"
                 },
+                "qrcode": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/organization.OrganizationQrcode"
+                    }
+                },
                 "status": {
                     "type": "integer"
                 },
@@ -11975,6 +11981,12 @@ var doc = `{
                 "phone": {
                     "type": "string"
                 },
+                "qrcode": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/organization.OrganizationQrcode"
+                    }
+                },
                 "status": {
                     "type": "integer",
                     "enum": [
@@ -11988,6 +12000,62 @@ var doc = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "organization.OrganizationQrcode": {
+            "type": "object",
+            "required": [
+                "name",
+                "type"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "organization.OrganizationResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "qrcode": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/organization.OrganizationQrcode"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
                 }
             }
         },
@@ -12215,6 +12283,9 @@ var doc = `{
         "project.ProjectRecordResponse": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "content": {
                     "type": "string"
                 },
@@ -12233,6 +12304,9 @@ var doc = `{
                 "plan": {
                     "type": "string"
                 },
+                "position_name": {
+                    "type": "string"
+                },
                 "project_id": {
                     "type": "integer"
                 },
@@ -12247,6 +12321,9 @@ var doc = `{
                 },
                 "user_id": {
                     "type": "integer"
+                },
+                "user_name": {
+                    "type": "string"
                 }
             }
         },

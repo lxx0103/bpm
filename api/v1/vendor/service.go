@@ -31,9 +31,14 @@ func (s *vendorService) GetVendorByID(id int64) (*VendorResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	qrcodes, err := query.GetVendorQrcode(id)
+	if err != nil {
+		return nil, err
+	}
 	vendor.Material = *materials
 	vendor.Brand = *brands
 	vendor.Picture = *pictures
+	vendor.Qrcode = *qrcodes
 	return vendor, err
 }
 
@@ -97,6 +102,14 @@ func (s *vendorService) NewVendor(info VendorNew) error {
 			}
 		}
 	}
+	if len(info.Qrcode) > 0 {
+		for _, qrcode := range info.Qrcode {
+			err = repo.CreateVendorQrcode(vendorID, qrcode, info.User)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	tx.Commit()
 	return nil
 }
@@ -125,9 +138,14 @@ func (s *vendorService) GetVendorList(filter VendorFilter) (int, *[]VendorRespon
 		if err != nil {
 			return 0, nil, err
 		}
+		qrcodes, err := query.GetVendorQrcode(v.ID)
+		if err != nil {
+			return 0, nil, err
+		}
 		(*list)[k].Material = *materials
 		(*list)[k].Brand = *brands
 		(*list)[k].Picture = *pictures
+		(*list)[k].Qrcode = *qrcodes
 	}
 	return count, list, err
 }
@@ -162,6 +180,10 @@ func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
 		return err
 	}
 	err = repo.DeleteVendorPicture(vendorID, info.User)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteVendorQrcode(vendorID, info.User)
 	if err != nil {
 		return err
 	}
@@ -210,6 +232,14 @@ func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
 			}
 		}
 	}
+	if len(info.Qrcode) > 0 {
+		for _, qrcode := range info.Qrcode {
+			err = repo.CreateVendorQrcode(vendorID, qrcode, info.User)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	tx.Commit()
 	return nil
 }
@@ -240,6 +270,10 @@ func (s *vendorService) DeleteVendor(vendorID int64, byUser string) error {
 		return err
 	}
 	err = repo.DeleteVendorPicture(vendorID, byUser)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteVendorQrcode(vendorID, byUser)
 	if err != nil {
 		return err
 	}

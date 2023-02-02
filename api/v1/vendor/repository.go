@@ -116,6 +116,24 @@ func (r *vendorRepository) CreateVendorPicture(vendorID int64, picture, byUser s
 	return err
 }
 
+func (r *vendorRepository) CreateVendorQrcode(vendorID int64, qrcode VendorQrcode, byUser string) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO vendor_qrcodes
+		(
+			vendor_id,
+			type,
+			name,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`, vendorID, qrcode.Type, qrcode.Name, 1, time.Now(), byUser, time.Now(), byUser)
+	return err
+}
+
 func (r *vendorRepository) UpdateVendor(id int64, info VendorNew) error {
 	_, err := r.tx.Exec(`
 		Update vendors SET 
@@ -198,6 +216,17 @@ func (r *vendorRepository) DeleteVendorBrand(id int64, byUser string) error {
 func (r *vendorRepository) DeleteVendorPicture(id int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update vendor_pictures SET 
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE vendor_id = ?
+	`, -1, time.Now(), byUser, id)
+	return err
+}
+
+func (r *vendorRepository) DeleteVendorQrcode(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update vendor_qrcodes SET 
 		status = ?,
 		updated = ?,
 		updated_by = ? 

@@ -16,9 +16,9 @@ func NewOrganizationQuery(connection *sqlx.DB) *organizationQuery {
 	}
 }
 
-func (r *organizationQuery) GetOrganizationByID(id int64) (*Organization, error) {
-	var organization Organization
-	err := r.conn.Get(&organization, "SELECT * FROM organizations WHERE id = ? ", id)
+func (r *organizationQuery) GetOrganizationByID(id int64) (*OrganizationResponse, error) {
+	var organization OrganizationResponse
+	err := r.conn.Get(&organization, "SELECT id, name, logo, description, phone, contact, address, city, type, status FROM organizations WHERE id = ? ", id)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (r *organizationQuery) GetOrganizationCount(filter OrganizationFilter) (int
 	return count, nil
 }
 
-func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]Organization, error) {
+func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]OrganizationResponse, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
@@ -60,9 +60,9 @@ func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]O
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var organizations []Organization
+	var organizations []OrganizationResponse
 	err := r.conn.Select(&organizations, `
-		SELECT * 
+		SELECT id, name, logo, description, phone, contact, address, city, type, status
 		FROM organizations 
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
@@ -103,4 +103,15 @@ func (r *organizationQuery) GetOrganizationTopExamples(organizationID int64) (*[
 		LIMIT 3
 	`, organizationID)
 	return &examples, err
+}
+
+func (r *organizationQuery) GetOrganizationQrcode(organizationID int64) (*[]OrganizationQrcode, error) {
+	var organizationQrcode []OrganizationQrcode
+	err := r.conn.Select(&organizationQrcode, `
+		SELECT type,name 
+		FROM organization_qrcodes 
+		WHERE organization_id = ?
+		AND status > 0
+	`, organizationID)
+	return &organizationQrcode, err
 }

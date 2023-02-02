@@ -108,3 +108,32 @@ func (r *organizationRepository) NewQrcode(path, source, img string) error {
 	`, path, img, source)
 	return err
 }
+
+func (r *organizationRepository) CreateOrganizationQrcode(organizationID int64, qrcode OrganizationQrcode, byUser string) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO organization_qrcodes
+		(
+			organization_id,
+			type,
+			name,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`, organizationID, qrcode.Type, qrcode.Name, 1, time.Now(), byUser, time.Now(), byUser)
+	return err
+}
+
+func (r *organizationRepository) DeleteOrganizationQrcode(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update organization_qrcodes SET 
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE organization_id = ?
+	`, -1, time.Now(), byUser, id)
+	return err
+}

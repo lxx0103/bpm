@@ -16,7 +16,7 @@ import (
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Param name query string false "组织编码"
-// @Success 200 object response.ListRes{data=[]Organization} 成功
+// @Success 200 object response.ListRes{data=[]OrganizationResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /organizations [GET]
 func GetOrganizationList(c *gin.Context) {
@@ -42,7 +42,7 @@ func GetOrganizationList(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param organization_info body OrganizationNew true "组织信息"
-// @Success 200 object response.SuccessRes{data=Organization} 成功
+// @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /organizations [POST]
 func NewOrganization(c *gin.Context) {
@@ -54,12 +54,12 @@ func NewOrganization(c *gin.Context) {
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	organization.User = claims.Username
 	organizationService := NewOrganizationService()
-	new, err := organizationService.NewOrganization(organization)
+	err := organizationService.NewOrganization(organization)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
 	}
-	response.Response(c, new)
+	response.Response(c, "ok")
 }
 
 // @Summary 根据ID获取组织
@@ -96,7 +96,7 @@ func GetOrganizationByID(c *gin.Context) {
 // @Produce application/json
 // @Param id path int true "组织ID"
 // @Param organization_info body OrganizationNew true "组织信息"
-// @Success 200 object response.SuccessRes{data=Organization} 成功
+// @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /organizations/:id [PUT]
 func UpdateOrganization(c *gin.Context) {
@@ -113,12 +113,12 @@ func UpdateOrganization(c *gin.Context) {
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	organization.User = claims.Username
 	organizationService := NewOrganizationService()
-	new, err := organizationService.UpdateOrganization(uri.ID, organization)
+	err := organizationService.UpdateOrganization(uri.ID, organization)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
 	}
-	response.Response(c, new)
+	response.Response(c, "ok")
 }
 
 // @Summary 获取小程序码

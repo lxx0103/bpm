@@ -99,3 +99,14 @@ func (r *vendorQuery) GetVendorPicture(vendorID int64) (*[]string, error) {
 	`, vendorID)
 	return &vendorPicture, err
 }
+
+func (r *vendorQuery) GetVendorQrcode(vendorID int64) (*[]VendorQrcode, error) {
+	var vendorQrcode []VendorQrcode
+	err := r.conn.Select(&vendorQrcode, `
+		SELECT type,name 
+		FROM vendor_qrcodes 
+		WHERE vendor_id = ?
+		AND status > 0
+	`, vendorID)
+	return &vendorQrcode, err
+}

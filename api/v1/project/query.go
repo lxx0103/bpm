@@ -305,7 +305,7 @@ func (r *projectQuery) GetProjectRecordList(projectID int64, filter ProjectRecor
 	args = append(args, filter.PageSize)
 	var records []ProjectRecordResponse
 	err := r.conn.Select(&records, `
-		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.record_date, pr.content, pr.plan, pr.status, pr.updated, u.name as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.record_date, pr.content, pr.plan, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_records pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
@@ -337,7 +337,7 @@ func (r *projectQuery) GetProjectRecordCount(projectID int64) (int, error) {
 
 func (r *projectQuery) GetProjectRecordByID(id int64, organizationID int64) (*ProjectRecordResponse, error) {
 	var record ProjectRecordResponse
-	err := r.conn.Get(&record, `SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.record_date, pr.content, pr.plan, pr.status, pr.updated, u.name as user_name, IFNULL(p.name, "") as position_name, u.avatar FROM project_records pr LEFT JOIN users u ON pr.user_id = u.id LEFT JOIN positions p ON u.position_id = p.id WHERE pr.id = ? AND pr.organization_id = ? AND pr.status > 0 limit 1`, id, organizationID)
+	err := r.conn.Get(&record, `SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.record_date, pr.content, pr.plan, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar FROM project_records pr LEFT JOIN users u ON pr.user_id = u.id LEFT JOIN positions p ON u.position_id = p.id WHERE pr.id = ? AND pr.organization_id = ? AND pr.status > 0 limit 1`, id, organizationID)
 	return &record, err
 }
 

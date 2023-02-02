@@ -18,34 +18,46 @@ func NewOrganizationService() *organizationService {
 	return &organizationService{}
 }
 
-func (s *organizationService) GetOrganizationByID(id int64) (*Organization, error) {
+func (s *organizationService) GetOrganizationByID(id int64) (*OrganizationResponse, error) {
 	db := database.InitMySQL()
 	query := NewOrganizationQuery(db)
 	organization, err := query.GetOrganizationByID(id)
-	return organization, err
+	if err != nil {
+		return nil, err
+	}
+	qrcodes, err := query.GetOrganizationQrcode(id)
+	if err != nil {
+		return nil, err
+	}
+	organization.Qrcode = *qrcodes
+	return organization, nil
 }
 
-func (s *organizationService) NewOrganization(info OrganizationNew) (*Organization, error) {
+func (s *organizationService) NewOrganization(info OrganizationNew) error {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer tx.Rollback()
 	repo := NewOrganizationRepository(tx)
 	organizationID, err := repo.CreateOrganization(info)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	organization, err := repo.GetOrganizationByID(organizationID)
-	if err != nil {
-		return nil, err
+	if len(info.Qrcode) > 0 {
+		for _, qrcode := range info.Qrcode {
+			err = repo.CreateOrganizationQrcode(organizationID, qrcode, info.User)
+			if err != nil {
+				return err
+			}
+		}
 	}
 	tx.Commit()
-	return organization, err
+	return nil
 }
 
-func (s *organizationService) GetOrganizationList(filter OrganizationFilter) (int, *[]Organization, error) {
+func (s *organizationService) GetOrganizationList(filter OrganizationFilter) (int, *[]OrganizationResponse, error) {
 	db := database.InitMySQL()
 	query := NewOrganizationQuery(db)
 	count, err := query.GetOrganizationCount(filter)
@@ -56,27 +68,42 @@ func (s *organizationService) GetOrganizationList(filter OrganizationFilter) (in
 	if err != nil {
 		return 0, nil, err
 	}
+	for k, v := range *list {
+		qrcodes, err := query.GetOrganizationQrcode(v.ID)
+		if err != nil {
+			return 0, nil, err
+		}
+		(*list)[k].Qrcode = *qrcodes
+	}
 	return count, list, err
 }
 
-func (s *organizationService) UpdateOrganization(organizationID int64, info OrganizationNew) (*Organization, error) {
+func (s *organizationService) UpdateOrganization(organizationID int64, info OrganizationNew) error {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer tx.Rollback()
 	repo := NewOrganizationRepository(tx)
+	err = repo.DeleteOrganizationQrcode(organizationID, info.User)
+	if err != nil {
+		return err
+	}
 	_, err = repo.UpdateOrganization(organizationID, info)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	organization, err := repo.GetOrganizationByID(organizationID)
-	if err != nil {
-		return nil, err
+	if len(info.Qrcode) > 0 {
+		for _, qrcode := range info.Qrcode {
+			err = repo.CreateOrganizationQrcode(organizationID, qrcode, info.User)
+			if err != nil {
+				return err
+			}
+		}
 	}
 	tx.Commit()
-	return organization, err
+	return nil
 }
 
 func (s *organizationService) GetQrCodeByPath(path, source string) (string, error) {
@@ -205,7 +232,12 @@ func (s *organizationService) GetPortalOrganizationList(filter OrganizationFilte
 		if err != nil {
 			return 0, nil, err
 		}
+		qrcodes, err := query.GetOrganizationQrcode(organization.ID)
+		if err != nil {
+			return 0, nil, err
+		}
 		resRow.Examples = *examples
+		resRow.Qrcode = *qrcodes
 		res = append(res, resRow)
 	}
 	return count, &res, err

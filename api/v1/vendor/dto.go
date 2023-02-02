@@ -9,18 +9,24 @@ type VendorFilter struct {
 }
 
 type VendorNew struct {
-	Name        string   `json:"name" binding:"required,min=1,max=64"`
-	Material    []int64  `json:"material"`
-	Brand       []int64  `json:"brand"`
-	Contact     string   `json:"contact" binding:"omitempty"`
-	Phone       string   `json:"phone" binding:"omitempty,max=64"`
-	Address     string   `json:"address" binding:"omitempty,max=255"`
-	Longitude   float64  `json:"longitude" binding:"omitempty"`
-	Latitude    float64  `json:"latitude" binding:"omitempty"`
-	Cover       string   `json:"cover" binding:"omitempty,max=64"`
-	Picture     []string `json:"picture"`
-	Description string   `json:"description" binding:"omitempty"`
-	User        string   `json:"user" swaggerignore:"true"`
+	Name        string         `json:"name" binding:"required,min=1,max=64"`
+	Material    []int64        `json:"material"`
+	Brand       []int64        `json:"brand"`
+	Qrcode      []VendorQrcode `json:"qrcode"`
+	Contact     string         `json:"contact" binding:"omitempty"`
+	Phone       string         `json:"phone" binding:"omitempty,max=64"`
+	Address     string         `json:"address" binding:"omitempty,max=255"`
+	Longitude   float64        `json:"longitude" binding:"omitempty"`
+	Latitude    float64        `json:"latitude" binding:"omitempty"`
+	Cover       string         `json:"cover" binding:"omitempty,max=64"`
+	Picture     []string       `json:"picture"`
+	Description string         `json:"description" binding:"omitempty"`
+	User        string         `json:"user" swaggerignore:"true"`
+}
+
+type VendorQrcode struct {
+	Type string `db:"type" json:"type" binding:"required"`
+	Name string `db:"name" json:"name" binding:"required"`
 }
 
 type VendorID struct {
@@ -40,6 +46,7 @@ type VendorResponse struct {
 	Cover       string           `db:"cover" json:"cover"`
 	Description string           `db:"description" json:"description"`
 	Picture     []string         `json:"picture"`
+	Qrcode      []VendorQrcode   `json:"qrcode"`
 	Status      int              `db:"status" json:"status"`
 }
 
