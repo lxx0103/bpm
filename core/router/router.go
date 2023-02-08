@@ -5,7 +5,6 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"bpm/core/config"
-	_ "bpm/docs"
 	"bpm/middleware"
 
 	"github.com/gin-gonic/gin"
