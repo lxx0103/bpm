@@ -4,6 +4,7 @@ import (
 	"bpm/core/response"
 	"bpm/service"
 	"errors"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,6 +24,7 @@ func AuthorizeJWT() gin.HandlerFunc {
 		}
 		claims, err := service.JWTAuthService().ParseToken(tokenString)
 		if err != nil {
+			fmt.Println(claims)
 			response.ResponseUnauthorized(c, "AuthError", errors.New("JWT AUTH ERROR"))
 			return
 		}

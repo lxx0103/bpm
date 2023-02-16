@@ -702,3 +702,83 @@ func (s *authService) GetMyWxmodule(positionID, parentID int64) ([]Wxmodule, err
 	menu, err := query.GetMyWxmodule(positionID, parentID)
 	return menu, err
 }
+
+func (s *authService) DeleteUser(userID int64, byUserID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		msg := "事务开启错误" + err.Error()
+		return errors.New(msg)
+	}
+	defer tx.Rollback()
+	repo := NewAuthRepository(tx)
+
+	oldUser, err := repo.GetUserByID(userID)
+	if err != nil {
+		msg := "获取用户失败"
+		return errors.New(msg)
+	}
+	if oldUser.Type != 1 && oldUser.Type != 2 {
+		msg := "用户类型错误"
+		return errors.New(msg)
+	}
+	byUser, err := repo.GetUserByID(byUserID)
+	if err != nil {
+		msg := "获取操作者失败"
+		return errors.New(msg)
+	}
+	var byPriority int64
+	byPriority = 0
+	if byUser.RoleID != 0 {
+		byRole, err := repo.GetRoleByID(byUser.RoleID)
+		if err != nil {
+			msg := "获取操作者角色失败"
+			return errors.New(msg)
+		}
+		byPriority = byRole.Priority
+	}
+	if oldUser.RoleID != 0 {
+		targetRole, err := repo.GetRoleByID(oldUser.RoleID)
+		if err != nil {
+			msg := "获取用户角色失败"
+			return errors.New(msg)
+		}
+		if byPriority <= targetRole.Priority && userID != byUserID { //只能修改角色比自己优先级低的用户,或者用户自身
+			msg := "你无法修改角色为" + targetRole.Name + "的用户"
+			return errors.New(msg)
+		}
+	}
+	err = repo.DeleteUser(userID, byUser.Name)
+	if err != nil {
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *authService) UpdateUserPassword(id int64, info UserPasswordUpdate) error {
+	if info.RoleID != 1 {
+		msg := "只有管理员可以更改密码"
+		return errors.New(msg)
+	}
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		msg := "事务开启错误" + err.Error()
+		return errors.New(msg)
+	}
+	defer tx.Rollback()
+	hashed, err := hashPassword(info.NewPassword)
+	if err != nil {
+		msg := "密码加密错误" + err.Error()
+		return errors.New(msg)
+	}
+	repo := NewAuthRepository(tx)
+	err = repo.UpdatePassword(id, hashed, info.User)
+	if err != nil {
+		msg := "密码更新错误" + err.Error()
+		return errors.New(msg)
+	}
+	tx.Commit()
+	return nil
+}

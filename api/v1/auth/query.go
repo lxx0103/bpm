@@ -20,9 +20,9 @@ func (r *authQuery) GetUserByID(id int64, organizationID int64) (*User, error) {
 	var user User
 	var err error
 	if organizationID != 0 {
-		err = r.conn.Get(&user, "SELECT * FROM users WHERE id = ? AND organization_id = ?", id, organizationID)
+		err = r.conn.Get(&user, "SELECT * FROM users WHERE id = ? AND organization_id = ? AND status > 0 ", id, organizationID)
 	} else {
-		err = r.conn.Get(&user, "SELECT * FROM users WHERE id = ? ", id)
+		err = r.conn.Get(&user, "SELECT * FROM users WHERE id = ? AND status > 0", id)
 	}
 	if err != nil {
 		return nil, err
@@ -39,6 +39,7 @@ func (r *authQuery) GetUserByOpenID(openID string) (*UserResponse, error) {
 		LEFT JOIN organizations o
 		ON u.organization_id = o.id
 		WHERE identifier = ?
+		AND u.status > 0 
 	`, openID)
 	if err != nil {
 		return nil, err

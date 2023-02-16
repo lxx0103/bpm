@@ -1058,3 +1058,64 @@ func GetMyWxmodule(c *gin.Context) {
 	// }
 	response.Response(c, new)
 }
+
+// @Summary 根据ID删除用户
+// @Id 175
+// @Tags 用户管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "用户ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /users/:id [DELETE]
+func DeleteUser(c *gin.Context) {
+	var uri UserID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	authService := NewAuthService()
+	err := authService.DeleteUser(uri.ID, claims.UserID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 更新用户密码
+// @Id 176
+// @Tags 用户管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "用户ID"
+// @Param info body UserPasswordUpdate true "用户信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /users/:id/password [POST]
+func UpdateUserPassword(c *gin.Context) {
+	var uri UserID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info UserPasswordUpdate
+	if err := c.ShouldBindJSON(&info); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	info.RoleID = claims.RoleID
+	authService := NewAuthService()
+	err := authService.UpdateUserPassword(uri.ID, info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}

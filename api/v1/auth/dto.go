@@ -216,3 +216,10 @@ type PositionWxmoduleNew struct {
 type ParentID struct {
 	ID int64 `uri:"id" binding:"required"`
 }
+
+type UserPasswordUpdate struct {
+	NewPassword string `json:"new_password" binding:"required,min=6"`
+	User        string `json:"user" swaggerignore:"true"`
+	UserID      int64  `json:"user_id" swaggerignore:"true"`
+	RoleID      int64  `json:"role_id" swaggerignore:"true"`
+}

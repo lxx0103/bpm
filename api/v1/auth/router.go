@@ -18,6 +18,8 @@ func AuthRouter(g *gin.RouterGroup) {
 	g.GET("/users", GetUserList)
 	g.GET("/users/:id", GetUserByID)
 	g.POST("/password", UpdatePassword)
+	g.DELETE("/users/:id", DeleteUser)
+	g.POST("/users/:id/password", UpdateUserPassword)
 
 	g.GET("/apis", GetAPIList)
 	g.GET("/apis/:id", GetAPIByID)

@@ -70,6 +70,7 @@ func (r *authRepository) GetUserByID(id int64) (*UserResponse, error) {
 	LEFT JOIN organizations o
 	ON u.organization_id = o.id
 	WHERE u.id = ?
+	AND u.status > 0
 	`, id)
 	err := row.Scan(&res.ID, &res.Type, &res.Identifier, &res.OrganizationID, &res.PositionID, &res.RoleID, &res.Name, &res.Email, &res.Gender, &res.Phone, &res.Birthday, &res.Address, &res.Avatar, &res.Status, &res.OrganizationName)
 	if err != nil {
@@ -110,6 +111,17 @@ func (r *authRepository) UpdateUser(id int64, info UserResponse, by string) erro
 		return errors.New(msg)
 	}
 	return nil
+}
+
+func (r *authRepository) DeleteUser(id int64, by string) error {
+	_, err := r.tx.Exec(`
+		Update users SET
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, -1, time.Now(), by, id)
+	return err
 }
 
 func (r *authRepository) CreateRole(info RoleNew) (int64, error) {
