@@ -748,9 +748,37 @@ func (s *authService) DeleteUser(userID int64, byUserID int64) error {
 			return errors.New(msg)
 		}
 	}
+	if oldUser.Type == 2 {
+		count, err := repo.GetUserMemberCount(userID)
+		if err != nil {
+			msg := "获取用户当前项目失败"
+			return errors.New(msg)
+		}
+		if count != 0 {
+			msg := "当前用户为项目成员，不能删除"
+			return errors.New(msg)
+		}
+	} else if oldUser.Type == 3 {
+		clientCount, err := repo.GetUserClientCount(userID)
+		if err != nil {
+			msg := "获取用户当前项目失败"
+			return errors.New(msg)
+		}
+		if clientCount != 0 {
+			msg := "当前用户为项目客户，不能删除"
+			return errors.New(msg)
+		}
+	}
 	err = repo.DeleteUser(userID, byUser.Name)
 	if err != nil {
 		return err
+	}
+	if oldUser.Type == 3 {
+		err = repo.DeleteClient(userID, byUser.Name)
+		if err != nil {
+			msg := "删除客户失败"
+			return errors.New(msg)
+		}
 	}
 	tx.Commit()
 	return nil

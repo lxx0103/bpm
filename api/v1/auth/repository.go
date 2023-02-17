@@ -474,3 +474,31 @@ func (r *authRepository) NewPositionWxmodule(position_id int64, info PositionWxm
 	_, err = r.tx.Exec(sql)
 	return err
 }
+
+func (r authRepository) GetUserMemberCount(userID int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM project_members WHERE user_id = ? AND status > 0`, userID)
+	err := row.Scan(&res)
+	if err != nil {
+		return 0, err
+	}
+	return res, nil
+}
+
+func (r authRepository) GetUserClientCount(userID int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT count(id) FROM projects WHERE client_id = (SELECT id FROM clients WHERE user_id = ?) AND status > 0`, userID)
+	err := row.Scan(&res)
+	return res, err
+}
+
+func (r *authRepository) DeleteClient(userID int64, by string) error {
+	_, err := r.tx.Exec(`
+		Update clients SET
+		status = ?,
+		updated = ?,
+		updated_by = ? 
+		WHERE user_id = ?
+	`, -1, time.Now(), by, userID)
+	return err
+}
