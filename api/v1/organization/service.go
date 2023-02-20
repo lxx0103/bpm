@@ -5,8 +5,9 @@ import (
 	"bpm/core/database"
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"os"
 
 	"github.com/google/uuid"
 )
@@ -140,7 +141,7 @@ func (s *organizationService) GetQrCodeByPath(path, source string) (string, erro
 						return "", err
 					}
 					defer res.Body.Close()
-					body, err := ioutil.ReadAll(res.Body)
+					body, err := io.ReadAll(res.Body)
 					if err != nil {
 						return "", err
 					}
@@ -175,7 +176,7 @@ func (s *organizationService) GetQrCodeByPath(path, source string) (string, erro
 				return "", err
 			}
 			defer resp.Body.Close()
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				return "", err
 			}
@@ -183,7 +184,7 @@ func (s *organizationService) GetQrCodeByPath(path, source string) (string, erro
 			extension := ".png"
 			newName := uuid.NewString() + extension
 			imgPath := dest + newName
-			err = ioutil.WriteFile(imgPath, body, 0666)
+			err = os.WriteFile(imgPath, body, 0666)
 			if err != nil {
 				return "", err
 			}

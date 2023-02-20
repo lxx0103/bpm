@@ -27,9 +27,9 @@ func (r *positionQuery) GetPositionByID(id int64, organizationID int64) (*Positi
 	var position Position
 	var err error
 	if organizationID != 0 {
-		err = r.conn.Get(&position, "SELECT * FROM positions WHERE id = ? AND organization_id = ?", id, organizationID)
+		err = r.conn.Get(&position, "SELECT * FROM positions WHERE id = ? AND organization_id = ? AND status > 0", id, organizationID)
 	} else {
-		err = r.conn.Get(&position, "SELECT * FROM positions WHERE id = ? ", id)
+		err = r.conn.Get(&position, "SELECT * FROM positions WHERE id = ? AND status > 0", id)
 	}
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (r *positionQuery) GetPositionByID(id int64, organizationID int64) (*Positi
 }
 
 func (r *positionQuery) GetPositionCount(filter PositionFilter) (int, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -57,7 +57,7 @@ func (r *positionQuery) GetPositionCount(filter PositionFilter) (int, error) {
 }
 
 func (r *positionQuery) GetPositionList(filter PositionFilter) (*[]PositionResponse, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"p.status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "p.name like ?"), append(args, "%"+v+"%")
 	}

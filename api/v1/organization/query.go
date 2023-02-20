@@ -26,7 +26,7 @@ func (r *organizationQuery) GetOrganizationByID(id int64) (*OrganizationResponse
 }
 
 func (r *organizationQuery) GetOrganizationCount(filter OrganizationFilter) (int, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -48,7 +48,7 @@ func (r *organizationQuery) GetOrganizationCount(filter OrganizationFilter) (int
 }
 
 func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]OrganizationResponse, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}

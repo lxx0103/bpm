@@ -732,7 +732,7 @@ func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRec
 		msg := "获取客户失败"
 		return 0, nil, errors.New(msg)
 	}
-	if filter.UserID != projectClientUserID {
+	if filter.UserID != projectClientUserID && filter.OrganizationID != 0 {
 		members, err := memberQuery.GetMembersByProjectID(projectID)
 		if err != nil {
 			msg := "获取成员失败" + err.Error()
@@ -790,7 +790,7 @@ func (s *projectService) GetProjectRecordByID(recordID, userID, organizationID i
 		msg := "获取客户失败"
 		return nil, errors.New(msg)
 	}
-	if userID != projectClientUserID {
+	if userID != projectClientUserID && organizationID != 0 {
 		members, err := memberQuery.GetMembersByProjectID(project.ID)
 		if err != nil {
 			msg := "获取成员失败" + err.Error()

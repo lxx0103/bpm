@@ -28,9 +28,9 @@ func (r *clientQuery) GetClientByID(id int64, organizationID int64) (*Client, er
 	var client Client
 	var err error
 	if organizationID != 0 {
-		err = r.conn.Get(&client, "SELECT * FROM clients WHERE id = ? AND organization_id = ?", id, organizationID)
+		err = r.conn.Get(&client, "SELECT * FROM clients WHERE id = ? AND organization_id = ? AND status >0", id, organizationID)
 	} else {
-		err = r.conn.Get(&client, "SELECT * FROM clients WHERE id = ? ", id)
+		err = r.conn.Get(&client, "SELECT * FROM clients WHERE id = ? AND status > 0", id)
 	}
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func (r *clientQuery) GetClientCount(filter ClientFilter, organizationID int64) 
 	if organizationID == 0 && filter.OrganizationID != 0 {
 		organizationID = filter.OrganizationID
 	}
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -64,7 +64,7 @@ func (r *clientQuery) GetClientList(filter ClientFilter, organizationID int64) (
 	if organizationID == 0 && filter.OrganizationID != 0 {
 		organizationID = filter.OrganizationID
 	}
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -90,9 +90,9 @@ func (r *clientQuery) GetClientByUserID(id int64, organizationID int64) (*Client
 	var client Client
 	var err error
 	if organizationID != 0 {
-		err = r.conn.Get(&client, "SELECT * FROM clients WHERE user_id = ? AND organization_id = ?", id, organizationID)
+		err = r.conn.Get(&client, "SELECT * FROM clients WHERE user_id = ? AND organization_id = ? AND status > 0", id, organizationID)
 	} else {
-		err = r.conn.Get(&client, "SELECT * FROM clients WHERE user_id = ? ", id)
+		err = r.conn.Get(&client, "SELECT * FROM clients WHERE user_id = ? AND status > 0", id)
 	}
 	if err != nil {
 		return nil, err

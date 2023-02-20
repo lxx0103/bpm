@@ -163,7 +163,7 @@ func (r *authQuery) GetAPIByID(id int64) (*API, error) {
 }
 
 func (r *authQuery) GetAPICount(filter APIFilter) (int, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
@@ -182,7 +182,7 @@ func (r *authQuery) GetAPICount(filter APIFilter) (int, error) {
 }
 
 func (r *authQuery) GetAPIList(filter APIFilter) (*[]API, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}

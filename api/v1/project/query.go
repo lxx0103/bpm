@@ -20,9 +20,9 @@ func (r *projectQuery) GetProjectByID(id int64, organizationID int64) (*Project,
 	var project Project
 	var err error
 	if organizationID != 0 {
-		err = r.conn.Get(&project, "SELECT * FROM projects WHERE id = ? AND organization_id = ?", id, organizationID)
+		err = r.conn.Get(&project, "SELECT * FROM projects WHERE id = ? AND organization_id = ? AND status > 0", id, organizationID)
 	} else {
-		err = r.conn.Get(&project, "SELECT * FROM projects WHERE id = ? ", id)
+		err = r.conn.Get(&project, "SELECT * FROM projects WHERE id = ? AND status > 0", id)
 	}
 	if err != nil {
 		return nil, err
