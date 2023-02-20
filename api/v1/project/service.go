@@ -446,6 +446,9 @@ func (s *projectService) GetProjectReportList(projectID int64, filter ProjectRep
 			break
 		}
 	}
+	if filter.OrganizationID == 0 {
+		memberValid = true
+	}
 	if !memberValid {
 		msg := "你不是此项目的成员"
 		return nil, errors.New(msg)
@@ -479,6 +482,9 @@ func (s *projectService) GetProjectReportByID(reportID, userID, organizationID i
 			memberValid = true
 			break
 		}
+	}
+	if organizationID == 0 {
+		memberValid = true
 	}
 	if !memberValid {
 		msg := "你不是此项目的成员"
