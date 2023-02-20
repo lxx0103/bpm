@@ -718,7 +718,7 @@ func (s *authService) DeleteUser(userID int64, byUserID int64) error {
 		msg := "获取用户失败"
 		return errors.New(msg)
 	}
-	if oldUser.Type != 1 && oldUser.Type != 2 {
+	if oldUser.Type != 3 && oldUser.Type != 2 {
 		msg := "用户类型错误"
 		return errors.New(msg)
 	}
