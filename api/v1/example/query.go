@@ -31,7 +31,7 @@ func (r *exampleQuery) GetExampleByID(id int64, organizationID int64) (*Example,
 }
 
 func (r *exampleQuery) GetExampleCount(filter ExampleFilter) (int, error) {
-	where, args := []string{"e.status > 0"}, []interface{}{}
+	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
 	}
