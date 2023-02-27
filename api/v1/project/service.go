@@ -454,6 +454,15 @@ func (s *projectService) GetProjectReportList(projectID int64, filter ProjectRep
 		return nil, errors.New(msg)
 	}
 	list, err := query.GetProjectReportList(projectID, filter)
+
+	for k, v := range *list {
+		links, err := query.GetProjectReportLinks(v.ID)
+		if err != nil {
+			msg := "获取报告链接失败" // + err.Error()
+			return nil, errors.New(msg)
+		}
+		(*list)[k].Links = *links
+	}
 	return list, err
 }
 
