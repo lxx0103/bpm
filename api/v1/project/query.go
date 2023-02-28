@@ -262,18 +262,22 @@ func (r *projectQuery) GetProjectCountByClientID(userID int64, organization_id i
 }
 
 func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectReportFilter) (*[]ProjectReportResponse, error) {
-	where, args := []string{"status > 0"}, []interface{}{}
-	where, args = append(where, "project_id = ?"), append(args, projectID)
+	where, args := []string{"pr.status > 0"}, []interface{}{}
+	where, args = append(where, "pr.project_id = ?"), append(args, projectID)
 	if filter.Status == "active" {
-		where, args = append(where, "status < ?"), append(args, 3)
+		where, args = append(where, "pr.status < ?"), append(args, 3)
 	}
 	if v := filter.Name; v != "" {
-		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+		where, args = append(where, "pr.name like ?"), append(args, "%"+v+"%")
 	}
 	var projectReports []ProjectReportResponse
 	err := r.conn.Select(&projectReports, `
-		SELECT id, user_id, name, report_date, content, status, updated
-		FROM project_reports
+		SELECT pr.id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		FROM project_reports pr
+		LEFT JOIN users u
+		ON pr.user_id = u.id
+		LEFT JOIN positions p
+		ON u.position_id = p.id
 		WHERE `+strings.Join(where, " AND ")+`
 		ORDER BY id DESC
 	`, args...)
