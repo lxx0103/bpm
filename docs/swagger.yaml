@@ -1738,6 +1738,8 @@ definitions:
     type: object
   project.ProjectReportResponse:
     properties:
+      avatar:
+        type: string
       content:
         type: string
       id:
@@ -1747,6 +1749,8 @@ definitions:
           type: string
         type: array
       name:
+        type: string
+      position_name:
         type: string
       project_id:
         type: integer
@@ -1758,6 +1762,27 @@ definitions:
         type: string
       user_id:
         type: integer
+      user_name:
+        type: string
+      views:
+        items:
+          $ref: '#/definitions/project.ProjectReportViewResponse'
+        type: array
+    type: object
+  project.ProjectReportViewResponse:
+    properties:
+      created:
+        type: string
+      id:
+        type: integer
+      project_id:
+        type: integer
+      project_report_id:
+        type: integer
+      viewer_id:
+        type: integer
+      viewer_name:
+        type: string
     type: object
   project.ProjectResponse:
     properties:
@@ -7280,6 +7305,36 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新项目报告
+      tags:
+      - 小程序接口
+  /wx/projectreports/:id/views:
+    post:
+      consumes:
+      - application/json
+      operationId: "177"
+      parameters:
+      - description: 报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID已阅项目报告
       tags:
       - 小程序接口
   /wx/projects:

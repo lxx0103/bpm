@@ -8734,6 +8734,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/wx/projectreports/:id/views": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "根据ID已阅项目报告",
+                "operationId": "177",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "报告ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/projects": {
             "post": {
                 "consumes": [
@@ -12466,6 +12516,9 @@ const docTemplate = `{
         "project.ProjectReportResponse": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "content": {
                     "type": "string"
                 },
@@ -12479,6 +12532,9 @@ const docTemplate = `{
                     }
                 },
                 "name": {
+                    "type": "string"
+                },
+                "position_name": {
                     "type": "string"
                 },
                 "project_id": {
@@ -12495,6 +12551,38 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                },
+                "user_name": {
+                    "type": "string"
+                },
+                "views": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/project.ProjectReportViewResponse"
+                    }
+                }
+            }
+        },
+        "project.ProjectReportViewResponse": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "project_report_id": {
+                    "type": "integer"
+                },
+                "viewer_id": {
+                    "type": "integer"
+                },
+                "viewer_name": {
+                    "type": "string"
                 }
             }
         },
