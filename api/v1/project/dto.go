@@ -89,18 +89,19 @@ type ProjectReportFilter struct {
 }
 
 type ProjectReportResponse struct {
-	ID           int64     `db:"id" json:"id"`
-	ProjectID    int64     `db:"project_id" json:"project_id"`
-	UserID       int64     `db:"user_id" json:"user_id"`
-	Name         string    `db:"name" json:"name"`
-	ReportDate   string    `db:"report_date" json:"report_date"`
-	Content      string    `db:"content" json:"content"`
-	Status       int       `db:"status" json:"status"`
-	Updated      time.Time `db:"updated" json:"updated"`
-	Links        []string  `json:"links"`
-	Avatar       string    `db:"avatar" json:"avatar"`
-	Username     string    `db:"user_name" json:"user_name"`
-	PositionName string    `db:"position_name" json:"position_name"`
+	ID           int64                       `db:"id" json:"id"`
+	ProjectID    int64                       `db:"project_id" json:"project_id"`
+	UserID       int64                       `db:"user_id" json:"user_id"`
+	Name         string                      `db:"name" json:"name"`
+	ReportDate   string                      `db:"report_date" json:"report_date"`
+	Content      string                      `db:"content" json:"content"`
+	Status       int                         `db:"status" json:"status"`
+	Updated      time.Time                   `db:"updated" json:"updated"`
+	Links        []string                    `json:"links"`
+	Avatar       string                      `db:"avatar" json:"avatar"`
+	Username     string                      `db:"user_name" json:"user_name"`
+	PositionName string                      `db:"position_name" json:"position_name"`
+	Views        []ProjectReportViewResponse `json:"views"`
 }
 
 type ProjectRecordNew struct {
@@ -135,4 +136,12 @@ type ProjectRecordResponse struct {
 	Username     string    `db:"user_name" json:"user_name"`
 	PositionName string    `db:"position_name" json:"position_name"`
 	Avatar       string    `db:"avatar" json:"avatar"`
+}
+type ProjectReportViewResponse struct {
+	ID              int64     `db:"id" json:"id"`
+	ProjectID       int64     `db:"project_id" json:"project_id"`
+	ProjectReportID int64     `db:"project_report_id" json:"project_report_id"`
+	ViewerID        int64     `db:"viewer_id" json:"viewer_id"`
+	ViewerName      string    `db:"viewer_name" json:"viewer_name"`
+	Created         time.Time `db:"created" json:"created"`
 }

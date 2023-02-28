@@ -362,3 +362,14 @@ func (r *projectQuery) GetProjectClientUserID(id int64) (int64, error) {
 	err := r.conn.Get(&userID, "SELECT c.user_id FROM projects p LEFT JOIN clients c ON p.client_id = c.id WHERE p.id = ?", id)
 	return userID, err
 }
+func (r *projectQuery) GetProjectReportViews(reportID int64) (*[]ProjectReportViewResponse, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "project_report_id = ?"), append(args, reportID)
+	var projectReports []ProjectReportViewResponse
+	err := r.conn.Select(&projectReports, `
+		SELECT id, project_id, project_report_id, viewer_id, viewer_name, created
+		FROM project_report_views
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
+}

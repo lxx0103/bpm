@@ -36,6 +36,7 @@ func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/projectreports/:id", WxGetProjectReportByID)
 	g.DELETE("/wx/projectreports/:id", WxDeleteProjectReport)
 	g.PUT("/wx/projectreports/:id", WxUpdateProjectReport)
+	g.POST("/wx/projectreports/:id/views", WxViewProjectReport)
 
 	g.POST("/wx/projects/:id/records", WxNewProjectRecord)
 	g.GET("/wx/projects/:id/records", WxGetProjectRecordList)

@@ -798,3 +798,29 @@ func PortalGetProjectRecordList(c *gin.Context) {
 	}
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
 }
+
+// @Summary 根据ID已阅项目报告
+// @Id 177
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "报告ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projectreports/:id/views [POST]
+func WxViewProjectReport(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	projectService := NewProjectService()
+	err := projectService.ViewProjectReport(uri.ID, claims.OrganizationID, claims.UserID, claims.Username)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}

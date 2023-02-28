@@ -462,6 +462,12 @@ func (s *projectService) GetProjectReportList(projectID int64, filter ProjectRep
 			return nil, errors.New(msg)
 		}
 		(*list)[k].Links = *links
+		views, err := query.GetProjectReportViews(v.ID)
+		if err != nil {
+			msg := "获取报告阅读记录失败" // + err.Error()
+			return nil, errors.New(msg)
+		}
+		(*list)[k].Views = *views
 	}
 	return list, err
 }
@@ -970,4 +976,75 @@ func (s *projectService) PortalGetProjectRecordList(projectID int64, filter Proj
 		(*list)[k].Photos = *photos
 	}
 	return count, list, err
+}
+
+func (s *projectService) ViewProjectReport(reportID, organizationID, userID int64, userName string) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewProjectRepository(tx)
+	memberRepo := member.NewMemberRepository(tx)
+	oldReport, err := repo.GetProjectReportByID(reportID, organizationID)
+	if err != nil {
+		msg := "报告不存在"
+		return errors.New(msg)
+	}
+	_, err = repo.GetProjectByID(oldReport.ProjectID, organizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return errors.New(msg)
+	}
+	members, err := memberRepo.GetMembersByProjectID(oldReport.ProjectID)
+	if err != nil {
+		msg := "获取项目成员失败"
+		return errors.New(msg)
+	}
+	memberValid := false
+	for _, member := range *members {
+		if member.UserID == userID {
+			memberValid = true
+			break
+		}
+	}
+	if !memberValid {
+		msg := "你不是此项目的成员"
+		return errors.New(msg)
+	}
+	var newReportView ProjectReportView
+	newReportView.OrganizationID = organizationID
+	newReportView.ProjectID = oldReport.ProjectID
+	newReportView.ProjectReportID = reportID
+	newReportView.ViewerID = userID
+	newReportView.ViewerName = userName
+	newReportView.Status = 1
+	newReportView.Created = time.Now()
+	newReportView.CreatedBy = userName
+	newReportView.Updated = time.Now()
+	newReportView.UpdatedBy = userName
+	err = repo.CreateProjectReportView(newReportView)
+	if err != nil {
+		msg := "创建已阅失败"
+		return errors.New(msg)
+	}
+	views, err := repo.GetProjectReportView(reportID)
+	if err != nil {
+		msg := "获取阅读记录失败"
+		return errors.New(msg)
+	}
+	reportStatus := 1
+	if len(*views) == len(*members) {
+		reportStatus = 3
+	} else {
+		reportStatus = 2
+	}
+	err = repo.UpdateProjectReportStatus(reportID, reportStatus, userName)
+	if err != nil {
+		msg := "更新状态失败"
+		return errors.New(msg)
+	}
+	tx.Commit()
+	return nil
 }

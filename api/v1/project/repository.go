@@ -299,3 +299,50 @@ func (r *projectRepository) UpdateProjectRecord(id int64, info ProjectRecord) er
 	`, info.RecordDate, info.Name, info.Content, info.Plan, info.Status, info.Updated, info.UpdatedBy, id)
 	return err
 }
+
+func (r *projectRepository) CreateProjectReportView(info ProjectReportView) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO project_report_views
+		(
+			organization_id,
+			project_id,
+			project_report_id,
+			viewer_id,
+			viewer_name,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.ProjectID, info.ProjectReportID, info.ViewerID, info.ViewerName, info.Status, info.Created, info.CreatedBy, info.Updated, info.UpdatedBy)
+	return err
+}
+
+func (r *projectRepository) GetProjectReportView(id int64) (*[]ProjectReportViewResponse, error) {
+	var res []ProjectReportViewResponse
+	rows, err := r.tx.Query(`SELECT id, project_id, project_report_id, viewer_id, viewer_name, created FROM project_report_views WHERE project_report_id = ? AND status > 0`, id)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var rowRes ProjectReportViewResponse
+		err = rows.Scan(&rowRes.ID, &rowRes.ProjectID, &rowRes.ProjectReportID, &rowRes.ViewerID, &rowRes.ViewerName, &rowRes.Created)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, rowRes)
+	}
+	return &res, nil
+}
+func (r *projectRepository) UpdateProjectReportStatus(id int64, status int, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update project_reports SET
+		status = ?,
+		updated = ?,
+		updated_by = ?
+		WHERE id = ?
+	`, status, time.Now(), byUser, id)
+	return err
+}
