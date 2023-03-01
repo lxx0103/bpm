@@ -1151,6 +1151,8 @@ definitions:
     type: object
   member.MemberResponse:
     properties:
+      avatar:
+        type: string
       name:
         type: string
       user_id:
@@ -1719,6 +1721,19 @@ definitions:
       user_name:
         type: string
     type: object
+  project.ProjectReportMemberViewResponse:
+    properties:
+      avatar:
+        type: string
+      user_id:
+        type: integer
+      user_name:
+        type: string
+      view_time:
+        type: string
+      viewed:
+        type: boolean
+    type: object
   project.ProjectReportNew:
     properties:
       content:
@@ -1764,25 +1779,12 @@ definitions:
         type: integer
       user_name:
         type: string
+      viewed:
+        type: boolean
       views:
         items:
-          $ref: '#/definitions/project.ProjectReportViewResponse'
+          $ref: '#/definitions/project.ProjectReportMemberViewResponse'
         type: array
-    type: object
-  project.ProjectReportViewResponse:
-    properties:
-      created:
-        type: string
-      id:
-        type: integer
-      project_id:
-        type: integer
-      project_report_id:
-        type: integer
-      viewer_id:
-        type: integer
-      viewer_name:
-        type: string
     type: object
   project.ProjectResponse:
     properties:

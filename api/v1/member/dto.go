@@ -13,4 +13,5 @@ type MemberNew struct {
 type MemberResponse struct {
 	UserID int64  `json:"user_id" db:"user_id"`
 	Name   string `json:"name" db:"name"`
+	Avatar string `json:"avatar" db:"avatar"`
 }

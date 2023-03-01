@@ -11656,6 +11656,9 @@ const docTemplate = `{
         "member.MemberResponse": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -12488,6 +12491,26 @@ const docTemplate = `{
                 }
             }
         },
+        "project.ProjectReportMemberViewResponse": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "user_name": {
+                    "type": "string"
+                },
+                "view_time": {
+                    "type": "string"
+                },
+                "viewed": {
+                    "type": "boolean"
+                }
+            }
+        },
         "project.ProjectReportNew": {
             "type": "object",
             "required": [
@@ -12555,34 +12578,14 @@ const docTemplate = `{
                 "user_name": {
                     "type": "string"
                 },
+                "viewed": {
+                    "type": "boolean"
+                },
                 "views": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/project.ProjectReportViewResponse"
+                        "$ref": "#/definitions/project.ProjectReportMemberViewResponse"
                     }
-                }
-            }
-        },
-        "project.ProjectReportViewResponse": {
-            "type": "object",
-            "properties": {
-                "created": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "project_id": {
-                    "type": "integer"
-                },
-                "project_report_id": {
-                    "type": "integer"
-                },
-                "viewer_id": {
-                    "type": "integer"
-                },
-                "viewer_name": {
-                    "type": "string"
                 }
             }
         },

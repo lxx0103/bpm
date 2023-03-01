@@ -456,6 +456,7 @@ func (s *projectService) GetProjectReportList(projectID int64, filter ProjectRep
 	list, err := query.GetProjectReportList(projectID, filter)
 
 	for k, v := range *list {
+		(*list)[k].Viewed = false
 		links, err := query.GetProjectReportLinks(v.ID)
 		if err != nil {
 			msg := "获取报告链接失败" // + err.Error()
@@ -467,7 +468,26 @@ func (s *projectService) GetProjectReportList(projectID int64, filter ProjectRep
 			msg := "获取报告阅读记录失败" // + err.Error()
 			return nil, errors.New(msg)
 		}
-		(*list)[k].Views = *views
+		var memberViews []ProjectReportMemberViewResponse
+		for _, member := range *members {
+			var memberView ProjectReportMemberViewResponse
+			memberView.UserID = member.UserID
+			memberView.UserName = member.Name
+			memberView.Avatar = member.Avatar
+			memberView.Viewed = false
+			for _, view := range *views {
+				if view.ViewerID == member.UserID {
+					memberView.Viewed = true
+					memberView.ViewTime = view.Created
+					if view.ViewerID == filter.UserID {
+						(*list)[k].Viewed = true
+					}
+					break
+				}
+			}
+			memberViews = append(memberViews, memberView)
+		}
+		(*list)[k].Views = memberViews
 	}
 	return list, err
 }
@@ -1011,6 +1031,15 @@ func (s *projectService) ViewProjectReport(reportID, organizationID, userID int6
 	}
 	if !memberValid {
 		msg := "你不是此项目的成员"
+		return errors.New(msg)
+	}
+	count, err := repo.CheckViewExist(reportID, userID)
+	if err != nil {
+		msg := "获取已阅记录失败"
+		return errors.New(msg)
+	}
+	if count != 0 {
+		msg := "重复确认"
 		return errors.New(msg)
 	}
 	var newReportView ProjectReportView
