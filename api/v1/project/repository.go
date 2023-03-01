@@ -348,7 +348,7 @@ func (r *projectRepository) UpdateProjectReportStatus(id int64, status int, byUs
 }
 func (r *projectRepository) CheckViewExist(reportID, userID int64) (int, error) {
 	var res int
-	row := r.tx.QueryRow(`SELECT count(1) FROM project_report_views WHERE report_id = ? AND viewer_id = ? AND status > 0 LIMIT 1`, reportID, userID)
+	row := r.tx.QueryRow(`SELECT count(1) FROM project_report_views WHERE project_report_id = ? AND viewer_id = ? AND status > 0 LIMIT 1`, reportID, userID)
 	err := row.Scan(&res)
 	if err != nil {
 		return 0, err
