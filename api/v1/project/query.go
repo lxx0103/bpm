@@ -288,7 +288,7 @@ func (r *projectQuery) GetProjectReportByID(id int64, organizationID int64) (*Pr
 	var report ProjectReportResponse
 	if organizationID == 0 {
 		err := r.conn.Get(&report, `
-		SELECT pr.id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_reports pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
@@ -301,7 +301,7 @@ func (r *projectQuery) GetProjectReportByID(id int64, organizationID int64) (*Pr
 		}
 	} else {
 		err := r.conn.Get(&report, `
-		SELECT pr.id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_reports pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
