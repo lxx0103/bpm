@@ -287,12 +287,27 @@ func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectRepor
 func (r *projectQuery) GetProjectReportByID(id int64, organizationID int64) (*ProjectReportResponse, error) {
 	var report ProjectReportResponse
 	if organizationID == 0 {
-		err := r.conn.Get(&report, "SELECT id, project_id, user_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND status > 0 limit 1", id)
+		err := r.conn.Get(&report, `
+		SELECT pr.id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		FROM project_reports pr
+		LEFT JOIN users u
+		ON pr.user_id = u.id
+		LEFT JOIN positions p
+		ON u.position_id = p.id 
+		WHERE pr.id = ? AND pr.status > 0 limit 1
+		`, id)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		err := r.conn.Get(&report, "SELECT id, project_id, user_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND organization_id = ? AND status > 0 limit 1", id, organizationID)
+		err := r.conn.Get(&report, `
+		SELECT pr.id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		FROM project_reports pr
+		LEFT JOIN users u
+		ON pr.user_id = u.id
+		LEFT JOIN positions p
+		ON u.position_id = p.id 
+		WHERE pr.id = ? AND pr.organization_id = ? AND pr.status > 0 limit 1`, id, organizationID)
 		if err != nil {
 			return nil, err
 		}
