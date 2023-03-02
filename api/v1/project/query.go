@@ -398,3 +398,21 @@ func (r *projectQuery) GetProjectReportViews(reportID int64) (*[]ProjectReportVi
 	`, args...)
 	return &projectReports, err
 }
+
+func (r *projectQuery) GetProjectReportUnreadList(userID int64) (*[]ProjectReportResponse, error) {
+	var projectReports []ProjectReportResponse
+	err := r.conn.Select(&projectReports, `
+		SELECT pr.id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		FROM project_reports pr
+		LEFT JOIN users u
+		ON pr.user_id = u.id
+		LEFT JOIN positions p
+		ON u.position_id = p.id
+		WHERE pr.project_id 
+		IN (SELECT project_id FROM project_members WHERE user_id = ? AND status > 0)
+		AND pr.id NOT IN (SELECT project_report_id FROM project_report_views WHERE viewer_id = ? AND status > 0)
+		AND pr.status > 0
+		ORDER BY pr.id DESC
+	`, userID, userID)
+	return &projectReports, err
+}

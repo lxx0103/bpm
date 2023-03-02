@@ -824,3 +824,23 @@ func WxViewProjectReport(c *gin.Context) {
 	}
 	response.Response(c, "ok")
 }
+
+// @Summary 项目报告未读列表
+// @Id 178
+// @Tags 小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Success 200 object response.SuccessRes{data=[]ProjectReportResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projectreports/unread [GET]
+func WxGetUnreadReportList(c *gin.Context) {
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	list, err := projectService.GetProjectReportUnreadList(claims.UserID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, list)
+}

@@ -1077,3 +1077,15 @@ func (s *projectService) ViewProjectReport(reportID, organizationID, userID int6
 	tx.Commit()
 	return nil
 }
+
+func (s *projectService) GetProjectReportUnreadList(userID int64) (*[]ProjectReportResponse, error) {
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	list, err := query.GetProjectReportUnreadList(userID)
+	if err != nil {
+		fmt.Println(err.Error())
+		msg := "获取未读报告失败" // + err.Error()
+		return nil, errors.New(msg)
+	}
+	return list, err
+}
