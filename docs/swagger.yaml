@@ -7339,6 +7339,32 @@ paths:
       summary: 根据ID已阅项目报告
       tags:
       - 小程序接口
+  /wx/projectreports/unread:
+    get:
+      consumes:
+      - application/json
+      operationId: "178"
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectReportResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目报告未读列表
+      tags:
+      - 小程序接口
   /wx/projects:
     post:
       consumes:
