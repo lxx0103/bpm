@@ -98,3 +98,16 @@ func (r *messageQuery) GetUserByPositionAndProject(positionID, projectID int64) 
 	`, positionID, projectID)
 	return &openIDs, err
 }
+
+func (r *messageQuery) GetMemberByProject(projectID int64) ([]string, error) {
+	var openID []string
+	err := r.conn.Select(&openID, `
+		SELECT identifier
+		FROM users
+		WHERE status = 1
+		AND id IN (
+			SELECT  user_id from project_members where project_id  = ? and status > 0
+		)
+		`, projectID)
+	return openID, err
+}

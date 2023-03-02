@@ -411,10 +411,10 @@ func (s *projectService) NewProjectReport(projectID int64, info ProjectReportNew
 	tx.Commit()
 
 	type NewProjectReportCreated struct {
-		ProjectID int64 `json:"project_id"`
+		ProjectReportID int64 `json:"project_report_id"`
 	}
 	var newEvent NewProjectReportCreated
-	newEvent.ProjectID = projectID
+	newEvent.ProjectReportID = reportID
 	rabbit, _ := queue.GetConn()
 	msg, _ := json.Marshal(newEvent)
 	err = rabbit.Publish("NewProjectReportCreated", msg)
@@ -674,10 +674,10 @@ func (s *projectService) UpdateProjectReport(reportID int64, info ProjectReportN
 	tx.Commit()
 
 	type NewProjectReportCreated struct {
-		ProjectID int64 `json:"project_id"`
+		ProjectReportID int64 `json:"project_report_id"`
 	}
 	var newEvent NewProjectReportCreated
-	newEvent.ProjectID = oldReport.ProjectID
+	newEvent.ProjectReportID = oldReport.ID
 	rabbit, _ := queue.GetConn()
 	msg, _ := json.Marshal(newEvent)
 	err = rabbit.Publish("NewProjectReportCreated", msg)

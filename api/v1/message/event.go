@@ -29,6 +29,9 @@ type NewEventCompleted struct {
 type NewEventAudited struct {
 	EventID int64 `json:"event_id"`
 }
+type NewProjectReportCreated struct {
+	ProjectReportID int64 `json:"project_report_id"`
+}
 type todoToSend struct {
 	OpenID string `json:"open_id"`
 	Thing2 string `json:"thing2"`
@@ -45,7 +48,14 @@ type auditToSend struct {
 	Thing6  string `json:"thing6"`
 	Time12  string `json:"time12"`
 }
-
+type reportToSend struct {
+	OpenID string `json:"open_id"`
+	Thing1 string `json:"thing1"`
+	Thing3 string `json:"thing3"`
+	Thing4 string `json:"thing4"`
+	Thing5 string `json:"thing5"`
+	Time2  string `json:"time2"`
+}
 type messageRes struct {
 	Errcode int    `json:"errcode"`
 	Errmsg  string `json:"errmsg"`
@@ -57,6 +67,7 @@ func Subscribe(conn *queue.Conn) {
 	conn.StartConsumer("NewEventTodo", "NewEventUpdated", NewEventTodo)
 	conn.StartConsumer("NewEventAudit", "NewEventCompleted", NewEventAudit)
 	conn.StartConsumer("NewEventAudited", "NewEventAudited", NextEventTodo)
+	conn.StartConsumer("NewProjectReportCreated", "NewProjectReportCreated", NewReportTodo)
 }
 
 func NewTodo(d amqp.Delivery) bool {
@@ -89,6 +100,15 @@ func checkExist(slice []todoToSend, find string) bool {
 }
 
 func checkExist2(slice []auditToSend, find string) bool {
+	for i := 0; i < len(slice); i++ {
+		if slice[i].OpenID == find {
+			return true
+		}
+	}
+	return false
+}
+
+func checkExist3(slice []reportToSend, find string) bool {
 	for i := 0; i < len(slice); i++ {
 		if slice[i].OpenID == find {
 			return true
@@ -706,6 +726,178 @@ func sendMessageToEvent(eventID int64) error {
 		templateID := config.ReadConfig("Wechat.daiban_template_id")
 		state := config.ReadConfig("Wechat.state")
 		jsonReq := []byte(`{ "touser" : "` + toSend.OpenID + `", "template_id" : "` + templateID + `", "page" : "pages/index/index","miniprogram_state" : "` + state + `","lang" : "zh_CN","data" : {  "thing2" : { "value": "` + toSend.Thing2 + `"}, "thing5": { "value": "` + toSend.Thing5 + `"}, "name7": { "value": "` + toSend.Name7 + `"}, "date3": { "value": "` + toSend.Date3 + `"}, "thing8": { "value": "` + toSend.Thing8 + `" } } }`)
+
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonReq))
+		if err != nil {
+			if err != nil {
+				fmt.Println(err.Error() + "14")
+				return err
+			}
+		}
+		q := req.URL.Query()
+		q.Add("access_token", accessToken)
+		req.URL.RawQuery = q.Encode()
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			if err != nil {
+				fmt.Println(err.Error() + "15")
+				return err
+			}
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			if err != nil {
+				fmt.Println(err.Error() + "16")
+				return err
+			}
+		}
+		var res messageRes
+		err = json.Unmarshal(body, &res)
+		if err != nil {
+			if err != nil {
+				fmt.Println(err.Error() + "17")
+				return err
+			}
+		}
+		if res.Errcode != 0 {
+			fmt.Println(res.Errmsg)
+		}
+	}
+	return nil
+}
+
+func NewReportTodo(d amqp.Delivery) bool {
+	if d.Body == nil {
+		return false
+	}
+	var NewProjectReportCreated NewProjectReportCreated
+	err := json.Unmarshal(d.Body, &NewProjectReportCreated)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "5")
+			return false
+		}
+	}
+	db := database.InitMySQL()
+	projectQuery := project.NewProjectQuery(db)
+	fmt.Println(NewProjectReportCreated.ProjectReportID)
+	report, err := projectQuery.GetProjectReportByID(NewProjectReportCreated.ProjectReportID, 0)
+	if err != nil {
+		fmt.Println(err.Error() + "18")
+		return false
+	}
+	err = sendMessageToReport(report.ID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	} else {
+		return true
+	}
+}
+
+func sendMessageToReport(reportID int64) error {
+	var toSends []reportToSend
+	db := database.InitMySQL()
+	query := NewMessageQuery(db)
+	projectQuery := project.NewProjectQuery(db)
+	report, err := projectQuery.GetProjectReportByID(reportID, 0)
+	if err != nil {
+		fmt.Println(err.Error(), "get report err")
+		return err
+
+	}
+	project, err := projectQuery.GetProjectByID(report.ProjectID, 0)
+	if err != nil {
+		fmt.Println(err.Error() + "get project error")
+		return err
+	}
+	users, err := query.GetMemberByProject(project.ID)
+	if err != nil {
+		fmt.Println(err.Error() + "get user error")
+		return err
+	}
+	for _, user := range users {
+		if !checkExist3(toSends, user) {
+			var msg reportToSend
+			msg.OpenID = user
+			msg.Thing1 = "内部报告"
+			msg.Thing3 = "有新报告，请查看"
+			msg.Thing4 = report.Username
+			msg.Thing5 = report.Name
+			msg.Time2 = report.Updated.Format("2006-01-02 15:04:05")
+			toSends = append(toSends, msg)
+		}
+	}
+	organizationQuery := organization.NewOrganizationQuery(db)
+	for _, toSend := range toSends {
+		accessToken, err := organizationQuery.GetAccessToken("bpm")
+		if err != nil {
+			if err.Error() != "sql: no rows in result set" {
+				if err != nil {
+					fmt.Println(err.Error() + "7")
+					return err
+				}
+			} else {
+				var tokenRes organization.WechatToken
+				httpClient := &http.Client{}
+				token_uri := config.ReadConfig("Wechat.token_uri")
+				appID := config.ReadConfig("Wechat.app_id")
+				appSecret := config.ReadConfig("Wechat.app_secret")
+				uri := token_uri + "?appid=" + appID + "&secret=" + appSecret + "&grant_type=client_credential"
+				req, err := http.NewRequest("GET", uri, nil)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "8")
+						return err
+					}
+				}
+				res, err := httpClient.Do(req)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "9")
+						return err
+					}
+				}
+				defer res.Body.Close()
+				body, err := ioutil.ReadAll(res.Body)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "10")
+						return err
+					}
+				}
+				err = json.Unmarshal(body, &tokenRes)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "11")
+						return err
+					}
+				}
+				tx, err := db.Begin()
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "12")
+						return err
+					}
+				}
+				defer tx.Rollback()
+				repo := organization.NewOrganizationRepository(tx)
+				err = repo.NewAccessToken("bpm", tokenRes.AccessToken)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "13")
+						return err
+					}
+				}
+				tx.Commit()
+				accessToken = tokenRes.AccessToken
+			}
+		}
+		url := config.ReadConfig("Wechat.message_uri")
+		templateID := config.ReadConfig("Wechat.report_template_id")
+		state := config.ReadConfig("Wechat.state")
+		jsonReq := []byte(`{ "touser" : "` + toSend.OpenID + `", "template_id" : "` + templateID + `", "page" : "pages/index/index","miniprogram_state" : "` + state + `","lang" : "zh_CN","data" : {  "thing1" : { "value": "` + toSend.Thing1 + `"}, "thing3": { "value": "` + toSend.Thing3 + `"}, "thing4": { "value": "` + toSend.Thing4 + `"}, "time2": { "value": "` + toSend.Time2 + `"}, "thing5": { "value": "` + toSend.Thing5 + `" } } }`)
 
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonReq))
 		if err != nil {

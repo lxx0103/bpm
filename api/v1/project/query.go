@@ -286,8 +286,18 @@ func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectRepor
 
 func (r *projectQuery) GetProjectReportByID(id int64, organizationID int64) (*ProjectReportResponse, error) {
 	var report ProjectReportResponse
-	err := r.conn.Get(&report, "SELECT id, project_id, user_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND organization_id = ? AND status > 0 limit 1", id, organizationID)
-	return &report, err
+	if organizationID == 0 {
+		err := r.conn.Get(&report, "SELECT id, project_id, user_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND status > 0 limit 1", id)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := r.conn.Get(&report, "SELECT id, project_id, user_id, name, report_date, content, updated, status FROM project_reports WHERE id = ? AND organization_id = ? AND status > 0 limit 1", id, organizationID)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &report, nil
 }
 
 func (r *projectQuery) GetProjectReportLinks(reportID int64) (*[]string, error) {
