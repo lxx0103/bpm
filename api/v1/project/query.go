@@ -272,7 +272,7 @@ func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectRepor
 	}
 	var projectReports []ProjectReportResponse
 	err := r.conn.Select(&projectReports, `
-		SELECT pr.id, pr.user_id, ps.name as project_name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.user_id, ps.name as project_name, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_reports pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
