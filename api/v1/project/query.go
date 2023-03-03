@@ -278,6 +278,8 @@ func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectRepor
 		ON pr.user_id = u.id
 		LEFT JOIN positions p
 		ON u.position_id = p.id
+		LEFT JOIN projects ps
+		ON pr.project_id = ps.id
 		WHERE `+strings.Join(where, " AND ")+`
 		ORDER BY id DESC
 	`, args...)
