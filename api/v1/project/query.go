@@ -272,7 +272,7 @@ func (r *projectQuery) GetProjectReportList(projectID int64, filter ProjectRepor
 	}
 	var projectReports []ProjectReportResponse
 	err := r.conn.Select(&projectReports, `
-		SELECT pr.id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.user_id, ps.name as project_name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_reports pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
@@ -288,12 +288,14 @@ func (r *projectQuery) GetProjectReportByID(id int64, organizationID int64) (*Pr
 	var report ProjectReportResponse
 	if organizationID == 0 {
 		err := r.conn.Get(&report, `
-		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.project_id, ps.name as project_name, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_reports pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
 		LEFT JOIN positions p
 		ON u.position_id = p.id 
+		LEFT JOIN projects ps
+		ON pr.project_id = ps.id
 		WHERE pr.id = ? AND pr.status > 0 limit 1
 		`, id)
 		if err != nil {
@@ -301,12 +303,14 @@ func (r *projectQuery) GetProjectReportByID(id int64, organizationID int64) (*Pr
 		}
 	} else {
 		err := r.conn.Get(&report, `
-		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.project_id, ps.name as project_name, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_reports pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
 		LEFT JOIN positions p
 		ON u.position_id = p.id 
+		LEFT JOIN projects ps
+		ON pr.project_id = ps.id
 		WHERE pr.id = ? AND pr.organization_id = ? AND pr.status > 0 limit 1`, id, organizationID)
 		if err != nil {
 			return nil, err
@@ -334,12 +338,14 @@ func (r *projectQuery) GetProjectRecordList(projectID int64, filter ProjectRecor
 	args = append(args, filter.PageSize)
 	var records []ProjectRecordResponse
 	err := r.conn.Select(&records, `
-		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.record_date, pr.content, pr.plan, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.project_id, ps.name, pr.user_id, pr.name, pr.record_date, pr.content, pr.plan, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_records pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
 		LEFT JOIN positions p
 		ON u.position_id = p.id
+		LEFT JOIN projects ps
+		ON pr.project_id = ps.id
 		WHERE `+strings.Join(where, " AND ")+`
 		ORDER BY pr.record_date desc, pr.updated desc
 		LIMIT ?, ?
@@ -402,12 +408,14 @@ func (r *projectQuery) GetProjectReportViews(reportID int64) (*[]ProjectReportVi
 func (r *projectQuery) GetProjectReportUnreadList(userID int64) (*[]ProjectReportResponse, error) {
 	var projectReports []ProjectReportResponse
 	err := r.conn.Select(&projectReports, `
-		SELECT pr.id, pr.project_id, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
+		SELECT pr.id, pr.project_id, ps.name as project_name, pr.user_id, pr.name, pr.report_date, pr.content, pr.status, pr.updated, IFNULL(u.name, "") as user_name, IFNULL(p.name, "") as position_name, u.avatar
 		FROM project_reports pr
 		LEFT JOIN users u
 		ON pr.user_id = u.id
 		LEFT JOIN positions p
 		ON u.position_id = p.id
+		LEFT JOIN projects ps
+		ON pr.project_id = ps.id
 		WHERE pr.project_id 
 		IN (SELECT project_id FROM project_members WHERE user_id = ? AND status > 0)
 		AND pr.id NOT IN (SELECT project_report_id FROM project_report_views WHERE viewer_id = ? AND status > 0)
