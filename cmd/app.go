@@ -29,7 +29,7 @@ func Run(args []string) {
 	log.ConfigLogger()
 	// cache.ConfigCache()
 	database.ConfigMysql()
-	event2.Subscribe(message.Subscribe)
+	event2.Subscribe(message.Subscribe, event.Subscribe)
 	r := router.InitRouter()
 	router.InitPublicRouter(r, auth.Routers, organization.PortalRouters, example.PortalRouters, vendor.PortalRouters, common.PortalRouters, project.PortalRouters)
 	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers, position.Routers, member.Routers, template.Routers, node.Routers, element.Routers, upload.Routers, example.Routers, common.Routers, vendor.Routers)

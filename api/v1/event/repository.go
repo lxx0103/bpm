@@ -384,19 +384,22 @@ func (r *eventRepository) GetAuditsByEventID(eventID int64) (*[]EventAudit, erro
 
 func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string, auditContent string) error {
 	status := 9
+	isActive := 0
 	if !approved {
 		status = 3
+		isActive = 1
 	}
 	_, err := r.tx.Exec(`
 		Update events SET 
 		audit_user = ?,
 		audit_time = ?,
 		audit_content = ?,
+		is_active = ?,
 		status = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, status, time.Now(), byUser, eventID)
+	`, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, isActive, status, time.Now(), byUser, eventID)
 	if err != nil {
 		return err
 	}
@@ -573,5 +576,50 @@ func (r *eventRepository) HandleReview(reviewID int64, status int, byUser string
 		updated_by = ? 
 		WHERE id = ?
 	`, byUser, time.Now().Format("2006-01-02 15:04:05"), handleContent, status, time.Now(), byUser, reviewID)
+	return err
+}
+
+func (r *eventRepository) SetEventActive(eventID int64) error {
+	_, err := r.tx.Exec(`
+		UPDATE events SET
+		is_active = 1,
+		updated = ?
+		WHERE id = ?
+	`, time.Now(), eventID)
+	return err
+}
+
+func (r *eventRepository) GetProjectProgress(id int64) (int, int, error) {
+	var all, completed int
+	row := r.tx.QueryRow(`
+		SELECT 
+		count(1) 
+		FROM events 
+		WHERE project_id = ?
+		AND status > 0`, id)
+	err := row.Scan(&all)
+	if err != nil {
+		return 0, 0, err
+	}
+	row = r.tx.QueryRow(`
+		SELECT 
+		count(1)
+		FROM events 
+		WHERE project_id = ?
+		AND status = 9`, id)
+	err = row.Scan(&completed)
+	if err != nil {
+		return 0, 0, err
+	}
+	return all, completed, err
+}
+
+func (r *eventRepository) UpdateProjectProgress(projectID int64, progress int) error {
+	sql := `UPDATE projects set progress = ?,`
+	if progress == 100 {
+		sql += ` status = 9,`
+	}
+	sql += ` updated = ? WHERE id = ?`
+	_, err := r.tx.Exec(sql, progress, time.Now(), projectID)
 	return err
 }

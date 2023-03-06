@@ -55,22 +55,43 @@ type AssignedProjectFilter struct {
 }
 
 type ProjectResponse struct {
-	ID               int64   `db:"id" json:"id"`
-	OrganizationID   int64   `db:"organization_id" json:"organization_id"`
-	OrganizationName string  `db:"organization_name" json:"organization_name"`
-	TemplateID       int64   `db:"template_id" json:"template_id"`
-	ClientID         int64   `db:"client_id" json:"client_id"`
-	ClientName       string  `db:"client_name" json:"client_name"`
-	Name             string  `db:"name" json:"name"`
-	Type             int     `db:"type" json:"type"`
-	Location         string  `db:"location" json:"location"`
-	Longitude        float64 `db:"longitude" json:"longitude"`
-	Latitude         float64 `db:"latitude" json:"latitude"`
-	CheckinDistance  int     `db:"checkin_distance" json:"checkin_distance"`
-	Priority         int     `db:"priority" json:"priority"`
-	Status           int     `db:"status" json:"status"`
+	ID               int64                 `db:"id" json:"id"`
+	OrganizationID   int64                 `db:"organization_id" json:"organization_id"`
+	OrganizationName string                `db:"organization_name" json:"organization_name"`
+	TemplateID       int64                 `db:"template_id" json:"template_id"`
+	TemplateName     string                `db:"template_name" json:"template_name"`
+	ClientID         int64                 `db:"client_id" json:"client_id"`
+	ClientName       string                `db:"client_name" json:"client_name"`
+	Name             string                `db:"name" json:"name"`
+	Type             int                   `db:"type" json:"type"`
+	Location         string                `db:"location" json:"location"`
+	Longitude        float64               `db:"longitude" json:"longitude"`
+	Latitude         float64               `db:"latitude" json:"latitude"`
+	CheckinDistance  int                   `db:"checkin_distance" json:"checkin_distance"`
+	Priority         int                   `db:"priority" json:"priority"`
+	Progress         int                   `db:"progress" json:"progress"`
+	Status           int                   `db:"status" json:"status"`
+	ActiveEvents     []ActiveEventResponse `json:"active_events"`
+	Created          time.Time             `db:"created" json:"created"`
+	CreatedBy        string                `db:"created_by" json:"created_by"`
+	Updated          time.Time             `db:"updated" json:"updated"`
+	UpdatedBy        string                `db:"updated_by" json:"updated_by"`
 }
 
+type ActiveEventResponse struct {
+	EventID    int64              `db:"event_id" json:"event_id"`
+	EventName  string             `db:"event_name" json:"event_name"`
+	Status     int                `db:"status" json:"status"`
+	ActiveType string             `json:"active_type"`
+	AssignType int                `db:"assign_type" json:"assign_type"`
+	AuditType  int                `db:"audit_type" json:"audit_type"`
+	Actives    []AssignToResponse `json:"actives"`
+}
+
+type AssignToResponse struct {
+	ID   int64  `db:"id" json:"id"`
+	Name string `db:"name" json:"name"`
+}
 type ProjectReportNew struct {
 	Name           string   `json:"name" binding:"required"`
 	ReportDate     string   `json:"report_date" binding:"required,datetime=2006-01-02"`

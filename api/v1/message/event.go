@@ -140,8 +140,8 @@ func NewEventAudit(d amqp.Delivery) bool {
 	if d.Body == nil {
 		return false
 	}
-	var NewEventUpdated NewEventUpdated
-	err := json.Unmarshal(d.Body, &NewEventUpdated)
+	var NewEventCompleted NewEventCompleted
+	err := json.Unmarshal(d.Body, &NewEventCompleted)
 	if err != nil {
 		if err != nil {
 			fmt.Println(err.Error() + "5")
@@ -150,7 +150,7 @@ func NewEventAudit(d amqp.Delivery) bool {
 	}
 	db := database.InitMySQL()
 	eventQuery := event.NewEventQuery(db)
-	event, err := eventQuery.GetEventByID(NewEventUpdated.EventID, 0)
+	event, err := eventQuery.GetEventByID(NewEventCompleted.EventID, 0)
 	if err != nil {
 		fmt.Println(err.Error() + "18")
 		return false

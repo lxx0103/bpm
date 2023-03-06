@@ -138,44 +138,38 @@ func (r *projectQuery) GetProjectCountByCreate(userName string, organization_id 
 	return count, nil
 }
 
-func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (*[]Project, error) {
+func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (*[]ProjectResponse, error) {
 	where, args := []string{"1=1"}, []interface{}{}
-	// args = append(args, positionID)
 	args = append(args, userID)
 	if v := filter.Type; v != 0 {
-		where, args = append(where, "type = ?"), append(args, v)
+		where, args = append(where, "p.type = ?"), append(args, v)
 	}
 	if v := filter.Status; v != 0 {
-		where, args = append(where, "status = ?"), append(args, v)
+		where, args = append(where, "p.status = ?"), append(args, v)
 	}
 	if v := filter.Name; v != "" {
-		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+		where, args = append(where, "p.name like ?"), append(args, "%"+v+"%")
 	}
 	args = append(args, organizationID)
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var projects []Project
-	// err := r.conn.Select(&projects, `
-	// 	SELECT * FROM projects WHERE id IN
-	// 	(
-	// 		SELECT project_id FROM events WHERE id IN
-	// 		(
-	// 			SELECT event_id FROM event_assigns WHERE ((assign_type = 1 and assign_to = ?) or (assign_type = 2 and assign_to = ?)) AND status > 0
-	// 		) AND status > 0
-	// 	)
-	// 	AND `+strings.Join(where, " AND ")+`
-	// 	AND status > 0 AND organization_id = ?
-	// 	ORDER BY ID DESC
-	// 	LIMIT ?, ?
-	// `, args...)
+	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT * FROM projects WHERE id IN 
+		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
+		FROM projects p
+		LEFT JOIN organizations o
+		ON p.organization_id = o.id
+		LEFT JOIN templates t
+		ON p.template_id = t.id
+		LEFT JOIN clients c
+		ON p.client_id = c.id
+		WHERE p.id IN 
 		(
 			SELECT project_id FROM project_members WHERE user_id = ? AND status > 0
 		)
 		AND `+strings.Join(where, " AND ")+`
-		AND status > 0 AND organization_id = ? 
-		ORDER BY ID DESC
+		AND p.status > 0 AND p.organization_id = ? 
+		ORDER BY p.ID DESC
 		LIMIT ?, ?
 	`, args...)
 	return &projects, err
@@ -425,4 +419,69 @@ func (r *projectQuery) GetProjectReportUnreadList(userID int64) (*[]ProjectRepor
 		ORDER BY pr.id DESC
 	`, userID, userID)
 	return &projectReports, err
+}
+
+func (r *projectQuery) GetActiveEvents(projectID int64) (*[]ActiveEventResponse, error) {
+	var events []ActiveEventResponse
+	err := r.conn.Select(&events, `
+		SELECT id as event_id, name as event_name, status ,assign_type, audit_type
+		FROM events 
+		WHERE project_id = ? 
+		AND status > 0
+		AND is_active = 1
+		ORDER BY sort DESC
+	`, projectID)
+	return &events, err
+}
+
+func (r *projectQuery) GetEventAssignPosition(eventID int64) (*[]AssignToResponse, error) {
+	var events []AssignToResponse
+	err := r.conn.Select(&events, `
+		SELECT ea.assign_to as id , IFNULL(p.name, "") as name 
+		FROM event_assigns ea 
+		LEFT JOIN positions p
+		ON ea.assign_to = p.id
+		WHERE ea.event_id = ? 
+		AND ea.status > 0
+	`, eventID)
+	return &events, err
+}
+
+func (r *projectQuery) GetEventAssignUser(eventID int64) (*[]AssignToResponse, error) {
+	var events []AssignToResponse
+	err := r.conn.Select(&events, `
+		SELECT ea.assign_to as id , IFNULL(p.name, "") as name 
+		FROM event_assigns ea 
+		LEFT JOIN users p
+		ON ea.assign_to = p.id
+		WHERE ea.event_id = ? 
+		AND ea.status > 0
+	`, eventID)
+	return &events, err
+}
+
+func (r *projectQuery) GetEventAuditPosition(eventID int64) (*[]AssignToResponse, error) {
+	var events []AssignToResponse
+	err := r.conn.Select(&events, `
+		SELECT ea.audit_to as id , IFNULL(p.name, "") as name 
+		FROM event_audits ea 
+		LEFT JOIN positions p
+		ON ea.audit_to = p.id
+		WHERE ea.event_id = ? 
+		AND ea.status > 0
+	`, eventID)
+	return &events, err
+}
+
+func (r *projectQuery) GetEventAuditUser(eventID int64) (*[]AssignToResponse, error) {
+	var events []AssignToResponse
+	err := r.conn.Select(&events, `
+		SELECT ea.audit_to as id , IFNULL(p.name, "") as name 
+		FROM event_audits ea 
+		LEFT JOIN users p
+		ON ea.audit_to = p.id
+		WHERE ea.event_id = ? 
+		AND ea.status > 0
+	`, eventID)
+	return &events, err
 }

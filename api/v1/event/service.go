@@ -312,6 +312,17 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 		msg := "create event NewEventCompleted error"
 		return errors.New(msg)
 	}
+	type EventActiveChanged struct {
+		ProjectID int64 `json:"project_id"`
+	}
+	var newEvent2 EventActiveChanged
+	newEvent2.ProjectID = event.ProjectID
+	msg2, _ := json.Marshal(newEvent2)
+	err = rabbit.Publish("EventActiveChanged", msg2)
+	if err != nil {
+		msg := "create event EventActiveChanged error"
+		return errors.New(msg)
+	}
 	return nil
 }
 
@@ -360,6 +371,18 @@ func (s *eventService) AuditEvent(eventID int64, info AuditEventInfo) error {
 		msg := "create event NewEventAudited error"
 		return errors.New(msg)
 	}
+	type EventActiveChanged struct {
+		ProjectID int64 `json:"project_id"`
+	}
+	var newEvent2 EventActiveChanged
+	newEvent2.ProjectID = event.ProjectID
+	msg2, _ := json.Marshal(newEvent2)
+	err = rabbit.Publish("EventActiveChanged", msg2)
+	if err != nil {
+		msg := "create event EventActiveChanged error"
+		return errors.New(msg)
+	}
+	fmt.Println(newEvent2)
 	return nil
 }
 func (s *eventService) GetAssignedAudit(filter AssignedAuditFilter, userID int64, positionID int64, organizationID int64) (*[]MyEvent, error) {

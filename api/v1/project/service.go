@@ -130,6 +130,12 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		if err != nil {
 			return nil, err
 		}
+		if len(*nodePres) == 0 {
+			err = eventRepo.SetEventActive((*events)[k].ID)
+			if err != nil {
+				return nil, err
+			}
+		}
 		nodeAudits, err := nodeRepo.GetAuditsByNodeID((*events)[k].NodeID)
 		if err != nil {
 			return nil, err
@@ -310,19 +316,57 @@ func (s *projectService) GetMyProject(filter MyProjectFilter, userName string, o
 	return myProjectsCount, myProjects, err
 }
 
-func (s *projectService) GetAssignedProject(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (int, *[]Project, error) {
+func (s *projectService) GetAssignedProject(filter AssignedProjectFilter, userID int64, positionID int64, organizationID int64) (int, *[]ProjectResponse, error) {
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
 
 	myProjects, err := query.GetProjectListByAssigned(filter, userID, positionID, organizationID)
 	if err != nil {
-		fmt.Println("aaa")
 		return 0, nil, err
 	}
 	myProjectsCount, err := query.GetProjectCountByAssigned(filter, userID, positionID, organizationID)
 	if err != nil {
-		fmt.Println("bbb")
 		return 0, nil, err
+	}
+	for k, v := range *myProjects {
+		events, err := query.GetActiveEvents(v.ID)
+		if err != nil {
+			return 0, nil, err
+		}
+		for k2, v2 := range *events {
+			if v2.Status == 1 || v2.Status == 3 {
+				(*events)[k2].ActiveType = "执行"
+				if v2.AssignType == 1 {
+					assigns, err := query.GetEventAssignPosition(v2.EventID)
+					if err != nil {
+						return 0, nil, err
+					}
+					(*events)[k2].Actives = *assigns
+				} else {
+					assigns, err := query.GetEventAssignUser(v2.EventID)
+					if err != nil {
+						return 0, nil, err
+					}
+					(*events)[k2].Actives = *assigns
+				}
+			} else if v2.Status == 2 {
+				(*events)[k2].ActiveType = "审核"
+				if v2.AuditType == 1 {
+					assigns, err := query.GetEventAuditPosition(v2.EventID)
+					if err != nil {
+						return 0, nil, err
+					}
+					(*events)[k2].Actives = *assigns
+				} else {
+					assigns, err := query.GetEventAuditUser(v2.EventID)
+					if err != nil {
+						return 0, nil, err
+					}
+					(*events)[k2].Actives = *assigns
+				}
+			}
+		}
+		(*myProjects)[k].ActiveEvents = *events
 	}
 	return myProjectsCount, myProjects, err
 }
