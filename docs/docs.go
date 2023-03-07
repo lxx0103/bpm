@@ -12362,6 +12362,46 @@ const docTemplate = `{
                 }
             }
         },
+        "project.ActiveEventResponse": {
+            "type": "object",
+            "properties": {
+                "active_type": {
+                    "type": "string"
+                },
+                "actives": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/project.AssignToResponse"
+                    }
+                },
+                "assign_type": {
+                    "type": "integer"
+                },
+                "audit_type": {
+                    "type": "integer"
+                },
+                "event_id": {
+                    "type": "integer"
+                },
+                "event_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "project.AssignToResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "project.Project": {
             "type": "object",
             "properties": {
@@ -12396,6 +12436,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "priority": {
+                    "type": "integer"
+                },
+                "progress": {
                     "type": "integer"
                 },
                 "status": {
@@ -12607,6 +12650,9 @@ const docTemplate = `{
                 "project_id": {
                     "type": "integer"
                 },
+                "project_name": {
+                    "type": "string"
+                },
                 "report_date": {
                     "type": "string"
                 },
@@ -12636,6 +12682,12 @@ const docTemplate = `{
         "project.ProjectResponse": {
             "type": "object",
             "properties": {
+                "active_events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/project.ActiveEventResponse"
+                    }
+                },
                 "checkin_distance": {
                     "type": "integer"
                 },
@@ -12643,6 +12695,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "client_name": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
                     "type": "string"
                 },
                 "id": {
@@ -12669,14 +12727,26 @@ const docTemplate = `{
                 "priority": {
                     "type": "integer"
                 },
+                "progress": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
                 },
                 "template_id": {
                     "type": "integer"
                 },
+                "template_name": {
+                    "type": "string"
+                },
                 "type": {
                     "type": "integer"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
                 }
             }
         },
