@@ -812,7 +812,7 @@ func sendMessageToReport(reportID int64) error {
 		fmt.Println(err.Error() + "get project error")
 		return err
 	}
-	users, err := query.GetMemberByProject(project.ID)
+	users, err := query.GetOtherMemberByProject(project.ID, report.UserID)
 	if err != nil {
 		fmt.Println(err.Error() + "get user error")
 		return err

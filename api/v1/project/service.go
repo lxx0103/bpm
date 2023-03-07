@@ -532,6 +532,39 @@ func (s *projectService) NewProjectReport(projectID int64, info ProjectReportNew
 			return errors.New(msg)
 		}
 	}
+
+	var newReportView ProjectReportView
+	newReportView.OrganizationID = info.OrganizationID
+	newReportView.ProjectID = projectID
+	newReportView.ProjectReportID = reportID
+	newReportView.ViewerID = info.UserID
+	newReportView.ViewerName = info.User
+	newReportView.Status = 1
+	newReportView.Created = time.Now()
+	newReportView.CreatedBy = info.User
+	newReportView.Updated = time.Now()
+	newReportView.UpdatedBy = info.User
+	err = repo.CreateProjectReportView(newReportView)
+	if err != nil {
+		msg := "创建已阅失败"
+		return errors.New(msg)
+	}
+	views, err := repo.GetProjectReportView(reportID)
+	if err != nil {
+		msg := "获取阅读记录失败"
+		return errors.New(msg)
+	}
+	reportStatus := 1
+	if len(*views) == len(*members) {
+		reportStatus = 3
+	} else {
+		reportStatus = 2
+	}
+	err = repo.UpdateProjectReportStatus(reportID, reportStatus, info.User)
+	if err != nil {
+		msg := "更新状态失败"
+		return errors.New(msg)
+	}
 	tx.Commit()
 
 	type NewProjectReportCreated struct {
