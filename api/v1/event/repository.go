@@ -617,7 +617,7 @@ func (r *eventRepository) GetProjectProgress(id int64) (int, int, error) {
 func (r *eventRepository) UpdateProjectProgress(projectID int64, progress int) error {
 	sql := `UPDATE projects set progress = ?,`
 	if progress == 100 {
-		sql += ` status = 9,`
+		sql += ` status = 2,`
 	}
 	sql += ` updated = ? WHERE id = ?`
 	_, err := r.tx.Exec(sql, progress, time.Now(), projectID)
