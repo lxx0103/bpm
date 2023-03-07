@@ -3,6 +3,7 @@ package project
 import (
 	"bpm/core/response"
 	"bpm/service"
+	"errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -178,7 +179,7 @@ func WxGetMyProjects(c *gin.Context) {
 	projectService := NewProjectService()
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	var count int
-	var list *[]Project
+	var list *[]ProjectResponse
 	if claims.UserType == 2 {
 		count, list, err = projectService.GetMyProject(filter, claims.Username, claims.OrganizationID)
 		if err != nil {
@@ -192,7 +193,7 @@ func WxGetMyProjects(c *gin.Context) {
 			return
 		}
 	} else {
-		response.ResponseError(c, "用户类型错误", err)
+		response.ResponseError(c, "用户类型错误", errors.New("管理用户无法获得我的任务"))
 		return
 	}
 	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)

@@ -87,26 +87,32 @@ func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64
 	return &projects, nil
 }
 
-func (r *projectQuery) GetProjectListByCreate(userName string, organization_id int64, filter MyProjectFilter) (*[]Project, error) {
+func (r *projectQuery) GetProjectListByCreate(userName string, organization_id int64, filter MyProjectFilter) (*[]ProjectResponse, error) {
 	where, args := []string{"1=1"}, []interface{}{}
 	if filter.Status == "all" {
-		where, args = append(where, "status > ?"), append(args, 0)
+		where, args = append(where, "p.status > ?"), append(args, 0)
 	} else {
-		where, args = append(where, "status = ?"), append(args, 1)
+		where, args = append(where, "p.status = ?"), append(args, 1)
 	}
 	if v := filter.Type; v != 0 {
-		where, args = append(where, "type = ?"), append(args, v)
+		where, args = append(where, "p.type = ?"), append(args, v)
 	}
-	where, args = append(where, "created_by = ?"), append(args, userName)
-	where, args = append(where, "organization_id = ?"), append(args, organization_id)
+	where, args = append(where, "p.created_by = ?"), append(args, userName)
+	where, args = append(where, "p.organization_id = ?"), append(args, organization_id)
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var projects []Project
+	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT * 
-		FROM projects 
+		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
+		FROM projects p
+		LEFT JOIN organizations o
+		ON p.organization_id = o.id
+		LEFT JOIN templates t
+		ON p.template_id = t.id
+		LEFT JOIN clients c
+		ON p.client_id = c.id 
 		WHERE `+strings.Join(where, " AND ")+`
-		ORDER BY id desc
+		ORDER BY p.id desc
 		LIMIT ?, ?
 	`, args...)
 	if err != nil {
@@ -201,7 +207,7 @@ func (r *projectQuery) GetProjectCountByAssigned(filter AssignedProjectFilter, u
 	return count, err
 }
 
-func (r *projectQuery) GetProjectListByClientID(userID int64, organization_id int64, filter MyProjectFilter) (*[]Project, error) {
+func (r *projectQuery) GetProjectListByClientID(userID int64, organization_id int64, filter MyProjectFilter) (*[]ProjectResponse, error) {
 	where, args := []string{"1=1"}, []interface{}{}
 	if filter.Status == "all" {
 		where, args = append(where, "p.status > ?"), append(args, 0)
@@ -215,12 +221,16 @@ func (r *projectQuery) GetProjectListByClientID(userID int64, organization_id in
 	where, args = append(where, "p.organization_id = ?"), append(args, organization_id)
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var projects []Project
+	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT p.* 
+		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
 		FROM projects p
+		LEFT JOIN organizations o
+		ON p.organization_id = o.id
+		LEFT JOIN templates t
+		ON p.template_id = t.id
 		LEFT JOIN clients c
-		ON p.client_id = c.id
+		ON p.client_id = c.id 
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
 	`, args...)
