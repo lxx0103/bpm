@@ -116,8 +116,8 @@ func (r *memberRepository) GetMembersByProjectID(projectID int64) (*[]MemberResp
 		LEFT JOIN users u 
 		ON m.user_id = u.id 
 		WHERE m.project_id = ? 
-		AND m.status = ? 
-		`, projectID, 1)
+		AND m.status > 0 
+		`, projectID)
 	if err != nil {
 		return nil, err
 	}
