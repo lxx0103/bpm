@@ -414,23 +414,23 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 		VALUES
 		(?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, eventID, byUser, auditContent, time.Now().Format("2006-01-02 15:04:05"), status, time.Now(), byUser, time.Now(), byUser)
-	if err != nil {
-		return err
-	}
-	_, err = r.tx.Exec(`
-		UPDATE projects 
-		SET status = 2 , 
-		updated = ?, 
-		updated_by = ?
-		WHERE status = 1
-		AND id not in (
-			SELECT project_id 
-			FROM events
-			WHERE status >0 
-			AND status <9
-			GROUP BY project_id 
-		)
-	`, time.Now(), byUser)
+	// if err != nil {
+	// 	return err
+	// }
+	// _, err = r.tx.Exec(`
+	// 	UPDATE projects
+	// 	SET status = 2 ,
+	// 	updated = ?,
+	// 	updated_by = ?
+	// 	WHERE status = 1
+	// 	AND id not in (
+	// 		SELECT project_id
+	// 		FROM events
+	// 		WHERE status >0
+	// 		AND status <9
+	// 		GROUP BY project_id
+	// 	)
+	// `, time.Now(), byUser)
 	return err
 }
 
