@@ -203,6 +203,31 @@ func (r *projectRepository) UpdateProjectReport(id int64, info ProjectReport) er
 	`, info.ReportDate, info.Name, info.Content, info.Status, info.Updated, info.UpdatedBy, id)
 	return err
 }
+func (r *projectRepository) DeleteReportByProjectID(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update project_reports SET status = -1, updated = ?,updated_by = ? WHERE project_id = ?`, time.Now(), byUser, id)
+	if err != nil {
+		return err
+	}
+	_, err = r.tx.Exec(`
+		Update project_report_links
+		SET	status = -1,
+		updated = ?,
+		updated_by = ?
+		WHERE project_id = ?
+	`, time.Now(), byUser, id)
+	if err != nil {
+		return err
+	}
+	_, err = r.tx.Exec(`
+		Update project_report_views 
+		SET	status = -1,
+		updated = ?,
+		updated_by = ?
+		WHERE project_id = ?
+	`, time.Now(), byUser, id)
+	return err
+}
 
 func (r *projectRepository) CreateProjectRecord(info ProjectRecord) (int64, error) {
 	result, err := r.tx.Exec(`
@@ -299,7 +324,21 @@ func (r *projectRepository) UpdateProjectRecord(id int64, info ProjectRecord) er
 	`, info.RecordDate, info.Name, info.Content, info.Plan, info.Status, info.Updated, info.UpdatedBy, id)
 	return err
 }
-
+func (r *projectRepository) DeleteRecordByProjectID(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update project_records SET status = -1, updated = ?,updated_by = ? WHERE project_id = ?`, time.Now(), byUser, id)
+	if err != nil {
+		return err
+	}
+	_, err = r.tx.Exec(`
+		Update project_record_photos
+		SET	status = -1,
+		updated = ?,
+		updated_by = ?
+		WHERE project_id = ?
+	`, time.Now(), byUser, id)
+	return err
+}
 func (r *projectRepository) CreateProjectReportView(info ProjectReportView) error {
 	_, err := r.tx.Exec(`
 		INSERT INTO project_report_views

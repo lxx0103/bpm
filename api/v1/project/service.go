@@ -297,6 +297,14 @@ func (s *projectService) DeleteProject(projectID int64, organizationID int64, us
 	if err != nil {
 		return err
 	}
+	err = repo.DeleteReportByProjectID(projectID, user)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteRecordByProjectID(projectID, user)
+	if err != nil {
+		return err
+	}
 	tx.Commit()
 	return nil
 }
