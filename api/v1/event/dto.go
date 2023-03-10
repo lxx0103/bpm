@@ -46,24 +46,34 @@ type MyEventResponse struct {
 }
 
 type MyEvent struct {
-	ID           int64  `db:"id" json:"id"`
-	ProjectID    int64  `db:"project_id" json:"project_id"`
-	ProjectName  string `db:"project_name" json:"project_name"`
-	Name         string `db:"name" json:"name"`
-	CompleteTime string `db:"complete_time" json:"complete_time"`
-	CompleteUser string `db:"complete_user" json:"complete_user"`
-	AuditTime    string `db:"audit_time" json:"audit_time"`
-	AuditUser    string `db:"audit_user" json:"audit_user"`
-	AuditContent string `db:"audit_content" json:"audit_content"`
-	NeedCheckin  int    `db:"need_checkin" json:"need_checkin"`
-	Sort         int    `db:"sort" json:"sort"`
-	Status       int    `db:"status" json:"status"`
-	Priority     int    `db:"priority" json:"priority"`
-	Deadline     string `db:"deadline" json:"deadline"`
-	CanReview    int    `db:"can_review" json:"can_review"`
-	IsActive     int    `json:"is_active"`
+	ID           int64               `db:"id" json:"id"`
+	ProjectID    int64               `db:"project_id" json:"project_id"`
+	ProjectName  string              `db:"project_name" json:"project_name"`
+	Name         string              `db:"name" json:"name"`
+	CompleteTime string              `db:"complete_time" json:"complete_time"`
+	CompleteUser string              `db:"complete_user" json:"complete_user"`
+	AuditTime    string              `db:"audit_time" json:"audit_time"`
+	AuditUser    string              `db:"audit_user" json:"audit_user"`
+	AuditContent string              `db:"audit_content" json:"audit_content"`
+	NeedCheckin  int                 `db:"need_checkin" json:"need_checkin"`
+	Sort         int                 `db:"sort" json:"sort"`
+	Status       int                 `db:"status" json:"status"`
+	Priority     int                 `db:"priority" json:"priority"`
+	Deadline     string              `db:"deadline" json:"deadline"`
+	CanReview    int                 `db:"can_review" json:"can_review"`
+	IsActive     int                 `db:"is_active" json:"is_active"`
+	NeedAudit    int                 `db:"need_audit" json:"need_audit"`
+	AuditType    int                 `db:"audit_type" json:"audit_type"`
+	Audit        *[]AssignToResponse `json:"audit"`
+	Assignable   int                 `db:"assignable" json:"assignable"`
+	AssignType   int                 `db:"assign_type" json:"assign_type"`
+	Assign       *[]AssignToResponse `json:"assign"`
 }
 
+type AssignToResponse struct {
+	ID   int64  `db:"id" json:"id"`
+	Name string `db:"name" json:"name"`
+}
 type SaveEventInfo struct {
 	Components []ComponentInfo `json:"component_info" binding:"required"`
 	User       string          `json:"user" swaggerignore:"true"`

@@ -164,28 +164,42 @@ func (s *eventService) GetAssignedEvent(filter AssignedEventFilter, userID int64
 func (s *eventService) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 	db := database.InitMySQL()
 	query := NewEventQuery(db)
-	myEvents, err := query.GetProjectEvent(filter)
+	events, err := query.GetProjectEvent(filter)
 	if err != nil {
 		if err.Error() != "sql: no rows in result set" {
 			return nil, err
 		}
 	}
-	for i := 0; i < len(*myEvents); i++ {
-		if (*myEvents)[i].Status == 9 {
-			(*myEvents)[i].IsActive = 2
-		} else {
-			active, err := query.CheckActive((*myEvents)[i].ID)
+
+	for k2, v2 := range *events {
+		if v2.AssignType == 1 {
+			assigns, err := query.GetEventAssignPosition(v2.ID)
 			if err != nil {
 				return nil, err
 			}
-			if !active {
-				(*myEvents)[i].IsActive = 2
-			} else {
-				(*myEvents)[i].IsActive = 1
+			(*events)[k2].Assign = assigns
+		} else {
+			assigns, err := query.GetEventAssignUser(v2.ID)
+			if err != nil {
+				return nil, err
 			}
+			(*events)[k2].Audit = assigns
+		}
+		if v2.AuditType == 1 {
+			audits, err := query.GetEventAuditPosition(v2.ID)
+			if err != nil {
+				return nil, err
+			}
+			(*events)[k2].Audit = audits
+		} else {
+			audits, err := query.GetEventAuditUser(v2.ID)
+			if err != nil {
+				return nil, err
+			}
+			(*events)[k2].Audit = audits
 		}
 	}
-	return myEvents, err
+	return events, err
 }
 
 func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {

@@ -192,7 +192,11 @@ func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*MyEvent, er
 
 func (r *eventQuery) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 	var event []MyEvent
-	sql := "SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, p.priority, IFNULL(e.deadline, '') as deadline, e.sort, e.status, p.priority, e.can_review FROM events e LEFT JOIN projects p ON p.id = e.project_id WHERE e.project_id = ?  "
+	sql := `
+		SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, p.priority, IFNULL(e.deadline, '') as deadline, e.sort, e.status, p.priority, e.can_review, e.assignable, e.is_active, e.assign_type, e.audit_type, e.need_audit
+		FROM events e 
+		LEFT JOIN projects p ON p.id = e.project_id 
+		WHERE e.project_id = ?  `
 	if filter.Status == "all" {
 		sql = sql + " AND e.status > 0"
 	} else {
@@ -337,4 +341,56 @@ func (r *eventQuery) GetReviewList(eventID int64) (*[]EventReviewResponse, error
 		ORDER BY id desc
 	`, eventID)
 	return &reviews, err
+}
+
+func (r *eventQuery) GetEventAssignPosition(eventID int64) (*[]AssignToResponse, error) {
+	var events []AssignToResponse
+	err := r.conn.Select(&events, `
+		SELECT ea.assign_to as id , IFNULL(p.name, "") as name 
+		FROM event_assigns ea 
+		LEFT JOIN positions p
+		ON ea.assign_to = p.id
+		WHERE ea.event_id = ? 
+		AND ea.status > 0
+	`, eventID)
+	return &events, err
+}
+
+func (r *eventQuery) GetEventAssignUser(eventID int64) (*[]AssignToResponse, error) {
+	var events []AssignToResponse
+	err := r.conn.Select(&events, `
+		SELECT ea.assign_to as id , IFNULL(p.name, "") as name 
+		FROM event_assigns ea 
+		LEFT JOIN users p
+		ON ea.assign_to = p.id
+		WHERE ea.event_id = ? 
+		AND ea.status > 0
+	`, eventID)
+	return &events, err
+}
+
+func (r *eventQuery) GetEventAuditPosition(eventID int64) (*[]AssignToResponse, error) {
+	var events []AssignToResponse
+	err := r.conn.Select(&events, `
+		SELECT ea.audit_to as id , IFNULL(p.name, "") as name 
+		FROM event_audits ea 
+		LEFT JOIN positions p
+		ON ea.audit_to = p.id
+		WHERE ea.event_id = ? 
+		AND ea.status > 0
+	`, eventID)
+	return &events, err
+}
+
+func (r *eventQuery) GetEventAuditUser(eventID int64) (*[]AssignToResponse, error) {
+	var events []AssignToResponse
+	err := r.conn.Select(&events, `
+		SELECT ea.audit_to as id , IFNULL(p.name, "") as name 
+		FROM event_audits ea 
+		LEFT JOIN users p
+		ON ea.audit_to = p.id
+		WHERE ea.event_id = ? 
+		AND ea.status > 0
+	`, eventID)
+	return &events, err
 }
