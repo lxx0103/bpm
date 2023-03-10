@@ -84,6 +84,7 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	}
 	if info.NeedAudit != 0 {
 		oldEvent.NeedAudit = info.NeedAudit
+		oldEvent.AuditType = info.AuditType
 		err = repo.DeleteEventAudit(eventID, info.User)
 		if err != nil {
 			return nil, err

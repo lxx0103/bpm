@@ -120,10 +120,12 @@ func (r *eventRepository) UpdateEvent(id int64, info Event, byUser string) error
 	_, err := r.tx.Exec(`
 		Update events SET 
 		assign_type = ?,
+		need_audit = ?,
+		audit_type = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.AssignType, time.Now(), byUser, id)
+	`, info.AssignType, info.NeedAudit, info.AuditType, time.Now(), byUser, id)
 	return err
 }
 
