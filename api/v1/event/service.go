@@ -183,7 +183,7 @@ func (s *eventService) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error)
 			if err != nil {
 				return nil, err
 			}
-			(*events)[k2].Audit = assigns
+			(*events)[k2].Assign = assigns
 		}
 		if v2.AuditType == 1 {
 			audits, err := query.GetEventAuditPosition(v2.ID)
