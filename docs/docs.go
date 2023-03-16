@@ -30,7 +30,7 @@ const docTemplate = `{
                     "API管理"
                 ],
                 "summary": "API列表",
-                "operationId": "36",
+                "operationId": "A010",
                 "parameters": [
                     {
                         "type": "integer",
@@ -100,7 +100,7 @@ const docTemplate = `{
                     "API管理"
                 ],
                 "summary": "新建API",
-                "operationId": "37",
+                "operationId": "A011",
                 "parameters": [
                     {
                         "description": "API信息",
@@ -152,7 +152,7 @@ const docTemplate = `{
                     "API管理"
                 ],
                 "summary": "根据ID获取API",
-                "operationId": "38",
+                "operationId": "A012",
                 "parameters": [
                     {
                         "type": "integer",
@@ -200,7 +200,7 @@ const docTemplate = `{
                     "API管理"
                 ],
                 "summary": "根据ID更新API",
-                "operationId": "39",
+                "operationId": "A013",
                 "parameters": [
                     {
                         "type": "integer",
@@ -259,7 +259,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "banner列表",
-                "operationId": "1013",
+                "operationId": "C013",
                 "parameters": [
                     {
                         "type": "integer",
@@ -323,7 +323,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "新建banner",
-                "operationId": "1014",
+                "operationId": "C014",
                 "parameters": [
                     {
                         "description": "banner信息",
@@ -375,7 +375,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID获取banner",
-                "operationId": "1015",
+                "operationId": "C015",
                 "parameters": [
                     {
                         "type": "integer",
@@ -423,7 +423,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID更新banner",
-                "operationId": "1016",
+                "operationId": "C016",
                 "parameters": [
                     {
                         "type": "integer",
@@ -480,7 +480,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID删除banner",
-                "operationId": "1017",
+                "operationId": "C017",
                 "parameters": [
                     {
                         "type": "integer",
@@ -530,7 +530,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "品牌列表",
-                "operationId": "1001",
+                "operationId": "C001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -594,7 +594,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "新建品牌",
-                "operationId": "1002",
+                "operationId": "C002",
                 "parameters": [
                     {
                         "description": "品牌信息",
@@ -646,7 +646,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID获取品牌",
-                "operationId": "1003",
+                "operationId": "C003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -694,7 +694,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID更新品牌",
-                "operationId": "1004",
+                "operationId": "C004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -751,7 +751,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID删除品牌",
-                "operationId": "1005",
+                "operationId": "C005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -801,7 +801,7 @@ const docTemplate = `{
                     "事件管理"
                 ],
                 "summary": "事件签到列表",
-                "operationId": "97",
+                "operationId": "F012",
                 "parameters": [
                     {
                         "type": "integer",
@@ -903,7 +903,7 @@ const docTemplate = `{
                     "客户管理"
                 ],
                 "summary": "客户列表",
-                "operationId": "24",
+                "operationId": "B001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -973,7 +973,7 @@ const docTemplate = `{
                     "客户管理"
                 ],
                 "summary": "新建客户",
-                "operationId": "25",
+                "operationId": "B002",
                 "parameters": [
                     {
                         "description": "客户信息",
@@ -1025,7 +1025,7 @@ const docTemplate = `{
                     "客户管理"
                 ],
                 "summary": "根据ID获取客户",
-                "operationId": "26",
+                "operationId": "B003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1073,7 +1073,7 @@ const docTemplate = `{
                     "客户管理"
                 ],
                 "summary": "根据ID更新客户",
-                "operationId": "27",
+                "operationId": "B004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1132,7 +1132,7 @@ const docTemplate = `{
                     "客户管理"
                 ],
                 "summary": "根据ID获取客户",
-                "operationId": "101",
+                "operationId": "B010",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1182,7 +1182,7 @@ const docTemplate = `{
                     "组件管理"
                 ],
                 "summary": "组件列表",
-                "operationId": "13",
+                "operationId": "D001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1255,7 +1255,7 @@ const docTemplate = `{
                     "组件管理"
                 ],
                 "summary": "根据ID获取组件",
-                "operationId": "15",
+                "operationId": "D002",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1305,7 +1305,7 @@ const docTemplate = `{
                     "元素管理"
                 ],
                 "summary": "元素列表",
-                "operationId": "64",
+                "operationId": "E001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1376,7 +1376,7 @@ const docTemplate = `{
                     "元素管理"
                 ],
                 "summary": "新建元素",
-                "operationId": "65",
+                "operationId": "E002",
                 "parameters": [
                     {
                         "description": "元素信息",
@@ -1428,7 +1428,7 @@ const docTemplate = `{
                     "元素管理"
                 ],
                 "summary": "根据ID获取元素",
-                "operationId": "66",
+                "operationId": "E003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1476,7 +1476,7 @@ const docTemplate = `{
                     "元素管理"
                 ],
                 "summary": "根据ID更新元素",
-                "operationId": "67",
+                "operationId": "E004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1533,7 +1533,7 @@ const docTemplate = `{
                     "元素管理"
                 ],
                 "summary": "根据ID更新元素",
-                "operationId": "68",
+                "operationId": "E005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1583,7 +1583,7 @@ const docTemplate = `{
                     "事件管理"
                 ],
                 "summary": "事件列表",
-                "operationId": "9",
+                "operationId": "F001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1655,7 +1655,7 @@ const docTemplate = `{
                     "事件管理"
                 ],
                 "summary": "根据ID获取事件",
-                "operationId": "11",
+                "operationId": "F002",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1703,7 +1703,7 @@ const docTemplate = `{
                     "事件管理"
                 ],
                 "summary": "根据ID更新事件",
-                "operationId": "12",
+                "operationId": "F003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1762,7 +1762,7 @@ const docTemplate = `{
                     "事件管理"
                 ],
                 "summary": "获取事件审核历史",
-                "operationId": "110",
+                "operationId": "F014",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1815,7 +1815,7 @@ const docTemplate = `{
                     "事件管理"
                 ],
                 "summary": "根据ID更新事件截止日期",
-                "operationId": "115",
+                "operationId": "F019",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1874,7 +1874,7 @@ const docTemplate = `{
                     "事件管理"
                 ],
                 "summary": "获取顾客反馈历史",
-                "operationId": "113",
+                "operationId": "F017",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1927,7 +1927,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "案例列表",
-                "operationId": "103",
+                "operationId": "G001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2033,7 +2033,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "新建案例",
-                "operationId": "104",
+                "operationId": "G002",
                 "parameters": [
                     {
                         "description": "案例信息",
@@ -2085,7 +2085,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "根据ID获取案例",
-                "operationId": "105",
+                "operationId": "G003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2133,7 +2133,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "根据ID更新案例",
-                "operationId": "106",
+                "operationId": "G004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2192,7 +2192,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "案例材料列表",
-                "operationId": "158",
+                "operationId": "G009",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2243,7 +2243,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "新建案例材料",
-                "operationId": "160",
+                "operationId": "G011",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2309,7 +2309,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "根据ID获取案例材料",
-                "operationId": "159",
+                "operationId": "G010",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2366,7 +2366,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "更新案例材料",
-                "operationId": "161",
+                "operationId": "G012",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2430,7 +2430,7 @@ const docTemplate = `{
                     "案例管理"
                 ],
                 "summary": "删除案例材料",
-                "operationId": "162",
+                "operationId": "G013",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2487,7 +2487,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "材料列表",
-                "operationId": "1006",
+                "operationId": "C006",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2551,7 +2551,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "新建材料",
-                "operationId": "1007",
+                "operationId": "C007",
                 "parameters": [
                     {
                         "description": "材料信息",
@@ -2603,7 +2603,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID获取材料",
-                "operationId": "1008",
+                "operationId": "C008",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2651,7 +2651,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID更新材料",
-                "operationId": "1009",
+                "operationId": "C009",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2708,7 +2708,7 @@ const docTemplate = `{
                     "基础信息管理"
                 ],
                 "summary": "根据ID删除材料",
-                "operationId": "1010",
+                "operationId": "C010",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2746,6 +2746,235 @@ const docTemplate = `{
                 }
             }
         },
+        "/meetings": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "会议管理"
+                ],
+                "summary": "会议列表",
+                "operationId": "H001",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "会议编码",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/meeting.MeetingResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "会议管理"
+                ],
+                "summary": "新建会议",
+                "operationId": "H002",
+                "parameters": [
+                    {
+                        "description": "会议信息",
+                        "name": "meeting_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/meeting.MeetingNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/meeting.Meeting"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/meetings/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "会议管理"
+                ],
+                "summary": "根据ID获取会议",
+                "operationId": "H003",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "会议ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/meeting.Meeting"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "会议管理"
+                ],
+                "summary": "根据ID更新会议",
+                "operationId": "H004",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "会议ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "会议信息",
+                        "name": "meeting_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/meeting.MeetingNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/meeting.Meeting"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/members": {
             "get": {
                 "consumes": [
@@ -2758,7 +2987,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "项目成员列表",
-                "operationId": "34",
+                "operationId": "I001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2809,7 +3038,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "新建项目成员",
-                "operationId": "35",
+                "operationId": "I002",
                 "parameters": [
                     {
                         "description": "成员信息",
@@ -2864,7 +3093,7 @@ const docTemplate = `{
                     "权限管理"
                 ],
                 "summary": "根据菜单ID获取API权限",
-                "operationId": "46",
+                "operationId": "A021",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2915,7 +3144,7 @@ const docTemplate = `{
                     "权限管理"
                 ],
                 "summary": "根据菜单ID更新API权限",
-                "operationId": "47",
+                "operationId": "A022",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2974,7 +3203,7 @@ const docTemplate = `{
                     "菜单管理"
                 ],
                 "summary": "菜单列表",
-                "operationId": "40",
+                "operationId": "A014",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3044,7 +3273,7 @@ const docTemplate = `{
                     "菜单管理"
                 ],
                 "summary": "新建菜单",
-                "operationId": "41",
+                "operationId": "A015",
                 "parameters": [
                     {
                         "description": "菜单信息",
@@ -3096,7 +3325,7 @@ const docTemplate = `{
                     "菜单管理"
                 ],
                 "summary": "根据ID获取菜单",
-                "operationId": "42",
+                "operationId": "A016",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3144,7 +3373,7 @@ const docTemplate = `{
                     "菜单管理"
                 ],
                 "summary": "根据ID更新菜单",
-                "operationId": "43",
+                "operationId": "A017",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3201,7 +3430,7 @@ const docTemplate = `{
                     "菜单管理"
                 ],
                 "summary": "根据ID更新菜单",
-                "operationId": "50",
+                "operationId": "A018",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3260,7 +3489,7 @@ const docTemplate = `{
                     "权限管理"
                 ],
                 "summary": "获取当前用户的前端路由",
-                "operationId": "48",
+                "operationId": "A023",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3301,7 +3530,7 @@ const docTemplate = `{
                     "节点管理"
                 ],
                 "summary": "节点列表",
-                "operationId": "59",
+                "operationId": "J001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3372,7 +3601,7 @@ const docTemplate = `{
                     "节点管理"
                 ],
                 "summary": "新建节点",
-                "operationId": "60",
+                "operationId": "J002",
                 "parameters": [
                     {
                         "description": "节点信息",
@@ -3424,7 +3653,7 @@ const docTemplate = `{
                     "节点管理"
                 ],
                 "summary": "根据ID获取节点",
-                "operationId": "61",
+                "operationId": "J003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3472,7 +3701,7 @@ const docTemplate = `{
                     "节点管理"
                 ],
                 "summary": "根据ID更新节点",
-                "operationId": "62",
+                "operationId": "J004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3529,7 +3758,7 @@ const docTemplate = `{
                     "节点管理"
                 ],
                 "summary": "根据ID删除节点",
-                "operationId": "63",
+                "operationId": "J005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3579,7 +3808,7 @@ const docTemplate = `{
                     "组织管理"
                 ],
                 "summary": "组织列表",
-                "operationId": "1",
+                "operationId": "K001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3643,7 +3872,7 @@ const docTemplate = `{
                     "组织管理"
                 ],
                 "summary": "新建组织",
-                "operationId": "2",
+                "operationId": "K002",
                 "parameters": [
                     {
                         "description": "组织信息",
@@ -3695,7 +3924,7 @@ const docTemplate = `{
                     "组织管理"
                 ],
                 "summary": "根据ID获取组织",
-                "operationId": "3",
+                "operationId": "K003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3743,7 +3972,7 @@ const docTemplate = `{
                     "组织管理"
                 ],
                 "summary": "根据ID更新组织",
-                "operationId": "4",
+                "operationId": "K004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3802,7 +4031,7 @@ const docTemplate = `{
                     "用户管理"
                 ],
                 "summary": "更新密码",
-                "operationId": "102",
+                "operationId": "A027",
                 "parameters": [
                     {
                         "description": "用户信息",
@@ -3854,7 +4083,7 @@ const docTemplate = `{
                     "门户接口"
                 ],
                 "summary": "banner列表",
-                "operationId": "1018",
+                "operationId": "C018",
                 "parameters": [
                     {
                         "type": "integer",
@@ -3920,7 +4149,7 @@ const docTemplate = `{
                     "门户接口"
                 ],
                 "summary": "案例列表",
-                "operationId": "141",
+                "operationId": "G007",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4028,7 +4257,7 @@ const docTemplate = `{
                     "门户接口"
                 ],
                 "summary": "根据ID获取案例",
-                "operationId": "142",
+                "operationId": "G008",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4078,7 +4307,7 @@ const docTemplate = `{
                     "门户接口"
                 ],
                 "summary": "案例材料列表",
-                "operationId": "163",
+                "operationId": "G014",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4131,7 +4360,7 @@ const docTemplate = `{
                     "门户接口"
                 ],
                 "summary": "材料列表",
-                "operationId": "1011",
+                "operationId": "C011",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4197,7 +4426,7 @@ const docTemplate = `{
                     "门户接口"
                 ],
                 "summary": "根据ID获取材料",
-                "operationId": "1012",
+                "operationId": "C012",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4247,7 +4476,7 @@ const docTemplate = `{
                     "门户接口"
                 ],
                 "summary": "组织列表",
-                "operationId": "140",
+                "operationId": "K007",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4325,7 +4554,7 @@ const docTemplate = `{
                     "门户接口"
                 ],
                 "summary": "根据ID获取组织",
-                "operationId": "143",
+                "operationId": "K008",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4375,7 +4604,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "项目记录列表",
-                "operationId": "174",
+                "operationId": "M032",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4423,6 +4652,134 @@ const docTemplate = `{
                 }
             }
         },
+        "/portal/vendors": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门户接口"
+                ],
+                "summary": "商家列表",
+                "operationId": "P006",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "商家名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "品牌名称",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "材料名称",
+                        "name": "material",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/vendors.VendorsResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/portal/vendors/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "门户接口"
+                ],
+                "summary": "根据ID获取商家",
+                "operationId": "P007",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商家ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vendors.VendorsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/positions": {
             "get": {
                 "consumes": [
@@ -4435,7 +4792,7 @@ const docTemplate = `{
                     "职位管理"
                 ],
                 "summary": "职位列表",
-                "operationId": "28",
+                "operationId": "L001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4505,7 +4862,7 @@ const docTemplate = `{
                     "职位管理"
                 ],
                 "summary": "新建职位",
-                "operationId": "29",
+                "operationId": "L002",
                 "parameters": [
                     {
                         "description": "职位信息",
@@ -4557,7 +4914,7 @@ const docTemplate = `{
                     "职位管理"
                 ],
                 "summary": "根据ID获取职位",
-                "operationId": "30",
+                "operationId": "L003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4605,7 +4962,7 @@ const docTemplate = `{
                     "职位管理"
                 ],
                 "summary": "根据ID更新职位",
-                "operationId": "31",
+                "operationId": "L004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4664,7 +5021,7 @@ const docTemplate = `{
                     "小程序模块管理"
                 ],
                 "summary": "根据职位ID获取小程序模块权限",
-                "operationId": "137",
+                "operationId": "A033",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4715,7 +5072,7 @@ const docTemplate = `{
                     "小程序模块管理"
                 ],
                 "summary": "根据职位ID更新小程序模块权限",
-                "operationId": "138",
+                "operationId": "A034",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4774,7 +5131,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID获取项目记录",
-                "operationId": "166",
+                "operationId": "M024",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4822,7 +5179,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID更新项目记录",
-                "operationId": "168",
+                "operationId": "M026",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4879,7 +5236,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID删除项目记录",
-                "operationId": "167",
+                "operationId": "M025",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4929,7 +5286,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID获取项目报告",
-                "operationId": "126",
+                "operationId": "M016",
                 "parameters": [
                     {
                         "type": "integer",
@@ -4977,7 +5334,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID更新项目报告",
-                "operationId": "130",
+                "operationId": "M020",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5034,7 +5391,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID删除项目报告",
-                "operationId": "127",
+                "operationId": "M017",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5084,7 +5441,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "项目列表",
-                "operationId": "5",
+                "operationId": "M001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5154,7 +5511,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "新建项目",
-                "operationId": "6",
+                "operationId": "M002",
                 "parameters": [
                     {
                         "description": "项目信息",
@@ -5206,7 +5563,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID获取项目",
-                "operationId": "7",
+                "operationId": "M003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5254,7 +5611,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID更新项目",
-                "operationId": "8",
+                "operationId": "M004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5311,7 +5668,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "根据ID删除项目",
-                "operationId": "51",
+                "operationId": "M005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5361,7 +5718,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "项目记录列表",
-                "operationId": "165",
+                "operationId": "M023",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5419,7 +5776,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "新建项目记录",
-                "operationId": "164",
+                "operationId": "M022",
                 "parameters": [
                     {
                         "description": "项目报告信息",
@@ -5471,7 +5828,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "项目报告列表",
-                "operationId": "124",
+                "operationId": "M014",
                 "parameters": [
                     {
                         "type": "string",
@@ -5527,7 +5884,7 @@ const docTemplate = `{
                     "项目管理"
                 ],
                 "summary": "新建项目报告",
-                "operationId": "122",
+                "operationId": "M012",
                 "parameters": [
                     {
                         "description": "项目报告信息",
@@ -5579,7 +5936,7 @@ const docTemplate = `{
                     "组织管理"
                 ],
                 "summary": "获取小程序码",
-                "operationId": "99",
+                "operationId": "K005",
                 "parameters": [
                     {
                         "description": "页面路径参数",
@@ -5631,7 +5988,7 @@ const docTemplate = `{
                     "权限管理"
                 ],
                 "summary": "根据角色ID获取菜单权限",
-                "operationId": "44",
+                "operationId": "A019",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5682,7 +6039,7 @@ const docTemplate = `{
                     "权限管理"
                 ],
                 "summary": "根据角色ID更新菜单权限",
-                "operationId": "45",
+                "operationId": "A020",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5741,7 +6098,7 @@ const docTemplate = `{
                     "角色管理"
                 ],
                 "summary": "角色列表",
-                "operationId": "18",
+                "operationId": "A003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5805,7 +6162,7 @@ const docTemplate = `{
                     "角色管理"
                 ],
                 "summary": "新建角色",
-                "operationId": "19",
+                "operationId": "A004",
                 "parameters": [
                     {
                         "description": "角色信息",
@@ -5857,7 +6214,7 @@ const docTemplate = `{
                     "角色管理"
                 ],
                 "summary": "根据ID获取角色",
-                "operationId": "20",
+                "operationId": "A005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5905,7 +6262,7 @@ const docTemplate = `{
                     "角色管理"
                 ],
                 "summary": "根据ID更新角色",
-                "operationId": "21",
+                "operationId": "A006",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5962,7 +6319,7 @@ const docTemplate = `{
                     "菜单管理"
                 ],
                 "summary": "根据ID删除角色",
-                "operationId": "52",
+                "operationId": "A024",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6012,7 +6369,7 @@ const docTemplate = `{
                     "用户权限"
                 ],
                 "summary": "登录",
-                "operationId": "17",
+                "operationId": "A001",
                 "parameters": [
                     {
                         "description": "登录类型",
@@ -6070,7 +6427,7 @@ const docTemplate = `{
                     "用户权限"
                 ],
                 "summary": "用户注册",
-                "operationId": "22",
+                "operationId": "A002",
                 "parameters": [
                     {
                         "description": "登录类型",
@@ -6122,7 +6479,7 @@ const docTemplate = `{
                     "模板管理"
                 ],
                 "summary": "模板列表",
-                "operationId": "54",
+                "operationId": "N001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6198,7 +6555,7 @@ const docTemplate = `{
                     "模板管理"
                 ],
                 "summary": "新建模板",
-                "operationId": "55",
+                "operationId": "N002",
                 "parameters": [
                     {
                         "description": "模板信息",
@@ -6250,7 +6607,7 @@ const docTemplate = `{
                     "模板管理"
                 ],
                 "summary": "根据ID获取模板",
-                "operationId": "56",
+                "operationId": "N003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6298,7 +6655,7 @@ const docTemplate = `{
                     "模板管理"
                 ],
                 "summary": "根据ID更新模板",
-                "operationId": "57",
+                "operationId": "N004",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6355,7 +6712,7 @@ const docTemplate = `{
                     "模板管理"
                 ],
                 "summary": "根据ID删除模板",
-                "operationId": "58",
+                "operationId": "N005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6405,7 +6762,7 @@ const docTemplate = `{
                     "文件管理"
                 ],
                 "summary": "文件上传列表",
-                "operationId": "72",
+                "operationId": "O001",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6462,7 +6819,7 @@ const docTemplate = `{
                     "文件管理"
                 ],
                 "summary": "上传文件",
-                "operationId": "73",
+                "operationId": "O002",
                 "parameters": [
                     {
                         "type": "file",
@@ -6512,7 +6869,7 @@ const docTemplate = `{
                     "用户管理"
                 ],
                 "summary": "用户列表",
-                "operationId": "32",
+                "operationId": "A008",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6590,7 +6947,7 @@ const docTemplate = `{
                     "用户管理"
                 ],
                 "summary": "根据ID获取用户",
-                "operationId": "33",
+                "operationId": "A009",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6638,7 +6995,7 @@ const docTemplate = `{
                     "用户管理"
                 ],
                 "summary": "根据ID更新用户",
-                "operationId": "23",
+                "operationId": "A007",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6745,7 +7102,7 @@ const docTemplate = `{
                     "用户管理"
                 ],
                 "summary": "更新用户密码",
-                "operationId": "176",
+                "operationId": "A036",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6792,6 +7149,289 @@ const docTemplate = `{
                 }
             }
         },
+        "/vendors": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商家管理"
+                ],
+                "summary": "商家列表",
+                "operationId": "P001",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "商家名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "品牌名称",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "材料名称",
+                        "name": "material",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/vendors.VendorsResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商家管理"
+                ],
+                "summary": "新建商家",
+                "operationId": "P002",
+                "parameters": [
+                    {
+                        "description": "商家信息",
+                        "name": "vendor_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vendors.VendorsNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/vendors/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商家管理"
+                ],
+                "summary": "根据ID获取商家",
+                "operationId": "P003",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商家ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vendors.VendorsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商家管理"
+                ],
+                "summary": "根据ID更新商家",
+                "operationId": "P004",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商家ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "商家信息",
+                        "name": "vendor_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vendors.VendorsNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "商家管理"
+                ],
+                "summary": "根据ID删除商家",
+                "operationId": "P005",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "商家ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/assignedprojects": {
             "get": {
                 "consumes": [
@@ -6804,7 +7444,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "获取我参加的项目",
-                "operationId": "74",
+                "operationId": "M007",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6876,7 +7516,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "审核事件",
-                "operationId": "91",
+                "operationId": "F009",
                 "parameters": [
                     {
                         "type": "integer",
@@ -6935,7 +7575,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "事件签到列表",
-                "operationId": "98",
+                "operationId": "F013",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7037,7 +7677,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "客户列表",
-                "operationId": "75",
+                "operationId": "B005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7101,7 +7741,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "新建客户",
-                "operationId": "76",
+                "operationId": "B006",
                 "parameters": [
                     {
                         "description": "客户信息",
@@ -7153,7 +7793,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID获取客户",
-                "operationId": "77",
+                "operationId": "B007",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7201,7 +7841,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID更新客户",
-                "operationId": "78",
+                "operationId": "B008",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7260,7 +7900,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据UserID获取客户",
-                "operationId": "100",
+                "operationId": "B009",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7310,7 +7950,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "组件列表",
-                "operationId": "87",
+                "operationId": "D003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7383,7 +8023,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "获取项目中的任务",
-                "operationId": "70",
+                "operationId": "F005",
                 "parameters": [
                     {
                         "type": "string",
@@ -7443,7 +8083,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID获取事件",
-                "operationId": "84",
+                "operationId": "F007",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7491,7 +8131,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID更新事件",
-                "operationId": "85",
+                "operationId": "F008",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7550,7 +8190,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "获取事件审核历史",
-                "operationId": "111",
+                "operationId": "F015",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7603,7 +8243,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "事件签到",
-                "operationId": "10",
+                "operationId": "F011",
                 "parameters": [
                     {
                         "description": "签到信息",
@@ -7655,7 +8295,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID更新事件截止日期",
-                "operationId": "116",
+                "operationId": "F020",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7714,7 +8354,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "获取顾客反馈历史",
-                "operationId": "114",
+                "operationId": "F018",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7765,7 +8405,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "顾客反馈",
-                "operationId": "112",
+                "operationId": "F016",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7824,7 +8464,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "案例列表",
-                "operationId": "107",
+                "operationId": "G005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7932,7 +8572,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID获取案例",
-                "operationId": "108",
+                "operationId": "G006",
                 "parameters": [
                     {
                         "type": "integer",
@@ -7970,6 +8610,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/wx/meetings": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "会议列表",
+                "operationId": "H005",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "会议编码",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/meeting.Meeting"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/members": {
             "get": {
                 "consumes": [
@@ -7982,7 +8688,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "项目成员列表",
-                "operationId": "82",
+                "operationId": "I003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8033,7 +8739,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "新建项目成员",
-                "operationId": "83",
+                "operationId": "I004",
                 "parameters": [
                     {
                         "description": "成员信息",
@@ -8088,7 +8794,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "获取我的审核任务",
-                "operationId": "94",
+                "operationId": "F010",
                 "parameters": [
                     {
                         "type": "string",
@@ -8141,7 +8847,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "获取我的当前任务",
-                "operationId": "53",
+                "operationId": "F004",
                 "parameters": [
                     {
                         "type": "string",
@@ -8194,7 +8900,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "获取我创建的项目",
-                "operationId": "69",
+                "operationId": "M006",
                 "parameters": [
                     {
                         "type": "string",
@@ -8267,7 +8973,7 @@ const docTemplate = `{
                     "小程序模块管理"
                 ],
                 "summary": "获取当前用户的小程序模块",
-                "operationId": "139",
+                "operationId": "A035",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8320,7 +9026,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID获取组织",
-                "operationId": "109",
+                "operationId": "K006",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8370,7 +9076,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "职位列表",
-                "operationId": "86",
+                "operationId": "L005",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8436,7 +9142,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID获取项目记录",
-                "operationId": "171",
+                "operationId": "M029",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8484,7 +9190,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID更新项目记录",
-                "operationId": "173",
+                "operationId": "M031",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8541,7 +9247,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID删除项目记录",
-                "operationId": "172",
+                "operationId": "M030",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8591,7 +9297,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID获取项目报告",
-                "operationId": "128",
+                "operationId": "M018",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8639,7 +9345,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID更新项目报告",
-                "operationId": "131",
+                "operationId": "M021",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8696,7 +9402,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID删除项目报告",
-                "operationId": "129",
+                "operationId": "M019",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8746,7 +9452,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID已阅项目报告",
-                "operationId": "177",
+                "operationId": "M033",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8796,7 +9502,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "项目报告未读列表",
-                "operationId": "178",
+                "operationId": "M034",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -8840,7 +9546,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "新建项目",
-                "operationId": "89",
+                "operationId": "M008",
                 "parameters": [
                     {
                         "description": "项目信息",
@@ -8892,7 +9598,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID获取项目",
-                "operationId": "90",
+                "operationId": "M009",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8940,7 +9646,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID更新项目",
-                "operationId": "92",
+                "operationId": "M010",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8997,7 +9703,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID删除项目",
-                "operationId": "93",
+                "operationId": "M011",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9047,7 +9753,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "项目记录列表",
-                "operationId": "170",
+                "operationId": "M028",
                 "parameters": [
                     {
                         "type": "string",
@@ -9103,7 +9809,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "新建项目记录",
-                "operationId": "169",
+                "operationId": "M027",
                 "parameters": [
                     {
                         "description": "项目记录信息",
@@ -9155,7 +9861,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "项目报告列表",
-                "operationId": "125",
+                "operationId": "M015",
                 "parameters": [
                     {
                         "type": "string",
@@ -9211,7 +9917,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "新建项目报告",
-                "operationId": "123",
+                "operationId": "M013",
                 "parameters": [
                     {
                         "description": "项目报告信息",
@@ -9263,7 +9969,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "处理顾客反馈",
-                "operationId": "118",
+                "operationId": "F021",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9322,7 +10028,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "保存事件",
-                "operationId": "71",
+                "operationId": "F006",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9381,7 +10087,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "模板列表",
-                "operationId": "79",
+                "operationId": "N006",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9453,7 +10159,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID获取模板",
-                "operationId": "80",
+                "operationId": "N007",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9503,7 +10209,7 @@ const docTemplate = `{
                     "文件管理"
                 ],
                 "summary": "WX文件上传列表",
-                "operationId": "95",
+                "operationId": "O003",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9560,7 +10266,7 @@ const docTemplate = `{
                     "文件管理"
                 ],
                 "summary": "WX上传文件",
-                "operationId": "96",
+                "operationId": "O004",
                 "parameters": [
                     {
                         "type": "file",
@@ -9610,7 +10316,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "用户列表",
-                "operationId": "81",
+                "operationId": "A025",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9676,7 +10382,7 @@ const docTemplate = `{
                     "小程序接口"
                 ],
                 "summary": "根据ID更新用户",
-                "operationId": "88",
+                "operationId": "A026",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9735,7 +10441,7 @@ const docTemplate = `{
                     "小程序模块管理"
                 ],
                 "summary": "小程序模块列表",
-                "operationId": "132",
+                "operationId": "A028",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9799,7 +10505,7 @@ const docTemplate = `{
                     "小程序模块管理"
                 ],
                 "summary": "新建小程序模块",
-                "operationId": "133",
+                "operationId": "A029",
                 "parameters": [
                     {
                         "description": "小程序模块信息",
@@ -9851,7 +10557,7 @@ const docTemplate = `{
                     "小程序模块管理"
                 ],
                 "summary": "根据ID获取小程序模块",
-                "operationId": "134",
+                "operationId": "A030",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9899,7 +10605,7 @@ const docTemplate = `{
                     "小程序模块管理"
                 ],
                 "summary": "根据ID更新小程序模块",
-                "operationId": "135",
+                "operationId": "A031",
                 "parameters": [
                     {
                         "type": "integer",
@@ -9956,7 +10662,7 @@ const docTemplate = `{
                     "小程序模块管理"
                 ],
                 "summary": "根据ID更新小程序模块",
-                "operationId": "136",
+                "operationId": "A032",
                 "parameters": [
                     {
                         "type": "integer",
@@ -10921,6 +11627,17 @@ const docTemplate = `{
                 }
             }
         },
+        "event.AssignToResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "event.AuditEventInfo": {
             "type": "object",
             "required": [
@@ -11330,11 +12047,32 @@ const docTemplate = `{
         "event.MyEvent": {
             "type": "object",
             "properties": {
+                "assign": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event.AssignToResponse"
+                    }
+                },
+                "assign_type": {
+                    "type": "integer"
+                },
+                "assignable": {
+                    "type": "integer"
+                },
+                "audit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/event.AssignToResponse"
+                    }
+                },
                 "audit_content": {
                     "type": "string"
                 },
                 "audit_time": {
                     "type": "string"
+                },
+                "audit_type": {
+                    "type": "integer"
                 },
                 "audit_user": {
                     "type": "string"
@@ -11359,6 +12097,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "need_audit": {
+                    "type": "integer"
                 },
                 "need_checkin": {
                     "type": "integer"
@@ -11675,6 +12416,80 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "meeting.Meeting": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "meeting.MeetingNew": {
+            "type": "object",
+            "required": [
+                "name",
+                "status"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "organization_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "status": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "meeting.MeetingResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },
@@ -12970,6 +13785,163 @@ const docTemplate = `{
                 },
                 "updated_by": {
                     "type": "string"
+                }
+            }
+        },
+        "vendors.VendorsBrand": {
+            "type": "object",
+            "properties": {
+                "brand_id": {
+                    "type": "integer"
+                },
+                "brand_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "vendors.VendorsMaterial": {
+            "type": "object",
+            "properties": {
+                "material_id": {
+                    "type": "integer"
+                },
+                "material_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "vendors.VendorsNew": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "brand": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "cover": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "description": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "material": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "qrcode": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vendors.VendorsQrcode"
+                    }
+                }
+            }
+        },
+        "vendors.VendorsQrcode": {
+            "type": "object",
+            "required": [
+                "name",
+                "type"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "vendors.VendorsResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "brand": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vendors.VendorsBrand"
+                    }
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "cover": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "latitude": {
+                    "type": "string"
+                },
+                "longitude": {
+                    "type": "string"
+                },
+                "material": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vendors.VendorsMaterial"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "qrcode": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vendors.VendorsQrcode"
+                    }
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         }

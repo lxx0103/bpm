@@ -632,6 +632,13 @@ definitions:
     required:
     - json_data
     type: object
+  event.AssignToResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   event.AuditEventInfo:
     properties:
       content:
@@ -904,10 +911,24 @@ definitions:
     type: object
   event.MyEvent:
     properties:
+      assign:
+        items:
+          $ref: '#/definitions/event.AssignToResponse'
+        type: array
+      assign_type:
+        type: integer
+      assignable:
+        type: integer
+      audit:
+        items:
+          $ref: '#/definitions/event.AssignToResponse'
+        type: array
       audit_content:
         type: string
       audit_time:
         type: string
+      audit_type:
+        type: integer
       audit_user:
         type: string
       can_review:
@@ -924,6 +945,8 @@ definitions:
         type: integer
       name:
         type: string
+      need_audit:
+        type: integer
       need_checkin:
         type: integer
       priority:
@@ -1135,6 +1158,56 @@ definitions:
         type: string
       type:
         type: string
+    type: object
+  meeting.Meeting:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  meeting.MeetingNew:
+    properties:
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - name
+    - status
+    type: object
+  meeting.MeetingResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      status:
+        type: integer
     type: object
   member.MemberNew:
     properties:
@@ -2016,6 +2089,111 @@ definitions:
       updated_by:
         type: string
     type: object
+  vendors.VendorsBrand:
+    properties:
+      brand_id:
+        type: integer
+      brand_name:
+        type: string
+    type: object
+  vendors.VendorsMaterial:
+    properties:
+      material_id:
+        type: integer
+      material_name:
+        type: string
+    type: object
+  vendors.VendorsNew:
+    properties:
+      address:
+        maxLength: 255
+        type: string
+      brand:
+        items:
+          type: integer
+        type: array
+      contact:
+        type: string
+      cover:
+        maxLength: 64
+        type: string
+      description:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      material:
+        items:
+          type: integer
+        type: array
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      phone:
+        maxLength: 64
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      qrcode:
+        items:
+          $ref: '#/definitions/vendors.VendorsQrcode'
+        type: array
+    required:
+    - name
+    type: object
+  vendors.VendorsQrcode:
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+    required:
+    - name
+    - type
+    type: object
+  vendors.VendorsResponse:
+    properties:
+      address:
+        type: string
+      brand:
+        items:
+          $ref: '#/definitions/vendors.VendorsBrand'
+        type: array
+      contact:
+        type: string
+      cover:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: string
+      longitude:
+        type: string
+      material:
+        items:
+          $ref: '#/definitions/vendors.VendorsMaterial'
+        type: array
+      name:
+        type: string
+      phone:
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      qrcode:
+        items:
+          $ref: '#/definitions/vendors.VendorsQrcode'
+        type: array
+      status:
+        type: integer
+    type: object
 host: 0.0.0.0:8080
 info:
   contact:
@@ -2029,7 +2207,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "36"
+      operationId: A010
       parameters:
       - description: 页码
         in: query
@@ -2073,7 +2251,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "37"
+      operationId: A011
       parameters:
       - description: API信息
         in: body
@@ -2104,7 +2282,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "38"
+      operationId: A012
       parameters:
       - description: API ID
         in: path
@@ -2133,7 +2311,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "39"
+      operationId: A013
       parameters:
       - description: API ID
         in: path
@@ -2169,7 +2347,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1013"
+      operationId: C013
       parameters:
       - description: 页码
         in: query
@@ -2209,7 +2387,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "1014"
+      operationId: C014
       parameters:
       - description: banner信息
         in: body
@@ -2240,7 +2418,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "1017"
+      operationId: C017
       parameters:
       - description: bannerID
         in: path
@@ -2269,7 +2447,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1015"
+      operationId: C015
       parameters:
       - description: bannerID
         in: path
@@ -2298,7 +2476,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "1016"
+      operationId: C016
       parameters:
       - description: bannerID
         in: path
@@ -2334,7 +2512,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1001"
+      operationId: C001
       parameters:
       - description: 页码
         in: query
@@ -2374,7 +2552,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "1002"
+      operationId: C002
       parameters:
       - description: 品牌信息
         in: body
@@ -2405,7 +2583,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "1005"
+      operationId: C005
       parameters:
       - description: 品牌ID
         in: path
@@ -2434,7 +2612,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1003"
+      operationId: C003
       parameters:
       - description: 品牌ID
         in: path
@@ -2463,7 +2641,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "1004"
+      operationId: C004
       parameters:
       - description: 品牌ID
         in: path
@@ -2499,7 +2677,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "97"
+      operationId: F012
       parameters:
       - description: 页码
         in: query
@@ -2564,7 +2742,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "24"
+      operationId: B001
       parameters:
       - description: 页码
         in: query
@@ -2608,7 +2786,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "25"
+      operationId: B002
       parameters:
       - description: 客户信息
         in: body
@@ -2639,7 +2817,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "26"
+      operationId: B003
       parameters:
       - description: 客户ID
         in: path
@@ -2668,7 +2846,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "27"
+      operationId: B004
       parameters:
       - description: 客户ID
         in: path
@@ -2704,7 +2882,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "101"
+      operationId: B010
       parameters:
       - description: 用户ID
         in: path
@@ -2734,7 +2912,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "13"
+      operationId: D001
       parameters:
       - description: 页码
         in: query
@@ -2780,7 +2958,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "15"
+      operationId: D002
       parameters:
       - description: 组件ID
         in: path
@@ -2810,7 +2988,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "64"
+      operationId: E001
       parameters:
       - description: 页码
         in: query
@@ -2855,7 +3033,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "65"
+      operationId: E002
       parameters:
       - description: 元素信息
         in: body
@@ -2886,7 +3064,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "68"
+      operationId: E005
       parameters:
       - description: 元素ID
         in: path
@@ -2915,7 +3093,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "66"
+      operationId: E003
       parameters:
       - description: 元素ID
         in: path
@@ -2944,7 +3122,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "67"
+      operationId: E004
       parameters:
       - description: 元素ID
         in: path
@@ -2980,7 +3158,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "9"
+      operationId: F001
       parameters:
       - description: 页码
         in: query
@@ -3025,7 +3203,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "11"
+      operationId: F002
       parameters:
       - description: 事件ID
         in: path
@@ -3054,7 +3232,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "12"
+      operationId: F003
       parameters:
       - description: 事件ID
         in: path
@@ -3090,7 +3268,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "110"
+      operationId: F014
       parameters:
       - description: 事件ID
         in: path
@@ -3122,7 +3300,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "115"
+      operationId: F019
       parameters:
       - description: 事件ID
         in: path
@@ -3158,7 +3336,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "113"
+      operationId: F017
       parameters:
       - description: 事件ID
         in: path
@@ -3190,7 +3368,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "103"
+      operationId: G001
       parameters:
       - description: 页码
         in: query
@@ -3258,7 +3436,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "104"
+      operationId: G002
       parameters:
       - description: 案例信息
         in: body
@@ -3289,7 +3467,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "105"
+      operationId: G003
       parameters:
       - description: 案例ID
         in: path
@@ -3318,7 +3496,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "106"
+      operationId: G004
       parameters:
       - description: 案例ID
         in: path
@@ -3354,7 +3532,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "158"
+      operationId: G009
       parameters:
       - description: 案例ID
         in: path
@@ -3385,7 +3563,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "160"
+      operationId: G011
       parameters:
       - description: 案例ID
         in: path
@@ -3426,7 +3604,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "159"
+      operationId: G010
       parameters:
       - description: 案例ID
         in: path
@@ -3461,7 +3639,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "162"
+      operationId: G013
       parameters:
       - description: 案例ID
         in: path
@@ -3495,7 +3673,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "161"
+      operationId: G012
       parameters:
       - description: 案例ID
         in: path
@@ -3536,7 +3714,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1006"
+      operationId: C006
       parameters:
       - description: 页码
         in: query
@@ -3576,7 +3754,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "1007"
+      operationId: C007
       parameters:
       - description: 材料信息
         in: body
@@ -3607,7 +3785,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "1010"
+      operationId: C010
       parameters:
       - description: 材料ID
         in: path
@@ -3636,7 +3814,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1008"
+      operationId: C008
       parameters:
       - description: 材料ID
         in: path
@@ -3665,7 +3843,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "1009"
+      operationId: C009
       parameters:
       - description: 材料ID
         in: path
@@ -3697,11 +3875,151 @@ paths:
       summary: 根据ID更新材料
       tags:
       - 基础信息管理
+  /meetings:
+    get:
+      consumes:
+      - application/json
+      operationId: H001
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 会议编码
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/meeting.MeetingResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 会议列表
+      tags:
+      - 会议管理
+    post:
+      consumes:
+      - application/json
+      operationId: H002
+      parameters:
+      - description: 会议信息
+        in: body
+        name: meeting_info
+        required: true
+        schema:
+          $ref: '#/definitions/meeting.MeetingNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/meeting.Meeting'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建会议
+      tags:
+      - 会议管理
+  /meetings/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: H003
+      parameters:
+      - description: 会议ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/meeting.Meeting'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取会议
+      tags:
+      - 会议管理
+    put:
+      consumes:
+      - application/json
+      operationId: H004
+      parameters:
+      - description: 会议ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 会议信息
+        in: body
+        name: meeting_info
+        required: true
+        schema:
+          $ref: '#/definitions/meeting.MeetingNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/meeting.Meeting'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新会议
+      tags:
+      - 会议管理
   /members:
     get:
       consumes:
       - application/json
-      operationId: "34"
+      operationId: I001
       parameters:
       - description: 项目ID
         in: query
@@ -3732,7 +4050,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "35"
+      operationId: I002
       parameters:
       - description: 成员信息
         in: body
@@ -3765,7 +4083,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "46"
+      operationId: A021
       parameters:
       - description: 菜单ID
         in: path
@@ -3796,7 +4114,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "47"
+      operationId: A022
       parameters:
       - description: 菜单ID
         in: path
@@ -3832,7 +4150,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "40"
+      operationId: A014
       parameters:
       - description: 页码
         in: query
@@ -3876,7 +4194,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "41"
+      operationId: A015
       parameters:
       - description: 菜单信息
         in: body
@@ -3907,7 +4225,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "50"
+      operationId: A018
       parameters:
       - description: 菜单ID
         in: path
@@ -3942,7 +4260,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "42"
+      operationId: A016
       parameters:
       - description: 菜单ID
         in: path
@@ -3971,7 +4289,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "43"
+      operationId: A017
       parameters:
       - description: 菜单ID
         in: path
@@ -4007,7 +4325,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "48"
+      operationId: A023
       produces:
       - application/json
       responses:
@@ -4031,7 +4349,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "59"
+      operationId: J001
       parameters:
       - description: 页码
         in: query
@@ -4076,7 +4394,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "60"
+      operationId: J002
       parameters:
       - description: 节点信息
         in: body
@@ -4107,7 +4425,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "63"
+      operationId: J005
       parameters:
       - description: 节点ID
         in: path
@@ -4136,7 +4454,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "61"
+      operationId: J003
       parameters:
       - description: 节点ID
         in: path
@@ -4165,7 +4483,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "62"
+      operationId: J004
       parameters:
       - description: 节点ID
         in: path
@@ -4201,7 +4519,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1"
+      operationId: K001
       parameters:
       - description: 页码
         in: query
@@ -4241,7 +4559,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "2"
+      operationId: K002
       parameters:
       - description: 组织信息
         in: body
@@ -4272,7 +4590,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "3"
+      operationId: K003
       parameters:
       - description: 组织ID
         in: path
@@ -4301,7 +4619,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "4"
+      operationId: K004
       parameters:
       - description: 组织ID
         in: path
@@ -4337,7 +4655,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "102"
+      operationId: A027
       parameters:
       - description: 用户信息
         in: body
@@ -4368,7 +4686,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1018"
+      operationId: C018
       parameters:
       - description: 页码
         in: query
@@ -4409,7 +4727,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "141"
+      operationId: G007
       parameters:
       - description: 页码
         in: query
@@ -4478,7 +4796,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "142"
+      operationId: G008
       parameters:
       - description: 案例ID
         in: path
@@ -4508,7 +4826,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "163"
+      operationId: G014
       parameters:
       - description: 案例ID
         in: path
@@ -4540,7 +4858,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1011"
+      operationId: C011
       parameters:
       - description: 页码
         in: query
@@ -4581,7 +4899,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "1012"
+      operationId: C012
       parameters:
       - description: 材料ID
         in: path
@@ -4611,7 +4929,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "140"
+      operationId: K007
       parameters:
       - description: 页码
         in: query
@@ -4660,7 +4978,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "143"
+      operationId: K008
       parameters:
       - description: 组织ID
         in: path
@@ -4690,7 +5008,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "174"
+      operationId: M032
       parameters:
       - description: 页码
         in: query
@@ -4723,11 +5041,90 @@ paths:
       summary: 项目记录列表
       tags:
       - 项目管理
+  /portal/vendors:
+    get:
+      consumes:
+      - application/json
+      operationId: P006
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 商家名称
+        in: query
+        name: name
+        type: string
+      - description: 品牌名称
+        in: query
+        name: brand
+        type: string
+      - description: 材料名称
+        in: query
+        name: material
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vendors.VendorsResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 商家列表
+      tags:
+      - 门户接口
+  /portal/vendors/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: P007
+      parameters:
+      - description: 商家ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/vendors.VendorsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取商家
+      tags:
+      - 门户接口
   /positions:
     get:
       consumes:
       - application/json
-      operationId: "28"
+      operationId: L001
       parameters:
       - description: 页码
         in: query
@@ -4771,7 +5168,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "29"
+      operationId: L002
       parameters:
       - description: 职位信息
         in: body
@@ -4802,7 +5199,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "30"
+      operationId: L003
       parameters:
       - description: 职位ID
         in: path
@@ -4831,7 +5228,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "31"
+      operationId: L004
       parameters:
       - description: 职位ID
         in: path
@@ -4867,7 +5264,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "137"
+      operationId: A033
       parameters:
       - description: 职位ID
         in: path
@@ -4898,7 +5295,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "138"
+      operationId: A034
       parameters:
       - description: 职位ID
         in: path
@@ -4934,7 +5331,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "167"
+      operationId: M025
       parameters:
       - description: 项目记录ID
         in: path
@@ -4963,7 +5360,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "166"
+      operationId: M024
       parameters:
       - description: 记录ID
         in: path
@@ -4992,7 +5389,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "168"
+      operationId: M026
       parameters:
       - description: 记录ID
         in: path
@@ -5028,7 +5425,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "127"
+      operationId: M017
       parameters:
       - description: 项目报告ID
         in: path
@@ -5057,7 +5454,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "126"
+      operationId: M016
       parameters:
       - description: 报告ID
         in: path
@@ -5086,7 +5483,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "130"
+      operationId: M020
       parameters:
       - description: 报告ID
         in: path
@@ -5122,7 +5519,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "5"
+      operationId: M001
       parameters:
       - description: 页码
         in: query
@@ -5166,7 +5563,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "6"
+      operationId: M002
       parameters:
       - description: 项目信息
         in: body
@@ -5197,7 +5594,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "51"
+      operationId: M005
       parameters:
       - description: 项目ID
         in: path
@@ -5226,7 +5623,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "7"
+      operationId: M003
       parameters:
       - description: 项目ID
         in: path
@@ -5255,7 +5652,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "8"
+      operationId: M004
       parameters:
       - description: 项目ID
         in: path
@@ -5291,7 +5688,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "165"
+      operationId: M023
       parameters:
       - description: 页码
         in: query
@@ -5327,7 +5724,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "164"
+      operationId: M022
       parameters:
       - description: 项目报告信息
         in: body
@@ -5358,7 +5755,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "124"
+      operationId: M014
       parameters:
       - description: 名称
         in: query
@@ -5392,7 +5789,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "122"
+      operationId: M012
       parameters:
       - description: 项目报告信息
         in: body
@@ -5423,7 +5820,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "99"
+      operationId: K005
       parameters:
       - description: 页面路径参数
         in: body
@@ -5454,7 +5851,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "44"
+      operationId: A019
       parameters:
       - description: 角色ID
         in: path
@@ -5485,7 +5882,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "45"
+      operationId: A020
       parameters:
       - description: 角色ID
         in: path
@@ -5521,7 +5918,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "18"
+      operationId: A003
       parameters:
       - description: 页码
         in: query
@@ -5561,7 +5958,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "19"
+      operationId: A004
       parameters:
       - description: 角色信息
         in: body
@@ -5592,7 +5989,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "52"
+      operationId: A024
       parameters:
       - description: 菜单ID
         in: path
@@ -5621,7 +6018,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "20"
+      operationId: A005
       parameters:
       - description: 角色ID
         in: path
@@ -5650,7 +6047,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "21"
+      operationId: A006
       parameters:
       - description: 角色ID
         in: path
@@ -5686,7 +6083,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "17"
+      operationId: A001
       parameters:
       - description: 登录类型
         in: body
@@ -5721,7 +6118,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "22"
+      operationId: A002
       parameters:
       - description: 登录类型
         in: body
@@ -5752,7 +6149,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "54"
+      operationId: N001
       parameters:
       - description: 页码
         in: query
@@ -5800,7 +6197,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "55"
+      operationId: N002
       parameters:
       - description: 模板信息
         in: body
@@ -5831,7 +6228,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "58"
+      operationId: N005
       parameters:
       - description: 模板ID
         in: path
@@ -5860,7 +6257,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "56"
+      operationId: N003
       parameters:
       - description: 模板ID
         in: path
@@ -5889,7 +6286,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "57"
+      operationId: N004
       parameters:
       - description: 模板ID
         in: path
@@ -5925,7 +6322,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "72"
+      operationId: O001
       parameters:
       - description: 组织ID
         in: query
@@ -5960,7 +6357,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      operationId: "73"
+      operationId: O002
       parameters:
       - description: 上传文件
         in: formData
@@ -5990,7 +6387,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "32"
+      operationId: A008
       parameters:
       - description: 页码
         in: query
@@ -6068,7 +6465,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "33"
+      operationId: A009
       parameters:
       - description: 用户ID
         in: path
@@ -6097,7 +6494,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "23"
+      operationId: A007
       parameters:
       - description: 用户ID
         in: path
@@ -6133,7 +6530,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "176"
+      operationId: A036
       parameters:
       - description: 用户ID
         in: path
@@ -6165,11 +6562,184 @@ paths:
       summary: 更新用户密码
       tags:
       - 用户管理
+  /vendors:
+    get:
+      consumes:
+      - application/json
+      operationId: P001
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 商家名称
+        in: query
+        name: name
+        type: string
+      - description: 品牌名称
+        in: query
+        name: brand
+        type: string
+      - description: 材料名称
+        in: query
+        name: material
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vendors.VendorsResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 商家列表
+      tags:
+      - 商家管理
+    post:
+      consumes:
+      - application/json
+      operationId: P002
+      parameters:
+      - description: 商家信息
+        in: body
+        name: vendor_info
+        required: true
+        schema:
+          $ref: '#/definitions/vendors.VendorsNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建商家
+      tags:
+      - 商家管理
+  /vendors/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: P005
+      parameters:
+      - description: 商家ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除商家
+      tags:
+      - 商家管理
+    get:
+      consumes:
+      - application/json
+      operationId: P003
+      parameters:
+      - description: 商家ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/vendors.VendorsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取商家
+      tags:
+      - 商家管理
+    put:
+      consumes:
+      - application/json
+      operationId: P004
+      parameters:
+      - description: 商家ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 商家信息
+        in: body
+        name: vendor_info
+        required: true
+        schema:
+          $ref: '#/definitions/vendors.VendorsNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新商家
+      tags:
+      - 商家管理
   /wx/assignedprojects:
     get:
       consumes:
       - application/json
-      operationId: "74"
+      operationId: M007
       parameters:
       - description: 状态（1进行中2完成不传为全部）
         in: query
@@ -6214,7 +6784,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "91"
+      operationId: F009
       parameters:
       - description: 事件ID
         in: path
@@ -6250,7 +6820,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "98"
+      operationId: F013
       parameters:
       - description: 页码
         in: query
@@ -6315,7 +6885,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "75"
+      operationId: B005
       parameters:
       - description: 页码
         in: query
@@ -6355,7 +6925,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "76"
+      operationId: B006
       parameters:
       - description: 客户信息
         in: body
@@ -6386,7 +6956,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "77"
+      operationId: B007
       parameters:
       - description: 客户ID
         in: path
@@ -6415,7 +6985,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "78"
+      operationId: B008
       parameters:
       - description: 客户ID
         in: path
@@ -6451,7 +7021,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "100"
+      operationId: B009
       parameters:
       - description: 用户ID
         in: path
@@ -6481,7 +7051,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "87"
+      operationId: D003
       parameters:
       - description: 页码
         in: query
@@ -6527,7 +7097,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "70"
+      operationId: F005
       parameters:
       - description: 显示所有all/激活active
         in: query
@@ -6564,7 +7134,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "84"
+      operationId: F007
       parameters:
       - description: 事件ID
         in: path
@@ -6593,7 +7163,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "85"
+      operationId: F008
       parameters:
       - description: 事件ID
         in: path
@@ -6629,7 +7199,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "111"
+      operationId: F015
       parameters:
       - description: 事件ID
         in: path
@@ -6661,7 +7231,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "10"
+      operationId: F011
       parameters:
       - description: 签到信息
         in: body
@@ -6692,7 +7262,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "116"
+      operationId: F020
       parameters:
       - description: 事件ID
         in: path
@@ -6728,7 +7298,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "114"
+      operationId: F018
       parameters:
       - description: 事件ID
         in: path
@@ -6759,7 +7329,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "112"
+      operationId: F016
       parameters:
       - description: 事件ID
         in: path
@@ -6795,7 +7365,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "107"
+      operationId: G005
       parameters:
       - description: 页码
         in: query
@@ -6864,7 +7434,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "108"
+      operationId: G006
       parameters:
       - description: 案例ID
         in: path
@@ -6890,11 +7460,52 @@ paths:
       summary: 根据ID获取案例
       tags:
       - 小程序接口
+  /wx/meetings:
+    get:
+      consumes:
+      - application/json
+      operationId: H005
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 会议编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/meeting.Meeting'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 会议列表
+      tags:
+      - 小程序接口
   /wx/members:
     get:
       consumes:
       - application/json
-      operationId: "82"
+      operationId: I003
       parameters:
       - description: 项目ID
         in: query
@@ -6925,7 +7536,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "83"
+      operationId: I004
       parameters:
       - description: 成员信息
         in: body
@@ -6958,7 +7569,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "94"
+      operationId: F010
       parameters:
       - description: 显示所有all/激活active
         in: query
@@ -6990,7 +7601,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "53"
+      operationId: F004
       parameters:
       - description: 显示所有all/激活active
         in: query
@@ -7022,7 +7633,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "69"
+      operationId: M006
       parameters:
       - description: 显示所有all/激活active
         in: query
@@ -7068,7 +7679,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "139"
+      operationId: A035
       parameters:
       - description: 父级id
         in: path
@@ -7100,7 +7711,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "109"
+      operationId: K006
       parameters:
       - description: 组织ID
         in: path
@@ -7130,7 +7741,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "86"
+      operationId: L005
       parameters:
       - description: 页码
         in: query
@@ -7171,7 +7782,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "172"
+      operationId: M030
       parameters:
       - description: 项目记录ID
         in: path
@@ -7200,7 +7811,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "171"
+      operationId: M029
       parameters:
       - description: 记录ID
         in: path
@@ -7229,7 +7840,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "173"
+      operationId: M031
       parameters:
       - description: 记录ID
         in: path
@@ -7265,7 +7876,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "129"
+      operationId: M019
       parameters:
       - description: 项目报告ID
         in: path
@@ -7294,7 +7905,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "128"
+      operationId: M018
       parameters:
       - description: 报告ID
         in: path
@@ -7323,7 +7934,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "131"
+      operationId: M021
       parameters:
       - description: 报告ID
         in: path
@@ -7359,7 +7970,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "177"
+      operationId: M033
       parameters:
       - description: 报告ID
         in: path
@@ -7389,7 +8000,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "178"
+      operationId: M034
       produces:
       - application/json
       responses:
@@ -7415,7 +8026,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "89"
+      operationId: M008
       parameters:
       - description: 项目信息
         in: body
@@ -7446,7 +8057,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "93"
+      operationId: M011
       parameters:
       - description: 项目ID
         in: path
@@ -7475,7 +8086,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "90"
+      operationId: M009
       parameters:
       - description: 项目ID
         in: path
@@ -7504,7 +8115,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "92"
+      operationId: M010
       parameters:
       - description: 项目ID
         in: path
@@ -7540,7 +8151,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "170"
+      operationId: M028
       parameters:
       - description: 名称
         in: query
@@ -7574,7 +8185,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "169"
+      operationId: M027
       parameters:
       - description: 项目记录信息
         in: body
@@ -7605,7 +8216,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "125"
+      operationId: M015
       parameters:
       - description: 名称
         in: query
@@ -7639,7 +8250,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "123"
+      operationId: M013
       parameters:
       - description: 项目报告信息
         in: body
@@ -7670,7 +8281,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "118"
+      operationId: F021
       parameters:
       - description: 反馈ID
         in: path
@@ -7706,7 +8317,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "71"
+      operationId: F006
       parameters:
       - description: 事件ID
         in: path
@@ -7742,7 +8353,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "79"
+      operationId: N006
       parameters:
       - description: 页码
         in: query
@@ -7787,7 +8398,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "80"
+      operationId: N007
       parameters:
       - description: 模板ID
         in: path
@@ -7817,7 +8428,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "95"
+      operationId: O003
       parameters:
       - description: 组织ID
         in: query
@@ -7852,7 +8463,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      operationId: "96"
+      operationId: O004
       parameters:
       - description: 上传文件
         in: formData
@@ -7882,7 +8493,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "81"
+      operationId: A025
       parameters:
       - description: 页码
         in: query
@@ -7923,7 +8534,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "88"
+      operationId: A026
       parameters:
       - description: 用户ID
         in: path
@@ -7959,7 +8570,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "132"
+      operationId: A028
       parameters:
       - description: 页码
         in: query
@@ -7999,7 +8610,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: "133"
+      operationId: A029
       parameters:
       - description: 小程序模块信息
         in: body
@@ -8030,7 +8641,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: "136"
+      operationId: A032
       parameters:
       - description: 小程序模块ID
         in: path
@@ -8065,7 +8676,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: "134"
+      operationId: A030
       parameters:
       - description: 小程序模块ID
         in: path
@@ -8094,7 +8705,7 @@ paths:
     put:
       consumes:
       - application/json
-      operationId: "135"
+      operationId: A031
       parameters:
       - description: 小程序模块ID
         in: path

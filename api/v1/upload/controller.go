@@ -11,7 +11,7 @@ import (
 )
 
 // @Summary 文件上传列表
-// @Id 72
+// @Id O001
 // @Tags 文件管理
 // @version 1.0
 // @Accept application/json
@@ -40,7 +40,7 @@ func GetUploadList(c *gin.Context) {
 }
 
 // @Summary 上传文件
-// @Id 73
+// @Id O002
 // @Tags 文件管理
 // @version 1.0
 // @Accept multipart/form-data
@@ -75,7 +75,7 @@ func NewUpload(c *gin.Context) {
 }
 
 // @Summary WX文件上传列表
-// @Id 95
+// @Id O003
 // @Tags 文件管理
 // @version 1.0
 // @Accept application/json
@@ -90,7 +90,7 @@ func WxGetUploadList(c *gin.Context) {
 }
 
 // @Summary WX上传文件
-// @Id 96
+// @Id O004
 // @Tags 文件管理
 // @version 1.0
 // @Accept multipart/form-data

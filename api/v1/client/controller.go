@@ -10,7 +10,7 @@ import (
 )
 
 // @Summary 客户列表
-// @Id 24
+// @Id B001
 // @Tags 客户管理
 // @version 1.0
 // @Accept application/json
@@ -41,7 +41,7 @@ func GetClientList(c *gin.Context) {
 }
 
 // @Summary 新建客户
-// @Id 25
+// @Id B002
 // @Tags 客户管理
 // @version 1.0
 // @Accept application/json
@@ -75,7 +75,7 @@ func NewClient(c *gin.Context) {
 }
 
 // @Summary 根据ID获取客户
-// @Id 26
+// @Id B003
 // @Tags 客户管理
 // @version 1.0
 // @Accept application/json
@@ -103,7 +103,7 @@ func GetClientByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新客户
-// @Id 27
+// @Id B004
 // @Tags 客户管理
 // @version 1.0
 // @Accept application/json
@@ -137,7 +137,7 @@ func UpdateClient(c *gin.Context) {
 }
 
 // @Summary 客户列表
-// @Id 75
+// @Id B005
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -153,7 +153,7 @@ func WxGetClientList(c *gin.Context) {
 }
 
 // @Summary 新建客户
-// @Id 76
+// @Id B006
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -167,7 +167,7 @@ func WxNewClient(c *gin.Context) {
 }
 
 // @Summary 根据ID获取客户
-// @Id 77
+// @Id B007
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -182,7 +182,7 @@ func WxGetClientByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新客户
-// @Id 78
+// @Id B008
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -197,7 +197,7 @@ func WxUpdateClient(c *gin.Context) {
 }
 
 // @Summary 根据UserID获取客户
-// @Id 100
+// @Id B009
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -212,7 +212,7 @@ func WxGetClientByUserID(c *gin.Context) {
 }
 
 // @Summary 根据ID获取客户
-// @Id 101
+// @Id B010
 // @Tags 客户管理
 // @version 1.0
 // @Accept application/json

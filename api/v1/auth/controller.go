@@ -11,7 +11,7 @@ import (
 )
 
 // @Summary 登录
-// @Id 17
+// @Id A001
 // @Tags 用户权限
 // @version 1.0
 // @Accept application/json
@@ -78,7 +78,7 @@ func Signin(c *gin.Context) {
 	response.Response(c, res)
 }
 
-// @Id 22
+// @Id A002
 // @Tags 用户权限
 // @Summary 用户注册
 // @version 1.0
@@ -105,7 +105,7 @@ func Signup(c *gin.Context) {
 }
 
 // @Summary 角色列表
-// @Id 18
+// @Id A003
 // @Tags 角色管理
 // @version 1.0
 // @Accept application/json
@@ -133,7 +133,7 @@ func GetRoleList(c *gin.Context) {
 }
 
 // @Summary 新建角色
-// @Id 19
+// @Id A004
 // @Tags 角色管理
 // @version 1.0
 // @Accept application/json
@@ -160,7 +160,7 @@ func NewRole(c *gin.Context) {
 }
 
 // @Summary 根据ID获取角色
-// @Id 20
+// @Id A005
 // @Tags 角色管理
 // @version 1.0
 // @Accept application/json
@@ -186,7 +186,7 @@ func GetRoleByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新角色
-// @Id 21
+// @Id A006
 // @Tags 角色管理
 // @version 1.0
 // @Accept application/json
@@ -219,7 +219,7 @@ func UpdateRole(c *gin.Context) {
 }
 
 // @Summary 根据ID更新用户
-// @Id 23
+// @Id A007
 // @Tags 用户管理
 // @version 1.0
 // @Accept application/json
@@ -252,7 +252,7 @@ func UpdateUser(c *gin.Context) {
 }
 
 // @Summary 用户列表
-// @Id 32
+// @Id A008
 // @Tags 用户管理
 // @version 1.0
 // @Accept application/json
@@ -284,7 +284,7 @@ func GetUserList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取用户
-// @Id 33
+// @Id A009
 // @Tags 用户管理
 // @version 1.0
 // @Accept application/json
@@ -312,7 +312,7 @@ func GetUserByID(c *gin.Context) {
 }
 
 // @Summary API列表
-// @Id 36
+// @Id A010
 // @Tags API管理
 // @version 1.0
 // @Accept application/json
@@ -341,7 +341,7 @@ func GetAPIList(c *gin.Context) {
 }
 
 // @Summary 新建API
-// @Id 37
+// @Id A011
 // @Tags API管理
 // @version 1.0
 // @Accept application/json
@@ -368,7 +368,7 @@ func NewAPI(c *gin.Context) {
 }
 
 // @Summary 根据ID获取API
-// @Id 38
+// @Id A012
 // @Tags API管理
 // @version 1.0
 // @Accept application/json
@@ -394,7 +394,7 @@ func GetAPIByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新API
-// @Id 39
+// @Id A013
 // @Tags API管理
 // @version 1.0
 // @Accept application/json
@@ -427,7 +427,7 @@ func UpdateAPI(c *gin.Context) {
 }
 
 // @Summary 菜单列表
-// @Id 40
+// @Id A014
 // @Tags 菜单管理
 // @version 1.0
 // @Accept application/json
@@ -456,7 +456,7 @@ func GetMenuList(c *gin.Context) {
 }
 
 // @Summary 新建菜单
-// @Id 41
+// @Id A015
 // @Tags 菜单管理
 // @version 1.0
 // @Accept application/json
@@ -483,7 +483,7 @@ func NewMenu(c *gin.Context) {
 }
 
 // @Summary 根据ID获取菜单
-// @Id 42
+// @Id A016
 // @Tags 菜单管理
 // @version 1.0
 // @Accept application/json
@@ -509,7 +509,7 @@ func GetMenuByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新菜单
-// @Id 43
+// @Id A017
 // @Tags 菜单管理
 // @version 1.0
 // @Accept application/json
@@ -542,7 +542,7 @@ func UpdateMenu(c *gin.Context) {
 }
 
 // @Summary 根据ID更新菜单
-// @Id 50
+// @Id A018
 // @Tags 菜单管理
 // @version 1.0
 // @Accept application/json
@@ -569,7 +569,7 @@ func DeleteMenu(c *gin.Context) {
 }
 
 // @Summary 根据角色ID获取菜单权限
-// @Id 44
+// @Id A019
 // @Tags 权限管理
 // @version 1.0
 // @Accept application/json
@@ -595,7 +595,7 @@ func GetRoleMenu(c *gin.Context) {
 }
 
 // @Summary 根据角色ID更新菜单权限
-// @Id 45
+// @Id A020
 // @Tags 权限管理
 // @version 1.0
 // @Accept application/json
@@ -628,7 +628,7 @@ func NewRoleMenu(c *gin.Context) {
 }
 
 // @Summary 根据菜单ID获取API权限
-// @Id 46
+// @Id A021
 // @Tags 权限管理
 // @version 1.0
 // @Accept application/json
@@ -654,7 +654,7 @@ func GetMenuApi(c *gin.Context) {
 }
 
 // @Summary 根据菜单ID更新API权限
-// @Id 47
+// @Id A022
 // @Tags 权限管理
 // @version 1.0
 // @Accept application/json
@@ -687,7 +687,7 @@ func NewMenuApi(c *gin.Context) {
 }
 
 // @Summary 获取当前用户的前端路由
-// @Id 48
+// @Id A023
 // @Tags 权限管理
 // @version 1.0
 // @Accept application/json
@@ -732,7 +732,7 @@ func GetMyMenu(c *gin.Context) {
 }
 
 // @Summary 根据ID删除角色
-// @Id 52
+// @Id A024
 // @Tags 菜单管理
 // @version 1.0
 // @Accept application/json
@@ -758,7 +758,7 @@ func DeleteRole(c *gin.Context) {
 }
 
 // @Summary 用户列表
-// @Id 81
+// @Id A025
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -774,7 +774,7 @@ func WxGetUserList(c *gin.Context) {
 }
 
 // @Summary 根据ID更新用户
-// @Id 88
+// @Id A026
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -789,7 +789,7 @@ func WxUpdateUser(c *gin.Context) {
 }
 
 // @Summary 更新密码
-// @Id 102
+// @Id A027
 // @Tags 用户管理
 // @version 1.0
 // @Accept application/json
@@ -817,7 +817,7 @@ func UpdatePassword(c *gin.Context) {
 }
 
 // @Summary 小程序模块列表
-// @Id 132
+// @Id A028
 // @Tags 小程序模块管理
 // @version 1.0
 // @Accept application/json
@@ -845,7 +845,7 @@ func GetWxmoduleList(c *gin.Context) {
 }
 
 // @Summary 新建小程序模块
-// @Id 133
+// @Id A029
 // @Tags 小程序模块管理
 // @version 1.0
 // @Accept application/json
@@ -872,7 +872,7 @@ func NewWxmodule(c *gin.Context) {
 }
 
 // @Summary 根据ID获取小程序模块
-// @Id 134
+// @Id A030
 // @Tags 小程序模块管理
 // @version 1.0
 // @Accept application/json
@@ -898,7 +898,7 @@ func GetWxmoduleByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新小程序模块
-// @Id 135
+// @Id A031
 // @Tags 小程序模块管理
 // @version 1.0
 // @Accept application/json
@@ -931,7 +931,7 @@ func UpdateWxmodule(c *gin.Context) {
 }
 
 // @Summary 根据ID更新小程序模块
-// @Id 136
+// @Id A032
 // @Tags 小程序模块管理
 // @version 1.0
 // @Accept application/json
@@ -958,7 +958,7 @@ func DeleteWxmodule(c *gin.Context) {
 }
 
 // @Summary 根据职位ID获取小程序模块权限
-// @Id 137
+// @Id A033
 // @Tags 小程序模块管理
 // @version 1.0
 // @Accept application/json
@@ -984,7 +984,7 @@ func GetPositionWxmodule(c *gin.Context) {
 }
 
 // @Summary 根据职位ID更新小程序模块权限
-// @Id 138
+// @Id A034
 // @Tags 小程序模块管理
 // @version 1.0
 // @Accept application/json
@@ -1017,7 +1017,7 @@ func NewPositionWxmodule(c *gin.Context) {
 }
 
 // @Summary 获取当前用户的小程序模块
-// @Id 139
+// @Id A035
 // @Tags 小程序模块管理
 // @version 1.0
 // @Accept application/json
@@ -1086,7 +1086,7 @@ func DeleteUser(c *gin.Context) {
 }
 
 // @Summary 更新用户密码
-// @Id 176
+// @Id A036
 // @Tags 用户管理
 // @version 1.0
 // @Accept application/json

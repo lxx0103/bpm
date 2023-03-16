@@ -1,4 +1,4 @@
-package vendor
+package vendors
 
 import (
 	"strings"
@@ -6,23 +6,23 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type vendorQuery struct {
+type vendorsQuery struct {
 	conn *sqlx.DB
 }
 
-func NewVendorQuery(connection *sqlx.DB) *vendorQuery {
-	return &vendorQuery{
+func NewVendorsQuery(connection *sqlx.DB) *vendorsQuery {
+	return &vendorsQuery{
 		conn: connection,
 	}
 }
 
-func (r *vendorQuery) GetVendorByID(id int64) (*VendorResponse, error) {
-	var vendor VendorResponse
-	err := r.conn.Get(&vendor, "SELECT id, contact, name, phone, address, longitude, latitude, cover, description, status FROM vendors WHERE id = ? AND status > 0 ", id)
-	return &vendor, err
+func (r *vendorsQuery) GetVendorsByID(id int64) (*VendorsResponse, error) {
+	var vendors VendorsResponse
+	err := r.conn.Get(&vendors, "SELECT id, contact, name, phone, address, longitude, latitude, cover, description, status FROM vendors WHERE id = ? AND status > 0 ", id)
+	return &vendors, err
 }
 
-func (r *vendorQuery) GetVendorCount(filter VendorFilter) (int, error) {
+func (r *vendorsQuery) GetVendorsCount(filter VendorsFilter) (int, error) {
 	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
@@ -44,7 +44,7 @@ func (r *vendorQuery) GetVendorCount(filter VendorFilter) (int, error) {
 	return count, nil
 }
 
-func (r *vendorQuery) GetVendorList(filter VendorFilter) (*[]VendorResponse, error) {
+func (r *vendorsQuery) GetVendorsList(filter VendorsFilter) (*[]VendorsResponse, error) {
 	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
@@ -57,56 +57,56 @@ func (r *vendorQuery) GetVendorList(filter VendorFilter) (*[]VendorResponse, err
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var vendors []VendorResponse
-	err := r.conn.Select(&vendors, `
+	var vendorss []VendorsResponse
+	err := r.conn.Select(&vendorss, `
 		SELECT id, contact, name, phone, address, longitude, latitude, cover, description, status
-		FROM vendors 
+		FROM vendors
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
 	`, args...)
-	return &vendors, err
+	return &vendorss, err
 }
 
-func (r *vendorQuery) GetVendorMaterial(vendorID int64) (*[]VendorMaterial, error) {
-	var vendorMaterial []VendorMaterial
-	err := r.conn.Select(&vendorMaterial, `
+func (r *vendorsQuery) GetVendorsMaterial(vendorsID int64) (*[]VendorsMaterial, error) {
+	var vendorsMaterial []VendorsMaterial
+	err := r.conn.Select(&vendorsMaterial, `
 		SELECT vm.material_id, m.name as material_name 
 		FROM vendor_materials vm LEFT JOIN materials m ON vm.material_id = m.id 
 		WHERE vm.vendor_id = ?
 		AND vm.status > 0
-	`, vendorID)
-	return &vendorMaterial, err
+	`, vendorsID)
+	return &vendorsMaterial, err
 }
 
-func (r *vendorQuery) GetVendorBrand(vendorID int64) (*[]VendorBrand, error) {
-	var vendorBrand []VendorBrand
-	err := r.conn.Select(&vendorBrand, `
+func (r *vendorsQuery) GetVendorsBrand(vendorsID int64) (*[]VendorsBrand, error) {
+	var vendorsBrand []VendorsBrand
+	err := r.conn.Select(&vendorsBrand, `
 		SELECT vm.brand_id, m.name as brand_name 
 		FROM vendor_brands vm LEFT JOIN brands m ON vm.brand_id = m.id 
 		WHERE vm.vendor_id = ?
 		AND vm.status > 0
-	`, vendorID)
-	return &vendorBrand, err
+	`, vendorsID)
+	return &vendorsBrand, err
 }
 
-func (r *vendorQuery) GetVendorPicture(vendorID int64) (*[]string, error) {
-	var vendorPicture []string
-	err := r.conn.Select(&vendorPicture, `
+func (r *vendorsQuery) GetVendorsPicture(vendorsID int64) (*[]string, error) {
+	var vendorsPicture []string
+	err := r.conn.Select(&vendorsPicture, `
 		SELECT name 
 		FROM vendor_pictures 
 		WHERE vendor_id = ?
 		AND status > 0
-	`, vendorID)
-	return &vendorPicture, err
+	`, vendorsID)
+	return &vendorsPicture, err
 }
 
-func (r *vendorQuery) GetVendorQrcode(vendorID int64) (*[]VendorQrcode, error) {
-	var vendorQrcode []VendorQrcode
-	err := r.conn.Select(&vendorQrcode, `
+func (r *vendorsQuery) GetVendorsQrcode(vendorsID int64) (*[]VendorsQrcode, error) {
+	var vendorsQrcode []VendorsQrcode
+	err := r.conn.Select(&vendorsQrcode, `
 		SELECT type,name 
 		FROM vendor_qrcodes 
 		WHERE vendor_id = ?
 		AND status > 0
-	`, vendorID)
-	return &vendorQrcode, err
+	`, vendorsID)
+	return &vendorsQrcode, err
 }

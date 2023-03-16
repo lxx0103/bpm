@@ -1,21 +1,21 @@
-package vendor
+package vendors
 
 import (
 	"database/sql"
 	"time"
 )
 
-type vendorRepository struct {
+type vendorsRepository struct {
 	tx *sql.Tx
 }
 
-func NewVendorRepository(transaction *sql.Tx) *vendorRepository {
-	return &vendorRepository{
+func NewVendorsRepository(transaction *sql.Tx) *vendorsRepository {
+	return &vendorsRepository{
 		tx: transaction,
 	}
 }
 
-func (r *vendorRepository) CreateVendor(info VendorNew) (int64, error) {
+func (r *vendorsRepository) CreateVendors(info VendorsNew) (int64, error) {
 	result, err := r.tx.Exec(`
 		INSERT INTO vendors
 		(
@@ -45,7 +45,7 @@ func (r *vendorRepository) CreateVendor(info VendorNew) (int64, error) {
 	return id, nil
 }
 
-func (r *vendorRepository) CheckMaterialExist(id int64) (int, error) {
+func (r *vendorsRepository) CheckMaterialExist(id int64) (int, error) {
 	var res int
 	row := r.tx.QueryRow(`SELECT count(1) FROM materials WHERE id = ? AND status > 0  LIMIT 1`, id)
 	err := row.Scan(&res)
@@ -55,7 +55,7 @@ func (r *vendorRepository) CheckMaterialExist(id int64) (int, error) {
 	return res, nil
 }
 
-func (r *vendorRepository) CreateVendorMaterial(vendorID, materialID int64, byUser string) error {
+func (r *vendorsRepository) CreateVendorsMaterial(vendorsID, materialID int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		INSERT INTO vendor_materials
 		(
@@ -68,11 +68,11 @@ func (r *vendorRepository) CreateVendorMaterial(vendorID, materialID int64, byUs
 			updated_by
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`, vendorID, materialID, 1, time.Now(), byUser, time.Now(), byUser)
+	`, vendorsID, materialID, 1, time.Now(), byUser, time.Now(), byUser)
 	return err
 }
 
-func (r *vendorRepository) CheckBrandExist(id int64) (int, error) {
+func (r *vendorsRepository) CheckBrandExist(id int64) (int, error) {
 	var res int
 	row := r.tx.QueryRow(`SELECT count(1) FROM brands WHERE id = ? AND status > 0  LIMIT 1`, id)
 	err := row.Scan(&res)
@@ -82,7 +82,7 @@ func (r *vendorRepository) CheckBrandExist(id int64) (int, error) {
 	return res, nil
 }
 
-func (r *vendorRepository) CreateVendorBrand(vendorID, brandID int64, byUser string) error {
+func (r *vendorsRepository) CreateVendorsBrand(vendorsID, brandID int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		INSERT INTO vendor_brands
 		(
@@ -95,11 +95,11 @@ func (r *vendorRepository) CreateVendorBrand(vendorID, brandID int64, byUser str
 			updated_by
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`, vendorID, brandID, 1, time.Now(), byUser, time.Now(), byUser)
+	`, vendorsID, brandID, 1, time.Now(), byUser, time.Now(), byUser)
 	return err
 }
 
-func (r *vendorRepository) CreateVendorPicture(vendorID int64, picture, byUser string) error {
+func (r *vendorsRepository) CreateVendorsPicture(vendorsID int64, picture, byUser string) error {
 	_, err := r.tx.Exec(`
 		INSERT INTO vendor_pictures
 		(
@@ -112,11 +112,11 @@ func (r *vendorRepository) CreateVendorPicture(vendorID int64, picture, byUser s
 			updated_by
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
-	`, vendorID, picture, 1, time.Now(), byUser, time.Now(), byUser)
+	`, vendorsID, picture, 1, time.Now(), byUser, time.Now(), byUser)
 	return err
 }
 
-func (r *vendorRepository) CreateVendorQrcode(vendorID int64, qrcode VendorQrcode, byUser string) error {
+func (r *vendorsRepository) CreateVendorsQrcode(vendorsID int64, qrcode VendorsQrcode, byUser string) error {
 	_, err := r.tx.Exec(`
 		INSERT INTO vendor_qrcodes
 		(
@@ -130,11 +130,11 @@ func (r *vendorRepository) CreateVendorQrcode(vendorID int64, qrcode VendorQrcod
 			updated_by
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-	`, vendorID, qrcode.Type, qrcode.Name, 1, time.Now(), byUser, time.Now(), byUser)
+	`, vendorsID, qrcode.Type, qrcode.Name, 1, time.Now(), byUser, time.Now(), byUser)
 	return err
 }
 
-func (r *vendorRepository) UpdateVendor(id int64, info VendorNew) error {
+func (r *vendorsRepository) UpdateVendors(id int64, info VendorsNew) error {
 	_, err := r.tx.Exec(`
 		Update vendors SET 
 		name = ?,
@@ -152,14 +152,14 @@ func (r *vendorRepository) UpdateVendor(id int64, info VendorNew) error {
 	return err
 }
 
-func (r *vendorRepository) GetVendorByID(id int64) (*VendorResponse, error) {
-	var res VendorResponse
+func (r *vendorsRepository) GetVendorsByID(id int64) (*VendorsResponse, error) {
+	var res VendorsResponse
 	row := r.tx.QueryRow(`SELECT id, name, status FROM vendors WHERE id = ? AND status > 0 LIMIT 1`, id)
 	err := row.Scan(&res.ID, &res.Name, &res.Status)
 	return &res, err
 }
 
-func (r *vendorRepository) CheckVendorNameExist(name string, selfID int64) (int, error) {
+func (r *vendorsRepository) CheckVendorsNameExist(name string, selfID int64) (int, error) {
 	var res int
 	row := r.tx.QueryRow(`SELECT count(1) FROM vendors WHERE name = ? AND status > 0 AND id != ?  LIMIT 1`, name, selfID)
 	err := row.Scan(&res)
@@ -169,9 +169,9 @@ func (r *vendorRepository) CheckVendorNameExist(name string, selfID int64) (int,
 	return res, nil
 }
 
-func (r *vendorRepository) CheckVendorActive(vendorID int64) (int, error) {
+func (r *vendorsRepository) CheckVendorsActive(vendorsID int64) (int, error) {
 	// var res int
-	// row := r.tx.QueryRow(`SELECT count(1) FROM material_vendors WHERE vendor_id = ? AND status > 0 LIMIT 1`, vendorID)
+	// row := r.tx.QueryRow(`SELECT count(1) FROM material_vendors WHERE vendor_id = ? AND status > 0 LIMIT 1`, vendorsID)
 	// err := row.Scan(&res)
 	// if err != nil {
 	// 	return 0, err
@@ -180,7 +180,7 @@ func (r *vendorRepository) CheckVendorActive(vendorID int64) (int, error) {
 	return res, nil
 }
 
-func (r *vendorRepository) DeleteVendor(id int64, byUser string) error {
+func (r *vendorsRepository) DeleteVendors(id int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update vendors SET 
 		status = ?,
@@ -191,7 +191,7 @@ func (r *vendorRepository) DeleteVendor(id int64, byUser string) error {
 	return err
 }
 
-func (r *vendorRepository) DeleteVendorMaterial(id int64, byUser string) error {
+func (r *vendorsRepository) DeleteVendorsMaterial(id int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update vendor_materials SET 
 		status = ?,
@@ -202,7 +202,7 @@ func (r *vendorRepository) DeleteVendorMaterial(id int64, byUser string) error {
 	return err
 }
 
-func (r *vendorRepository) DeleteVendorBrand(id int64, byUser string) error {
+func (r *vendorsRepository) DeleteVendorsBrand(id int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update vendor_brands SET 
 		status = ?,
@@ -213,7 +213,7 @@ func (r *vendorRepository) DeleteVendorBrand(id int64, byUser string) error {
 	return err
 }
 
-func (r *vendorRepository) DeleteVendorPicture(id int64, byUser string) error {
+func (r *vendorsRepository) DeleteVendorsPicture(id int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update vendor_pictures SET 
 		status = ?,
@@ -224,7 +224,7 @@ func (r *vendorRepository) DeleteVendorPicture(id int64, byUser string) error {
 	return err
 }
 
-func (r *vendorRepository) DeleteVendorQrcode(id int64, byUser string) error {
+func (r *vendorsRepository) DeleteVendorsQrcode(id int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update vendor_qrcodes SET 
 		status = ?,

@@ -1,56 +1,56 @@
-package vendor
+package vendors
 
 import (
 	"bpm/core/database"
 	"errors"
 )
 
-type vendorService struct {
+type vendorsService struct {
 }
 
-func NewVendorService() *vendorService {
-	return &vendorService{}
+func NewVendorsService() *vendorsService {
+	return &vendorsService{}
 }
 
-func (s *vendorService) GetVendorByID(id int64) (*VendorResponse, error) {
+func (s *vendorsService) GetVendorsByID(id int64) (*VendorsResponse, error) {
 	db := database.InitMySQL()
-	query := NewVendorQuery(db)
-	vendor, err := query.GetVendorByID(id)
+	query := NewVendorsQuery(db)
+	vendors, err := query.GetVendorsByID(id)
 	if err != nil {
 		return nil, err
 	}
-	materials, err := query.GetVendorMaterial(id)
+	materials, err := query.GetVendorsMaterial(id)
 	if err != nil {
 		return nil, err
 	}
-	brands, err := query.GetVendorBrand(id)
+	brands, err := query.GetVendorsBrand(id)
 	if err != nil {
 		return nil, err
 	}
-	pictures, err := query.GetVendorPicture(id)
+	pictures, err := query.GetVendorsPicture(id)
 	if err != nil {
 		return nil, err
 	}
-	qrcodes, err := query.GetVendorQrcode(id)
+	qrcodes, err := query.GetVendorsQrcode(id)
 	if err != nil {
 		return nil, err
 	}
-	vendor.Material = *materials
-	vendor.Brand = *brands
-	vendor.Picture = *pictures
-	vendor.Qrcode = *qrcodes
-	return vendor, err
+	vendors.Material = *materials
+	vendors.Brand = *brands
+	vendors.Picture = *pictures
+	vendors.Qrcode = *qrcodes
+	return vendors, err
 }
 
-func (s *vendorService) NewVendor(info VendorNew) error {
+func (s *vendorsService) NewVendors(info VendorsNew) error {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
-	repo := NewVendorRepository(tx)
-	exist, err := repo.CheckVendorNameExist(info.Name, 0)
+	repo := NewVendorsRepository(tx)
+	exist, err := repo.CheckVendorsNameExist(info.Name, 0)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (s *vendorService) NewVendor(info VendorNew) error {
 		msg := "商家名称重复"
 		return errors.New(msg)
 	}
-	vendorID, err := repo.CreateVendor(info)
+	vendorsID, err := repo.CreateVendors(info)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (s *vendorService) NewVendor(info VendorNew) error {
 				msg := "材料不存在"
 				return errors.New(msg)
 			}
-			err = repo.CreateVendorMaterial(vendorID, material, info.User)
+			err = repo.CreateVendorsMaterial(vendorsID, material, info.User)
 			if err != nil {
 				return err
 			}
@@ -88,7 +88,7 @@ func (s *vendorService) NewVendor(info VendorNew) error {
 				msg := "品牌不存在"
 				return errors.New(msg)
 			}
-			err = repo.CreateVendorBrand(vendorID, brand, info.User)
+			err = repo.CreateVendorsBrand(vendorsID, brand, info.User)
 			if err != nil {
 				return err
 			}
@@ -96,7 +96,7 @@ func (s *vendorService) NewVendor(info VendorNew) error {
 	}
 	if len(info.Picture) > 0 {
 		for _, picture := range info.Picture {
-			err = repo.CreateVendorPicture(vendorID, picture, info.User)
+			err = repo.CreateVendorsPicture(vendorsID, picture, info.User)
 			if err != nil {
 				return err
 			}
@@ -104,7 +104,7 @@ func (s *vendorService) NewVendor(info VendorNew) error {
 	}
 	if len(info.Qrcode) > 0 {
 		for _, qrcode := range info.Qrcode {
-			err = repo.CreateVendorQrcode(vendorID, qrcode, info.User)
+			err = repo.CreateVendorsQrcode(vendorsID, qrcode, info.User)
 			if err != nil {
 				return err
 			}
@@ -114,31 +114,31 @@ func (s *vendorService) NewVendor(info VendorNew) error {
 	return nil
 }
 
-func (s *vendorService) GetVendorList(filter VendorFilter) (int, *[]VendorResponse, error) {
+func (s *vendorsService) GetVendorsList(filter VendorsFilter) (int, *[]VendorsResponse, error) {
 	db := database.InitMySQL()
-	query := NewVendorQuery(db)
-	count, err := query.GetVendorCount(filter)
+	query := NewVendorsQuery(db)
+	count, err := query.GetVendorsCount(filter)
 	if err != nil {
 		return 0, nil, err
 	}
-	list, err := query.GetVendorList(filter)
+	list, err := query.GetVendorsList(filter)
 	if err != nil {
 		return 0, nil, err
 	}
 	for k, v := range *list {
-		materials, err := query.GetVendorMaterial(v.ID)
+		materials, err := query.GetVendorsMaterial(v.ID)
 		if err != nil {
 			return 0, nil, err
 		}
-		brands, err := query.GetVendorBrand(v.ID)
+		brands, err := query.GetVendorsBrand(v.ID)
 		if err != nil {
 			return 0, nil, err
 		}
-		pictures, err := query.GetVendorPicture(v.ID)
+		pictures, err := query.GetVendorsPicture(v.ID)
 		if err != nil {
 			return 0, nil, err
 		}
-		qrcodes, err := query.GetVendorQrcode(v.ID)
+		qrcodes, err := query.GetVendorsQrcode(v.ID)
 		if err != nil {
 			return 0, nil, err
 		}
@@ -150,20 +150,20 @@ func (s *vendorService) GetVendorList(filter VendorFilter) (int, *[]VendorRespon
 	return count, list, err
 }
 
-func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
+func (s *vendorsService) UpdateVendors(vendorsID int64, info VendorsNew) error {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
-	repo := NewVendorRepository(tx)
-	_, err = repo.GetVendorByID(vendorID)
+	repo := NewVendorsRepository(tx)
+	_, err = repo.GetVendorsByID(vendorsID)
 	if err != nil {
 		msg := "商家不存在"
 		return errors.New(msg)
 	}
-	exist, err := repo.CheckVendorNameExist(info.Name, vendorID)
+	exist, err := repo.CheckVendorsNameExist(info.Name, vendorsID)
 	if err != nil {
 		return err
 	}
@@ -171,23 +171,23 @@ func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
 		msg := "商家名称重复"
 		return errors.New(msg)
 	}
-	err = repo.DeleteVendorMaterial(vendorID, info.User)
+	err = repo.DeleteVendorsMaterial(vendorsID, info.User)
 	if err != nil {
 		return err
 	}
-	err = repo.DeleteVendorBrand(vendorID, info.User)
+	err = repo.DeleteVendorsBrand(vendorsID, info.User)
 	if err != nil {
 		return err
 	}
-	err = repo.DeleteVendorPicture(vendorID, info.User)
+	err = repo.DeleteVendorsPicture(vendorsID, info.User)
 	if err != nil {
 		return err
 	}
-	err = repo.DeleteVendorQrcode(vendorID, info.User)
+	err = repo.DeleteVendorsQrcode(vendorsID, info.User)
 	if err != nil {
 		return err
 	}
-	err = repo.UpdateVendor(vendorID, info)
+	err = repo.UpdateVendors(vendorsID, info)
 	if err != nil {
 		return err
 	}
@@ -202,7 +202,7 @@ func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
 				msg := "材料不存在"
 				return errors.New(msg)
 			}
-			err = repo.CreateVendorMaterial(vendorID, material, info.User)
+			err = repo.CreateVendorsMaterial(vendorsID, material, info.User)
 			if err != nil {
 				return err
 			}
@@ -218,7 +218,7 @@ func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
 				msg := "品牌不存在"
 				return errors.New(msg)
 			}
-			err = repo.CreateVendorBrand(vendorID, brand, info.User)
+			err = repo.CreateVendorsBrand(vendorsID, brand, info.User)
 			if err != nil {
 				return err
 			}
@@ -226,7 +226,7 @@ func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
 	}
 	if len(info.Picture) > 0 {
 		for _, picture := range info.Picture {
-			err = repo.CreateVendorPicture(vendorID, picture, info.User)
+			err = repo.CreateVendorsPicture(vendorsID, picture, info.User)
 			if err != nil {
 				return err
 			}
@@ -234,7 +234,7 @@ func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
 	}
 	if len(info.Qrcode) > 0 {
 		for _, qrcode := range info.Qrcode {
-			err = repo.CreateVendorQrcode(vendorID, qrcode, info.User)
+			err = repo.CreateVendorsQrcode(vendorsID, qrcode, info.User)
 			if err != nil {
 				return err
 			}
@@ -244,36 +244,36 @@ func (s *vendorService) UpdateVendor(vendorID int64, info VendorNew) error {
 	return nil
 }
 
-func (s *vendorService) DeleteVendor(vendorID int64, byUser string) error {
+func (s *vendorsService) DeleteVendors(vendorsID int64, byUser string) error {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
-	repo := NewVendorRepository(tx)
-	_, err = repo.GetVendorByID(vendorID)
+	repo := NewVendorsRepository(tx)
+	_, err = repo.GetVendorsByID(vendorsID)
 	if err != nil {
 		msg := "商家不存在"
 		return errors.New(msg)
 	}
-	err = repo.DeleteVendor(vendorID, byUser)
+	err = repo.DeleteVendors(vendorsID, byUser)
 	if err != nil {
 		return err
 	}
-	err = repo.DeleteVendorMaterial(vendorID, byUser)
+	err = repo.DeleteVendorsMaterial(vendorsID, byUser)
 	if err != nil {
 		return err
 	}
-	err = repo.DeleteVendorBrand(vendorID, byUser)
+	err = repo.DeleteVendorsBrand(vendorsID, byUser)
 	if err != nil {
 		return err
 	}
-	err = repo.DeleteVendorPicture(vendorID, byUser)
+	err = repo.DeleteVendorsPicture(vendorsID, byUser)
 	if err != nil {
 		return err
 	}
-	err = repo.DeleteVendorQrcode(vendorID, byUser)
+	err = repo.DeleteVendorsQrcode(vendorsID, byUser)
 	if err != nil {
 		return err
 	}

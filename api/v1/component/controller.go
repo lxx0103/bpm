@@ -7,7 +7,7 @@ import (
 )
 
 // @Summary 组件列表
-// @Id 13
+// @Id D001
 // @Tags 组件管理
 // @version 1.0
 // @Accept application/json
@@ -36,7 +36,7 @@ func GetComponentList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取组件
-// @Id 15
+// @Id D002
 // @Tags 组件管理
 // @version 1.0
 // @Accept application/json
@@ -62,7 +62,7 @@ func GetComponentByID(c *gin.Context) {
 }
 
 // @Summary 组件列表
-// @Id 87
+// @Id D003
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json

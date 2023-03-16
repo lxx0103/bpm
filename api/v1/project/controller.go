@@ -9,7 +9,7 @@ import (
 )
 
 // @Summary 项目列表
-// @Id 5
+// @Id M001
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -40,7 +40,7 @@ func GetProjectList(c *gin.Context) {
 }
 
 // @Summary 新建项目
-// @Id 6
+// @Id M002
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -69,7 +69,7 @@ func NewProject(c *gin.Context) {
 }
 
 // @Summary 根据ID获取项目
-// @Id 7
+// @Id M003
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -97,7 +97,7 @@ func GetProjectByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新项目
-// @Id 8
+// @Id M004
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -131,7 +131,7 @@ func UpdateProject(c *gin.Context) {
 }
 
 // @Summary 根据ID删除项目
-// @Id 51
+// @Id M005
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -157,7 +157,7 @@ func DeleteProject(c *gin.Context) {
 }
 
 // @Summary 获取我创建的项目
-// @Id 69
+// @Id M006
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -200,7 +200,7 @@ func WxGetMyProjects(c *gin.Context) {
 }
 
 // @Summary 获取我参加的项目
-// @Id 74
+// @Id M007
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -231,7 +231,7 @@ func WxGetAssignedProjects(c *gin.Context) {
 }
 
 // @Summary 新建项目
-// @Id 89
+// @Id M008
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -245,7 +245,7 @@ func WxNewProject(c *gin.Context) {
 }
 
 // @Summary 根据ID获取项目
-// @Id 90
+// @Id M009
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -260,7 +260,7 @@ func WxGetProjectByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新项目
-// @Id 92
+// @Id M010
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -275,7 +275,7 @@ func WxUpdateProject(c *gin.Context) {
 }
 
 // @Summary 根据ID删除项目
-// @Id 93
+// @Id M011
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -289,7 +289,7 @@ func WxDeleteProject(c *gin.Context) {
 }
 
 // @Summary 新建项目报告
-// @Id 122
+// @Id M012
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -323,7 +323,7 @@ func NewProjectReport(c *gin.Context) {
 }
 
 // @Summary 新建项目报告
-// @Id 123
+// @Id M013
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -337,7 +337,7 @@ func WxNewProjectReport(c *gin.Context) {
 }
 
 // @Summary 项目报告列表
-// @Id 124
+// @Id M014
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -372,7 +372,7 @@ func GetProjectReportList(c *gin.Context) {
 }
 
 // @Summary 项目报告列表
-// @Id 125
+// @Id M015
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -407,7 +407,7 @@ func WxGetProjectReportList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取项目报告
-// @Id 126
+// @Id M016
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -434,7 +434,7 @@ func GetProjectReportByID(c *gin.Context) {
 }
 
 // @Summary 根据ID删除项目报告
-// @Id 127
+// @Id M017
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -460,7 +460,7 @@ func DeleteProjectReport(c *gin.Context) {
 }
 
 // @Summary 根据ID获取项目报告
-// @Id 128
+// @Id M018
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -475,7 +475,7 @@ func WxGetProjectReportByID(c *gin.Context) {
 }
 
 // @Summary 根据ID删除项目报告
-// @Id 129
+// @Id M019
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -489,7 +489,7 @@ func WxDeleteProjectReport(c *gin.Context) {
 }
 
 // @Summary 根据ID更新项目报告
-// @Id 130
+// @Id M020
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -524,7 +524,7 @@ func UpdateProjectReport(c *gin.Context) {
 }
 
 // @Summary 根据ID更新项目报告
-// @Id 131
+// @Id M021
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -539,7 +539,7 @@ func WxUpdateProjectReport(c *gin.Context) {
 }
 
 // @Summary 新建项目记录
-// @Id 164
+// @Id M022
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -573,7 +573,7 @@ func NewProjectRecord(c *gin.Context) {
 }
 
 // @Summary 项目记录列表
-// @Id 165
+// @Id M023
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -608,7 +608,7 @@ func GetProjectRecordList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取项目记录
-// @Id 166
+// @Id M024
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -635,7 +635,7 @@ func GetProjectRecordByID(c *gin.Context) {
 }
 
 // @Summary 根据ID删除项目记录
-// @Id 167
+// @Id M025
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -661,7 +661,7 @@ func DeleteProjectRecord(c *gin.Context) {
 }
 
 // @Summary 根据ID更新项目记录
-// @Id 168
+// @Id M026
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -696,7 +696,7 @@ func UpdateProjectRecord(c *gin.Context) {
 }
 
 // @Summary 新建项目记录
-// @Id 169
+// @Id M027
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -710,7 +710,7 @@ func WxNewProjectRecord(c *gin.Context) {
 }
 
 // @Summary 项目记录列表
-// @Id 170
+// @Id M028
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -725,7 +725,7 @@ func WxGetProjectRecordList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取项目记录
-// @Id 171
+// @Id M029
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -740,7 +740,7 @@ func WxGetProjectRecordByID(c *gin.Context) {
 }
 
 // @Summary 根据ID删除项目记录
-// @Id 172
+// @Id M030
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -754,7 +754,7 @@ func WxDeleteProjectRecord(c *gin.Context) {
 }
 
 // @Summary 根据ID更新项目记录
-// @Id 173
+// @Id M031
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -769,7 +769,7 @@ func WxUpdateProjectRecord(c *gin.Context) {
 }
 
 // @Summary 项目记录列表
-// @Id 174
+// @Id M032
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -801,7 +801,7 @@ func PortalGetProjectRecordList(c *gin.Context) {
 }
 
 // @Summary 根据ID已阅项目报告
-// @Id 177
+// @Id M033
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -827,7 +827,7 @@ func WxViewProjectReport(c *gin.Context) {
 }
 
 // @Summary 项目报告未读列表
-// @Id 178
+// @Id M034
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json

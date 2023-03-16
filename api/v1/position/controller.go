@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 职位列表
-// @Id 28
+// @Id L001
 // @Tags 职位管理
 // @version 1.0
 // @Accept application/json
@@ -39,7 +39,7 @@ func GetPositionList(c *gin.Context) {
 }
 
 // @Summary 新建职位
-// @Id 29
+// @Id L002
 // @Tags 职位管理
 // @version 1.0
 // @Accept application/json
@@ -67,7 +67,7 @@ func NewPosition(c *gin.Context) {
 }
 
 // @Summary 根据ID获取职位
-// @Id 30
+// @Id L003
 // @Tags 职位管理
 // @version 1.0
 // @Accept application/json
@@ -95,7 +95,7 @@ func GetPositionByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新职位
-// @Id 31
+// @Id L004
 // @Tags 职位管理
 // @version 1.0
 // @Accept application/json
@@ -129,7 +129,7 @@ func UpdatePosition(c *gin.Context) {
 }
 
 // @Summary 职位列表
-// @Id 86
+// @Id L005
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json

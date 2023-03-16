@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 元素列表
-// @Id 64
+// @Id E001
 // @Tags 元素管理
 // @version 1.0
 // @Accept application/json
@@ -37,7 +37,7 @@ func GetElementList(c *gin.Context) {
 }
 
 // @Summary 新建元素
-// @Id 65
+// @Id E002
 // @Tags 元素管理
 // @version 1.0
 // @Accept application/json
@@ -64,7 +64,7 @@ func NewElement(c *gin.Context) {
 }
 
 // @Summary 根据ID获取元素
-// @Id 66
+// @Id E003
 // @Tags 元素管理
 // @version 1.0
 // @Accept application/json
@@ -90,7 +90,7 @@ func GetElementByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新元素
-// @Id 67
+// @Id E004
 // @Tags 元素管理
 // @version 1.0
 // @Accept application/json
@@ -123,7 +123,7 @@ func UpdateElement(c *gin.Context) {
 }
 
 // @Summary 根据ID更新元素
-// @Id 68
+// @Id E005
 // @Tags 元素管理
 // @version 1.0
 // @Accept application/json

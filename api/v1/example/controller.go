@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 案例列表
-// @Id 103
+// @Id G001
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -45,7 +45,7 @@ func GetExampleList(c *gin.Context) {
 }
 
 // @Summary 新建案例
-// @Id 104
+// @Id G002
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -73,7 +73,7 @@ func NewExample(c *gin.Context) {
 }
 
 // @Summary 根据ID获取案例
-// @Id 105
+// @Id G003
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -101,7 +101,7 @@ func GetExampleByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新案例
-// @Id 106
+// @Id G004
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -135,7 +135,7 @@ func UpdateExample(c *gin.Context) {
 }
 
 // @Summary 案例列表
-// @Id 107
+// @Id G005
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -158,7 +158,7 @@ func WxGetExampleList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取案例
-// @Id 108
+// @Id G006
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -172,7 +172,7 @@ func WxGetExampleByID(c *gin.Context) {
 }
 
 // @Summary 案例列表
-// @Id 141
+// @Id G007
 // @Tags 门户接口
 // @version 1.0
 // @Accept application/json
@@ -207,7 +207,7 @@ func PortalGetExampleList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取案例
-// @Id 142
+// @Id G008
 // @Tags 门户接口
 // @version 1.0
 // @Accept application/json
@@ -232,7 +232,7 @@ func PortalGetExampleByID(c *gin.Context) {
 }
 
 // @Summary 案例材料列表
-// @Id 158
+// @Id G009
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -257,7 +257,7 @@ func GetExampleMaterialList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取案例材料
-// @Id 159
+// @Id G010
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -284,7 +284,7 @@ func GetExampleMaterialByID(c *gin.Context) {
 }
 
 // @Summary 新建案例材料
-// @Id 160
+// @Id G011
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -319,7 +319,7 @@ func NewExampleMaterial(c *gin.Context) {
 }
 
 // @Summary 更新案例材料
-// @Id 161
+// @Id G012
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -354,7 +354,7 @@ func UpdateExampleMaterial(c *gin.Context) {
 }
 
 // @Summary 删除案例材料
-// @Id 162
+// @Id G013
 // @Tags 案例管理
 // @version 1.0
 // @Accept application/json
@@ -382,7 +382,7 @@ func DeleteExampleMaterial(c *gin.Context) {
 }
 
 // @Summary 案例材料列表
-// @Id 163
+// @Id G014
 // @Tags 门户接口
 // @version 1.0
 // @Accept application/json

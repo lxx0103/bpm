@@ -2,7 +2,7 @@ package example
 
 import (
 	"bpm/api/v1/common"
-	"bpm/api/v1/vendor"
+	"bpm/api/v1/vendors"
 	"bpm/core/database"
 	"errors"
 )
@@ -130,7 +130,7 @@ func (s *exampleService) NewExampleMaterial(info ExampleMaterialNew, exampleID, 
 	}
 	defer tx.Rollback()
 	repo := NewExampleRepository(tx)
-	vendorRepo := vendor.NewVendorRepository(tx)
+	vendorsRepo := vendors.NewVendorsRepository(tx)
 	commonRepo := common.NewCommonRepository(tx)
 	_, err = repo.GetExampleByID(exampleID, organizationID)
 	if err != nil {
@@ -143,7 +143,7 @@ func (s *exampleService) NewExampleMaterial(info ExampleMaterialNew, exampleID, 
 		return errors.New(msg)
 	}
 	if info.VendorID != 0 {
-		_, err = vendorRepo.GetVendorByID(info.VendorID)
+		_, err = vendorsRepo.GetVendorsByID(info.VendorID)
 		if err != nil {
 			msg := "供应商不存在"
 			return errors.New(msg)
@@ -172,7 +172,7 @@ func (s *exampleService) UpdateExampleMaterial(info ExampleMaterialNew, exampleI
 	}
 	defer tx.Rollback()
 	repo := NewExampleRepository(tx)
-	vendorRepo := vendor.NewVendorRepository(tx)
+	vendorsRepo := vendors.NewVendorsRepository(tx)
 	commonRepo := common.NewCommonRepository(tx)
 	_, err = repo.GetExampleByID(exampleID, organizationID)
 	if err != nil {
@@ -190,7 +190,7 @@ func (s *exampleService) UpdateExampleMaterial(info ExampleMaterialNew, exampleI
 		return errors.New(msg)
 	}
 	if info.VendorID != 0 {
-		_, err = vendorRepo.GetVendorByID(info.VendorID)
+		_, err = vendorsRepo.GetVendorsByID(info.VendorID)
 		if err != nil {
 			msg := "供应商不存在"
 			return errors.New(msg)

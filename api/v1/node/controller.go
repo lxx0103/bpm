@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 节点列表
-// @Id 59
+// @Id J001
 // @Tags 节点管理
 // @version 1.0
 // @Accept application/json
@@ -39,7 +39,7 @@ func GetNodeList(c *gin.Context) {
 }
 
 // @Summary 新建节点
-// @Id 60
+// @Id J002
 // @Tags 节点管理
 // @version 1.0
 // @Accept application/json
@@ -67,7 +67,7 @@ func NewNode(c *gin.Context) {
 }
 
 // @Summary 根据ID获取节点
-// @Id 61
+// @Id J003
 // @Tags 节点管理
 // @version 1.0
 // @Accept application/json
@@ -93,7 +93,7 @@ func GetNodeByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新节点
-// @Id 62
+// @Id J004
 // @Tags 节点管理
 // @version 1.0
 // @Accept application/json
@@ -127,7 +127,7 @@ func UpdateNode(c *gin.Context) {
 }
 
 // @Summary 根据ID删除节点
-// @Id 63
+// @Id J005
 // @Tags 节点管理
 // @version 1.0
 // @Accept application/json

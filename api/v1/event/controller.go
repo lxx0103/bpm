@@ -9,7 +9,7 @@ import (
 )
 
 // @Summary 事件列表
-// @Id 9
+// @Id F001
 // @Tags 事件管理
 // @version 1.0
 // @Accept application/json
@@ -40,7 +40,7 @@ func GetEventList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取事件
-// @Id 11
+// @Id F002
 // @Tags 事件管理
 // @version 1.0
 // @Accept application/json
@@ -67,7 +67,7 @@ func GetEventByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新事件
-// @Id 12
+// @Id F003
 // @Tags 事件管理
 // @version 1.0
 // @Accept application/json
@@ -101,7 +101,7 @@ func UpdateEvent(c *gin.Context) {
 }
 
 // @Summary 获取我的当前任务
-// @Id 53
+// @Id F004
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -128,7 +128,7 @@ func WxGetMyEvents(c *gin.Context) {
 }
 
 // @Summary 获取项目中的任务
-// @Id 70
+// @Id F005
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -155,7 +155,7 @@ func WxGetEvents(c *gin.Context) {
 }
 
 // @Summary 保存事件
-// @Id 71
+// @Id F006
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -190,7 +190,7 @@ func WxSaveEvent(c *gin.Context) {
 }
 
 // @Summary 根据ID获取事件
-// @Id 84
+// @Id F007
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -204,7 +204,7 @@ func WxGetEventByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新事件
-// @Id 85
+// @Id F008
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -219,7 +219,7 @@ func WxUpdateEvent(c *gin.Context) {
 }
 
 // @Summary 审核事件
-// @Id 91
+// @Id F009
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -254,7 +254,7 @@ func WxAuditEvent(c *gin.Context) {
 }
 
 // @Summary 获取我的审核任务
-// @Id 94
+// @Id F010
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -281,7 +281,7 @@ func WxGetMyAudits(c *gin.Context) {
 }
 
 // @Summary 事件签到
-// @Id 10
+// @Id F011
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -317,7 +317,7 @@ func WxNewEventCheckin(c *gin.Context) {
 }
 
 // @Summary 事件签到列表
-// @Id 97
+// @Id F012
 // @Tags 事件管理
 // @version 1.0
 // @Accept application/json
@@ -353,7 +353,7 @@ func GetCheckinList(c *gin.Context) {
 }
 
 // @Summary 事件签到列表
-// @Id 98
+// @Id F013
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -390,7 +390,7 @@ func WxGetCheckinList(c *gin.Context) {
 }
 
 // @Summary 获取事件审核历史
-// @Id 110
+// @Id F014
 // @Tags 事件管理
 // @version 1.0
 // @Accept application/json
@@ -417,7 +417,7 @@ func GetAuditHistory(c *gin.Context) {
 }
 
 // @Summary 获取事件审核历史
-// @Id 111
+// @Id F015
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -431,7 +431,7 @@ func WxGetAuditHistory(c *gin.Context) {
 }
 
 // @Summary 顾客反馈
-// @Id 112
+// @Id F016
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -466,7 +466,7 @@ func WxReviewEvent(c *gin.Context) {
 }
 
 // @Summary 获取顾客反馈历史
-// @Id 113
+// @Id F017
 // @Tags 事件管理
 // @version 1.0
 // @Accept application/json
@@ -493,7 +493,7 @@ func GetReview(c *gin.Context) {
 }
 
 // @Summary 获取顾客反馈历史
-// @Id 114
+// @Id F018
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -507,7 +507,7 @@ func WxGetReview(c *gin.Context) {
 }
 
 // @Summary 根据ID更新事件截止日期
-// @Id 115
+// @Id F019
 // @Tags 事件管理
 // @version 1.0
 // @Accept application/json
@@ -541,7 +541,7 @@ func UpdateEventDeadline(c *gin.Context) {
 }
 
 // @Summary 根据ID更新事件截止日期
-// @Id 116
+// @Id F020
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -556,7 +556,7 @@ func WxUpdateEventDeadline(c *gin.Context) {
 }
 
 // @Summary 处理顾客反馈
-// @Id 118
+// @Id F021
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json

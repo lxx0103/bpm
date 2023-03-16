@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 组织列表
-// @Id 1
+// @Id K001
 // @Tags 组织管理
 // @version 1.0
 // @Accept application/json
@@ -36,7 +36,7 @@ func GetOrganizationList(c *gin.Context) {
 }
 
 // @Summary 新建组织
-// @Id 2
+// @Id K002
 // @Tags 组织管理
 // @version 1.0
 // @Accept application/json
@@ -63,7 +63,7 @@ func NewOrganization(c *gin.Context) {
 }
 
 // @Summary 根据ID获取组织
-// @Id 3
+// @Id K003
 // @Tags 组织管理
 // @version 1.0
 // @Accept application/json
@@ -89,7 +89,7 @@ func GetOrganizationByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新组织
-// @Id 4
+// @Id K004
 // @Tags 组织管理
 // @version 1.0
 // @Accept application/json
@@ -122,7 +122,7 @@ func UpdateOrganization(c *gin.Context) {
 }
 
 // @Summary 获取小程序码
-// @Id 99
+// @Id K005
 // @Tags 组织管理
 // @version 1.0
 // @Accept application/json
@@ -148,7 +148,7 @@ func GetQrCode(c *gin.Context) {
 }
 
 // @Summary 根据ID获取组织
-// @Id 109
+// @Id K006
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -162,7 +162,7 @@ func WxGetOrganizationByID(c *gin.Context) {
 }
 
 // @Summary 组织列表
-// @Id 140
+// @Id K007
 // @Tags 门户接口
 // @version 1.0
 // @Accept application/json
@@ -192,7 +192,7 @@ func PortalGetOrganizationList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取组织
-// @Id 143
+// @Id K008
 // @Tags 门户接口
 // @version 1.0
 // @Accept application/json

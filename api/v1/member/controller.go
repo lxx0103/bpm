@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 项目成员列表
-// @Id 34
+// @Id I001
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -36,7 +36,7 @@ func GetMemberList(c *gin.Context) {
 }
 
 // @Summary 新建项目成员
-// @Id 35
+// @Id I002
 // @Tags 项目管理
 // @version 1.0
 // @Accept application/json
@@ -64,7 +64,7 @@ func NewMember(c *gin.Context) {
 }
 
 // @Summary 项目成员列表
-// @Id 82
+// @Id I003
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -78,7 +78,7 @@ func WxGetMemberList(c *gin.Context) {
 }
 
 // @Summary 新建项目成员
-// @Id 83
+// @Id I004
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json

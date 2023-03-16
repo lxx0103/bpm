@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 模板列表
-// @Id 54
+// @Id N001
 // @Tags 模板管理
 // @version 1.0
 // @Accept application/json
@@ -40,7 +40,7 @@ func GetTemplateList(c *gin.Context) {
 }
 
 // @Summary 新建模板
-// @Id 55
+// @Id N002
 // @Tags 模板管理
 // @version 1.0
 // @Accept application/json
@@ -68,7 +68,7 @@ func NewTemplate(c *gin.Context) {
 }
 
 // @Summary 根据ID获取模板
-// @Id 56
+// @Id N003
 // @Tags 模板管理
 // @version 1.0
 // @Accept application/json
@@ -96,7 +96,7 @@ func GetTemplateByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新模板
-// @Id 57
+// @Id N004
 // @Tags 模板管理
 // @version 1.0
 // @Accept application/json
@@ -130,7 +130,7 @@ func UpdateTemplate(c *gin.Context) {
 }
 
 // @Summary 根据ID删除模板
-// @Id 58
+// @Id N005
 // @Tags 模板管理
 // @version 1.0
 // @Accept application/json
@@ -156,7 +156,7 @@ func DeleteTemplate(c *gin.Context) {
 }
 
 // @Summary 模板列表
-// @Id 79
+// @Id N006
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json
@@ -173,7 +173,7 @@ func WxGetTemplateList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取模板
-// @Id 80
+// @Id N007
 // @Tags 小程序接口
 // @version 1.0
 // @Accept application/json

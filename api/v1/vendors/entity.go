@@ -1,8 +1,8 @@
-package vendor
+package vendors
 
 import "time"
 
-type Vendor struct {
+type Vendors struct {
 	ID          int64     `db:"id" json:"id"`
 	Name        string    `db:"name" json:"name"`
 	Contact     string    `db:"contact" json:"contact"`

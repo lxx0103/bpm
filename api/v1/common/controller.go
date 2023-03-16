@@ -8,7 +8,7 @@ import (
 )
 
 // @Summary 品牌列表
-// @Id 1001
+// @Id C001
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -36,7 +36,7 @@ func GetBrandList(c *gin.Context) {
 }
 
 // @Summary 新建品牌
-// @Id 1002
+// @Id C002
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -63,7 +63,7 @@ func NewBrand(c *gin.Context) {
 }
 
 // @Summary 根据ID获取品牌
-// @Id 1003
+// @Id C003
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -89,7 +89,7 @@ func GetBrandByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新品牌
-// @Id 1004
+// @Id C004
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -122,7 +122,7 @@ func UpdateBrand(c *gin.Context) {
 }
 
 // @Summary 根据ID删除品牌
-// @Id 1005
+// @Id C005
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -148,7 +148,7 @@ func DeleteBrand(c *gin.Context) {
 }
 
 // @Summary 材料列表
-// @Id 1006
+// @Id C006
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -176,7 +176,7 @@ func GetMaterialList(c *gin.Context) {
 }
 
 // @Summary 新建材料
-// @Id 1007
+// @Id C007
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -203,7 +203,7 @@ func NewMaterial(c *gin.Context) {
 }
 
 // @Summary 根据ID获取材料
-// @Id 1008
+// @Id C008
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -229,7 +229,7 @@ func GetMaterialByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新材料
-// @Id 1009
+// @Id C009
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -262,7 +262,7 @@ func UpdateMaterial(c *gin.Context) {
 }
 
 // @Summary 根据ID删除材料
-// @Id 1010
+// @Id C010
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -288,7 +288,7 @@ func DeleteMaterial(c *gin.Context) {
 }
 
 // @Summary 材料列表
-// @Id 1011
+// @Id C011
 // @Tags 门户接口
 // @version 1.0
 // @Accept application/json
@@ -304,7 +304,7 @@ func PortalGetMaterialList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取材料
-// @Id 1012
+// @Id C012
 // @Tags 门户接口
 // @version 1.0
 // @Accept application/json
@@ -319,7 +319,7 @@ func PortalGetMaterialByID(c *gin.Context) {
 }
 
 // @Summary banner列表
-// @Id 1013
+// @Id C013
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -347,7 +347,7 @@ func GetBannerList(c *gin.Context) {
 }
 
 // @Summary 新建banner
-// @Id 1014
+// @Id C014
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -374,7 +374,7 @@ func NewBanner(c *gin.Context) {
 }
 
 // @Summary 根据ID获取banner
-// @Id 1015
+// @Id C015
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -400,7 +400,7 @@ func GetBannerByID(c *gin.Context) {
 }
 
 // @Summary 根据ID更新banner
-// @Id 1016
+// @Id C016
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -433,7 +433,7 @@ func UpdateBanner(c *gin.Context) {
 }
 
 // @Summary 根据ID删除banner
-// @Id 1017
+// @Id C017
 // @Tags 基础信息管理
 // @version 1.0
 // @Accept application/json
@@ -459,7 +459,7 @@ func DeleteBanner(c *gin.Context) {
 }
 
 // @Summary banner列表
-// @Id 1018
+// @Id C018
 // @Tags 门户接口
 // @version 1.0
 // @Accept application/json
