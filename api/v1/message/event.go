@@ -222,6 +222,10 @@ func sendMessageToActive(projectID int64) error {
 	projectQuery := project.NewProjectQuery(db)
 	project, err := projectQuery.GetProjectByID(projectID, 0)
 	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			fmt.Println("项目不存在")
+			return nil
+		}
 		fmt.Println(err.Error() + "4")
 		return err
 	}
