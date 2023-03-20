@@ -12,4 +12,8 @@ func Routers(g *gin.RouterGroup) {
 
 func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/meetings", WxGetMeetingList)
+	g.GET("/wx/meetings/:id", WxGetMeetingByID)
+	g.PUT("/wx/meetings/:id", WxUpdateMeeting)
+	g.POST("/wx/meetings", WxNewMeeting)
+	g.DELETE("/wx/meetings/:id", WxDeleteMeeting)
 }

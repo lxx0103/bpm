@@ -1,5 +1,128 @@
 basePath: /
 definitions:
+  assignment.AssignmentAudit:
+    properties:
+      content:
+        type: string
+      result:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - content
+    - result
+    type: object
+  assignment.AssignmentComplete:
+    properties:
+      content:
+        type: string
+    required:
+    - content
+    type: object
+  assignment.AssignmentNew:
+    properties:
+      assign_to:
+        type: integer
+      assignment_type:
+        enum:
+        - 1
+        - 2
+        type: integer
+      audit_to:
+        type: integer
+      content:
+        type: string
+      file:
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      project_id:
+        type: integer
+      reference_id:
+        minimum: 1
+        type: integer
+    required:
+    - assign_to
+    - assignment_type
+    - audit_to
+    - content
+    - name
+    - project_id
+    type: object
+  assignment.AssignmentResponse:
+    properties:
+      assign_name:
+        type: string
+      assign_to:
+        type: integer
+      assignment_type:
+        type: integer
+      audit_content:
+        type: string
+      audit_name:
+        type: string
+      audit_time:
+        type: string
+      audit_to:
+        type: integer
+      complete_content:
+        type: string
+      complete_time:
+        type: string
+      content:
+        type: string
+      created:
+        type: string
+      created_by:
+        type: string
+      file:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      project_id:
+        type: integer
+      project_name:
+        type: string
+      reference_id:
+        type: integer
+      status:
+        type: integer
+    type: object
+  assignment.AssignmentUpdate:
+    properties:
+      assign_to:
+        type: integer
+      audit_to:
+        type: integer
+      content:
+        type: string
+      file:
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      project_id:
+        type: integer
+    required:
+    - assign_to
+    - audit_to
+    - content
+    - name
+    - project_id
+    type: object
   auth.API:
     properties:
       created:
@@ -1159,27 +1282,14 @@ definitions:
       type:
         type: string
     type: object
-  meeting.Meeting:
-    properties:
-      created:
-        type: string
-      created_by:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      organization_id:
-        type: integer
-      status:
-        type: integer
-      updated:
-        type: string
-      updated_by:
-        type: string
-    type: object
   meeting.MeetingNew:
     properties:
+      content:
+        type: string
+      date:
+        type: string
+      file:
+        type: string
       name:
         maxLength: 64
         minLength: 1
@@ -1187,17 +1297,19 @@ definitions:
       organization_id:
         minimum: 1
         type: integer
-      status:
-        enum:
-        - 1
-        - 2
-        type: integer
     required:
+    - content
+    - date
     - name
-    - status
     type: object
   meeting.MeetingResponse:
     properties:
+      content:
+        type: string
+      date:
+        type: string
+      file:
+        type: string
       id:
         type: integer
       name:
@@ -2343,6 +2455,349 @@ paths:
       summary: 根据ID更新API
       tags:
       - API管理
+  /assignments:
+    get:
+      consumes:
+      - application/json
+      operationId: Q001
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 任务名称
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 任务类型（1，会议任务，2其他任务）
+        in: query
+        name: assignment_type
+        type: integer
+      - description: 关联ID（会议ID)
+        in: query
+        name: reference_id
+        type: integer
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/assignment.AssignmentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 任务列表
+      tags:
+      - 任务管理
+    post:
+      consumes:
+      - application/json
+      operationId: Q002
+      parameters:
+      - description: 任务信息
+        in: body
+        name: assignment_info
+        required: true
+        schema:
+          $ref: '#/definitions/assignment.AssignmentNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建任务
+      tags:
+      - 任务管理
+  /assignments/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: Q005
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除任务
+      tags:
+      - 任务管理
+    get:
+      consumes:
+      - application/json
+      operationId: Q003
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/assignment.AssignmentResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取任务
+      tags:
+      - 任务管理
+    put:
+      consumes:
+      - application/json
+      operationId: Q004
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/assignment.AssignmentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新任务
+      tags:
+      - 任务管理
+  /assignments/:id/audit:
+    post:
+      consumes:
+      - application/json
+      operationId: Q007
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/assignment.AssignmentAudit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID审核任务
+      tags:
+      - 任务管理
+  /assignments/:id/complete:
+    post:
+      consumes:
+      - application/json
+      operationId: Q006
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/assignment.AssignmentComplete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID完成任务
+      tags:
+      - 任务管理
+  /assignments/my:
+    get:
+      consumes:
+      - application/json
+      operationId: Q008
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 任务名称
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/assignment.AssignmentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 我的任务列表
+      tags:
+      - 任务管理
+  /assignments/myaudit:
+    get:
+      consumes:
+      - application/json
+      operationId: Q009
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 任务名称
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/assignment.AssignmentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 我的任务审核列表
+      tags:
+      - 任务管理
   /banners:
     get:
       consumes:
@@ -3891,7 +4346,7 @@ paths:
         name: page_size
         required: true
         type: integer
-      - description: 会议编码
+      - description: 会议名称
         in: query
         name: name
         type: string
@@ -3941,7 +4396,7 @@ paths:
             - $ref: '#/definitions/response.SuccessRes'
             - properties:
                 data:
-                  $ref: '#/definitions/meeting.Meeting'
+                  type: string
               type: object
         "400":
           description: Bad Request
@@ -3951,6 +4406,35 @@ paths:
       tags:
       - 会议管理
   /meetings/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: H005
+      parameters:
+      - description: 会议ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除会议
+      tags:
+      - 会议管理
     get:
       consumes:
       - application/json
@@ -3971,7 +4455,7 @@ paths:
             - $ref: '#/definitions/response.SuccessRes'
             - properties:
                 data:
-                  $ref: '#/definitions/meeting.Meeting'
+                  $ref: '#/definitions/meeting.MeetingResponse'
               type: object
         "400":
           description: Bad Request
@@ -4006,7 +4490,7 @@ paths:
             - $ref: '#/definitions/response.SuccessRes'
             - properties:
                 data:
-                  $ref: '#/definitions/meeting.Meeting'
+                  type: string
               type: object
         "400":
           description: Bad Request
@@ -6780,6 +7264,349 @@ paths:
       summary: 获取我参加的项目
       tags:
       - 小程序接口
+  /wx/assignments:
+    get:
+      consumes:
+      - application/json
+      operationId: Q010
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 任务名称
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 任务类型（1，会议任务，2其他任务）
+        in: query
+        name: assignment_type
+        type: integer
+      - description: 关联ID（会议ID)
+        in: query
+        name: reference_id
+        type: integer
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/assignment.AssignmentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 任务列表
+      tags:
+      - 小程序接口-任务管理
+    post:
+      consumes:
+      - application/json
+      operationId: Q011
+      parameters:
+      - description: 任务信息
+        in: body
+        name: assignment_info
+        required: true
+        schema:
+          $ref: '#/definitions/assignment.AssignmentNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建任务
+      tags:
+      - 小程序接口-任务管理
+  /wx/assignments/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: Q014
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除任务
+      tags:
+      - 小程序接口-任务管理
+    get:
+      consumes:
+      - application/json
+      operationId: Q012
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/assignment.AssignmentResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取任务
+      tags:
+      - 小程序接口-任务管理
+    put:
+      consumes:
+      - application/json
+      operationId: Q013
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/assignment.AssignmentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新任务
+      tags:
+      - 小程序接口-任务管理
+  /wx/assignments/:id/audit:
+    post:
+      consumes:
+      - application/json
+      operationId: Q016
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/assignment.AssignmentAudit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID审核任务
+      tags:
+      - 小程序接口-任务管理
+  /wx/assignments/:id/complete:
+    post:
+      consumes:
+      - application/json
+      operationId: Q015
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/assignment.AssignmentComplete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID完成任务
+      tags:
+      - 小程序接口-任务管理
+  /wx/assignments/my:
+    get:
+      consumes:
+      - application/json
+      operationId: Q017
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 任务名称
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/assignment.AssignmentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 我的任务列表
+      tags:
+      - 小程序接口-任务管理
+  /wx/assignments/myaudit:
+    get:
+      consumes:
+      - application/json
+      operationId: Q018
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 任务名称
+        in: query
+        name: name
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/assignment.AssignmentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 我的任务审核列表
+      tags:
+      - 小程序接口-任务管理
   /wx/auditevents/:id:
     put:
       consumes:
@@ -7464,7 +8291,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: H005
+      operationId: H006
       parameters:
       - description: 页码
         in: query
@@ -7476,10 +8303,14 @@ paths:
         name: page_size
         required: true
         type: integer
-      - description: 会议编码
+      - description: 会议名称
         in: query
         name: name
         type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
       produces:
       - application/json
       responses:
@@ -7491,7 +8322,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/meeting.Meeting'
+                    $ref: '#/definitions/meeting.MeetingResponse'
                   type: array
               type: object
         "400":
@@ -7500,7 +8331,131 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 会议列表
       tags:
-      - 小程序接口
+      - 小程序接口-会议管理
+    post:
+      consumes:
+      - application/json
+      operationId: H007
+      parameters:
+      - description: 会议信息
+        in: body
+        name: meeting_info
+        required: true
+        schema:
+          $ref: '#/definitions/meeting.MeetingNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建会议
+      tags:
+      - 小程序接口-会议管理
+  /wx/meetings/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: H010
+      parameters:
+      - description: 会议ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除会议
+      tags:
+      - 小程序接口-会议管理
+    get:
+      consumes:
+      - application/json
+      operationId: H008
+      parameters:
+      - description: 会议ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/meeting.MeetingResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取会议
+      tags:
+      - 小程序接口-会议管理
+    put:
+      consumes:
+      - application/json
+      operationId: H009
+      parameters:
+      - description: 会议ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 会议信息
+        in: body
+        name: meeting_info
+        required: true
+        schema:
+          $ref: '#/definitions/meeting.MeetingNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新会议
+      tags:
+      - 小程序接口-会议管理
   /wx/members:
     get:
       consumes:

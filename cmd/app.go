@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bpm/api/v1/assignment"
 	"bpm/api/v1/auth"
 	"bpm/api/v1/client"
 	"bpm/api/v1/common"
@@ -33,7 +34,7 @@ func Run(args []string) {
 	event2.Subscribe(message.Subscribe, event.Subscribe)
 	r := router.InitRouter()
 	router.InitPublicRouter(r, auth.Routers, organization.PortalRouters, example.PortalRouters, vendors.PortalRouters, common.PortalRouters, project.PortalRouters)
-	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers, position.Routers, member.Routers, template.Routers, node.Routers, element.Routers, upload.Routers, example.Routers, common.Routers, vendors.Routers, meeting.Routers)
-	router.InitWxRouter(r, event.WxRouters, project.WxRouters, upload.WxRouters, component.WxRouters, position.WxRouters, auth.WxRouters, client.WxRouters, member.WxRouters, template.WxRouters, example.WxRouters, organization.WxRouters, meeting.WxRouters)
+	router.InitAuthRouter(r, organization.Routers, project.Routers, event.Routers, component.Routers, auth.AuthRouter, client.Routers, position.Routers, member.Routers, template.Routers, node.Routers, element.Routers, upload.Routers, example.Routers, common.Routers, vendors.Routers, meeting.Routers, assignment.Routers)
+	router.InitWxRouter(r, event.WxRouters, project.WxRouters, upload.WxRouters, component.WxRouters, position.WxRouters, auth.WxRouters, client.WxRouters, member.WxRouters, template.WxRouters, example.WxRouters, organization.WxRouters, meeting.WxRouters, assignment.WxRouters)
 	router.RunServer(r)
 }

@@ -10,18 +10,10 @@ type memberRepository struct {
 	tx *sql.Tx
 }
 
-func NewMemberRepository(transaction *sql.Tx) MemberRepository {
+func NewMemberRepository(transaction *sql.Tx) *memberRepository {
 	return &memberRepository{
 		tx: transaction,
 	}
-}
-
-type MemberRepository interface {
-	//Member Management
-	CreateProjectMember(int64, []int64, int64, string) error
-	DeleteProjectMember(int64, string) error
-	GetMembersByProjectID(int64) (*[]MemberResponse, error)
-	CheckProjectExist(int64, int64) (int, error)
 }
 
 func (r *memberRepository) CreateProjectMember(projectID int64, userID []int64, organizationID int64, user string) error {
@@ -130,4 +122,21 @@ func (r *memberRepository) GetMembersByProjectID(projectID int64) (*[]MemberResp
 		res = append(res, rowRes)
 	}
 	return &res, nil
+}
+
+func (r *memberRepository) CheckMemberExist(projectID, userID int64) (bool, error) {
+	var res int
+	row := r.tx.QueryRow(`
+		SELECT count(1) 
+		FROM project_members
+		WHERE project_id = ? 
+		AND user_id = ?
+		AND status > 0 
+		LIMIT 1
+		`, projectID, userID)
+	err := row.Scan(&res)
+	if err != nil {
+		return false, err
+	}
+	return res > 0, nil
 }

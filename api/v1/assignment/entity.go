@@ -10,7 +10,9 @@ type Assignment struct {
 	AssignTo        int64     `db:"assign_to" json:"assign_to"`
 	AuditTo         int64     `db:"audit_to" json:"audit_to"`
 	CompleteContent string    `db:"complete_content" json:"complete_content"`
+	CompleteTime    string    `db:"complete_time" json:"complete_time"`
 	AuditContent    string    `db:"audit_content" json:"audit_content"`
+	AuditTime       string    `db:"audit_time" json:"audit_time"`
 	Name            string    `db:"name" json:"name"`
 	Content         string    `db:"content" json:"content"`
 	File            string    `db:"file" json:"file"`
