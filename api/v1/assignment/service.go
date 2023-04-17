@@ -233,7 +233,7 @@ func (s *assignmentService) AuditAssignment(assignmentID int64, info AssignmentA
 		msg := "此任务不可审核"
 		return errors.New(msg)
 	}
-	if oldAssignment.AssignTo != info.UserID {
+	if oldAssignment.AuditTo != info.UserID {
 		msg := "只能审核分配给你的任务"
 		return errors.New(msg)
 	}
