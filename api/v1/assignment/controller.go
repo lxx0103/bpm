@@ -59,6 +59,7 @@ func NewAssignment(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	assignment.User = claims.Username
+	assignment.UserID = claims.UserID
 	organizationID := claims.OrganizationID
 	assignmentService := NewAssignmentService()
 	err := assignmentService.NewAssignment(assignment, organizationID)
@@ -121,6 +122,7 @@ func UpdateAssignment(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	assignment.User = claims.Username
+	assignment.UserID = claims.UserID
 	organizationID := claims.OrganizationID
 	assignmentService := NewAssignmentService()
 	err := assignmentService.UpdateAssignment(uri.ID, assignment, organizationID)
@@ -149,7 +151,7 @@ func DeleteAssignment(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	assignmentService := NewAssignmentService()
-	err := assignmentService.DeleteAssignment(uri.ID, claims.OrganizationID, claims.Username)
+	err := assignmentService.DeleteAssignment(uri.ID, claims.OrganizationID, claims.Username, claims.UserID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

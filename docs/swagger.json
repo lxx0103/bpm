@@ -12081,7 +12081,6 @@
         "assignment.AssignmentAudit": {
             "type": "object",
             "required": [
-                "content",
                 "result"
             ],
             "properties": {
@@ -12220,6 +12219,9 @@
                     "type": "integer"
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }
@@ -14017,6 +14019,9 @@
                     "type": "string"
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }

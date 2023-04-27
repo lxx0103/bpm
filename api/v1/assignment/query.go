@@ -41,6 +41,7 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		m.content, 
 		m.file,
 		m.status,
+		m.user_id,
 		m.created,
 		m.created_by
 		FROM assignments m
@@ -171,6 +172,7 @@ func (r *assignmentQuery) GetAssignmentList(filter AssignmentFilter) (*[]Assignm
 		m.content, 
 		m.file,
 		m.status,
+		m.user_id,
 		m.created,
 		m.created_by
 		FROM assignments m
@@ -248,6 +250,7 @@ func (r *assignmentQuery) GetMyAssignmentList(filter MyAssignmentFilter) (*[]Ass
 		m.content, 
 		m.file,
 		m.status,
+		m.user_id,
 		m.created,
 		m.created_by
 		FROM assignments m
@@ -325,6 +328,7 @@ func (r *assignmentQuery) GetMyAuditList(filter MyAuditFilter) (*[]AssignmentRes
 		m.content, 
 		m.file,
 		m.status,
+		m.user_id,
 		m.created,
 		m.created_by
 		FROM assignments m

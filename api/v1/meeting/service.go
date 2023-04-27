@@ -92,6 +92,10 @@ func (s *meetingService) UpdateMeeting(meetingID int64, info MeetingNew, organiz
 		msg := "会议记录不存在"
 		return errors.New(msg)
 	}
+	if oldMeeting.UserID != info.UserID {
+		msg := "不是你创建的会议记录"
+		return errors.New(msg)
+	}
 	err = repo.UpdateMeeting(meetingID, info)
 	if err != nil {
 		return err
@@ -100,7 +104,7 @@ func (s *meetingService) UpdateMeeting(meetingID int64, info MeetingNew, organiz
 	return nil
 }
 
-func (s *meetingService) DeleteMeeting(meetingID, organizationID int64, byUser string) error {
+func (s *meetingService) DeleteMeeting(meetingID, organizationID int64, byUser string, byUserID int64) error {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -115,6 +119,10 @@ func (s *meetingService) DeleteMeeting(meetingID, organizationID int64, byUser s
 	}
 	if organizationID != oldMeeting.OrganizationID && organizationID != 0 {
 		msg := "会议记录不存在"
+		return errors.New(msg)
+	}
+	if oldMeeting.UserID != byUserID {
+		msg := "不是你创建的会议记录"
 		return errors.New(msg)
 	}
 	err = repo.DeleteMeeting(meetingID, byUser)

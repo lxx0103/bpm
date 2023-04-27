@@ -29,13 +29,14 @@ func (r *assignmentRepository) CreateAssignment(info AssignmentNew) error {
 			content,
 			file,
 			status,
+			user_id,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.OrganizationID, info.ProjectID, info.AssignmentType, info.ReferenceID, info.AssignTo, info.AuditTo, info.Name, info.Content, info.File, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.ProjectID, info.AssignmentType, info.ReferenceID, info.AssignTo, info.AuditTo, info.Name, info.Content, info.File, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
 	return err
 }
 
@@ -78,6 +79,7 @@ func (r *assignmentRepository) GetAssignmentByID(id int64) (*AssignmentResponse,
 		m.content, 
 		m.file,
 		m.status,
+		m.user_id,
 		m.created,
 		m.created_by
 		FROM assignments m
@@ -93,7 +95,7 @@ func (r *assignmentRepository) GetAssignmentByID(id int64) (*AssignmentResponse,
 		AND m.status > 0
 	`, id)
 
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.OrganizationName, &res.AssignmentType, &res.ReferenceID, &res.ProjectID, &res.ProjectName, &res.AssignTo, &res.AssignName, &res.AuditTo, &res.AuditName, &res.CompleteContent, &res.CompleteTime, &res.AuditContent, &res.AuditTime, &res.Name, &res.Content, &res.File, &res.Status, &res.Created, &res.CreatedBy)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.OrganizationName, &res.AssignmentType, &res.ReferenceID, &res.ProjectID, &res.ProjectName, &res.AssignTo, &res.AssignName, &res.AuditTo, &res.AuditName, &res.CompleteContent, &res.CompleteTime, &res.AuditContent, &res.AuditTime, &res.Name, &res.Content, &res.File, &res.Status, &res.UserID, &res.Created, &res.CreatedBy)
 	return &res, err
 }
 

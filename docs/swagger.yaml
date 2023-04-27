@@ -10,7 +10,6 @@ definitions:
         - 2
         type: integer
     required:
-    - content
     - result
     type: object
   assignment.AssignmentComplete:
@@ -98,6 +97,8 @@ definitions:
       reference_id:
         type: integer
       status:
+        type: integer
+      user_id:
         type: integer
     type: object
   assignment.AssignmentUpdate:
@@ -1319,6 +1320,8 @@ definitions:
       organization_name:
         type: string
       status:
+        type: integer
+      user_id:
         type: integer
     type: object
   member.MemberNew:

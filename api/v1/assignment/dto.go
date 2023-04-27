@@ -24,6 +24,7 @@ type AssignmentNew struct {
 	Content        string `json:"content" binding:"required"`
 	File           string `json:"file" binding:"omitempty"`
 	User           string `json:"user" swaggerignore:"true"`
+	UserID         int64  `json:"user_id" swaggerignore:"true"`
 }
 
 type AssignmentUpdate struct {
@@ -34,6 +35,7 @@ type AssignmentUpdate struct {
 	Content   string `json:"content" binding:"required"`
 	File      string `json:"file" binding:"omitempty"`
 	User      string `json:"user" swaggerignore:"true"`
+	UserID    int64  `json:"user_id" swaggerignore:"true"`
 }
 type AssignmentID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
@@ -59,6 +61,7 @@ type AssignmentResponse struct {
 	Content          string    `db:"content" json:"content"`
 	File             string    `db:"file" json:"file"`
 	Status           int       `db:"status" json:"status"`
+	UserID           int64     `db:"user_id" json:"user_id"`
 	Created          time.Time `db:"created" json:"created"`
 	CreatedBy        string    `db:"created_by" json:"created_by"`
 }
@@ -71,7 +74,7 @@ type AssignmentComplete struct {
 
 type AssignmentAudit struct {
 	Result  int    `json:"result" binding:"required,oneof=1 2"`
-	Content string `json:"content" binding:"required"`
+	Content string `json:"content" binding:"omitempty"`
 	User    string `json:"user" swaggerignore:"true"`
 	UserID  int64  `json:"user_id" swaggerignore:"true"`
 }

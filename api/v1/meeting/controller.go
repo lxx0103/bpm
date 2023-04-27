@@ -56,6 +56,7 @@ func NewMeeting(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	meeting.User = claims.Username
+	meeting.UserID = claims.UserID
 	organizationID := claims.OrganizationID
 	meetingService := NewMeetingService()
 	err := meetingService.NewMeeting(meeting, organizationID)
@@ -118,6 +119,7 @@ func UpdateMeeting(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	meeting.User = claims.Username
+	meeting.UserID = claims.UserID
 	organizationID := claims.OrganizationID
 	meetingService := NewMeetingService()
 	err := meetingService.UpdateMeeting(uri.ID, meeting, organizationID)
@@ -146,7 +148,7 @@ func DeleteMeeting(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	meetingService := NewMeetingService()
-	err := meetingService.DeleteMeeting(uri.ID, claims.OrganizationID, claims.Username)
+	err := meetingService.DeleteMeeting(uri.ID, claims.OrganizationID, claims.Username, claims.UserID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

@@ -25,13 +25,14 @@ func (r *meetingRepository) CreateMeeting(info MeetingNew) error {
 			content,
 			file,
 			status,
+			user_id,
 			created,
 			created_by,
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.OrganizationID, info.Name, info.Date, info.Content, info.File, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.Name, info.Date, info.Content, info.File, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
 	return err
 }
 
@@ -52,7 +53,7 @@ func (r *meetingRepository) UpdateMeeting(id int64, info MeetingNew) error {
 func (r *meetingRepository) GetMeetingByID(id int64) (*MeetingResponse, error) {
 	var res MeetingResponse
 	row := r.tx.QueryRow(`
-		SELECT m.id, m.name, m.status, m.organization_id, o.name as organization_name, m.date, m.content, m.file
+		SELECT m.id, m.name, m.status, m.organization_id, o.name as organization_name, m.date, m.content, m.file, m.user_id
 		FROM meetings m
 		LEFT JOIN organizations o
 		ON m.organization_id = o.id
@@ -60,7 +61,7 @@ func (r *meetingRepository) GetMeetingByID(id int64) (*MeetingResponse, error) {
 		AND m.status > 0
 	`, id)
 
-	err := row.Scan(&res.ID, &res.Name, &res.Status, &res.OrganizationID, &res.OrganizationName, &res.Date, &res.Content, &res.File)
+	err := row.Scan(&res.ID, &res.Name, &res.Status, &res.OrganizationID, &res.OrganizationName, &res.Date, &res.Content, &res.File, &res.UserID)
 	return &res, err
 }
 

@@ -16,6 +16,7 @@ type MeetingNew struct {
 	Content        string `json:"content" binding:"required"`
 	File           string `json:"file" binding:"omitempty"`
 	User           string `json:"user" swaggerignore:"true"`
+	UserID         int64  `json:"user_id" swaggerignore:"true"`
 }
 
 type MeetingID struct {
@@ -31,4 +32,5 @@ type MeetingResponse struct {
 	Content          string    `db:"content" json:"content"`
 	File             string    `db:"file" json:"file"`
 	Status           int       `db:"status" json:"status"`
+	UserID           int64     `db:"user_id" json:"user_id"`
 }

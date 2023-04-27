@@ -21,7 +21,7 @@ func (r *meetingQuery) GetMeetingByID(id int64, organizationID int64) (*MeetingR
 	var err error
 	if organizationID != 0 {
 		err = r.conn.Get(&meeting, `
-		SELECT m.id, m.name, m.status, m.organization_id, o.name as organization_name, m.date, m.content, m.file
+		SELECT m.id, m.name, m.status, m.organization_id, o.name as organization_name, m.date, m.content, m.file, m.user_id
 		FROM meetings m
 		LEFT JOIN organizations o
 		ON m.organization_id = o.id
@@ -31,7 +31,7 @@ func (r *meetingQuery) GetMeetingByID(id int64, organizationID int64) (*MeetingR
 		`, id, organizationID)
 	} else {
 		err = r.conn.Get(&meeting, `
-		SELECT m.id, m.name, m.status, m.organization_id, o.name as organization_name, m.date, m.content, m.file
+		SELECT m.id, m.name, m.status, m.organization_id, o.name as organization_name, m.date, m.content, m.file, m.user_id
 		FROM meetings m
 		LEFT JOIN organizations o
 		ON m.organization_id = o.id
@@ -73,7 +73,7 @@ func (r *meetingQuery) GetMeetingList(filter MeetingFilter) (*[]MeetingResponse,
 	args = append(args, filter.PageSize)
 	var meetings []MeetingResponse
 	err := r.conn.Select(&meetings, `
-		SELECT m.id, m.name, m.status, m.organization_id, o.name as organization_name, m.date, m.content, m.file
+		SELECT m.id, m.name, m.status, m.organization_id, o.name as organization_name, m.date, m.content, m.file, m.user_id
 		FROM meetings m
 		LEFT JOIN organizations o
 		ON m.organization_id = o.id

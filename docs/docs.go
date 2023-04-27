@@ -12095,7 +12095,6 @@ var doc = `{
         "assignment.AssignmentAudit": {
             "type": "object",
             "required": [
-                "content",
                 "result"
             ],
             "properties": {
@@ -12234,6 +12233,9 @@ var doc = `{
                     "type": "integer"
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }
@@ -14031,6 +14033,9 @@ var doc = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }

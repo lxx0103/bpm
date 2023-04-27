@@ -114,7 +114,7 @@ func (s *assignmentService) UpdateAssignment(assignmentID int64, info Assignment
 		msg := "此任务已完成"
 		return errors.New(msg)
 	}
-	if oldAssignment.CreatedBy != info.User {
+	if oldAssignment.UserID != info.UserID {
 		msg := "只能修改自己创建的任务"
 		return errors.New(msg)
 	}
@@ -150,7 +150,7 @@ func (s *assignmentService) UpdateAssignment(assignmentID int64, info Assignment
 	return nil
 }
 
-func (s *assignmentService) DeleteAssignment(assignmentID, organizationID int64, byUser string) error {
+func (s *assignmentService) DeleteAssignment(assignmentID, organizationID int64, byUser string, byUserID int64) error {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -167,7 +167,7 @@ func (s *assignmentService) DeleteAssignment(assignmentID, organizationID int64,
 		msg := "任务记录不存在"
 		return errors.New(msg)
 	}
-	if oldAssignment.CreatedBy != byUser {
+	if oldAssignment.UserID != byUserID {
 		msg := "只能删除自己创建的任务"
 		return errors.New(msg)
 	}
