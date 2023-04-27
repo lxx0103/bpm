@@ -5,6 +5,8 @@ import (
 	"bpm/api/v1/member"
 	"bpm/api/v1/project"
 	"bpm/core/database"
+	"bpm/core/queue"
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -65,11 +67,24 @@ func (s *assignmentService) NewAssignment(info AssignmentNew, organizationID int
 		msg := "审核人员不存在"
 		return errors.New(msg)
 	}
-	err = repo.CreateAssignment(info)
+	assignmentID, err := repo.CreateAssignment(info)
 	if err != nil {
 		return err
 	}
 	tx.Commit()
+
+	type NewAssignmentCreated struct {
+		AssignmentID int64 `json:"assignment_id"`
+	}
+	var newEvent NewAssignmentCreated
+	newEvent.AssignmentID = assignmentID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewAssignmentCreated", msg)
+	if err != nil {
+		msg := "create event NewAssignmentCreated error"
+		return errors.New(msg)
+	}
 	return nil
 }
 
@@ -147,6 +162,18 @@ func (s *assignmentService) UpdateAssignment(assignmentID int64, info Assignment
 		return err
 	}
 	tx.Commit()
+	type NewAssignmentCreated struct {
+		AssignmentID int64 `json:"assignment_id"`
+	}
+	var newEvent NewAssignmentCreated
+	newEvent.AssignmentID = assignmentID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewAssignmentCreated", msg)
+	if err != nil {
+		msg := "create event NewAssignmentCreated error"
+		return errors.New(msg)
+	}
 	return nil
 }
 
@@ -209,6 +236,18 @@ func (s *assignmentService) CompleteAssignment(assignmentID int64, info Assignme
 		return err
 	}
 	tx.Commit()
+	type NewAssignmentCompleted struct {
+		AssignmentID int64 `json:"assignment_id"`
+	}
+	var newEvent NewAssignmentCompleted
+	newEvent.AssignmentID = assignmentID
+	rabbit, _ := queue.GetConn()
+	msg, _ := json.Marshal(newEvent)
+	err = rabbit.Publish("NewAssignmentCompleted", msg)
+	if err != nil {
+		msg := "create event NewAssignmentCompleted error"
+		return errors.New(msg)
+	}
 	return nil
 }
 
@@ -242,6 +281,21 @@ func (s *assignmentService) AuditAssignment(assignmentID int64, info AssignmentA
 		return err
 	}
 	tx.Commit()
+	if info.Result == 2 {
+		type NewAssignmentCreated struct {
+			AssignmentID int64 `json:"assignment_id"`
+		}
+		var newEvent NewAssignmentCreated
+		newEvent.AssignmentID = assignmentID
+		rabbit, _ := queue.GetConn()
+		msg, _ := json.Marshal(newEvent)
+		err = rabbit.Publish("NewAssignmentCreated", msg)
+		if err != nil {
+			msg := "create event NewAssignmentCreated error"
+			return errors.New(msg)
+		}
+
+	}
 	return nil
 }
 

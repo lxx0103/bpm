@@ -79,6 +79,7 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		m.content, 
 		m.file,
 		m.status,
+		m.user_id,
 		m.created,
 		m.created_by
 		FROM assignments m
@@ -87,7 +88,7 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		LEFT JOIN projects p
 		ON p.id = m.project_id
 		LEFT JOIN users u
-		ON u.id = m.assign_to,
+		ON u.id = m.assign_to
 		LEFT JOIN users u2
 		ON u2.id = m.audit_to
 		WHERE m.id = ? 

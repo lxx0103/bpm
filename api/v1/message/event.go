@@ -1,6 +1,8 @@
 package message
 
 import (
+	"bpm/api/v1/assignment"
+	"bpm/api/v1/auth"
 	"bpm/api/v1/event"
 	"bpm/api/v1/organization"
 	"bpm/api/v1/project"
@@ -32,6 +34,12 @@ type NewEventAudited struct {
 type NewProjectReportCreated struct {
 	ProjectReportID int64 `json:"project_report_id"`
 }
+type NewAssignmentCreated struct {
+	AssignmentID int64 `json:"assignment_id"`
+}
+type NewAssignmentCompleted struct {
+	AssignmentID int64 `json:"assignment_id"`
+}
 type todoToSend struct {
 	OpenID string `json:"open_id"`
 	Thing2 string `json:"thing2"`
@@ -61,6 +69,20 @@ type messageRes struct {
 	Errmsg  string `json:"errmsg"`
 }
 
+type assignmentToSend struct {
+	OpenID string `json:"open_id"`
+	Thing4 string `json:"thing4"`
+	Date3  string `json:"date3"`
+	Thing6 string `json:"thing6"`
+}
+type assignmentAuditToSend struct {
+	OpenID string `json:"open_id"`
+	Thing1 string `json:"thing1"`
+	Thing2 string `json:"thing2"`
+	Name4  string `json:"name4"`
+	Time5  string `json:"time5"`
+}
+
 func Subscribe(conn *queue.Conn) {
 	// conn.StartConsumer("NewTodo", "NewProjectCreated", NewTodo)
 	conn.StartConsumer("NewTodo", "NewProjectMember", NewTodo)
@@ -68,6 +90,8 @@ func Subscribe(conn *queue.Conn) {
 	conn.StartConsumer("NewEventAudit", "NewEventCompleted", NewEventAudit)
 	conn.StartConsumer("NewEventAudited", "NewEventAudited", NextEventTodo)
 	conn.StartConsumer("NewProjectReportCreated", "NewProjectReportCreated", NewReportTodo)
+	conn.StartConsumer("NewAssignmentCreated", "NewAssignmentCreated", NewAssignmentTodo)
+	conn.StartConsumer("NewAssignmentCompleted", "NewAssignmentCompleted", NewAssignmentAuditTodo)
 }
 
 func NewTodo(d amqp.Delivery) bool {
@@ -939,6 +963,332 @@ func sendMessageToReport(reportID int64) error {
 		if res.Errcode != 0 {
 			fmt.Println(res.Errmsg)
 		}
+	}
+	return nil
+}
+
+func NewAssignmentTodo(d amqp.Delivery) bool {
+	if d.Body == nil {
+		return false
+	}
+	var NewAssignmentCreated NewAssignmentCreated
+	err := json.Unmarshal(d.Body, &NewAssignmentCreated)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "5")
+			return false
+		}
+	}
+	db := database.InitMySQL()
+	assignmentQuery := assignment.NewAssignmentQuery(db)
+	fmt.Println(NewAssignmentCreated.AssignmentID)
+	assignment, err := assignmentQuery.GetAssignmentByID(NewAssignmentCreated.AssignmentID, 0)
+	if err != nil {
+		fmt.Println(err.Error() + "28")
+		return false
+	}
+	err = sendMessageToAssignment(assignment.ID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	} else {
+		return true
+	}
+}
+
+func sendMessageToAssignment(assignmentID int64) error {
+	db := database.InitMySQL()
+	assignmentQuery := assignment.NewAssignmentQuery(db)
+	authQuery := auth.NewAuthQuery(db)
+	projectQuery := project.NewProjectQuery(db)
+	organizationQuery := organization.NewOrganizationQuery(db)
+	assignment, err := assignmentQuery.GetAssignmentByID(assignmentID, 0)
+	if err != nil {
+		fmt.Println(err.Error(), "get assignment err")
+		return err
+
+	}
+	user, err := authQuery.GetUserByID(assignment.AssignTo, 0)
+	if err != nil {
+		fmt.Println(err.Error() + "get user error")
+		return err
+	}
+	project, err := projectQuery.GetProjectByID(assignment.ProjectID, 0)
+	if err != nil {
+		fmt.Println(err.Error() + "get project error")
+		return err
+	}
+	var msgToSend assignmentToSend
+	msgToSend.OpenID = user.Identifier
+	msgToSend.Thing4 = assignment.Name
+	msgToSend.Thing6 = project.Name
+	msgToSend.Date3 = assignment.Created.Format("2006-01-02 15:04:05")
+	accessToken, err := organizationQuery.GetAccessToken("bpm")
+	if err != nil {
+		if err.Error() != "sql: no rows in result set" {
+			if err != nil {
+				fmt.Println(err.Error() + "7")
+				return err
+			}
+		} else {
+			var tokenRes organization.WechatToken
+			httpClient := &http.Client{}
+			token_uri := config.ReadConfig("Wechat.token_uri")
+			appID := config.ReadConfig("Wechat.app_id")
+			appSecret := config.ReadConfig("Wechat.app_secret")
+			uri := token_uri + "?appid=" + appID + "&secret=" + appSecret + "&grant_type=client_credential"
+			req, err := http.NewRequest("GET", uri, nil)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "8")
+					return err
+				}
+			}
+			res, err := httpClient.Do(req)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "9")
+					return err
+				}
+			}
+			defer res.Body.Close()
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "10")
+					return err
+				}
+			}
+			err = json.Unmarshal(body, &tokenRes)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "11")
+					return err
+				}
+			}
+			tx, err := db.Begin()
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "12")
+					return err
+				}
+			}
+			defer tx.Rollback()
+			repo := organization.NewOrganizationRepository(tx)
+			err = repo.NewAccessToken("bpm", tokenRes.AccessToken)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "13")
+					return err
+				}
+			}
+			tx.Commit()
+			accessToken = tokenRes.AccessToken
+		}
+	}
+	url := config.ReadConfig("Wechat.message_uri")
+	templateID := config.ReadConfig("Wechat.assignment_template_id")
+	state := config.ReadConfig("Wechat.state")
+	jsonReq := []byte(`{ "touser" : "` + msgToSend.OpenID + `", "template_id" : "` + templateID + `", "page" : "pages/index/index","miniprogram_state" : "` + state + `","lang" : "zh_CN","data" : {  "thing4" : { "value": "` + msgToSend.Thing4 + `"}, "thing6": { "value": "` + msgToSend.Thing6 + `"}, "date3": { "value": "` + msgToSend.Date3 + `"} } }`)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonReq))
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "14")
+			return err
+		}
+	}
+	q := req.URL.Query()
+	q.Add("access_token", accessToken)
+	req.URL.RawQuery = q.Encode()
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "15")
+			return err
+		}
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "16")
+			return err
+		}
+	}
+	var res messageRes
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "17")
+			return err
+		}
+	}
+	if res.Errcode != 0 {
+		fmt.Println(res.Errmsg)
+	}
+	return nil
+}
+
+func NewAssignmentAuditTodo(d amqp.Delivery) bool {
+	if d.Body == nil {
+		return false
+	}
+	var NewAssignmentCompleted NewAssignmentCompleted
+	err := json.Unmarshal(d.Body, &NewAssignmentCompleted)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "5")
+			return false
+		}
+	}
+	db := database.InitMySQL()
+	assignmentQuery := assignment.NewAssignmentQuery(db)
+	fmt.Println(NewAssignmentCompleted.AssignmentID)
+	assignment, err := assignmentQuery.GetAssignmentByID(NewAssignmentCompleted.AssignmentID, 0)
+	if err != nil {
+		fmt.Println(err.Error() + "28")
+		return false
+	}
+	err = sendMessageToAssignmentAudit(assignment.ID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	} else {
+		return true
+	}
+}
+
+func sendMessageToAssignmentAudit(assignmentID int64) error {
+	db := database.InitMySQL()
+	assignmentQuery := assignment.NewAssignmentQuery(db)
+	authQuery := auth.NewAuthQuery(db)
+	projectQuery := project.NewProjectQuery(db)
+	organizationQuery := organization.NewOrganizationQuery(db)
+	assignment, err := assignmentQuery.GetAssignmentByID(assignmentID, 0)
+	if err != nil {
+		fmt.Println(err.Error(), "get assignment err")
+		return err
+
+	}
+	user, err := authQuery.GetUserByID(assignment.AuditTo, 0)
+	if err != nil {
+		fmt.Println(err.Error() + "get user error")
+		return err
+	}
+	project, err := projectQuery.GetProjectByID(assignment.ProjectID, 0)
+	if err != nil {
+		fmt.Println(err.Error() + "get project error")
+		return err
+	}
+	var msgToSend assignmentAuditToSend
+	msgToSend.OpenID = user.Identifier
+	msgToSend.Thing1 = assignment.Name
+	msgToSend.Thing2 = project.Name
+	msgToSend.Time5 = assignment.CompleteTime[0:19]
+	accessToken, err := organizationQuery.GetAccessToken("bpm")
+	if err != nil {
+		if err.Error() != "sql: no rows in result set" {
+			if err != nil {
+				fmt.Println(err.Error() + "7")
+				return err
+			}
+		} else {
+			var tokenRes organization.WechatToken
+			httpClient := &http.Client{}
+			token_uri := config.ReadConfig("Wechat.token_uri")
+			appID := config.ReadConfig("Wechat.app_id")
+			appSecret := config.ReadConfig("Wechat.app_secret")
+			uri := token_uri + "?appid=" + appID + "&secret=" + appSecret + "&grant_type=client_credential"
+			req, err := http.NewRequest("GET", uri, nil)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "8")
+					return err
+				}
+			}
+			res, err := httpClient.Do(req)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "9")
+					return err
+				}
+			}
+			defer res.Body.Close()
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "10")
+					return err
+				}
+			}
+			err = json.Unmarshal(body, &tokenRes)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "11")
+					return err
+				}
+			}
+			tx, err := db.Begin()
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "12")
+					return err
+				}
+			}
+			defer tx.Rollback()
+			repo := organization.NewOrganizationRepository(tx)
+			err = repo.NewAccessToken("bpm", tokenRes.AccessToken)
+			if err != nil {
+				if err != nil {
+					fmt.Println(err.Error() + "13")
+					return err
+				}
+			}
+			tx.Commit()
+			accessToken = tokenRes.AccessToken
+		}
+	}
+	url := config.ReadConfig("Wechat.message_uri")
+	templateID := config.ReadConfig("Wechat.assignment_audit_template_id")
+	state := config.ReadConfig("Wechat.state")
+	jsonReq := []byte(`{ "touser" : "` + msgToSend.OpenID + `", "template_id" : "` + templateID + `", "page" : "pages/index/index","miniprogram_state" : "` + state + `","lang" : "zh_CN","data" : {  "thing1" : { "value": "` + msgToSend.Thing1 + `"}, "thing2": { "value": "` + msgToSend.Thing2 + `"}, "time5": { "value": "` + msgToSend.Time5 + `"}, "name4": { "value": "` + msgToSend.Name4 + `"} } }`)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonReq))
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "14")
+			return err
+		}
+	}
+	q := req.URL.Query()
+	q.Add("access_token", accessToken)
+	req.URL.RawQuery = q.Encode()
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "15")
+			return err
+		}
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "16")
+			return err
+		}
+	}
+	var res messageRes
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "17")
+			return err
+		}
+	}
+	if res.Errcode != 0 {
+		fmt.Println(res.Errmsg)
 	}
 	return nil
 }

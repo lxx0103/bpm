@@ -15,8 +15,8 @@ func NewAssignmentRepository(transaction *sql.Tx) *assignmentRepository {
 	}
 }
 
-func (r *assignmentRepository) CreateAssignment(info AssignmentNew) error {
-	_, err := r.tx.Exec(`
+func (r *assignmentRepository) CreateAssignment(info AssignmentNew) (int64, error) {
+	res, err := r.tx.Exec(`
 		INSERT INTO assignments
 		(
 			organization_id,
@@ -37,7 +37,11 @@ func (r *assignmentRepository) CreateAssignment(info AssignmentNew) error {
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`, info.OrganizationID, info.ProjectID, info.AssignmentType, info.ReferenceID, info.AssignTo, info.AuditTo, info.Name, info.Content, info.File, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	assignmentID, err := res.LastInsertId()
+	return assignmentID, err
 }
 
 func (r *assignmentRepository) UpdateAssignment(id int64, info AssignmentUpdate) error {
