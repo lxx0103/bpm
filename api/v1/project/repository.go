@@ -339,6 +339,11 @@ func (r *projectRepository) DeleteRecordByProjectID(id int64, byUser string) err
 	`, time.Now(), byUser, id)
 	return err
 }
+func (r *projectRepository) DeleteAssignmentByProjectID(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update assignments SET status = -1, updated = ?,updated_by = ? WHERE project_id = ?`, time.Now(), byUser, id)
+	return err
+}
 func (r *projectRepository) CreateProjectReportView(info ProjectReportView) error {
 	_, err := r.tx.Exec(`
 		INSERT INTO project_report_views

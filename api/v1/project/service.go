@@ -305,6 +305,10 @@ func (s *projectService) DeleteProject(projectID int64, organizationID int64, us
 	if err != nil {
 		return err
 	}
+	err = repo.DeleteAssignmentByProjectID(projectID, user)
+	if err != nil {
+		return err
+	}
 	tx.Commit()
 	return nil
 }
