@@ -9235,6 +9235,37 @@ paths:
       summary: 新建项目报告
       tags:
       - 小程序接口
+  /wx/qrcode:
+    post:
+      consumes:
+      - application/json
+      operationId: K009
+      parameters:
+      - description: 页面路径参数
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/organization.QrcodeFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取小程序码
+      tags:
+      - 组织管理
   /wx/reviews/:id/handle:
     put:
       consumes:

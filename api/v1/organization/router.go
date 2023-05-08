@@ -12,6 +12,7 @@ func Routers(g *gin.RouterGroup) {
 
 func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/organizations/:id", WxGetOrganizationByID)
+	g.GET("/wx/qrcode", WxGetQrCode)
 }
 
 func PortalRouters(g *gin.RouterGroup) {

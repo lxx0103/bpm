@@ -204,3 +204,17 @@ func PortalGetOrganizationList(c *gin.Context) {
 func PortalGetOrganizationByID(c *gin.Context) {
 	GetOrganizationByID(c)
 }
+
+// @Summary 获取小程序码
+// @Id K009
+// @Tags 组织管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param info body QrcodeFilter true "页面路径参数"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/qrcode [POST]
+func WxGetQrCode(c *gin.Context) {
+	GetQrCode(c)
+}
