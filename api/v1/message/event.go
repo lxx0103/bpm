@@ -1148,7 +1148,7 @@ func NewAssignmentAuditTodo(d amqp.Delivery) bool {
 	assignment, err := assignmentQuery.GetAssignmentByID(NewAssignmentCompleted.AssignmentID, 0)
 	if err != nil {
 		fmt.Println(err.Error() + "28")
-		return false
+		return true
 	}
 	err = sendMessageToAssignmentAudit(assignment.ID)
 	if err != nil {
