@@ -472,7 +472,7 @@ func sendMessageToAudit(eventID int64) error {
 					msg.Thing2 = event.UpdatedBy
 					msg.Thing11 = event.Name
 					msg.Thing6 = "有需要你审批的节点"
-					msg.Time12 = event.Updated.Format("2006-01-02 15:03:04")
+					msg.Time12 = event.Updated.Format("2006-01-02 15:04:05")
 					toSends = append(toSends, msg)
 				}
 			}
@@ -492,7 +492,7 @@ func sendMessageToAudit(eventID int64) error {
 				msg.Thing2 = event.UpdatedBy
 				msg.Thing11 = event.Name
 				msg.Thing6 = "有需要你审批的节点"
-				msg.Time12 = event.Updated.Format("2006-01-02 15:03:04")
+				msg.Time12 = event.Updated.Format("2006-01-02 15:04:05")
 				toSends = append(toSends, msg)
 			}
 		}
