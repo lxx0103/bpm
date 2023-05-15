@@ -14489,6 +14489,9 @@
                 "logo": {
                     "type": "string"
                 },
+                "logo2": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -14536,6 +14539,9 @@
                 "logo": {
                     "type": "string"
                 },
+                "logo2": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -14579,6 +14585,9 @@
                     "type": "string"
                 },
                 "logo": {
+                    "type": "string"
+                },
+                "logo2": {
                     "type": "string"
                 },
                 "name": {
@@ -14645,6 +14654,9 @@
                     "type": "integer"
                 },
                 "logo": {
+                    "type": "string"
+                },
+                "logo2": {
                     "type": "string"
                 },
                 "name": {

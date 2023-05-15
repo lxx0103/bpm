@@ -222,6 +222,7 @@ func (s *organizationService) GetPortalOrganizationList(filter OrganizationFilte
 		resRow.ID = organization.ID
 		resRow.Name = organization.Name
 		resRow.Logo = organization.Logo
+		resRow.Logo2 = organization.Logo2
 		resRow.Description = organization.Description
 		resRow.Phone = organization.Phone
 		resRow.Contact = organization.Contact

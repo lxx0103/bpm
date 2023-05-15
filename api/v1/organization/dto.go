@@ -12,6 +12,7 @@ type OrganizationNew struct {
 	Name        string               `json:"name" binding:"required,min=1,max=64"`
 	Description string               `json:"description" binding:"required"`
 	Logo        string               `json:"logo" binding:"omitempty"`
+	Logo2       string               `json:"logo2" binding:"omitempty"`
 	Contact     string               `json:"contact" binding:"omitempty"`
 	Phone       string               `json:"phone" binding:"omitempty"`
 	Address     string               `json:"address" binding:"omitempty"`
@@ -26,6 +27,7 @@ type OrganizationResponse struct {
 	ID          int64                `db:"id" json:"id"`
 	Name        string               `db:"name" json:"name"`
 	Logo        string               `db:"logo" json:"logo"`
+	Logo2       string               `db:"logo2" json:"logo2"`
 	Description string               `db:"description" json:"description"`
 	Phone       string               `db:"phone" json:"phone"`
 	Contact     string               `db:"contact" json:"contact"`
@@ -59,6 +61,7 @@ type OrganizationExampleResponse struct {
 	ID          int64                `db:"id" json:"id"`
 	Name        string               `db:"name" json:"name"`
 	Logo        string               `db:"logo" json:"logo"`
+	Logo2       string               `db:"logo2" json:"logo2"`
 	Description string               `db:"description" json:"description"`
 	Phone       string               `db:"phone" json:"phone"`
 	Contact     string               `db:"contact" json:"contact"`

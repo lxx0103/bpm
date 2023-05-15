@@ -14503,6 +14503,9 @@ var doc = `{
                 "logo": {
                     "type": "string"
                 },
+                "logo2": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -14550,6 +14553,9 @@ var doc = `{
                 "logo": {
                     "type": "string"
                 },
+                "logo2": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -14593,6 +14599,9 @@ var doc = `{
                     "type": "string"
                 },
                 "logo": {
+                    "type": "string"
+                },
+                "logo2": {
                     "type": "string"
                 },
                 "name": {
@@ -14659,6 +14668,9 @@ var doc = `{
                     "type": "integer"
                 },
                 "logo": {
+                    "type": "string"
+                },
+                "logo2": {
                     "type": "string"
                 },
                 "name": {

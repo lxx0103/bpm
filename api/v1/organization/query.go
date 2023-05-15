@@ -18,7 +18,7 @@ func NewOrganizationQuery(connection *sqlx.DB) *organizationQuery {
 
 func (r *organizationQuery) GetOrganizationByID(id int64) (*OrganizationResponse, error) {
 	var organization OrganizationResponse
-	err := r.conn.Get(&organization, "SELECT id, name, logo, description, phone, contact, address, city, type, status FROM organizations WHERE id = ? ", id)
+	err := r.conn.Get(&organization, "SELECT id, name, logo, logo2, description, phone, contact, address, city, type, status FROM organizations WHERE id = ? ", id)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]O
 	args = append(args, filter.PageSize)
 	var organizations []OrganizationResponse
 	err := r.conn.Select(&organizations, `
-		SELECT id, name, logo, description, phone, contact, address, city, type, status
+		SELECT id, name, logo, logo2, description, phone, contact, address, city, type, status
 		FROM organizations 
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
