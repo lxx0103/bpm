@@ -920,6 +920,7 @@ func (s *projectService) NewProjectRecord(projectID int64, info ProjectRecordNew
 		recordPhoto.UpdatedBy = info.User
 		err = repo.CreateProjectRecordPhoto(recordPhoto)
 		if err != nil {
+			fmt.Println(err.Error())
 			msg := "创建图片失败"
 			return errors.New(msg)
 		}
