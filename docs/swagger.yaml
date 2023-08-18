@@ -2193,6 +2193,21 @@ definitions:
         - 2
         type: integer
     type: object
+  upload.KeyRes:
+    properties:
+      Expiration:
+        type: string
+      ExpiredTime:
+        type: integer
+      StartTime:
+        type: integer
+      TmpSecretId:
+        type: string
+      TmpSecretKey:
+        type: string
+      Token:
+        type: string
+    type: object
   upload.Upload:
     properties:
       created:
@@ -4176,6 +4191,35 @@ paths:
       summary: 更新案例材料
       tags:
       - 案例管理
+  /key:
+    get:
+      consumes:
+      - application/json
+      operationId: O005
+      parameters:
+      - description: APPID
+        in: query
+        name: app_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/upload.KeyRes'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取临时密钥
+      tags:
+      - 文件管理
   /materials:
     get:
       consumes:
@@ -8298,6 +8342,35 @@ paths:
       summary: 根据ID获取案例
       tags:
       - 小程序接口
+  /wx/key:
+    get:
+      consumes:
+      - application/json
+      operationId: O006
+      parameters:
+      - description: APPID
+        in: query
+        name: app_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/upload.KeyRes'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取临时密钥
+      tags:
+      - 文件管理
   /wx/meetings:
     get:
       consumes:

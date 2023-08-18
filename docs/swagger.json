@@ -3026,6 +3026,55 @@
                 }
             }
         },
+        "/key": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件管理"
+                ],
+                "summary": "获取临时密钥",
+                "operationId": "O005",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "APPID",
+                        "name": "app_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/upload.KeyRes"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/materials": {
             "get": {
                 "consumes": [
@@ -9766,6 +9815,55 @@
                 }
             }
         },
+        "/wx/key": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件管理"
+                ],
+                "summary": "获取临时密钥",
+                "operationId": "O006",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "APPID",
+                        "name": "app_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/upload.KeyRes"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/meetings": {
             "get": {
                 "consumes": [
@@ -15353,6 +15451,29 @@
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "upload.KeyRes": {
+            "type": "object",
+            "properties": {
+                "Expiration": {
+                    "type": "string"
+                },
+                "ExpiredTime": {
+                    "type": "integer"
+                },
+                "StartTime": {
+                    "type": "integer"
+                },
+                "TmpSecretId": {
+                    "type": "string"
+                },
+                "TmpSecretKey": {
+                    "type": "string"
+                },
+                "Token": {
+                    "type": "string"
                 }
             }
         },

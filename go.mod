@@ -19,6 +19,8 @@ require (
 	golang.org/x/crypto v0.6.0
 )
 
+require github.com/tencentyun/qcloud-cos-sts-sdk v0.0.0-20230815133100-78b611a90975 // indirect
+
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect

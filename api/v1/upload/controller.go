@@ -102,3 +102,43 @@ func WxGetUploadList(c *gin.Context) {
 func WxNewUpload(c *gin.Context) {
 	NewUpload(c)
 }
+
+// @Summary 获取临时密钥
+// @Id O005
+// @Tags 文件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param app_id query string false "APPID"
+// @Success 200 object response.SuccessRes{data=KeyRes} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /key [GET]
+func GetUploadKey(c *gin.Context) {
+	var filter KeyFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	uploadService := NewUploadService()
+	key, err := uploadService.GetUploadKey(filter)
+	if err != nil {
+		response.ResponseError(c, "ServiceError", err)
+		return
+	}
+	response.Response(c, key)
+}
+
+// @Summary 获取临时密钥
+// @Id O006
+// @Tags 文件管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param app_id query string false "APPID"
+// @Success 200 object response.SuccessRes{data=KeyRes} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/key [GET]
+func WxGetUploadKey(c *gin.Context) {
+	GetUploadKey(c)
+}
