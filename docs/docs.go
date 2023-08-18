@@ -3059,6 +3059,12 @@ var doc = `{
                         "description": "APPID",
                         "name": "app_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "bucket",
+                        "name": "bucket",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -9847,6 +9853,12 @@ var doc = `{
                         "type": "string",
                         "description": "APPID",
                         "name": "app_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "bucket",
+                        "name": "bucket",
                         "in": "query"
                     }
                 ],

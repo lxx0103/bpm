@@ -3045,6 +3045,12 @@
                         "description": "APPID",
                         "name": "app_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "bucket",
+                        "name": "bucket",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -9833,6 +9839,12 @@
                         "type": "string",
                         "description": "APPID",
                         "name": "app_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "bucket",
+                        "name": "bucket",
                         "in": "query"
                     }
                 ],

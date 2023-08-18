@@ -110,6 +110,7 @@ func WxNewUpload(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param app_id query string false "APPID"
+// @Param bucket query string false "bucket"
 // @Success 200 object response.SuccessRes{data=KeyRes} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /key [GET]
@@ -136,6 +137,7 @@ func GetUploadKey(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param app_id query string false "APPID"
+// @Param bucket query string false "bucket"
 // @Success 200 object response.SuccessRes{data=KeyRes} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/key [GET]

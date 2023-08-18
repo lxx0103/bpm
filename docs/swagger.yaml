@@ -4201,6 +4201,10 @@ paths:
         in: query
         name: app_id
         type: string
+      - description: bucket
+        in: query
+        name: bucket
+        type: string
       produces:
       - application/json
       responses:
@@ -8351,6 +8355,10 @@ paths:
       - description: APPID
         in: query
         name: app_id
+        type: string
+      - description: bucket
+        in: query
+        name: bucket
         type: string
       produces:
       - application/json
