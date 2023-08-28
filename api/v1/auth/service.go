@@ -169,7 +169,7 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 	if err != nil {
 		return nil, err
 	}
-	if userLimit <= totalUser && oldUser.Type == 2 && oldUser.Status == 2 && info.Status == 1 {
+	if userLimit <= totalUser && oldUser.Type == 2 && oldUser.Status != 1 && info.Status == 1 {
 		msg := "超过最大用户数，无法启用"
 		return nil, errors.New(msg)
 	}
