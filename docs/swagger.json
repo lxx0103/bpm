@@ -14619,6 +14619,9 @@
                 },
                 "updated_by": {
                     "type": "string"
+                },
+                "user_limit": {
+                    "type": "integer"
                 }
             }
         },
@@ -14679,7 +14682,8 @@
                 "description",
                 "name",
                 "status",
-                "type"
+                "type",
+                "user_limit"
             ],
             "properties": {
                 "address": {
@@ -14727,6 +14731,10 @@
                         1,
                         2
                     ]
+                },
+                "user_limit": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -14785,6 +14793,9 @@
                     "type": "integer"
                 },
                 "type": {
+                    "type": "integer"
+                },
+                "user_limit": {
                     "type": "integer"
                 }
             }

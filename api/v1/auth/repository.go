@@ -502,3 +502,36 @@ func (r *authRepository) DeleteClient(userID int64, by string) error {
 	`, -1, time.Now(), by, userID)
 	return err
 }
+
+func (r *authRepository) GetUserLimit(id int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`	
+	SELECT user_limit
+	FROM organizations 
+	WHERE id = ?
+	AND status > 0
+	`, id)
+	err := row.Scan(&res)
+	if err != nil {
+		msg := "获取用户数失败:" + err.Error()
+		return 0, errors.New(msg)
+	}
+	return res, nil
+}
+
+func (r *authRepository) GetUserCount(id int64) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`	
+	SELECT count(1)
+	FROM users 
+	WHERE organization_id = ?
+	AND type = 2
+	AND status = 1
+	`, id)
+	err := row.Scan(&res)
+	if err != nil {
+		msg := "获取用户总数失败:" + err.Error()
+		return 0, errors.New(msg)
+	}
+	return res, nil
+}

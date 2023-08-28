@@ -161,6 +161,18 @@ func (s *authService) UpdateUser(userID int64, info UserUpdate, byUserID int64) 
 		msg := "用户类型错误"
 		return nil, errors.New(msg)
 	}
+	userLimit, err := repo.GetUserLimit(oldUser.OrganizationID)
+	if err != nil {
+		return nil, err
+	}
+	totalUser, err := repo.GetUserCount(oldUser.OrganizationID)
+	if err != nil {
+		return nil, err
+	}
+	if userLimit <= totalUser && oldUser.Type == 2 && oldUser.Status == 2 && info.Status == 1 {
+		msg := "超过最大用户数，无法启用"
+		return nil, errors.New(msg)
+	}
 	byUser, err := repo.GetUserByID(byUserID)
 	if err != nil {
 		return nil, err

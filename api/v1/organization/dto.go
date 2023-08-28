@@ -18,6 +18,7 @@ type OrganizationNew struct {
 	Address     string               `json:"address" binding:"omitempty"`
 	City        string               `json:"city" binding:"required"`
 	Type        int                  `json:"type" binding:"required,oneof=1 2"`
+	UserLimit   int                  `json:"user_limit" binding:"required,min=1"`
 	Status      int                  `json:"status" binding:"required,oneof=1 2"`
 	Qrcode      []OrganizationQrcode `json:"qrcode"`
 	User        string               `json:"user" swaggerignore:"true"`
@@ -34,6 +35,7 @@ type OrganizationResponse struct {
 	Address     string               `db:"address" json:"address"`
 	City        string               `db:"city" json:"city"`
 	Type        int                  `db:"type" json:"type"`
+	UserLimit   int                  `db:"user_limit" json:"user_limit"`
 	Status      int                  `db:"status" json:"status"`
 	Qrcode      []OrganizationQrcode `json:"qrcode"`
 }

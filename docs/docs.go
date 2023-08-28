@@ -14633,6 +14633,9 @@ var doc = `{
                 },
                 "updated_by": {
                     "type": "string"
+                },
+                "user_limit": {
+                    "type": "integer"
                 }
             }
         },
@@ -14693,7 +14696,8 @@ var doc = `{
                 "description",
                 "name",
                 "status",
-                "type"
+                "type",
+                "user_limit"
             ],
             "properties": {
                 "address": {
@@ -14741,6 +14745,10 @@ var doc = `{
                         1,
                         2
                     ]
+                },
+                "user_limit": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -14799,6 +14807,9 @@ var doc = `{
                     "type": "integer"
                 },
                 "type": {
+                    "type": "integer"
+                },
+                "user_limit": {
                     "type": "integer"
                 }
             }

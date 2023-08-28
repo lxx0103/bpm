@@ -1620,6 +1620,8 @@ definitions:
         type: string
       updated_by:
         type: string
+      user_limit:
+        type: integer
     type: object
   organization.OrganizationExampleResponse:
     properties:
@@ -1688,12 +1690,16 @@ definitions:
         - 1
         - 2
         type: integer
+      user_limit:
+        minimum: 1
+        type: integer
     required:
     - city
     - description
     - name
     - status
     - type
+    - user_limit
     type: object
   organization.OrganizationQrcode:
     properties:
@@ -1732,6 +1738,8 @@ definitions:
       status:
         type: integer
       type:
+        type: integer
+      user_limit:
         type: integer
     type: object
   organization.QrcodeFilter:

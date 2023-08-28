@@ -13,6 +13,7 @@ type Organization struct {
 	Address     string    `db:"address" json:"address"`
 	City        string    `db:"city" json:"city"`
 	Type        int       `db:"type" json:"type"`
+	UserLimit   int       `db:"user_limit" json:"user_limit"`
 	Status      int       `db:"status" json:"status"`
 	Created     time.Time `db:"created" json:"created"`
 	CreatedBy   string    `db:"created_by" json:"created_by"`
