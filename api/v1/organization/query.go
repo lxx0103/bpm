@@ -37,7 +37,7 @@ func (r *organizationQuery) GetOrganizationCount(filter OrganizationFilter) (int
 		where, args = append(where, "type = ?"), append(args, v)
 	}
 	if v := filter.Status; v == "active" {
-		where, args = append(where, "status = 1"), append(args, v)
+		where, args = append(where, "status = ?"), append(args, 1)
 	}
 	var count int
 	err := r.conn.Get(&count, `
@@ -62,7 +62,7 @@ func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]O
 		where, args = append(where, "type = ?"), append(args, v)
 	}
 	if v := filter.Status; v == "active" {
-		where, args = append(where, "status = 1"), append(args, v)
+		where, args = append(where, "status = ?"), append(args, 1)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
