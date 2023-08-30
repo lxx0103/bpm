@@ -4,6 +4,7 @@ type OrganizationFilter struct {
 	Name     string `form:"name" binding:"omitempty,max=64,min=1"`
 	City     string `form:"city" binding:"omitempty"`
 	Type     int    `form:"type" binding:"omitempty,oneof=1 2"`
+	Status   string `form:"status" binding:"omitempty,oneof=all active"`
 	PageId   int    `form:"page_id" binding:"required,min=1"`
 	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
 }

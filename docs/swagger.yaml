@@ -5086,6 +5086,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 状态（all/active)
+        in: query
+        name: status
+        type: string
       produces:
       - application/json
       responses:
@@ -5503,6 +5507,10 @@ paths:
       - description: 类型1/2
         in: query
         name: type
+        type: string
+      - description: 状态（all/active)
+        in: query
+        name: status
         type: string
       produces:
       - application/json

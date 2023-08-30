@@ -4497,6 +4497,12 @@ var doc = `{
                         "description": "组织编码",
                         "name": "name",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态（all/active)",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -5176,6 +5182,12 @@ var doc = `{
                         "type": "string",
                         "description": "类型1/2",
                         "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态（all/active)",
+                        "name": "status",
                         "in": "query"
                     }
                 ],

@@ -16,6 +16,7 @@ import (
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Param name query string false "组织编码"
+// @Param status query string false "状态（all/active)"
 // @Success 200 object response.ListRes{data=[]OrganizationResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /organizations [GET]
@@ -172,6 +173,7 @@ func WxGetOrganizationByID(c *gin.Context) {
 // @Param name query string false "组织名称"
 // @Param city query string false "区域"
 // @Param type query string false "类型1/2"
+// @Param status query string false "状态（all/active)"
 // @Success 200 object response.ListRes{data=[]OrganizationExampleResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /portal/organizations [GET]
