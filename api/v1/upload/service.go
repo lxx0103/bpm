@@ -82,6 +82,8 @@ func (s *uploadService) GetUploadKey(filter KeyFilter) (*KeyRes, error) {
 						"name/cos:CompleteMultipartUpload",
 						//下载
 						"name/cos:GetObject",
+						//删除
+						"name/cos:DeleteObject",
 					},
 					Effect: "allow",
 					Resource: []string{
