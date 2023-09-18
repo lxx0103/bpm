@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 )
 
 type assignmentService struct {
@@ -21,7 +22,13 @@ func NewAssignmentService() *assignmentService {
 func (s *assignmentService) GetAssignmentByID(id int64, organizationID int64) (*AssignmentResponse, error) {
 	db := database.InitMySQL()
 	query := NewAssignmentQuery(db)
+	links, err := query.GetAssignmentFile(id)
+	if err != nil {
+		msg := "获取报告链接失败"
+		return nil, errors.New(msg)
+	}
 	assignment, err := query.GetAssignmentByID(id, organizationID)
+	assignment.File = *links
 	return assignment, err
 }
 
@@ -71,6 +78,22 @@ func (s *assignmentService) NewAssignment(info AssignmentNew, organizationID int
 	if err != nil {
 		return err
 	}
+
+	for _, link := range info.File {
+		var assignmentFile AssignmentFile
+		assignmentFile.AssignmentID = assignmentID
+		assignmentFile.Link = link
+		assignmentFile.Status = 1
+		assignmentFile.Created = time.Now()
+		assignmentFile.CreatedBy = info.User
+		assignmentFile.Updated = time.Now()
+		assignmentFile.UpdatedBy = info.User
+		err = repo.CreateAssignmentFile(assignmentFile)
+		if err != nil {
+			msg := "创建文件失败"
+			return errors.New(msg)
+		}
+	}
 	tx.Commit()
 
 	type NewAssignmentCreated struct {
@@ -101,6 +124,14 @@ func (s *assignmentService) GetAssignmentList(filter AssignmentFilter, organizat
 	list, err := query.GetAssignmentList(filter)
 	if err != nil {
 		return 0, nil, err
+	}
+	for k, v := range *list {
+		links, err := query.GetAssignmentFile(v.ID)
+		if err != nil {
+			msg := "获取文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].File = *links
 	}
 	return count, list, err
 }
@@ -157,6 +188,26 @@ func (s *assignmentService) UpdateAssignment(assignmentID int64, info Assignment
 		msg := "审核人员不存在"
 		return errors.New(msg)
 	}
+	err = repo.DeleteAssignmentFile(assignmentID, info.User)
+	if err != nil {
+		msg := "更新失败"
+		return errors.New(msg)
+	}
+	for _, link := range info.File {
+		var assignmentFile AssignmentFile
+		assignmentFile.AssignmentID = assignmentID
+		assignmentFile.Link = link
+		assignmentFile.Status = 1
+		assignmentFile.Created = time.Now()
+		assignmentFile.CreatedBy = info.User
+		assignmentFile.Updated = time.Now()
+		assignmentFile.UpdatedBy = info.User
+		err = repo.CreateAssignmentFile(assignmentFile)
+		if err != nil {
+			msg := "创建链接失败"
+			return errors.New(msg)
+		}
+	}
 	err = repo.UpdateAssignment(assignmentID, info)
 	if err != nil {
 		return err
@@ -199,6 +250,10 @@ func (s *assignmentService) DeleteAssignment(assignmentID, organizationID int64,
 		return errors.New(msg)
 	}
 	err = repo.DeleteAssignment(assignmentID, byUser)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteAssignmentFile(assignmentID, byUser)
 	if err != nil {
 		return err
 	}
@@ -310,6 +365,14 @@ func (s *assignmentService) GetMyAssignmentList(filter MyAssignmentFilter) (int,
 	if err != nil {
 		return 0, nil, err
 	}
+	for k, v := range *list {
+		links, err := query.GetAssignmentFile(v.ID)
+		if err != nil {
+			msg := "获取文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].File = *links
+	}
 	return count, list, err
 }
 
@@ -323,6 +386,14 @@ func (s *assignmentService) GetMyAuditList(filter MyAuditFilter) (int, *[]Assign
 	list, err := query.GetMyAuditList(filter)
 	if err != nil {
 		return 0, nil, err
+	}
+	for k, v := range *list {
+		links, err := query.GetAssignmentFile(v.ID)
+		if err != nil {
+			msg := "获取文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].File = *links
 	}
 	return count, list, err
 }

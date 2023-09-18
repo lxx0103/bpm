@@ -27,7 +27,6 @@ func (r *assignmentRepository) CreateAssignment(info AssignmentNew) (int64, erro
 			audit_to,
 			name,
 			content,
-			file,
 			status,
 			user_id,
 			created,
@@ -35,8 +34,8 @@ func (r *assignmentRepository) CreateAssignment(info AssignmentNew) (int64, erro
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.OrganizationID, info.ProjectID, info.AssignmentType, info.ReferenceID, info.AssignTo, info.AuditTo, info.Name, info.Content, info.File, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.ProjectID, info.AssignmentType, info.ReferenceID, info.AssignTo, info.AuditTo, info.Name, info.Content, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -52,11 +51,10 @@ func (r *assignmentRepository) UpdateAssignment(id int64, info AssignmentUpdate)
 		audit_to = ?,
 		name = ?,
 		content = ?,
-		file = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.ProjectID, info.AssignTo, info.AuditTo, info.Name, info.Content, info.File, time.Now(), info.User, id)
+	`, info.ProjectID, info.AssignTo, info.AuditTo, info.Name, info.Content, time.Now(), info.User, id)
 	return err
 }
 
@@ -81,7 +79,6 @@ func (r *assignmentRepository) GetAssignmentByID(id int64) (*AssignmentResponse,
 		m.audit_time,
 		m.name,
 		m.content, 
-		m.file,
 		m.status,
 		m.user_id,
 		m.created,
@@ -99,7 +96,7 @@ func (r *assignmentRepository) GetAssignmentByID(id int64) (*AssignmentResponse,
 		AND m.status > 0
 	`, id)
 
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.OrganizationName, &res.AssignmentType, &res.ReferenceID, &res.ProjectID, &res.ProjectName, &res.AssignTo, &res.AssignName, &res.AuditTo, &res.AuditName, &res.CompleteContent, &res.CompleteTime, &res.AuditContent, &res.AuditTime, &res.Name, &res.Content, &res.File, &res.Status, &res.UserID, &res.Created, &res.CreatedBy)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.OrganizationName, &res.AssignmentType, &res.ReferenceID, &res.ProjectID, &res.ProjectName, &res.AssignTo, &res.AssignName, &res.AuditTo, &res.AuditName, &res.CompleteContent, &res.CompleteTime, &res.AuditContent, &res.AuditTime, &res.Name, &res.Content, &res.Status, &res.UserID, &res.Created, &res.CreatedBy)
 	return &res, err
 }
 
@@ -141,5 +138,33 @@ func (r *assignmentRepository) AuditAssignment(id int64, info AssignmentAudit) e
 		updated_by = ? 
 		WHERE id = ?
 	`, info.Content, time.Now(), status, time.Now(), info.User, id)
+	return err
+}
+
+func (r *assignmentRepository) CreateAssignmentFile(info AssignmentFile) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO assignment_files
+		(
+			assignment_id,
+			link,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, info.AssignmentID, info.Link, info.Status, time.Now(), info.CreatedBy, time.Now(), info.UpdatedBy)
+	return err
+}
+
+func (r *assignmentRepository) DeleteAssignmentFile(assignmentID int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update assignment_files SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE assignment_id = ?
+	`, time.Now(), byUser, assignmentID)
 	return err
 }

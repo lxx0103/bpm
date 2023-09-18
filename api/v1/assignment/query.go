@@ -39,7 +39,6 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		m.audit_time,
 		m.name,
 		m.content, 
-		m.file,
 		m.status,
 		m.user_id,
 		m.created,
@@ -77,7 +76,6 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		m.audit_time,
 		m.name,
 		m.content, 
-		m.file,
 		m.status,
 		m.user_id,
 		m.created,
@@ -171,7 +169,6 @@ func (r *assignmentQuery) GetAssignmentList(filter AssignmentFilter) (*[]Assignm
 		m.audit_time,
 		m.name,
 		m.content, 
-		m.file,
 		m.status,
 		m.user_id,
 		m.created,
@@ -249,7 +246,6 @@ func (r *assignmentQuery) GetMyAssignmentList(filter MyAssignmentFilter) (*[]Ass
 		m.audit_time,
 		m.name,
 		m.content, 
-		m.file,
 		m.status,
 		m.user_id,
 		m.created,
@@ -327,7 +323,6 @@ func (r *assignmentQuery) GetMyAuditList(filter MyAuditFilter) (*[]AssignmentRes
 		m.audit_time,
 		m.name,
 		m.content, 
-		m.file,
 		m.status,
 		m.user_id,
 		m.created,
@@ -348,4 +343,16 @@ func (r *assignmentQuery) GetMyAuditList(filter MyAuditFilter) (*[]AssignmentRes
 		return nil, err
 	}
 	return &assignments, nil
+}
+
+func (r *assignmentQuery) GetAssignmentFile(assignmentID int64) (*[]string, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "assignment_id = ?"), append(args, assignmentID)
+	var projectReports []string
+	err := r.conn.Select(&projectReports, `
+		SELECT link
+		FROM assignment_files
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
 }
