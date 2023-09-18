@@ -68,7 +68,7 @@ func (r *organizationQuery) GetOrganizationList(filter OrganizationFilter) (*[]O
 	args = append(args, filter.PageSize)
 	var organizations []OrganizationResponse
 	err := r.conn.Select(&organizations, `
-		SELECT id, name, logo, logo2, description, phone, contact, address, city, type, user_limit, expiry_date, status
+		SELECT id, name, logo, logo2, description, phone, contact, address, city, type, user_limit, IFNULL(expiry_date, "") as expiry_date, status
 		FROM organizations 
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
