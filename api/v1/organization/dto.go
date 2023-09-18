@@ -20,6 +20,7 @@ type OrganizationNew struct {
 	City        string               `json:"city" binding:"required"`
 	Type        int                  `json:"type" binding:"required,oneof=1 2"`
 	UserLimit   int                  `json:"user_limit" binding:"required,min=1"`
+	ExpiryDate  string               `json:"expiry_date" binding:"omitempty,datetime=2006-01-02"`
 	Status      int                  `json:"status" binding:"required,oneof=1 2"`
 	Qrcode      []OrganizationQrcode `json:"qrcode"`
 	User        string               `json:"user" swaggerignore:"true"`
@@ -37,6 +38,7 @@ type OrganizationResponse struct {
 	City        string               `db:"city" json:"city"`
 	Type        int                  `db:"type" json:"type"`
 	UserLimit   int                  `db:"user_limit" json:"user_limit"`
+	ExpiryDate  string               `db:"expiry_date" json:"expiry_date"`
 	Status      int                  `db:"status" json:"status"`
 	Qrcode      []OrganizationQrcode `json:"qrcode"`
 }
