@@ -85,21 +85,6 @@ func (s *authService) VerifyWechatSignin(code string) (*WechatCredential, error)
 func (s *authService) GetUserInfo(openID string, authType int, organizationID int64) (*UserResponse, error) {
 	db := database.InitMySQL()
 	query := NewAuthQuery(db)
-	organizationQuery := organization.NewOrganizationQuery(db)
-	organization, err := organizationQuery.GetOrganizationByID(organizationID)
-	if err != nil {
-		msg := "组织不存在"
-		return nil, errors.New(msg)
-	}
-	if organization.ExpiryDate != "" {
-		t, _ := time.Parse("2006-01-02", organization.ExpiryDate)
-		expiry := t.Unix()
-		now := time.Now().Unix()
-		if now > expiry {
-			msg := "组织已过期"
-			return nil, errors.New(msg)
-		}
-	}
 	user, err := query.GetUserByOpenID(openID)
 	if err != nil {
 		if err.Error() != "sql: no rows in result set" {
@@ -128,6 +113,21 @@ func (s *authService) GetUserInfo(openID string, authType int, organizationID in
 			return nil, err
 		}
 		tx.Commit()
+	}
+	organizationQuery := organization.NewOrganizationQuery(db)
+	organization, err := organizationQuery.GetOrganizationByID(user.OrganizationID)
+	if err != nil {
+		msg := "组织不存在"
+		return nil, errors.New(msg)
+	}
+	if organization.ExpiryDate != "" {
+		t, _ := time.Parse("2006-01-02", organization.ExpiryDate)
+		expiry := t.Unix()
+		now := time.Now().Unix()
+		if now > expiry {
+			msg := "组织已过期"
+			return nil, errors.New(msg)
+		}
 	}
 	return user, nil
 }
