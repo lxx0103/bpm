@@ -9,6 +9,7 @@ type Example struct {
 	Cover          string    `db:"cover" json:"cover"`
 	Notes          string    `db:"notes" json:"notes"`
 	Description    string    `db:"description" json:"description"`
+	Description2   string    `db:"description2" json:"description2"`
 	Style          string    `db:"style" json:"style"`
 	Type           string    `db:"type" json:"type"`
 	Room           string    `db:"room" json:"room"`

@@ -20,6 +20,7 @@ type ExampleNew struct {
 	OrganizationID int64  `json:"organization_id" binding:"omitempty,min=1"`
 	Notes          string `json:"notes" binding:"omitempty"`
 	Description    string `json:"description" binding:"omitempty"`
+	Description2   string `json:"description2" binding:"omitempty"`
 	Style          string `json:"style" binding:"omitempty"`
 	Type           string `json:"type" binding:"omitempty"`
 	Room           string `json:"room" binding:"omitempty"`
@@ -53,6 +54,7 @@ type ExampleResponse struct {
 	Building         string `db:"building" json:"building"`
 	Status           int    `db:"status" json:"status"`
 	Description      string `db:"description" json:"description"`
+	Description2     string `db:"description2" json:"description2"`
 }
 
 type ExampleListResponse struct {
