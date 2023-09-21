@@ -18,7 +18,7 @@ type VendorsNew struct {
 	Address     string          `json:"address" binding:"omitempty,max=255"`
 	Longitude   float64         `json:"longitude" binding:"omitempty"`
 	Latitude    float64         `json:"latitude" binding:"omitempty"`
-	Cover       string          `json:"cover" binding:"omitempty,max=64"`
+	Cover       string          `json:"cover" binding:"omitempty,max=255"`
 	Picture     []string        `json:"picture"`
 	Description string          `json:"description" binding:"omitempty"`
 	User        string          `json:"user" swaggerignore:"true"`
