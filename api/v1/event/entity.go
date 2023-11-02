@@ -11,6 +11,7 @@ type Event struct {
 	NodeID          int64          `db:"node_id" json:"node_id"`
 	PreID           *[]EventPre    `json:"pre_id"`
 	NeedAudit       int            `db:"need_audit" json:"need_audit"`
+	AuditLevel      int            `db:"audit_level" json:"audit_level"`
 	AuditType       int            `db:"audit_type" json:"audit_type"`
 	Audit           *[]EventAudit  `json:"audit"`
 	CompleteTime    string         `db:"complete_time" json:"complete_time"`
@@ -54,15 +55,16 @@ type EventPre struct {
 	UpdatedBy string    `db:"updated_by" json:"updated_by"`
 }
 type EventAudit struct {
-	ID        int64     `db:"id" json:"id"`
-	EventID   int64     `db:"event_id" json:"event_id"`
-	AuditType int       `db:"audit_type" json:"audit_type"`
-	AuditTo   int64     `db:"audit_to" json:"audit_to"`
-	Status    int       `db:"status" json:"status"`
-	Created   time.Time `db:"created" json:"created"`
-	CreatedBy string    `db:"created_by" json:"created_by"`
-	Updated   time.Time `db:"updated" json:"updated"`
-	UpdatedBy string    `db:"updated_by" json:"updated_by"`
+	ID         int64     `db:"id" json:"id"`
+	EventID    int64     `db:"event_id" json:"event_id"`
+	AuditLevel int       `db:"audit_level" json:"audit_level"`
+	AuditType  int       `db:"audit_type" json:"audit_type"`
+	AuditTo    int64     `db:"audit_to" json:"audit_to"`
+	Status     int       `db:"status" json:"status"`
+	Created    time.Time `db:"created" json:"created"`
+	CreatedBy  string    `db:"created_by" json:"created_by"`
+	Updated    time.Time `db:"updated" json:"updated"`
+	UpdatedBy  string    `db:"updated_by" json:"updated_by"`
 }
 type EventCheckin struct {
 	ID          int64     `db:"id" json:"id"`

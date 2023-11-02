@@ -255,10 +255,10 @@ func (r *nodeRepository) GetNodesByTemplateID(templateID int64) (*[]Node, error)
 	return &res, nil
 }
 
-func (r *nodeRepository) CreateNodeAudit(nodeID int64, auditType int, auditTo []int64, user string) error {
+func (r *nodeRepository) CreateNodeAudit(nodeID int64, auditLevel, auditType int, auditTo []int64, user string) error {
 	for i := 0; i < len(auditTo); i++ {
 		var exist int
-		row := r.tx.QueryRow(`SELECT count(1) FROM node_audits WHERE node_id = ? AND audit_type = ? AND audit_to = ? AND status > 0  LIMIT 1`, nodeID, auditType, auditTo[i])
+		row := r.tx.QueryRow(`SELECT count(1) FROM node_audits WHERE node_id = ? AND audit_level = ? AND audit_type = ? AND audit_to = ? AND status > 0  LIMIT 1`, nodeID, auditLevel, auditType, auditTo[i])
 		err := row.Scan(&exist)
 		if err != nil {
 			return err
@@ -271,6 +271,7 @@ func (r *nodeRepository) CreateNodeAudit(nodeID int64, auditType int, auditTo []
 			INSERT INTO node_audits
 			(
 				node_id,
+				audit_level,
 				audit_type,
 				audit_to,
 				status,
@@ -279,8 +280,8 @@ func (r *nodeRepository) CreateNodeAudit(nodeID int64, auditType int, auditTo []
 				updated,
 				updated_by
 			)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-		`, nodeID, auditType, auditTo[i], 1, time.Now(), user, time.Now(), user)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`, nodeID, auditLevel, auditType, auditTo[i], 1, time.Now(), user, time.Now(), user)
 		if err != nil {
 			return err
 		}
@@ -300,13 +301,13 @@ func (r *nodeRepository) DeleteNodeAudit(node_id int64, user string) error {
 
 func (r *nodeRepository) GetAuditsByNodeID(nodeID int64) (*[]NodeAudit, error) {
 	var res []NodeAudit
-	rows, err := r.tx.Query(`SELECT id, node_id, audit_type, audit_to, status, created, created_by, updated, updated_by FROM node_audits WHERE node_id = ? AND status > 0 `, nodeID)
+	rows, err := r.tx.Query(`SELECT id, node_id, audit_level, audit_type, audit_to, status, created, created_by, updated, updated_by FROM node_audits WHERE node_id = ? AND status > 0 `, nodeID)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var rowRes NodeAudit
-		err = rows.Scan(&rowRes.ID, &rowRes.NodeID, &rowRes.AuditType, &rowRes.AuditTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
+		err = rows.Scan(&rowRes.ID, &rowRes.NodeID, &rowRes.AuditLevel, &rowRes.AuditType, &rowRes.AuditTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
 		if err != nil {
 			return nil, err
 		}

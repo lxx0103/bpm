@@ -89,9 +89,32 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 		if err != nil {
 			return nil, err
 		}
-		err = repo.CreateEventAudit(eventID, info.AuditType, info.AuditTo, info.User)
+		var auditInfo NodeAudit
+		auditInfo.AuditLevel = 1
+		auditInfo.AuditTo = info.AuditTo
+		err = repo.CreateEventAudit(eventID, info.AuditType, auditInfo, info.User)
 		if err != nil {
 			return nil, err
+		}
+		if len(info.AuditMore) > 0 {
+			for _, auditMore := range info.AuditMore {
+				if auditMore.AuditLevel < 2 {
+					return nil, errors.New("审核级别错误")
+				}
+				if auditMore.AuditType != 1 && auditMore.AuditType != 2 {
+					return nil, errors.New("审核类型错误")
+				}
+				if len(auditMore.AuditTo) == 0 {
+					return nil, errors.New("审核对象错误")
+				}
+				var auditInfo NodeAudit
+				auditInfo.AuditLevel = auditMore.AuditLevel
+				auditInfo.AuditTo = auditMore.AuditTo
+				err = repo.CreateEventAudit(eventID, auditMore.AuditType, auditInfo, info.User)
+				if err != nil {
+					return nil, err
+				}
+			}
 		}
 	}
 	err = repo.UpdateEvent(eventID, *oldEvent, info.User)
@@ -308,7 +331,7 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 		return err
 	}
 	if event.NeedAudit == 2 {
-		err = repo.AuditEvent(eventID, true, "SYSTEM", "无需审核")
+		err = repo.AuditEvent(eventID, true, "SYSTEM", "无需审核", 0)
 		if err != nil {
 			return err
 		}
@@ -357,7 +380,7 @@ func (s *eventService) AuditEvent(eventID int64, info AuditEventInfo) error {
 		msg := "此事件无法审核"
 		return errors.New(msg)
 	}
-	assignExist, err := repo.CheckAudit(eventID, info.UserID, info.PositionID)
+	assignExist, err := repo.CheckAudit(eventID, info.UserID, info.PositionID, event.AuditLevel)
 	if err != nil {
 		return err
 	}
@@ -369,7 +392,7 @@ func (s *eventService) AuditEvent(eventID int64, info AuditEventInfo) error {
 	if info.Result != 1 {
 		approved = false
 	}
-	err = repo.AuditEvent(eventID, approved, info.User, info.Content)
+	err = repo.AuditEvent(eventID, approved, info.User, info.Content, event.AuditLevel)
 	if err != nil {
 		return err
 	}
@@ -422,6 +445,15 @@ func (s *eventService) GetAssignedAudit(filter AssignedAuditFilter, userID int64
 				return nil, err
 			}
 			continue
+		}
+		if filter.Status == "active" {
+			levelActive, err := query.CheckLevelActive(assignedAudit[i], userID, positionID, activeEvent.AuditLevel)
+			if err != nil {
+				return nil, err
+			}
+			if !levelActive {
+				continue
+			}
 		}
 		activeEvents = append(activeEvents, *activeEvent)
 	}
@@ -628,7 +660,7 @@ func (s *eventService) HandleReview(reviewID int64, info HandleReviewInfo) error
 			return err
 		}
 		if assignExist == 0 {
-			auditExist, err := repo.CheckAudit(review.EventID, info.UserID, info.PositionID)
+			auditExist, err := repo.CheckAudit(review.EventID, info.UserID, info.PositionID, 0)
 			if err != nil {
 				return err
 			}

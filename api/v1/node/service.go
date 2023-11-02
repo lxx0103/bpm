@@ -90,9 +90,26 @@ func (s *nodeService) NewNode(info NodeNew, organizationID int64) (*Node, error)
 	}
 	node.PreID = pres
 	if info.NeedAudit == 1 {
-		err = repo.CreateNodeAudit(nodeID, info.AuditType, info.AuditTo, info.User)
+		err = repo.CreateNodeAudit(nodeID, 1, info.AuditType, info.AuditTo, info.User)
 		if err != nil {
 			return nil, err
+		}
+		if len(info.AuditMore) > 0 {
+			for _, auditInfo := range info.AuditMore {
+				if auditInfo.AuditLevel < 2 {
+					return nil, errors.New("审核级别错误")
+				}
+				if auditInfo.AuditType != 1 && auditInfo.AuditType != 2 {
+					return nil, errors.New("审核类型错误")
+				}
+				if len(auditInfo.AuditTo) == 0 {
+					return nil, errors.New("审核对象错误")
+				}
+				err = repo.CreateNodeAudit(nodeID, auditInfo.AuditLevel, auditInfo.AuditType, auditInfo.AuditTo, info.User)
+				if err != nil {
+					return nil, err
+				}
+			}
 		}
 	}
 	audits, err := repo.GetAuditsByNodeID(nodeID)
@@ -208,9 +225,26 @@ func (s *nodeService) UpdateNode(nodeID int64, info NodeUpdate, organizationID i
 		return nil, err
 	}
 	if info.AuditType != 0 {
-		err = repo.CreateNodeAudit(nodeID, info.AuditType, info.AuditTo, info.User)
+		err = repo.CreateNodeAudit(nodeID, 1, info.AuditType, info.AuditTo, info.User)
 		if err != nil {
 			return nil, err
+		}
+		if len(info.AuditMore) > 0 {
+			for _, auditInfo := range info.AuditMore {
+				if auditInfo.AuditLevel < 2 {
+					return nil, errors.New("审核级别错误")
+				}
+				if auditInfo.AuditType != 1 && auditInfo.AuditType != 2 {
+					return nil, errors.New("审核类型错误")
+				}
+				if len(auditInfo.AuditTo) == 0 {
+					return nil, errors.New("审核对象错误")
+				}
+				err = repo.CreateNodeAudit(nodeID, auditInfo.AuditLevel, auditInfo.AuditType, auditInfo.AuditTo, info.User)
+				if err != nil {
+					return nil, err
+				}
+			}
 		}
 	}
 	audits, err := repo.GetAuditsByNodeID(nodeID)

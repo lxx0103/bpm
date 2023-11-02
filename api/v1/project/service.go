@@ -114,7 +114,6 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 	for k := 0; k < len(*events); k++ {
 		var pres []int64
 		var assigns []int64
-		var audits []int64
 		nodePres, err := nodeRepo.GetPresByNodeID((*events)[k].NodeID)
 		if err != nil {
 			return nil, err
@@ -141,14 +140,16 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 			return nil, err
 		}
 		for n := 0; n < len(*nodeAudits); n++ {
-			audits = append(audits, (*nodeAudits)[n].AuditTo)
+			var nodeAudit event.NodeAudit
+			nodeAudit.AuditLevel = (*nodeAudits)[n].AuditLevel
+			nodeAudit.AuditTo = append(nodeAudit.AuditTo, (*nodeAudits)[n].AuditTo)
+			err = eventRepo.CreateEventAudit((*events)[k].ID, (*events)[k].AuditType, nodeAudit, info.User)
+			if err != nil {
+				return nil, err
+			}
 			if (*nodeAudits)[n].AuditType == 2 {
 				projectMember = append(projectMember, (*nodeAudits)[n].AuditTo)
 			}
-		}
-		err = eventRepo.CreateEventAudit((*events)[k].ID, (*events)[k].AuditType, audits, info.User)
-		if err != nil {
-			return nil, err
 		}
 		if (*events)[k].AssignType == 3 {
 			assigns = append(assigns, info.UserID)

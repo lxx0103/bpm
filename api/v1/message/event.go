@@ -233,6 +233,14 @@ func NextEventTodo(d amqp.Delivery) bool {
 		} else {
 			return true
 		}
+	} else if event.Status == 2 {
+		err = sendMessageToAudit(event.ID)
+		if err != nil {
+			fmt.Println(err.Error())
+			return false
+		} else {
+			return true
+		}
 	} else {
 		return true
 	}
@@ -458,6 +466,9 @@ func sendMessageToAudit(eventID int64) error {
 		return err
 	}
 	for _, assignTo := range *assigned {
+		if event.AuditLevel != assignTo.AuditLevel {
+			continue
+		}
 		if assignTo.AuditType == 1 { //position
 			users, err := query.GetUserByPositionAndProject(assignTo.AuditTo, event.ProjectID)
 			if err != nil {

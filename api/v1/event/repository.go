@@ -133,11 +133,11 @@ func (r *eventRepository) GetEventByID(id int64, organizationID int64) (*Event, 
 	var res Event
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_type, e.audit_content, e.audit_time, e.audit_user, e.need_checkin, e.sort, e.can_review, IFNULL(e.deadline,"") as deadline, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT e.id, e.project_id, e.name, e.assignable, e.assign_type, e.need_audit, e.audit_level, e.audit_type, e.audit_content, e.audit_time, e.audit_user, e.need_checkin, e.sort, e.can_review, IFNULL(e.deadline,"") as deadline, e.status, e.created, e.created_by, e.updated, e.updated_by FROM events e LEFT JOIN projects p ON e.project_id = p.id  WHERE e.id = ? AND p.organization_id = ? AND e.status > 0 LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, project_id, name, assignable, assign_type, need_audit, audit_type, audit_content, audit_time, audit_user, need_checkin, sort, can_review, IFNULL(deadline,"") as deadline, status, created, created_by, updated, updated_by FROM events WHERE id = ? AND status > 0 LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, project_id, name, assignable, assign_type, need_audit, audit_level, audit_type, audit_content, audit_time, audit_user, need_checkin, sort, can_review, IFNULL(deadline,"") as deadline, status, created, created_by, updated, updated_by FROM events WHERE id = ? AND status > 0 LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditType, &res.AuditContent, &res.AuditTime, &res.AuditUser, &res.NeedCheckin, &res.Sort, &res.CanReview, &res.Deadline, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.ProjectID, &res.Name, &res.Assignable, &res.AssignType, &res.NeedAudit, &res.AuditLevel, &res.AuditType, &res.AuditContent, &res.AuditTime, &res.AuditUser, &res.NeedCheckin, &res.Sort, &res.CanReview, &res.Deadline, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -301,11 +301,22 @@ func (r *eventRepository) CheckAssign(eventID int64, userID int64, positionID in
 	return res, err
 }
 
-func (r *eventRepository) CheckAudit(eventID int64, userID int64, positionID int64) (int, error) {
+func (r *eventRepository) CheckAudit(eventID int64, userID int64, positionID int64, auditLevel int) (int, error) {
 	var res int
-	row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) AND status > 0  LIMIT 1`, eventID, positionID, userID)
-	err := row.Scan(&res)
-	return res, err
+	if auditLevel != 0 {
+		row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) AND status > 0 AND audit_level = ? LIMIT 1`, eventID, positionID, userID, auditLevel)
+		err := row.Scan(&res)
+		if err != nil {
+			return 0, err
+		}
+	} else {
+		row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) AND status > 0  LIMIT 1`, eventID, positionID, userID)
+		err := row.Scan(&res)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return res, nil
 }
 func (r *eventRepository) CompleteEvent(eventID int64, byUser string) error {
 	_, err := r.tx.Exec(`
@@ -320,10 +331,10 @@ func (r *eventRepository) CompleteEvent(eventID int64, byUser string) error {
 	return err
 }
 
-func (r *eventRepository) CreateEventAudit(eventID int64, auditType int, auditTo []int64, user string) error {
-	for i := 0; i < len(auditTo); i++ {
+func (r *eventRepository) CreateEventAudit(eventID int64, auditType int, auditInfo NodeAudit, user string) error {
+	for i := 0; i < len(auditInfo.AuditTo); i++ {
 		var exist int
-		row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND audit_type = ? AND audit_to = ? AND status > 0  LIMIT 1`, eventID, auditType, auditTo[i])
+		row := r.tx.QueryRow(`SELECT count(1) FROM event_audits WHERE event_id = ? AND audit_level = ? AND audit_type = ? AND audit_to = ? AND status > 0  LIMIT 1`, eventID, auditInfo.AuditLevel, auditType, auditInfo.AuditTo[i])
 		err := row.Scan(&exist)
 		if err != nil {
 			return err
@@ -336,6 +347,7 @@ func (r *eventRepository) CreateEventAudit(eventID int64, auditType int, auditTo
 			INSERT INTO event_audits
 			(
 				event_id,
+				audit_level,
 				audit_type,
 				audit_to,
 				status,
@@ -344,8 +356,8 @@ func (r *eventRepository) CreateEventAudit(eventID int64, auditType int, auditTo
 				updated,
 				updated_by
 			)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-		`, eventID, auditType, auditTo[i], 1, time.Now(), user, time.Now(), user)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`, eventID, auditInfo.AuditLevel, auditType, auditInfo.AuditTo[i], 1, time.Now(), user, time.Now(), user)
 		if err != nil {
 			return err
 		}
@@ -369,13 +381,13 @@ func (r *eventRepository) DeleteEventAudit(event_id int64, user string) error {
 
 func (r *eventRepository) GetAuditsByEventID(eventID int64) (*[]EventAudit, error) {
 	var res []EventAudit
-	rows, err := r.tx.Query(`SELECT id, event_id, audit_type, audit_to, status, created, created_by, updated, updated_by FROM event_audits WHERE event_id = ? AND status = ? `, eventID, 1)
+	rows, err := r.tx.Query(`SELECT id, event_id, audit_level, audit_type, audit_to, status, created, created_by, updated, updated_by FROM event_audits WHERE event_id = ? AND status = ? `, eventID, 1)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
 		var rowRes EventAudit
-		err = rows.Scan(&rowRes.ID, &rowRes.EventID, &rowRes.AuditType, &rowRes.AuditTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
+		err = rows.Scan(&rowRes.ID, &rowRes.EventID, &rowRes.AuditLevel, &rowRes.AuditType, &rowRes.AuditTo, &rowRes.Status, &rowRes.Created, &rowRes.CreatedBy, &rowRes.Updated, &rowRes.UpdatedBy)
 		if err != nil {
 			return nil, err
 		}
@@ -384,15 +396,34 @@ func (r *eventRepository) GetAuditsByEventID(eventID int64) (*[]EventAudit, erro
 	return &res, nil
 }
 
-func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string, auditContent string) error {
-	status := 9
+func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string, auditContent string, currentLevel int) error {
+	eventStatus := 9
+	historyStatus := 1
 	isActive := 0
+	nextLevel := currentLevel
+	fmt.Println(nextLevel)
 	if !approved {
-		status = 3
+		eventStatus = 3
 		isActive = 1
+		nextLevel = 1
+	} else {
+		row := r.tx.QueryRow(`SELECT audit_level FROM event_audits WHERE event_id = ? AND audit_level > ? AND status > 0 ORDER BY audit_level ASC`, eventID, currentLevel)
+		err := row.Scan(&nextLevel)
+		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				nextLevel = 0
+			} else {
+				return err
+			}
+		}
+		if nextLevel != 0 {
+			eventStatus = 2
+			isActive = 1
+		}
 	}
 	_, err := r.tx.Exec(`
 		Update events SET 
+		audit_level = ?,
 		audit_user = ?,
 		audit_time = ?,
 		audit_content = ?,
@@ -401,24 +432,24 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, isActive, status, time.Now(), byUser, eventID)
+	`, nextLevel, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, isActive, eventStatus, time.Now(), byUser, eventID)
 	if err != nil {
 		return err
 	}
-	if status == 9 {
-		status = 1
+	if approved {
+		historyStatus = 1
 	} else {
-		status = 2
+		historyStatus = 2
 	}
 	_, err = r.tx.Exec(`
 		INSERT INTO event_audit_historys 
 		(event_id, audit_user, audit_content, audit_time, status, created, created_by, updated, updated_by)
 		VALUES
 		(?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, eventID, byUser, auditContent, time.Now().Format("2006-01-02 15:04:05"), status, time.Now(), byUser, time.Now(), byUser)
-	// if err != nil {
-	// 	return err
-	// }
+	`, eventID, byUser, auditContent, time.Now().Format("2006-01-02 15:04:05"), historyStatus, time.Now(), byUser, time.Now(), byUser)
+	if err != nil {
+		return err
+	}
 	// _, err = r.tx.Exec(`
 	// 	UPDATE projects
 	// 	SET status = 2 ,

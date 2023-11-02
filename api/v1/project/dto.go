@@ -176,3 +176,8 @@ type ProjectReportMemberViewResponse struct {
 	Viewed   bool      `json:"viewed"`
 	ViewTime time.Time `json:"view_time"`
 }
+
+type NodeAudit struct {
+	AuditLevel int
+	AuditTo    int64
+}

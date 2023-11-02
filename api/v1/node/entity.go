@@ -48,13 +48,14 @@ type NodePre struct {
 }
 
 type NodeAudit struct {
-	ID        int64     `db:"id" json:"id"`
-	NodeID    int64     `db:"node_id" json:"node_id"`
-	AuditType int       `db:"audit_type" json:"audit_type"`
-	AuditTo   int64     `db:"audit_to" json:"audit_to"`
-	Status    int       `db:"status" json:"status"`
-	Created   time.Time `db:"created" json:"created"`
-	CreatedBy string    `db:"created_by" json:"created_by"`
-	Updated   time.Time `db:"updated" json:"updated"`
-	UpdatedBy string    `db:"updated_by" json:"updated_by"`
+	ID         int64     `db:"id" json:"id"`
+	NodeID     int64     `db:"node_id" json:"node_id"`
+	AuditLevel int       `db:"audit_level" json:"audit_level"`
+	AuditType  int       `db:"audit_type" json:"audit_type"`
+	AuditTo    int64     `db:"audit_to" json:"audit_to"`
+	Status     int       `db:"status" json:"status"`
+	Created    time.Time `db:"created" json:"created"`
+	CreatedBy  string    `db:"created_by" json:"created_by"`
+	Updated    time.Time `db:"updated" json:"updated"`
+	UpdatedBy  string    `db:"updated_by" json:"updated_by"`
 }
