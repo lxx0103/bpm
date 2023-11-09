@@ -312,7 +312,7 @@ func sendMessageToActive(projectID int64) error {
 				openID, err := query.GetUserByIDAndProject(assignTo.AssignTo, projectID)
 				if err != nil {
 					if err != nil {
-						fmt.Println(err.Error() + "6")
+						fmt.Println(err.Error()+"3336", assignTo.AssignTo, projectID)
 						return err
 					}
 				}
@@ -491,7 +491,7 @@ func sendMessageToAudit(eventID int64) error {
 			openID, err := query.GetUserByIDAndProject(assignTo.AuditTo, event.ProjectID)
 			if err != nil {
 				if err != nil {
-					fmt.Println(err.Error() + "6")
+					fmt.Println(err.Error() + "1116")
 					return err
 				}
 			}
@@ -674,7 +674,7 @@ func sendMessageToEvent(eventID int64) error {
 			openID, err := query.GetUserByIDAndProject(assignTo.AssignTo, event.ProjectID)
 			if err != nil {
 				if err != nil {
-					fmt.Println(err.Error() + "6")
+					fmt.Println(err.Error() + "2226")
 					return err
 				}
 			}
@@ -1197,6 +1197,7 @@ func sendMessageToAssignmentAudit(assignmentID int64) error {
 	msgToSend.Thing1 = assignment.Name
 	msgToSend.Thing2 = project.Name
 	msgToSend.Time5 = assignment.CompleteTime[0:19]
+	msgToSend.Name4 = assignment.AssignName
 	accessToken, err := organizationQuery.GetAccessToken("bpm")
 	if err != nil {
 		if err.Error() != "sql: no rows in result set" {
