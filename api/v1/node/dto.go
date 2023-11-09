@@ -37,7 +37,7 @@ type NodeUpdate struct {
 	AuditType  int     `json:"audit_type" binding:"omitempty,oneof=1 2"`
 	AuditTo    []int64 `json:"audit_to" binding:"omitempty"`
 	AuditMore  []struct {
-		AuditLevel int     `json:"audit_level" binding:"required,min=2"`
+		AuditLevel int     `json:"audit_level" binding:"required,min=1"`
 		AuditType  int     `json:"audit_type" binding:"required,oneof=1 2"`
 		AuditTo    []int64 `json:"audit_to" binding:"required"`
 	} `json:"audit_more" binding:"omitempty"`

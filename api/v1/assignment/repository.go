@@ -21,6 +21,7 @@ func (r *assignmentRepository) CreateAssignment(info AssignmentNew) (int64, erro
 		(
 			organization_id,
 			project_id,
+			event_id,
 			assignment_type,
 			reference_id,
 			assign_to,
@@ -34,8 +35,8 @@ func (r *assignmentRepository) CreateAssignment(info AssignmentNew) (int64, erro
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.OrganizationID, info.ProjectID, info.AssignmentType, info.ReferenceID, info.AssignTo, info.AuditTo, info.Name, info.Content, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.OrganizationID, info.ProjectID, info.EventID, info.AssignmentType, info.ReferenceID, info.AssignTo, info.AuditTo, info.Name, info.Content, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -47,6 +48,7 @@ func (r *assignmentRepository) UpdateAssignment(id int64, info AssignmentUpdate)
 	_, err := r.tx.Exec(`
 		Update assignments SET 
 		project_id = ?,
+		event_id = ?,
 		assign_to = ?,
 		audit_to = ?,
 		name = ?,
@@ -54,7 +56,7 @@ func (r *assignmentRepository) UpdateAssignment(id int64, info AssignmentUpdate)
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.ProjectID, info.AssignTo, info.AuditTo, info.Name, info.Content, time.Now(), info.User, id)
+	`, info.ProjectID, info.EventID, info.AssignTo, info.AuditTo, info.Name, info.Content, time.Now(), info.User, id)
 	return err
 }
 
@@ -69,6 +71,8 @@ func (r *assignmentRepository) GetAssignmentByID(id int64) (*AssignmentResponse,
 		m.reference_id,
 		m.project_id,
 		IFNULL(p.name, "") as project_name,
+		m.event_id,
+		IFNULL(e.name, "") as event_name,
 		m.assign_to,
 		IFNULL(u.name, "") as assign_name,
 		m.audit_to,
@@ -88,6 +92,8 @@ func (r *assignmentRepository) GetAssignmentByID(id int64) (*AssignmentResponse,
 		ON m.organization_id = o.id
 		LEFT JOIN projects p
 		ON p.id = m.project_id
+		LEFT JOIN events e
+		ON e.id = m.event_id
 		LEFT JOIN users u
 		ON u.id = m.assign_to
 		LEFT JOIN users u2
@@ -96,7 +102,7 @@ func (r *assignmentRepository) GetAssignmentByID(id int64) (*AssignmentResponse,
 		AND m.status > 0
 	`, id)
 
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.OrganizationName, &res.AssignmentType, &res.ReferenceID, &res.ProjectID, &res.ProjectName, &res.AssignTo, &res.AssignName, &res.AuditTo, &res.AuditName, &res.CompleteContent, &res.CompleteTime, &res.AuditContent, &res.AuditTime, &res.Name, &res.Content, &res.Status, &res.UserID, &res.Created, &res.CreatedBy)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.OrganizationName, &res.AssignmentType, &res.ReferenceID, &res.ProjectID, &res.ProjectName, &res.EventID, &res.EventName, &res.AssignTo, &res.AssignName, &res.AuditTo, &res.AuditName, &res.CompleteContent, &res.CompleteTime, &res.AuditContent, &res.AuditTime, &res.Name, &res.Content, &res.Status, &res.UserID, &res.Created, &res.CreatedBy)
 	return &res, err
 }
 
@@ -158,9 +164,36 @@ func (r *assignmentRepository) CreateAssignmentFile(info AssignmentFile) error {
 	return err
 }
 
+func (r *assignmentRepository) CreateAssignmentCompleteFile(info AssignmentCompleteFile) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO assignment_complete_files
+		(
+			assignment_id,
+			link,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, info.AssignmentID, info.Link, info.Status, time.Now(), info.CreatedBy, time.Now(), info.UpdatedBy)
+	return err
+}
 func (r *assignmentRepository) DeleteAssignmentFile(assignmentID int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update assignment_files SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE assignment_id = ?
+	`, time.Now(), byUser, assignmentID)
+	return err
+}
+
+func (r *assignmentRepository) DeleteAssignmentCompleteFile(assignmentID int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update assignment_complete_files SET 
 		status = -1,
 		updated = ?,
 		updated_by = ? 

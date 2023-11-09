@@ -5,6 +5,7 @@ import (
 	"bpm/core/queue"
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 type memberService struct {
@@ -41,6 +42,18 @@ func (s *memberService) NewMember(info MemberNew, organizationID int64) (*[]Memb
 	members, err := repo.GetMembersByProjectID(info.ProjectID)
 	if err != nil {
 		return nil, err
+	}
+	memberValid, err := repo.CheckMemberValid(info.ProjectID)
+	if err != nil {
+		if err != nil {
+			if err.Error() != "sql: no rows in result set" {
+				return nil, err
+			}
+		}
+	} else {
+		msg := "项目成员错误"
+		fmt.Println(memberValid)
+		return nil, errors.New(msg)
 	}
 	tx.Commit()
 

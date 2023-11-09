@@ -140,3 +140,23 @@ func (r *memberRepository) CheckMemberExist(projectID, userID int64) (bool, erro
 	}
 	return res > 0, nil
 }
+
+func (r *memberRepository) CheckMemberValid(projectID int64) (int64, error) {
+	var res int64
+	row := r.tx.QueryRow(`
+		SELECT ea.audit_to 
+		FROM event_audits ea
+		LEFT JOIN events e 
+		ON ea.event_id = e.id
+		WHERE ea.status > 0 
+		AND ea.audit_type = 2
+		AND e.project_id = ?
+		AND ea.audit_to not in (
+			SELECT user_id FROM project_members
+			WHERE project_id = ? 
+			AND status > 0 
+		)
+		`, projectID, projectID)
+	err := row.Scan(&res)
+	return res, err
+}

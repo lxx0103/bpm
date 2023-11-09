@@ -471,27 +471,50 @@ func (r *projectQuery) GetEventAssignUser(eventID int64) (*[]AssignToResponse, e
 }
 
 func (r *projectQuery) GetEventAuditPosition(eventID int64) (*[]AssignToResponse, error) {
+	var auditLevel int
+	err := r.conn.Get(&auditLevel, `
+		SELECT audit_level
+		FROM events 
+		WHERE id = ? 
+		AND status > 0
+		LIMIT 1
+	`, eventID)
+	if err != nil {
+		return nil, err
+	}
+	var auditType int
+	err = r.conn.Get(&auditType, `
+		SELECT audit_type
+		FROM event_audits 
+		WHERE event_id = ? 
+		AND audit_level = ?
+		AND status > 0
+		LIMIT 1
+	`, eventID, auditLevel)
+	if err != nil {
+		return nil, err
+	}
 	var events []AssignToResponse
-	err := r.conn.Select(&events, `
+	if auditType == 1 {
+		err = r.conn.Select(&events, `
 		SELECT ea.audit_to as id , IFNULL(p.name, "") as name 
 		FROM event_audits ea 
 		LEFT JOIN positions p
 		ON ea.audit_to = p.id
 		WHERE ea.event_id = ? 
+		AND ea.audit_level = ?
 		AND ea.status > 0
-	`, eventID)
-	return &events, err
-}
-
-func (r *projectQuery) GetEventAuditUser(eventID int64) (*[]AssignToResponse, error) {
-	var events []AssignToResponse
-	err := r.conn.Select(&events, `
-		SELECT ea.audit_to as id , IFNULL(p.name, "") as name 
-		FROM event_audits ea 
-		LEFT JOIN users p
-		ON ea.audit_to = p.id
-		WHERE ea.event_id = ? 
-		AND ea.status > 0
-	`, eventID)
+	`, eventID, auditLevel)
+	} else if auditType == 2 {
+		err = r.conn.Select(&events, `
+			SELECT ea.audit_to as id , IFNULL(p.name, "") as name 
+			FROM event_audits ea 
+			LEFT JOIN users p
+			ON ea.audit_to = p.id
+			WHERE ea.event_id = ? 
+			AND ea.audit_level = ?
+			AND ea.status > 0
+		`, eventID, auditLevel)
+	}
 	return &events, err
 }

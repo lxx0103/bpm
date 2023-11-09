@@ -28,6 +28,7 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 			assignable,
 			need_audit,
 			audit_type,
+			audit_level,
 			need_checkin,
 			sort,
 			can_review,
@@ -37,8 +38,8 @@ func (r *eventRepository) CreateEvent(info EventNew) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, info.NeedCheckin, info.Sort, info.CanReview, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, info.ProjectID, info.NodeID, info.Name, info.AssignType, info.Assignable, info.NeedAudit, info.AuditType, 1, info.NeedCheckin, info.Sort, info.CanReview, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -401,17 +402,24 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 	historyStatus := 1
 	isActive := 0
 	nextLevel := currentLevel
+	nextAuditType := 0
 	fmt.Println(nextLevel)
 	if !approved {
 		eventStatus = 3
 		isActive = 1
 		nextLevel = 1
+		row := r.tx.QueryRow(`SELECT audit_type FROM event_audits WHERE event_id = ? AND audit_level = ? AND status > 0 ORDER BY audit_level ASC`, eventID, 1)
+		err := row.Scan(&nextAuditType)
+		if err != nil {
+			return err
+		}
 	} else {
-		row := r.tx.QueryRow(`SELECT audit_level FROM event_audits WHERE event_id = ? AND audit_level > ? AND status > 0 ORDER BY audit_level ASC`, eventID, currentLevel)
-		err := row.Scan(&nextLevel)
+		row := r.tx.QueryRow(`SELECT audit_level, audit_type FROM event_audits WHERE event_id = ? AND audit_level > ? AND status > 0 ORDER BY audit_level ASC`, eventID, currentLevel)
+		err := row.Scan(&nextLevel, &nextAuditType)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				nextLevel = 0
+				nextAuditType = 0
 			} else {
 				return err
 			}
@@ -424,6 +432,7 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 	_, err := r.tx.Exec(`
 		Update events SET 
 		audit_level = ?,
+		audit_type = ?,
 		audit_user = ?,
 		audit_time = ?,
 		audit_content = ?,
@@ -432,7 +441,7 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, nextLevel, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, isActive, eventStatus, time.Now(), byUser, eventID)
+	`, nextLevel, nextAuditType, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, isActive, eventStatus, time.Now(), byUser, eventID)
 	if err != nil {
 		return err
 	}

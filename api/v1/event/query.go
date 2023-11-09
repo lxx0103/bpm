@@ -195,7 +195,7 @@ func (r *eventQuery) GetAssignedEventByID(id int64, status string) (*MyEvent, er
 func (r *eventQuery) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error) {
 	var event []MyEvent
 	sql := `
-		SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, p.priority, IFNULL(e.deadline, '') as deadline, e.sort, e.status, p.priority, e.can_review, e.assignable, e.is_active, e.assign_type, e.audit_type, e.need_audit
+		SELECT e.id, e.project_id, p.name as project_name, e.name, e.complete_user, e.complete_time, e.audit_user, e.audit_time, e.audit_content, e.need_checkin, p.priority, IFNULL(e.deadline, '') as deadline, e.sort, e.status, p.priority, e.can_review, e.assignable, e.is_active, e.assign_type, e.audit_type, e.need_audit, e.audit_level as audit_level
 		FROM events e 
 		LEFT JOIN projects p ON p.id = e.project_id 
 		WHERE e.project_id = ?  `
@@ -388,52 +388,51 @@ func (r *eventQuery) GetEventAuditPosition(eventID int64) (*[][]AssignToResponse
 	}
 	var res [][]AssignToResponse
 	for _, level := range levels {
-		var events []AssignToResponse
-		err := r.conn.Select(&events, `
-			SELECT ea.audit_to as id, ea.audit_type as audit_type, ea.audit_level as audit_level, IFNULL(p.name, "") as name 
-			FROM event_audits ea 
-			LEFT JOIN positions p
-			ON ea.audit_to = p.id
-			WHERE ea.event_id = ? 
-			AND ea.audit_level = ?
-			AND ea.status > 0
+		var auditType int
+		err := r.conn.Get(&auditType, `
+			SELECT audit_type
+			FROM event_audits 
+			WHERE event_id = ? 
+			AND audit_level = ?
+			AND status > 0
+			LIMIT 1
 		`, eventID, level)
 		if err != nil {
 			return nil, err
 		}
-		res = append(res, events)
-	}
-	return &res, err
-}
-
-func (r *eventQuery) GetEventAuditUser(eventID int64) (*[][]AssignToResponse, error) {
-	var levels []int
-	err := r.conn.Select(&levels, `
-		SELECT distinct(audit_level)
-		FROM event_audits 
-		WHERE event_id = ? 
-		AND status > 0
-		ORDER BY audit_level ASC
-	`, eventID)
-	if err != nil {
-		return nil, err
-	}
-	var res [][]AssignToResponse
-	for _, level := range levels {
 		var events []AssignToResponse
-		err := r.conn.Select(&events, `
-		SELECT ea.audit_to as id , ea.audit_type as audit_type, ea.audit_level as audit_level, IFNULL(p.name, "") as name 
-		FROM event_audits ea 
-		LEFT JOIN users p
-		ON ea.audit_to = p.id
-		WHERE ea.event_id = ? 
-		AND ea.audit_level = ?
-		AND ea.status > 0
-	`, eventID, level)
-		if err != nil {
-			return nil, err
+		if auditType == 1 {
+			err = r.conn.Select(&events, `
+				SELECT ea.audit_to as id, ea.audit_type as audit_type, ea.audit_level as audit_level, IFNULL(p.name, "") as name 
+				FROM event_audits ea 
+				LEFT JOIN positions p
+				ON ea.audit_to = p.id
+				WHERE ea.event_id = ? 
+				AND ea.audit_level = ?
+				AND ea.audit_type = 1
+				AND ea.status > 0
+			`, eventID, level)
+			if err != nil {
+				return nil, err
+			}
+			res = append(res, events)
+		} else if auditType == 2 {
+			var events []AssignToResponse
+			err := r.conn.Select(&events, `
+			SELECT ea.audit_to as id , ea.audit_type as audit_type, ea.audit_level as audit_level, IFNULL(p.name, "") as name 
+			FROM event_audits ea 
+			LEFT JOIN users p
+			ON ea.audit_to = p.id
+			WHERE ea.event_id = ? 
+			AND ea.audit_level = ?
+			AND ea.audit_type = 2
+			AND ea.status > 0
+		`, eventID, level)
+			if err != nil {
+				return nil, err
+			}
+			res = append(res, events)
 		}
-		res = append(res, events)
 	}
 	return &res, err
 }

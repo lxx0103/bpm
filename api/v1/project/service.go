@@ -143,7 +143,7 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 			var nodeAudit event.NodeAudit
 			nodeAudit.AuditLevel = (*nodeAudits)[n].AuditLevel
 			nodeAudit.AuditTo = append(nodeAudit.AuditTo, (*nodeAudits)[n].AuditTo)
-			err = eventRepo.CreateEventAudit((*events)[k].ID, (*events)[k].AuditType, nodeAudit, info.User)
+			err = eventRepo.CreateEventAudit((*events)[k].ID, (*nodeAudits)[n].AuditType, nodeAudit, info.User)
 			if err != nil {
 				return nil, err
 			}
@@ -349,19 +349,19 @@ func (s *projectService) GetMyProject(filter MyProjectFilter, userName string, o
 				}
 			} else if v2.Status == 2 {
 				(*events)[k2].ActiveType = "审核"
-				if v2.AuditType == 1 {
-					assigns, err := query.GetEventAuditPosition(v2.EventID)
-					if err != nil {
-						return 0, nil, err
-					}
-					(*events)[k2].Actives = *assigns
-				} else {
-					assigns, err := query.GetEventAuditUser(v2.EventID)
-					if err != nil {
-						return 0, nil, err
-					}
-					(*events)[k2].Actives = *assigns
+				// if v2.AuditType == 1 {
+				assigns, err := query.GetEventAuditPosition(v2.EventID)
+				if err != nil {
+					return 0, nil, err
 				}
+				(*events)[k2].Actives = *assigns
+				// } else {
+				// 	assigns, err := query.GetEventAuditUser(v2.EventID)
+				// 	if err != nil {
+				// 		return 0, nil, err
+				// 	}
+				// 	(*events)[k2].Actives = *assigns
+				// }
 			}
 		}
 		(*myProjects)[k].ActiveEvents = *events
@@ -404,19 +404,19 @@ func (s *projectService) GetAssignedProject(filter AssignedProjectFilter, userID
 				}
 			} else if v2.Status == 2 {
 				(*events)[k2].ActiveType = "审核"
-				if v2.AuditType == 1 {
-					assigns, err := query.GetEventAuditPosition(v2.EventID)
-					if err != nil {
-						return 0, nil, err
-					}
-					(*events)[k2].Actives = *assigns
-				} else {
-					assigns, err := query.GetEventAuditUser(v2.EventID)
-					if err != nil {
-						return 0, nil, err
-					}
-					(*events)[k2].Actives = *assigns
+				// if v2.AuditType == 1 {
+				assigns, err := query.GetEventAuditPosition(v2.EventID)
+				if err != nil {
+					return 0, nil, err
 				}
+				(*events)[k2].Actives = *assigns
+				// } else {
+				// 	assigns, err := query.GetEventAuditUser(v2.EventID)
+				// 	if err != nil {
+				// 		return 0, nil, err
+				// 	}
+				// 	(*events)[k2].Actives = *assigns
+				// }
 			}
 		}
 		(*myProjects)[k].ActiveEvents = *events
@@ -459,19 +459,19 @@ func (s *projectService) GetClientProject(filter MyProjectFilter, userID int64, 
 				}
 			} else if v2.Status == 2 {
 				(*events)[k2].ActiveType = "审核"
-				if v2.AuditType == 1 {
-					assigns, err := query.GetEventAuditPosition(v2.EventID)
-					if err != nil {
-						return 0, nil, err
-					}
-					(*events)[k2].Actives = *assigns
-				} else {
-					assigns, err := query.GetEventAuditUser(v2.EventID)
-					if err != nil {
-						return 0, nil, err
-					}
-					(*events)[k2].Actives = *assigns
+				// if v2.AuditType == 1 {
+				assigns, err := query.GetEventAuditPosition(v2.EventID)
+				if err != nil {
+					return 0, nil, err
 				}
+				(*events)[k2].Actives = *assigns
+				// } else {
+				// 	assigns, err := query.GetEventAuditUser(v2.EventID)
+				// 	if err != nil {
+				// 		return 0, nil, err
+				// 	}
+				// 	(*events)[k2].Actives = *assigns
+				// }
 			}
 		}
 		(*myProjects)[k].ActiveEvents = *events

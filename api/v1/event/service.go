@@ -84,23 +84,15 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 	}
 	if info.NeedAudit != 0 {
 		oldEvent.NeedAudit = info.NeedAudit
-		oldEvent.AuditType = info.AuditType
-		err = repo.DeleteEventAudit(eventID, info.User)
 		if err != nil {
 			return nil, err
 		}
-		var auditInfo NodeAudit
-		auditInfo.AuditLevel = 1
-		auditInfo.AuditTo = info.AuditTo
-		err = repo.CreateEventAudit(eventID, info.AuditType, auditInfo, info.User)
+		err = repo.DeleteEventAudit(eventID, info.User)
 		if err != nil {
 			return nil, err
 		}
 		if len(info.AuditMore) > 0 {
 			for _, auditMore := range info.AuditMore {
-				if auditMore.AuditLevel < 2 {
-					return nil, errors.New("审核级别错误")
-				}
 				if auditMore.AuditType != 1 && auditMore.AuditType != 2 {
 					return nil, errors.New("审核类型错误")
 				}
@@ -113,6 +105,9 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 				err = repo.CreateEventAudit(eventID, auditMore.AuditType, auditInfo, info.User)
 				if err != nil {
 					return nil, err
+				}
+				if auditMore.AuditLevel == oldEvent.AuditLevel {
+					oldEvent.AuditType = auditMore.AuditType
 				}
 			}
 		}
@@ -209,19 +204,18 @@ func (s *eventService) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error)
 			}
 			(*events)[k2].Assign = assigns
 		}
-		if v2.AuditType == 1 {
-			audits, err := query.GetEventAuditPosition(v2.ID)
-			if err != nil {
-				return nil, err
-			}
-			(*events)[k2].Audit = audits
-		} else {
-			audits, err := query.GetEventAuditUser(v2.ID)
-			if err != nil {
-				return nil, err
-			}
-			(*events)[k2].Audit = audits
+		// if v2.AuditType == 1 {
+		audits, err := query.GetEventAuditPosition(v2.ID)
+		if err != nil {
+			return nil, err
 		}
+		// } else {
+		// auditUsers, err := query.GetEventAuditUser(v2.ID)
+		// if err != nil {
+		// 	return nil, err
+		// }
+		(*events)[k2].Audit = audits
+		// }
 	}
 	return events, err
 }

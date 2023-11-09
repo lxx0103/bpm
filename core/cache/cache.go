@@ -6,10 +6,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-redis/cache/v8"
-	"github.com/go-redis/redis/v8"
 	"bpm/core/config"
 	"bpm/core/log"
+
+	"github.com/go-redis/cache/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 var (
@@ -36,7 +37,7 @@ func ConfigCache() *cache.Cache {
 	return mycache
 }
 
-//GetKey get key
+// GetKey get key
 func GetKey(key string, value string) {
 	err := mycache.Get(ctx, key, &value)
 	if err != nil {
@@ -45,7 +46,7 @@ func GetKey(key string, value string) {
 	fmt.Println(value)
 }
 
-//SetKey set key
+// SetKey set key
 func SetKey(key string, value interface{}) error {
 	err := mycache.Set(&cache.Item{
 		Ctx:   ctx,

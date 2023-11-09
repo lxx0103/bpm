@@ -2,6 +2,7 @@ package assignment
 
 import (
 	"bpm/api/v1/auth"
+	"bpm/api/v1/event"
 	"bpm/api/v1/member"
 	"bpm/api/v1/project"
 	"bpm/core/database"
@@ -27,8 +28,14 @@ func (s *assignmentService) GetAssignmentByID(id int64, organizationID int64) (*
 		msg := "获取报告链接失败"
 		return nil, errors.New(msg)
 	}
+	completeFiles, err := query.GetAssignmentCompleteFile(id)
+	if err != nil {
+		msg := "获取报告链接失败"
+		return nil, errors.New(msg)
+	}
 	assignment, err := query.GetAssignmentByID(id, organizationID)
 	assignment.File = *links
+	assignment.CompleteFile = *completeFiles
 	return assignment, err
 }
 
@@ -48,12 +55,24 @@ func (s *assignmentService) NewAssignment(info AssignmentNew, organizationID int
 	defer tx.Rollback()
 	repo := NewAssignmentRepository(tx)
 	projectRepo := project.NewProjectRepository(tx)
+	eventRepo := event.NewEventRepository(tx)
 	memberRepo := member.NewMemberRepository(tx)
 	userRepo := auth.NewAuthRepository(tx)
 	_, err = projectRepo.GetProjectByID(info.ProjectID, info.OrganizationID)
 	if err != nil {
 		msg := "获取项目失败"
 		return errors.New(msg)
+	}
+	if info.EventID != 0 {
+		relatedEvent, err := eventRepo.GetEventByID(info.EventID, info.OrganizationID)
+		if err != nil {
+			msg := "获取事件失败"
+			return errors.New(msg)
+		}
+		if relatedEvent.ProjectID != info.ProjectID {
+			msg := "事件与项目不一致"
+			return errors.New(msg)
+		}
 	}
 	memberExist, err := memberRepo.CheckMemberExist(info.ProjectID, info.AssignTo)
 	if err != nil {
@@ -132,6 +151,12 @@ func (s *assignmentService) GetAssignmentList(filter AssignmentFilter, organizat
 			return 0, nil, errors.New(msg)
 		}
 		(*list)[k].File = *links
+		completeFiles, err := query.GetAssignmentCompleteFile(v.ID)
+		if err != nil {
+			msg := "获取完成文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].CompleteFile = *completeFiles
 	}
 	return count, list, err
 }
@@ -145,6 +170,7 @@ func (s *assignmentService) UpdateAssignment(assignmentID int64, info Assignment
 	defer tx.Rollback()
 	repo := NewAssignmentRepository(tx)
 	projectRepo := project.NewProjectRepository(tx)
+	eventRepo := event.NewEventRepository(tx)
 	memberRepo := member.NewMemberRepository(tx)
 	userRepo := auth.NewAuthRepository(tx)
 	oldAssignment, err := repo.GetAssignmentByID(assignmentID)
@@ -168,6 +194,17 @@ func (s *assignmentService) UpdateAssignment(assignmentID int64, info Assignment
 	if err != nil {
 		msg := "获取项目失败"
 		return errors.New(msg)
+	}
+	if info.EventID != 0 {
+		relatedEvent, err := eventRepo.GetEventByID(info.EventID, oldAssignment.OrganizationID)
+		if err != nil {
+			msg := "获取事件失败"
+			return errors.New(msg)
+		}
+		if relatedEvent.ProjectID != info.ProjectID {
+			msg := "事件与项目不一致"
+			return errors.New(msg)
+		}
 	}
 	memberExist, err := memberRepo.CheckMemberExist(info.ProjectID, info.AssignTo)
 	if err != nil {
@@ -290,6 +327,22 @@ func (s *assignmentService) CompleteAssignment(assignmentID int64, info Assignme
 	if err != nil {
 		return err
 	}
+
+	for _, link := range info.File {
+		var assignmentFile AssignmentCompleteFile
+		assignmentFile.AssignmentID = assignmentID
+		assignmentFile.Link = link
+		assignmentFile.Status = 1
+		assignmentFile.Created = time.Now()
+		assignmentFile.CreatedBy = info.User
+		assignmentFile.Updated = time.Now()
+		assignmentFile.UpdatedBy = info.User
+		err = repo.CreateAssignmentCompleteFile(assignmentFile)
+		if err != nil {
+			msg := "创建文件失败"
+			return errors.New(msg)
+		}
+	}
 	tx.Commit()
 	type NewAssignmentCompleted struct {
 		AssignmentID int64 `json:"assignment_id"`
@@ -372,6 +425,12 @@ func (s *assignmentService) GetMyAssignmentList(filter MyAssignmentFilter) (int,
 			return 0, nil, errors.New(msg)
 		}
 		(*list)[k].File = *links
+		completeLinks, err := query.GetAssignmentCompleteFile(v.ID)
+		if err != nil {
+			msg := "获取完成文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].CompleteFile = *completeLinks
 	}
 	return count, list, err
 }
@@ -394,6 +453,12 @@ func (s *assignmentService) GetMyAuditList(filter MyAuditFilter) (int, *[]Assign
 			return 0, nil, errors.New(msg)
 		}
 		(*list)[k].File = *links
+		completeLinks, err := query.GetAssignmentCompleteFile(v.ID)
+		if err != nil {
+			msg := "获取完成文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].CompleteFile = *completeLinks
 	}
 	return count, list, err
 }

@@ -29,6 +29,8 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		m.reference_id,
 		m.project_id,
 		IFNULL(p.name, "") as project_name,
+		m.event_id,
+		IFNULL(e.name, "") as event_name,
 		m.assign_to,
 		IFNULL(u.name, "") as assign_name,
 		m.audit_to,
@@ -48,6 +50,8 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		ON m.organization_id = o.id
 		LEFT JOIN projects p
 		ON p.id = m.project_id
+		LEFT JOIN events e
+		ON e.id = m.event_id
 		LEFT JOIN users u
 		ON u.id = m.assign_to
 		LEFT JOIN users u2
@@ -66,6 +70,8 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		m.reference_id,
 		m.project_id,
 		IFNULL(p.name, "") as project_name,
+		m.event_id,
+		IFNULL(e.name, "") as event_name,
 		m.assign_to,
 		IFNULL(u.name, "") as assign_name,
 		m.audit_to,
@@ -85,6 +91,8 @@ func (r *assignmentQuery) GetAssignmentByID(id int64, organizationID int64) (*As
 		ON m.organization_id = o.id
 		LEFT JOIN projects p
 		ON p.id = m.project_id
+		LEFT JOIN events e
+		ON e.id = m.event_id
 		LEFT JOIN users u
 		ON u.id = m.assign_to
 		LEFT JOIN users u2
@@ -115,6 +123,9 @@ func (r *assignmentQuery) GetAssignmentCount(filter AssignmentFilter) (int, erro
 	}
 	if v := filter.ProjectID; v != 0 {
 		where, args = append(where, "project_id = ?"), append(args, v)
+	}
+	if v := filter.EventID; v != 0 {
+		where, args = append(where, "m.event_id = ?"), append(args, v)
 	}
 	var count int
 	err := r.conn.Get(&count, `
@@ -147,6 +158,9 @@ func (r *assignmentQuery) GetAssignmentList(filter AssignmentFilter) (*[]Assignm
 	if v := filter.ProjectID; v != 0 {
 		where, args = append(where, "m.project_id = ?"), append(args, v)
 	}
+	if v := filter.EventID; v != 0 {
+		where, args = append(where, "m.event_id = ?"), append(args, v)
+	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
 	var assignments []AssignmentResponse
@@ -159,6 +173,8 @@ func (r *assignmentQuery) GetAssignmentList(filter AssignmentFilter) (*[]Assignm
 		m.reference_id,
 		m.project_id,
 		IFNULL(p.name, "") as project_name,
+		m.event_id,
+		IFNULL(e.name, "") as event_name,
 		m.assign_to,
 		IFNULL(u.name, "") as assign_name,
 		m.audit_to,
@@ -178,6 +194,8 @@ func (r *assignmentQuery) GetAssignmentList(filter AssignmentFilter) (*[]Assignm
 		ON m.organization_id = o.id
 		LEFT JOIN projects p
 		ON p.id = m.project_id
+		LEFT JOIN events e
+		ON e.id = m.event_id
 		LEFT JOIN users u
 		ON u.id = m.assign_to
 		LEFT JOIN users u2
@@ -236,6 +254,8 @@ func (r *assignmentQuery) GetMyAssignmentList(filter MyAssignmentFilter) (*[]Ass
 		m.reference_id,
 		m.project_id,
 		IFNULL(p.name, "") as project_name,
+		m.event_id,
+		IFNULL(e.name, "") as event_name,
 		m.assign_to,
 		IFNULL(u.name, "") as assign_name,
 		m.audit_to,
@@ -255,6 +275,8 @@ func (r *assignmentQuery) GetMyAssignmentList(filter MyAssignmentFilter) (*[]Ass
 		ON m.organization_id = o.id
 		LEFT JOIN projects p
 		ON p.id = m.project_id
+		LEFT JOIN events e
+		ON e.id = m.event_id
 		LEFT JOIN users u
 		ON u.id = m.assign_to
 		LEFT JOIN users u2
@@ -313,6 +335,8 @@ func (r *assignmentQuery) GetMyAuditList(filter MyAuditFilter) (*[]AssignmentRes
 		m.reference_id,
 		m.project_id,
 		IFNULL(p.name, "") as project_name,
+		m.event_id,
+		IFNULL(e.name, "") as event_name,
 		m.assign_to,
 		IFNULL(u.name, "") as assign_name,
 		m.audit_to,
@@ -332,6 +356,8 @@ func (r *assignmentQuery) GetMyAuditList(filter MyAuditFilter) (*[]AssignmentRes
 		ON m.organization_id = o.id
 		LEFT JOIN projects p
 		ON p.id = m.project_id
+		LEFT JOIN events e
+		ON e.id = m.event_id
 		LEFT JOIN users u
 		ON u.id = m.assign_to
 		LEFT JOIN users u2
@@ -352,6 +378,18 @@ func (r *assignmentQuery) GetAssignmentFile(assignmentID int64) (*[]string, erro
 	err := r.conn.Select(&projectReports, `
 		SELECT link
 		FROM assignment_files
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
+}
+
+func (r *assignmentQuery) GetAssignmentCompleteFile(assignmentID int64) (*[]string, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "assignment_id = ?"), append(args, assignmentID)
+	var projectReports []string
+	err := r.conn.Select(&projectReports, `
+		SELECT link
+		FROM assignment_complete_files
 		WHERE `+strings.Join(where, " AND ")+`
 	`, args...)
 	return &projectReports, err

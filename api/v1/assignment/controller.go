@@ -20,6 +20,7 @@ import (
 // @Param assignment_type query int64 false "任务类型（1，会议任务，2其他任务）"
 // @Param reference_id query int64 false "关联ID（会议ID)"
 // @Param project_id query int64 false "项目ID"
+// @Param event_id query int64 false "事件ID"
 // @Success 200 object response.ListRes{data=[]AssignmentResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /assignments [GET]
