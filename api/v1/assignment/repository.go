@@ -117,7 +117,7 @@ func (r *assignmentRepository) DeleteAssignment(id int64, byUser string) error {
 	return err
 }
 
-func (r *assignmentRepository) CompleteAssignment(id int64, info AssignmentComplete) error {
+func (r *assignmentRepository) CompleteAssignment(id int64, info AssignmentComplete) (int64, error) {
 	_, err := r.tx.Exec(`
 		Update assignments SET 
 		complete_content = ?,
@@ -126,14 +126,39 @@ func (r *assignmentRepository) CompleteAssignment(id int64, info AssignmentCompl
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Content, time.Now(), 2, time.Now(), info.User, id)
-	return err
+	`, info.Content, time.Now().Format("2006-01-02 15:04:05"), 2, time.Now(), info.User, id)
+	if err != nil {
+		return 0, err
+	}
+	res, err := r.tx.Exec(`
+		INSERT INTO assignment_historys
+		(
+			assignment_id,
+			history_type,
+			user,
+			content,
+			history_time,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, id, "完成任务", info.User, info.Content, time.Now().Format("2006-01-02 15:04:05"), 1, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		return 0, err
+	}
+	historyID, err := res.LastInsertId()
+	return historyID, err
 }
 
-func (r *assignmentRepository) AuditAssignment(id int64, info AssignmentAudit) error {
+func (r *assignmentRepository) AuditAssignment(id int64, info AssignmentAudit) (int64, error) {
 	status := 9
+	historyType := "审核通过"
 	if info.Result == 2 {
 		status = 3
+		historyType = "审核驳回"
 	}
 	_, err := r.tx.Exec(`
 		Update assignments SET 
@@ -143,8 +168,31 @@ func (r *assignmentRepository) AuditAssignment(id int64, info AssignmentAudit) e
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Content, time.Now(), status, time.Now(), info.User, id)
-	return err
+	`, info.Content, time.Now().Format("2006-01-02 15:04:05"), status, time.Now(), info.User, id)
+	if err != nil {
+		return 0, err
+	}
+	res, err := r.tx.Exec(`
+		INSERT INTO assignment_historys
+		(
+			assignment_id,
+			history_type,
+			user,
+			content,
+			history_time,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, id, historyType, info.User, info.Content, time.Now().Format("2006-01-02 15:04:05"), info.Result, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		return 0, err
+	}
+	historyID, err := res.LastInsertId()
+	return historyID, err
 }
 
 func (r *assignmentRepository) CreateAssignmentFile(info AssignmentFile) error {
@@ -180,6 +228,7 @@ func (r *assignmentRepository) CreateAssignmentCompleteFile(info AssignmentCompl
 	`, info.AssignmentID, info.Link, info.Status, time.Now(), info.CreatedBy, time.Now(), info.UpdatedBy)
 	return err
 }
+
 func (r *assignmentRepository) DeleteAssignmentFile(assignmentID int64, byUser string) error {
 	_, err := r.tx.Exec(`
 		Update assignment_files SET 
@@ -199,5 +248,50 @@ func (r *assignmentRepository) DeleteAssignmentCompleteFile(assignmentID int64, 
 		updated_by = ? 
 		WHERE assignment_id = ?
 	`, time.Now(), byUser, assignmentID)
+	return err
+}
+
+func (r *assignmentRepository) DeleteAssignmentAuditFile(assignmentID int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update assignment_audit_files SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE assignment_id = ?
+	`, time.Now(), byUser, assignmentID)
+	return err
+}
+
+func (r *assignmentRepository) CreateAssignmentHistoryFile(info AssignmentHistoryFile) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO assignment_history_files
+		(
+			history_id,
+			link,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, info.HistoryID, info.Link, info.Status, time.Now(), info.CreatedBy, time.Now(), info.UpdatedBy)
+	return err
+}
+
+func (r *assignmentRepository) CreateAssignmentAuditFile(info AssignmentAuditFile) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO assignment_audit_files
+		(
+			assignment_id,
+			link,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, info.AssignmentID, info.Link, info.Status, time.Now(), info.CreatedBy, time.Now(), info.UpdatedBy)
 	return err
 }

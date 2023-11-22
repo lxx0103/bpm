@@ -4,6 +4,10 @@ definitions:
     properties:
       content:
         type: string
+      file:
+        items:
+          type: string
+        type: array
       result:
         enum:
         - 1
@@ -16,8 +20,33 @@ definitions:
     properties:
       content:
         type: string
+      file:
+        items:
+          type: string
+        type: array
     required:
     - content
+    type: object
+  assignment.AssignmentHistoryResponse:
+    properties:
+      assignment_id:
+        type: integer
+      content:
+        type: string
+      file:
+        items:
+          type: string
+        type: array
+      history_time:
+        type: string
+      history_type:
+        type: string
+      id:
+        type: integer
+      status:
+        type: integer
+      user:
+        type: string
     type: object
   assignment.AssignmentNew:
     properties:
@@ -32,8 +61,12 @@ definitions:
         type: integer
       content:
         type: string
+      event_id:
+        type: integer
       file:
-        type: string
+        items:
+          type: string
+        type: array
       name:
         maxLength: 64
         minLength: 1
@@ -64,6 +97,10 @@ definitions:
         type: integer
       audit_content:
         type: string
+      audit_file:
+        items:
+          type: string
+        type: array
       audit_name:
         type: string
       audit_time:
@@ -72,6 +109,10 @@ definitions:
         type: integer
       complete_content:
         type: string
+      complete_file:
+        items:
+          type: string
+        type: array
       complete_time:
         type: string
       content:
@@ -80,8 +121,14 @@ definitions:
         type: string
       created_by:
         type: string
-      file:
+      event_id:
+        type: integer
+      event_name:
         type: string
+      file:
+        items:
+          type: string
+        type: array
       id:
         type: integer
       name:
@@ -109,8 +156,12 @@ definitions:
         type: integer
       content:
         type: string
+      event_id:
+        type: integer
       file:
-        type: string
+        items:
+          type: string
+        type: array
       name:
         maxLength: 64
         minLength: 1
@@ -758,6 +809,10 @@ definitions:
     type: object
   event.AssignToResponse:
     properties:
+      audit_level:
+        type: string
+      audit_type:
+        type: string
       id:
         type: integer
       name:
@@ -768,6 +823,10 @@ definitions:
       content:
         maxLength: 255
         type: string
+      file:
+        items:
+          type: string
+        type: array
       result:
         enum:
         - 1
@@ -830,6 +889,12 @@ definitions:
         type: array
       audit_content:
         type: string
+      audit_file:
+        items:
+          type: string
+        type: array
+      audit_level:
+        type: integer
       audit_time:
         type: string
       audit_type:
@@ -898,6 +963,8 @@ definitions:
     type: object
   event.EventAudit:
     properties:
+      audit_level:
+        type: integer
       audit_to:
         type: integer
       audit_type:
@@ -927,6 +994,12 @@ definitions:
         type: string
       event_id:
         type: integer
+      file:
+        items:
+          type: string
+        type: array
+      history_type:
+        type: string
       id:
         type: integer
       status:
@@ -1005,6 +1078,27 @@ definitions:
         - 1
         - 2
         type: integer
+      audit_more:
+        items:
+          properties:
+            audit_level:
+              minimum: 2
+              type: integer
+            audit_to:
+              items:
+                type: integer
+              type: array
+            audit_type:
+              enum:
+              - 1
+              - 2
+              type: integer
+          required:
+          - audit_level
+          - audit_to
+          - audit_type
+          type: object
+        type: array
       audit_to:
         items:
           type: integer
@@ -1045,10 +1139,18 @@ definitions:
         type: integer
       audit:
         items:
-          $ref: '#/definitions/event.AssignToResponse'
+          items:
+            $ref: '#/definitions/event.AssignToResponse'
+          type: array
         type: array
       audit_content:
         type: string
+      audit_file:
+        items:
+          type: string
+        type: array
+      audit_level:
+        type: integer
       audit_time:
         type: string
       audit_type:
@@ -1114,6 +1216,8 @@ definitions:
       created_by:
         type: string
       description:
+        type: string
+      description2:
         type: string
       example_type:
         type: integer
@@ -1216,6 +1320,8 @@ definitions:
         type: string
       description:
         type: string
+      description2:
+        type: string
       example_type:
         type: integer
       feed_id:
@@ -1255,6 +1361,8 @@ definitions:
       cover:
         type: string
       description:
+        type: string
+      description2:
         type: string
       example_type:
         type: integer
@@ -1416,6 +1524,8 @@ definitions:
     type: object
   node.NodeAudit:
     properties:
+      audit_level:
+        type: integer
       audit_to:
         type: integer
       audit_type:
@@ -1452,6 +1562,27 @@ definitions:
         - 1
         - 2
         type: integer
+      audit_more:
+        items:
+          properties:
+            audit_level:
+              minimum: 2
+              type: integer
+            audit_to:
+              items:
+                type: integer
+              type: array
+            audit_type:
+              enum:
+              - 1
+              - 2
+              type: integer
+          required:
+          - audit_level
+          - audit_to
+          - audit_type
+          type: object
+        type: array
       audit_to:
         items:
           type: integer
@@ -1540,6 +1671,27 @@ definitions:
         - 1
         - 2
         type: integer
+      audit_more:
+        items:
+          properties:
+            audit_level:
+              minimum: 1
+              type: integer
+            audit_to:
+              items:
+                type: integer
+              type: array
+            audit_type:
+              enum:
+              - 1
+              - 2
+              type: integer
+          required:
+          - audit_level
+          - audit_to
+          - audit_type
+          type: object
+        type: array
       audit_to:
         items:
           type: integer
@@ -1601,6 +1753,8 @@ definitions:
       created_by:
         type: string
       description:
+        type: string
+      expiry_date:
         type: string
       id:
         type: integer
@@ -1666,6 +1820,8 @@ definitions:
         type: string
       description:
         type: string
+      expiry_date:
+        type: string
       logo:
         type: string
       logo2:
@@ -1720,6 +1876,8 @@ definitions:
       contact:
         type: string
       description:
+        type: string
+      expiry_date:
         type: string
       id:
         type: integer
@@ -2114,6 +2272,79 @@ definitions:
     properties:
       data: {}
     type: object
+  shortcut.ShortcutNew:
+    properties:
+      content:
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      shortcut_type:
+        type: integer
+    required:
+    - content
+    - shortcut_type
+    type: object
+  shortcut.ShortcutResponse:
+    properties:
+      content:
+        type: string
+      id:
+        type: integer
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      shortcut_type:
+        type: integer
+      shortcut_type_name:
+        type: string
+      status:
+        type: integer
+    type: object
+  shortcut.ShortcutTypeNew:
+    properties:
+      name:
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      parent_id:
+        type: integer
+    required:
+    - name
+    type: object
+  shortcut.ShortcutTypeResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      parent_id:
+        type: integer
+      status:
+        type: integer
+    type: object
+  shortcut.ShortcutTypeUpdate:
+    properties:
+      name:
+        type: string
+      parent_id:
+        type: integer
+    required:
+    - name
+    type: object
+  shortcut.ShortcutUpdate:
+    properties:
+      content:
+        type: string
+    required:
+    - content
+    type: object
   template.Template:
     properties:
       created:
@@ -2261,7 +2492,7 @@ definitions:
       contact:
         type: string
       cover:
-        maxLength: 64
+        maxLength: 255
         type: string
       description:
         type: string
@@ -2525,6 +2756,10 @@ paths:
         in: query
         name: project_id
         type: integer
+      - description: 事件ID
+        in: query
+        name: event_id
+        type: integer
       produces:
       - application/json
       responses:
@@ -2740,6 +2975,38 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID完成任务
+      tags:
+      - 任务管理
+  /assignments/:id/historys:
+    get:
+      consumes:
+      - application/json
+      operationId: Q019
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/assignment.AssignmentHistoryResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取任务历史
       tags:
       - 任务管理
   /assignments/my:
@@ -6638,6 +6905,338 @@ paths:
       summary: 根据ID更新角色
       tags:
       - 角色管理
+  /shortcut_types:
+    get:
+      consumes:
+      - application/json
+      operationId: R011
+      parameters:
+      - description: 父级ID
+        in: query
+        name: parent_id
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/shortcut.ShortcutTypeResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 快捷模版类别列表
+      tags:
+      - 快捷模版管理
+    post:
+      consumes:
+      - application/json
+      operationId: R012
+      parameters:
+      - description: 快捷模版类别信息
+        in: body
+        name: shortcut_info
+        required: true
+        schema:
+          $ref: '#/definitions/shortcut.ShortcutTypeNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建快捷模版类别
+      tags:
+      - 快捷模版管理
+  /shortcut_types/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: R015
+      parameters:
+      - description: 快捷模版类别ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除快捷模版类别
+      tags:
+      - 快捷模版管理
+    get:
+      consumes:
+      - application/json
+      operationId: R013
+      parameters:
+      - description: 快捷模版类别ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/shortcut.ShortcutTypeResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取快捷模版类别
+      tags:
+      - 快捷模版管理
+    put:
+      consumes:
+      - application/json
+      operationId: R014
+      parameters:
+      - description: 快捷模版类别ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 快捷模版类别信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/shortcut.ShortcutTypeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新快捷模版类别
+      tags:
+      - 快捷模版管理
+  /shortcuts:
+    get:
+      consumes:
+      - application/json
+      operationId: R001
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 快捷模版名称
+        in: query
+        name: keyword
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 快捷模版类型
+        in: query
+        name: shortcut_type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/shortcut.ShortcutResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 快捷模版列表
+      tags:
+      - 快捷模版管理
+    post:
+      consumes:
+      - application/json
+      operationId: R002
+      parameters:
+      - description: 快捷模版信息
+        in: body
+        name: shortcut_info
+        required: true
+        schema:
+          $ref: '#/definitions/shortcut.ShortcutNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建快捷模版
+      tags:
+      - 快捷模版管理
+  /shortcuts/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: R005
+      parameters:
+      - description: 快捷模版ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除快捷模版
+      tags:
+      - 快捷模版管理
+    get:
+      consumes:
+      - application/json
+      operationId: R003
+      parameters:
+      - description: 快捷模版ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/shortcut.ShortcutResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取快捷模版
+      tags:
+      - 快捷模版管理
+    put:
+      consumes:
+      - application/json
+      operationId: R004
+      parameters:
+      - description: 快捷模版ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 快捷模版信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/shortcut.ShortcutUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新快捷模版
+      tags:
+      - 快捷模版管理
   /signin:
     post:
       consumes:
@@ -7590,6 +8189,38 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID完成任务
+      tags:
+      - 小程序接口-任务管理
+  /wx/assignments/:id/historys:
+    get:
+      consumes:
+      - application/json
+      operationId: Q020
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/assignment.AssignmentHistoryResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 获取任务历史
       tags:
       - 小程序接口-任务管理
   /wx/assignments/my:
@@ -9443,6 +10074,338 @@ paths:
       summary: 保存事件
       tags:
       - 小程序接口
+  /wx/shortcut_types:
+    get:
+      consumes:
+      - application/json
+      operationId: R016
+      parameters:
+      - description: 父级ID
+        in: query
+        name: parent_id
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/shortcut.ShortcutTypeResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 快捷模版类别列表
+      tags:
+      - 小程序接口-快捷模版管理
+    post:
+      consumes:
+      - application/json
+      operationId: R017
+      parameters:
+      - description: 快捷模版类别信息
+        in: body
+        name: shortcut_info
+        required: true
+        schema:
+          $ref: '#/definitions/shortcut.ShortcutTypeNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建快捷模版类别
+      tags:
+      - 小程序接口-快捷模版管理
+  /wx/shortcut_types/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: R020
+      parameters:
+      - description: 快捷模版类别ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除快捷模版类别
+      tags:
+      - 小程序接口-快捷模版管理
+    get:
+      consumes:
+      - application/json
+      operationId: R018
+      parameters:
+      - description: 快捷模版类别ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/shortcut.ShortcutTypeResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取快捷模版类别
+      tags:
+      - 小程序接口-快捷模版管理
+    put:
+      consumes:
+      - application/json
+      operationId: R019
+      parameters:
+      - description: 快捷模版类别ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 快捷模版类别信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/shortcut.ShortcutTypeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新快捷模版类别
+      tags:
+      - 小程序接口-快捷模版管理
+  /wx/shortcuts:
+    get:
+      consumes:
+      - application/json
+      operationId: R006
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 快捷模版名称
+        in: query
+        name: keyword
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 快捷模版类型
+        in: query
+        name: shortcut_type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/shortcut.ShortcutResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 快捷模版列表
+      tags:
+      - 小程序接口-快捷模版管理
+    post:
+      consumes:
+      - application/json
+      operationId: R007
+      parameters:
+      - description: 快捷模版信息
+        in: body
+        name: shortcut_info
+        required: true
+        schema:
+          $ref: '#/definitions/shortcut.ShortcutNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建快捷模版
+      tags:
+      - 小程序接口-快捷模版管理
+  /wx/shortcuts/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: R010
+      parameters:
+      - description: 快捷模版ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID删除快捷模版
+      tags:
+      - 小程序接口-快捷模版管理
+    get:
+      consumes:
+      - application/json
+      operationId: R008
+      parameters:
+      - description: 快捷模版ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/shortcut.ShortcutResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取快捷模版
+      tags:
+      - 小程序接口-快捷模版管理
+    put:
+      consumes:
+      - application/json
+      operationId: R009
+      parameters:
+      - description: 快捷模版ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 快捷模版信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/shortcut.ShortcutUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新快捷模版
+      tags:
+      - 小程序接口-快捷模版管理
   /wx/templates:
     get:
       consumes:

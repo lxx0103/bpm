@@ -66,6 +66,7 @@ type AssignmentResponse struct {
 	Content          string    `db:"content" json:"content"`
 	File             []string  `db:"file" json:"file"`
 	CompleteFile     []string  `db:"complete_file" json:"complete_file"`
+	AuditFile        []string  `db:"audit_file" json:"audit_file"`
 	Status           int       `db:"status" json:"status"`
 	UserID           int64     `db:"user_id" json:"user_id"`
 	Created          time.Time `db:"created" json:"created"`
@@ -80,10 +81,11 @@ type AssignmentComplete struct {
 }
 
 type AssignmentAudit struct {
-	Result  int    `json:"result" binding:"required,oneof=1 2"`
-	Content string `json:"content" binding:"omitempty"`
-	User    string `json:"user" swaggerignore:"true"`
-	UserID  int64  `json:"user_id" swaggerignore:"true"`
+	Result  int      `json:"result" binding:"required,oneof=1 2"`
+	Content string   `json:"content" binding:"omitempty"`
+	File    []string `json:"file" binding:"omitempty"`
+	User    string   `json:"user" swaggerignore:"true"`
+	UserID  int64    `json:"user_id" swaggerignore:"true"`
 }
 
 type MyAssignmentFilter struct {
@@ -113,13 +115,13 @@ type AssignmentFile struct {
 	UpdatedBy    string    `db:"updated_by" json:"updated_by"`
 }
 
-type AssignmentCompleteFile struct {
-	ID           int64     `db:"id" json:"id"`
-	AssignmentID int64     `db:"assignment_id" json:"assignment_id"`
-	Link         string    `db:"link" json:"link"`
-	Status       int       `db:"status" json:"status"`
-	Created      time.Time `db:"created" json:"created"`
-	CreatedBy    string    `db:"created_by" json:"created_by"`
-	Updated      time.Time `db:"updated" json:"updated"`
-	UpdatedBy    string    `db:"updated_by" json:"updated_by"`
+type AssignmentHistoryResponse struct {
+	ID           int64    `db:"id" json:"id"`
+	AssignmentID int64    `db:"assignment_id" json:"assignment_id"`
+	HistoryType  string   `db:"history_type" json:"history_type"`
+	Time         string   `db:"history_time" json:"history_time"`
+	Content      string   `db:"content" json:"content"`
+	User         string   `db:"user" json:"user"`
+	File         []string `db:"file" json:"file"`
+	Status       int      `db:"status" json:"status"`
 }

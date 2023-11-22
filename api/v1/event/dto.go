@@ -71,6 +71,7 @@ type MyEvent struct {
 	AuditLevel   int                   `db:"audit_level" json:"audit_level"`
 	AuditType    int                   `db:"audit_type" json:"audit_type"`
 	Audit        *[][]AssignToResponse `json:"audit"`
+	AuditFile    []string              `db:"audit_file" json:"audit_file"`
 	Assignable   int                   `db:"assignable" json:"assignable"`
 	AssignType   int                   `db:"assign_type" json:"assign_type"`
 	Assign       *[]AssignToResponse   `json:"assign"`
@@ -95,11 +96,12 @@ type ComponentInfo struct {
 }
 
 type AuditEventInfo struct {
-	Result     int    `json:"result" binding:"required,oneof=1 2"`
-	Content    string `json:"content" binding:"omitempty,max=255"`
-	User       string `json:"user" swaggerignore:"true"`
-	UserID     int64  `json:"user_id" swaggerignore:"true"`
-	PositionID int64  `json:"position_id" swaggerignore:"true"`
+	Result     int      `json:"result" binding:"required,oneof=1 2"`
+	Content    string   `json:"content" binding:"omitempty,max=255"`
+	File       []string `json:"file" binding:"omitempty"`
+	User       string   `json:"user" swaggerignore:"true"`
+	UserID     int64    `json:"user_id" swaggerignore:"true"`
+	PositionID int64    `json:"position_id" swaggerignore:"true"`
 }
 type AssignedAuditFilter struct {
 	Status string `form:"status" binding:"required,oneof=all active"`
@@ -143,12 +145,14 @@ type CheckinResponse struct {
 	Distance         int     `db:"distance" json:"distance"`
 }
 type EventAuditHistoryResponse struct {
-	ID           int64  `db:"id" json:"id"`
-	EventID      int64  `db:"event_id" json:"event_id"`
-	AuditTime    string `db:"audit_time" json:"audit_time"`
-	AuditContent string `db:"audit_content" json:"audit_content"`
-	AuditUser    string `db:"audit_user" json:"audit_user"`
-	Status       int    `db:"status" json:"status"`
+	ID           int64    `db:"id" json:"id"`
+	EventID      int64    `db:"event_id" json:"event_id"`
+	HistoryType  string   `db:"history_type" json:"history_type"`
+	AuditTime    string   `db:"audit_time" json:"audit_time"`
+	AuditContent string   `db:"audit_content" json:"audit_content"`
+	AuditUser    string   `db:"audit_user" json:"audit_user"`
+	File         []string `db:"file" json:"file"`
+	Status       int      `db:"status" json:"status"`
 }
 
 type EventReviewNew struct {

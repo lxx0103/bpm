@@ -319,7 +319,7 @@ func (r *eventRepository) CheckAudit(eventID int64, userID int64, positionID int
 	}
 	return res, nil
 }
-func (r *eventRepository) CompleteEvent(eventID int64, byUser string) error {
+func (r *eventRepository) CompleteEvent(eventID int64, byUser string) (int64, error) {
 	_, err := r.tx.Exec(`
 		Update events SET 
 		complete_user = ?,
@@ -329,7 +329,30 @@ func (r *eventRepository) CompleteEvent(eventID int64, byUser string) error {
 		updated_by = ? 
 		WHERE id = ?
 	`, byUser, time.Now().Format("2006-01-02 15:04:05"), time.Now(), byUser, eventID)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	res, err := r.tx.Exec(`
+		INSERT INTO event_historys
+		(
+			event_id,
+			history_type,
+			audit_user,
+			audit_content,
+			audit_time,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, eventID, "完成事件", byUser, "", time.Now().Format("2006-01-02 15:04:05"), 1, time.Now(), byUser, time.Now(), byUser)
+	if err != nil {
+		return 0, err
+	}
+	historyID, err := res.LastInsertId()
+	return historyID, err
 }
 
 func (r *eventRepository) CreateEventAudit(eventID int64, auditType int, auditInfo NodeAudit, user string) error {
@@ -397,9 +420,10 @@ func (r *eventRepository) GetAuditsByEventID(eventID int64) (*[]EventAudit, erro
 	return &res, nil
 }
 
-func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string, auditContent string, currentLevel int) error {
+func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string, auditContent string, currentLevel int) (int64, error) {
 	eventStatus := 9
 	historyStatus := 1
+	historyType := "审核通过"
 	isActive := 0
 	nextLevel := currentLevel
 	nextAuditType := 0
@@ -411,7 +435,7 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 		row := r.tx.QueryRow(`SELECT audit_type FROM event_audits WHERE event_id = ? AND audit_level = ? AND status > 0 ORDER BY audit_level ASC`, eventID, 1)
 		err := row.Scan(&nextAuditType)
 		if err != nil {
-			return err
+			return 0, err
 		}
 	} else {
 		row := r.tx.QueryRow(`SELECT audit_level, audit_type FROM event_audits WHERE event_id = ? AND audit_level > ? AND status > 0 ORDER BY audit_level ASC`, eventID, currentLevel)
@@ -421,7 +445,7 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 				nextLevel = 0
 				nextAuditType = 0
 			} else {
-				return err
+				return 0, err
 			}
 		}
 		if nextLevel != 0 {
@@ -443,37 +467,25 @@ func (r *eventRepository) AuditEvent(eventID int64, approved bool, byUser string
 		WHERE id = ?
 	`, nextLevel, nextAuditType, byUser, time.Now().Format("2006-01-02 15:04:05"), auditContent, isActive, eventStatus, time.Now(), byUser, eventID)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if approved {
 		historyStatus = 1
 	} else {
 		historyStatus = 2
+		historyType = "审核驳回"
 	}
-	_, err = r.tx.Exec(`
-		INSERT INTO event_audit_historys 
-		(event_id, audit_user, audit_content, audit_time, status, created, created_by, updated, updated_by)
+	res, err := r.tx.Exec(`
+		INSERT INTO event_historys 
+		(event_id, history_type, audit_user, audit_content, audit_time, status, created, created_by, updated, updated_by)
 		VALUES
-		(?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, eventID, byUser, auditContent, time.Now().Format("2006-01-02 15:04:05"), historyStatus, time.Now(), byUser, time.Now(), byUser)
+		(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, eventID, historyType, byUser, auditContent, time.Now().Format("2006-01-02 15:04:05"), historyStatus, time.Now(), byUser, time.Now(), byUser)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	// _, err = r.tx.Exec(`
-	// 	UPDATE projects
-	// 	SET status = 2 ,
-	// 	updated = ?,
-	// 	updated_by = ?
-	// 	WHERE status = 1
-	// 	AND id not in (
-	// 		SELECT project_id
-	// 		FROM events
-	// 		WHERE status >0
-	// 		AND status <9
-	// 		GROUP BY project_id
-	// 	)
-	// `, time.Now(), byUser)
-	return err
+	historyID, err := res.LastInsertId()
+	return historyID, err
 }
 
 func (r *eventRepository) CheckCheckin(eventID int64, userID int64) (int, error) {
@@ -663,5 +675,50 @@ func (r *eventRepository) UpdateProjectProgress(projectID int64, progress int) e
 	}
 	sql += ` updated = ? WHERE id = ?`
 	_, err := r.tx.Exec(sql, progress, time.Now(), projectID)
+	return err
+}
+
+func (r *eventRepository) DeleteEventAuditFile(eventID int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update event_audit_files SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE event_id = ?
+	`, time.Now(), byUser, eventID)
+	return err
+}
+
+func (r *eventRepository) CreateEventAuditFile(info EventAuditFile) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO event_audit_files
+		(
+			event_id,
+			link,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, info.EventID, info.Link, info.Status, time.Now(), info.CreatedBy, time.Now(), info.UpdatedBy)
+	return err
+}
+
+func (r *eventRepository) CreateEventHistoryFile(info EventHistoryFile) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO event_history_files
+		(
+			history_id,
+			link,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, info.HistoryID, info.Link, info.Status, time.Now(), info.CreatedBy, time.Now(), info.UpdatedBy)
 	return err
 }

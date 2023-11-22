@@ -394,3 +394,37 @@ func (r *assignmentQuery) GetAssignmentCompleteFile(assignmentID int64) (*[]stri
 	`, args...)
 	return &projectReports, err
 }
+
+func (r *assignmentQuery) GetAssignmentAuditFile(assignmentID int64) (*[]string, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "assignment_id = ?"), append(args, assignmentID)
+	var projectReports []string
+	err := r.conn.Select(&projectReports, `
+		SELECT link
+		FROM assignment_audit_files
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
+}
+
+func (r *assignmentQuery) GetHistoryList(assignmentID int64) (*[]AssignmentHistoryResponse, error) {
+	var historys []AssignmentHistoryResponse
+	err := r.conn.Select(&historys, `
+		SELECT id, history_type, assignment_id, user, history_time, content, status
+		FROM assignment_historys
+		WHERE assignment_id = ? AND status > 0
+		ORDER BY history_time asc
+	`, assignmentID)
+	return &historys, err
+}
+func (r *assignmentQuery) GetAssignmentHistoryFile(historyID int64) (*[]string, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "history_id = ?"), append(args, historyID)
+	var projectReports []string
+	err := r.conn.Select(&projectReports, `
+		SELECT link
+		FROM assignment_history_files
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
+}

@@ -432,3 +432,44 @@ func WxGetMyAssignmentList(c *gin.Context) {
 func WxGetMyAuditList(c *gin.Context) {
 	GetMyAuditList(c)
 }
+
+// @Summary 获取任务历史
+// @Id Q019
+// @Tags 任务管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "任务ID"
+// @Success 200 object response.SuccessRes{data=[]AssignmentHistoryResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /assignments/:id/historys [GET]
+func GetHistory(c *gin.Context) {
+	var uri AssignmentID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	assignmentService := NewAssignmentService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	historys, err := assignmentService.GetAssignmentHistory(uri.ID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, historys)
+
+}
+
+// @Summary 获取任务历史
+// @Id Q020
+// @Tags 小程序接口-任务管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "任务ID"
+// @Success 200 object response.SuccessRes{data=[]AssignmentHistoryResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/assignments/:id/historys [GET]
+func WxGetHistory(c *gin.Context) {
+	GetHistory(c)
+}

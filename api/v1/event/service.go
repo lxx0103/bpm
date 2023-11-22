@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"strings"
+	"time"
 )
 
 type eventService struct {
@@ -40,6 +41,12 @@ func (s *eventService) GetEventByID(id, organizationID int64) (*Event, error) {
 		return nil, err
 	}
 	event.Audit = audits
+	auditFiles, err := query.GetEventAuditFile(event.ID)
+	if err != nil {
+		msg := "获取审核文件失败" // + err.Error()
+		return nil, errors.New(msg)
+	}
+	event.AuditFile = *auditFiles
 	return event, err
 }
 
@@ -92,6 +99,7 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 			return nil, err
 		}
 		if len(info.AuditMore) > 0 {
+			auditValid := false
 			for _, auditMore := range info.AuditMore {
 				if auditMore.AuditType != 1 && auditMore.AuditType != 2 {
 					return nil, errors.New("审核类型错误")
@@ -107,8 +115,16 @@ func (s *eventService) UpdateEvent(eventID int64, info EventUpdate, organization
 					return nil, err
 				}
 				if auditMore.AuditLevel == oldEvent.AuditLevel {
+					auditValid = true
 					oldEvent.AuditType = auditMore.AuditType
 				}
+			}
+			if oldEvent.AuditLevel == 0 {
+				auditValid = true
+			}
+			if !auditValid {
+				msg := "无法删除当前审核"
+				return nil, errors.New(msg)
 			}
 		}
 	}
@@ -216,6 +232,12 @@ func (s *eventService) GetProjectEvent(filter MyEventFilter) (*[]MyEvent, error)
 		// }
 		(*events)[k2].Audit = audits
 		// }
+		auditFiles, err := query.GetEventAuditFile(v2.ID)
+		if err != nil {
+			msg := "获取审核文件失败" // + err.Error()
+			return nil, errors.New(msg)
+		}
+		(*events)[k2].AuditFile = *auditFiles
 	}
 	return events, err
 }
@@ -320,12 +342,12 @@ func (s *eventService) SaveEvent(eventID int64, info SaveEventInfo) error {
 		msg := "有" + fmt.Sprintf("%v", requiredCount) + "个必填项没填"
 		return errors.New(msg)
 	}
-	err = repo.CompleteEvent(eventID, info.User)
+	_, err = repo.CompleteEvent(eventID, info.User)
 	if err != nil {
 		return err
 	}
 	if event.NeedAudit == 2 {
-		err = repo.AuditEvent(eventID, true, "SYSTEM", "无需审核", 0)
+		_, err = repo.AuditEvent(eventID, true, "SYSTEM", "无需审核", 0)
 		if err != nil {
 			return err
 		}
@@ -386,9 +408,42 @@ func (s *eventService) AuditEvent(eventID int64, info AuditEventInfo) error {
 	if info.Result != 1 {
 		approved = false
 	}
-	err = repo.AuditEvent(eventID, approved, info.User, info.Content, event.AuditLevel)
+	historyID, err := repo.AuditEvent(eventID, approved, info.User, info.Content, event.AuditLevel)
 	if err != nil {
 		return err
+	}
+	err = repo.DeleteEventAuditFile(eventID, info.User)
+	if err != nil {
+		return err
+	}
+	for _, link := range info.File {
+		var eventFile EventAuditFile
+		eventFile.EventID = eventID
+		eventFile.Link = link
+		eventFile.Status = 1
+		eventFile.Created = time.Now()
+		eventFile.CreatedBy = info.User
+		eventFile.Updated = time.Now()
+		eventFile.UpdatedBy = info.User
+		err = repo.CreateEventAuditFile(eventFile)
+		if err != nil {
+			msg := "创建文件失败"
+			return errors.New(msg)
+		}
+		var eventHistoryFile EventHistoryFile
+		eventHistoryFile.HistoryID = historyID
+		eventHistoryFile.Link = link
+		eventHistoryFile.Status = 1
+		eventHistoryFile.Created = time.Now()
+		eventHistoryFile.CreatedBy = info.User
+		eventHistoryFile.Updated = time.Now()
+		eventHistoryFile.UpdatedBy = info.User
+		err = repo.CreateEventHistoryFile(eventHistoryFile)
+		if err != nil {
+			msg := "创建历史文件失败"
+			return errors.New(msg)
+		}
+
 	}
 	tx.Commit()
 	type NewEventAudited struct {
@@ -572,6 +627,17 @@ func (s *eventService) GetEventAuditHistory(eventID, organizationID int64) (*[]E
 		return nil, errors.New(msg)
 	}
 	list, err := query.GetAuditHistoryList(eventID)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range *list {
+		links, err := query.GetEventHistoryFile(v.ID)
+		if err != nil {
+			msg := "获取文件失败" // + err.Error()
+			return nil, errors.New(msg)
+		}
+		(*list)[k].File = *links
+	}
 	return list, err
 }
 

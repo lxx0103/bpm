@@ -26,6 +26,7 @@ type Event struct {
 	Deadline        string         `db:"deadline" json:"deadline"`
 	Status          int            `db:"status" json:"status"`
 	Assign          *[]EventAssign `json:"assign"`
+	AuditFile       []string       `json:"audit_file"`
 	Created         time.Time      `db:"created" json:"created"`
 	CreatedBy       string         `db:"created_by" json:"created_by"`
 	Updated         time.Time      `db:"updated" json:"updated"`
@@ -110,4 +111,26 @@ type EventReview struct {
 	CreatedBy     string    `db:"created_by" json:"created_by"`
 	Updated       time.Time `db:"updated" json:"updated"`
 	UpdatedBy     string    `db:"updated_by" json:"updated_by"`
+}
+
+type EventAuditFile struct {
+	ID        int64     `db:"id" json:"id"`
+	EventID   int64     `db:"event_id" json:"event_id"`
+	Link      string    `db:"link" json:"link"`
+	Status    int       `db:"status" json:"status"`
+	Created   time.Time `db:"created" json:"created"`
+	CreatedBy string    `db:"created_by" json:"created_by"`
+	Updated   time.Time `db:"updated" json:"updated"`
+	UpdatedBy string    `db:"updated_by" json:"updated_by"`
+}
+
+type EventHistoryFile struct {
+	ID        int64     `db:"id" json:"id"`
+	HistoryID int64     `db:"history_id" json:"history_id"`
+	Link      string    `db:"link" json:"link"`
+	Status    int       `db:"status" json:"status"`
+	Created   time.Time `db:"created" json:"created"`
+	CreatedBy string    `db:"created_by" json:"created_by"`
+	Updated   time.Time `db:"updated" json:"updated"`
+	UpdatedBy string    `db:"updated_by" json:"updated_by"`
 }

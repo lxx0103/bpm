@@ -22,3 +22,36 @@ type Assignment struct {
 	Updated         time.Time `db:"updated" json:"updated"`
 	UpdatedBy       string    `db:"updated_by" json:"updated_by"`
 }
+
+type AssignmentCompleteFile struct {
+	ID           int64     `db:"id" json:"id"`
+	AssignmentID int64     `db:"assignment_id" json:"assignment_id"`
+	Link         string    `db:"link" json:"link"`
+	Status       int       `db:"status" json:"status"`
+	Created      time.Time `db:"created" json:"created"`
+	CreatedBy    string    `db:"created_by" json:"created_by"`
+	Updated      time.Time `db:"updated" json:"updated"`
+	UpdatedBy    string    `db:"updated_by" json:"updated_by"`
+}
+
+type AssignmentHistoryFile struct {
+	ID        int64     `db:"id" json:"id"`
+	HistoryID int64     `db:"history_id" json:"history_id"`
+	Link      string    `db:"link" json:"link"`
+	Status    int       `db:"status" json:"status"`
+	Created   time.Time `db:"created" json:"created"`
+	CreatedBy string    `db:"created_by" json:"created_by"`
+	Updated   time.Time `db:"updated" json:"updated"`
+	UpdatedBy string    `db:"updated_by" json:"updated_by"`
+}
+
+type AssignmentAuditFile struct {
+	ID           int64     `db:"id" json:"id"`
+	AssignmentID int64     `db:"assignment_id" json:"assignment_id"`
+	Link         string    `db:"link" json:"link"`
+	Status       int       `db:"status" json:"status"`
+	Created      time.Time `db:"created" json:"created"`
+	CreatedBy    string    `db:"created_by" json:"created_by"`
+	Updated      time.Time `db:"updated" json:"updated"`
+	UpdatedBy    string    `db:"updated_by" json:"updated_by"`
+}

@@ -298,6 +298,12 @@
                         "description": "项目ID",
                         "name": "project_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "事件ID",
+                        "name": "event_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -639,6 +645,59 @@
                                     "properties": {
                                         "data": {
                                             "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/assignments/:id/historys": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "任务管理"
+                ],
+                "summary": "获取任务历史",
+                "operationId": "Q019",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "任务ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/assignment.AssignmentHistoryResponse"
+                                            }
                                         }
                                     }
                                 }
@@ -7023,6 +7082,552 @@
                 }
             }
         },
+        "/shortcut_types": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "快捷模版类别列表",
+                "operationId": "R011",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "父级ID",
+                        "name": "parent_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/shortcut.ShortcutTypeResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "新建快捷模版类别",
+                "operationId": "R012",
+                "parameters": [
+                    {
+                        "description": "快捷模版类别信息",
+                        "name": "shortcut_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortcut.ShortcutTypeNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/shortcut_types/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "根据ID获取快捷模版类别",
+                "operationId": "R013",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版类别ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortcut.ShortcutTypeResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "根据ID更新快捷模版类别",
+                "operationId": "R014",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版类别ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "快捷模版类别信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortcut.ShortcutTypeUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "根据ID删除快捷模版类别",
+                "operationId": "R015",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版类别ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/shortcuts": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "快捷模版列表",
+                "operationId": "R001",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "快捷模版名称",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "快捷模版类型",
+                        "name": "shortcut_type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/shortcut.ShortcutResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "新建快捷模版",
+                "operationId": "R002",
+                "parameters": [
+                    {
+                        "description": "快捷模版信息",
+                        "name": "shortcut_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortcut.ShortcutNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/shortcuts/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "根据ID获取快捷模版",
+                "operationId": "R003",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortcut.ShortcutResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "根据ID更新快捷模版",
+                "operationId": "R004",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "快捷模版信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortcut.ShortcutUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷模版管理"
+                ],
+                "summary": "根据ID删除快捷模版",
+                "operationId": "R005",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/signin": {
             "post": {
                 "consumes": [
@@ -8568,6 +9173,59 @@
                                     "properties": {
                                         "data": {
                                             "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/wx/assignments/:id/historys": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-任务管理"
+                ],
+                "summary": "获取任务历史",
+                "operationId": "Q020",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "任务ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/assignment.AssignmentHistoryResponse"
+                                            }
                                         }
                                     }
                                 }
@@ -11616,6 +12274,552 @@
                 }
             }
         },
+        "/wx/shortcut_types": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "快捷模版类别列表",
+                "operationId": "R016",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "父级ID",
+                        "name": "parent_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/shortcut.ShortcutTypeResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "新建快捷模版类别",
+                "operationId": "R017",
+                "parameters": [
+                    {
+                        "description": "快捷模版类别信息",
+                        "name": "shortcut_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortcut.ShortcutTypeNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/wx/shortcut_types/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "根据ID获取快捷模版类别",
+                "operationId": "R018",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版类别ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortcut.ShortcutTypeResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "根据ID更新快捷模版类别",
+                "operationId": "R019",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版类别ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "快捷模版类别信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortcut.ShortcutTypeUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "根据ID删除快捷模版类别",
+                "operationId": "R020",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版类别ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/wx/shortcuts": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "快捷模版列表",
+                "operationId": "R006",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "快捷模版名称",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "快捷模版类型",
+                        "name": "shortcut_type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/shortcut.ShortcutResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "新建快捷模版",
+                "operationId": "R007",
+                "parameters": [
+                    {
+                        "description": "快捷模版信息",
+                        "name": "shortcut_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortcut.ShortcutNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/wx/shortcuts/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "根据ID获取快捷模版",
+                "operationId": "R008",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortcut.ShortcutResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "根据ID更新快捷模版",
+                "operationId": "R009",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "快捷模版信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortcut.ShortcutUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口-快捷模版管理"
+                ],
+                "summary": "根据ID删除快捷模版",
+                "operationId": "R010",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "快捷模版ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/templates": {
             "get": {
                 "consumes": [
@@ -12261,6 +13465,12 @@
                 "content": {
                     "type": "string"
                 },
+                "file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "result": {
                     "type": "integer",
                     "enum": [
@@ -12277,6 +13487,44 @@
             ],
             "properties": {
                 "content": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "assignment.AssignmentHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "assignment_id": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "history_time": {
+                    "type": "string"
+                },
+                "history_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "user": {
                     "type": "string"
                 }
             }
@@ -12308,8 +13556,14 @@
                 "content": {
                     "type": "string"
                 },
+                "event_id": {
+                    "type": "integer"
+                },
                 "file": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "type": "string",
@@ -12344,6 +13598,12 @@
                 "audit_content": {
                     "type": "string"
                 },
+                "audit_file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "audit_name": {
                     "type": "string"
                 },
@@ -12355,6 +13615,12 @@
                 },
                 "complete_content": {
                     "type": "string"
+                },
+                "complete_file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "complete_time": {
                     "type": "string"
@@ -12368,8 +13634,17 @@
                 "created_by": {
                     "type": "string"
                 },
-                "file": {
+                "event_id": {
+                    "type": "integer"
+                },
+                "event_name": {
                     "type": "string"
+                },
+                "file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -12419,8 +13694,14 @@
                 "content": {
                     "type": "string"
                 },
+                "event_id": {
+                    "type": "integer"
+                },
                 "file": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "type": "string",
@@ -13351,6 +14632,12 @@
         "event.AssignToResponse": {
             "type": "object",
             "properties": {
+                "audit_level": {
+                    "type": "string"
+                },
+                "audit_type": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -13368,6 +14655,12 @@
                 "content": {
                     "type": "string",
                     "maxLength": 255
+                },
+                "file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "result": {
                     "type": "integer",
@@ -13458,6 +14751,15 @@
                 },
                 "audit_content": {
                     "type": "string"
+                },
+                "audit_file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "audit_level": {
+                    "type": "integer"
                 },
                 "audit_time": {
                     "type": "string"
@@ -13562,6 +14864,9 @@
         "event.EventAudit": {
             "type": "object",
             "properties": {
+                "audit_level": {
+                    "type": "integer"
+                },
                 "audit_to": {
                     "type": "integer"
                 },
@@ -13605,6 +14910,15 @@
                 },
                 "event_id": {
                     "type": "integer"
+                },
+                "file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "history_type": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -13724,6 +15038,36 @@
                         2
                     ]
                 },
+                "audit_more": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "audit_level",
+                            "audit_to",
+                            "audit_type"
+                        ],
+                        "properties": {
+                            "audit_level": {
+                                "type": "integer",
+                                "minimum": 2
+                            },
+                            "audit_to": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer"
+                                }
+                            },
+                            "audit_type": {
+                                "type": "integer",
+                                "enum": [
+                                    1,
+                                    2
+                                ]
+                            }
+                        }
+                    }
+                },
                 "audit_to": {
                     "type": "array",
                     "items": {
@@ -13783,11 +15127,23 @@
                 "audit": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/event.AssignToResponse"
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/event.AssignToResponse"
+                        }
                     }
                 },
                 "audit_content": {
                     "type": "string"
+                },
+                "audit_file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "audit_level": {
+                    "type": "integer"
                 },
                 "audit_time": {
                     "type": "string"
@@ -13887,6 +15243,9 @@
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "description2": {
                     "type": "string"
                 },
                 "example_type": {
@@ -14045,6 +15404,9 @@
                 "description": {
                     "type": "string"
                 },
+                "description2": {
+                    "type": "string"
+                },
                 "example_type": {
                     "type": "integer"
                 },
@@ -14097,6 +15459,9 @@
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "description2": {
                     "type": "string"
                 },
                 "example_type": {
@@ -14339,6 +15704,9 @@
         "node.NodeAudit": {
             "type": "object",
             "properties": {
+                "audit_level": {
+                    "type": "integer"
+                },
                 "audit_to": {
                     "type": "integer"
                 },
@@ -14405,6 +15773,36 @@
                         1,
                         2
                     ]
+                },
+                "audit_more": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "audit_level",
+                            "audit_to",
+                            "audit_type"
+                        ],
+                        "properties": {
+                            "audit_level": {
+                                "type": "integer",
+                                "minimum": 2
+                            },
+                            "audit_to": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer"
+                                }
+                            },
+                            "audit_type": {
+                                "type": "integer",
+                                "enum": [
+                                    1,
+                                    2
+                                ]
+                            }
+                        }
+                    }
                 },
                 "audit_to": {
                     "type": "array",
@@ -14517,6 +15915,36 @@
                         2
                     ]
                 },
+                "audit_more": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "audit_level",
+                            "audit_to",
+                            "audit_type"
+                        ],
+                        "properties": {
+                            "audit_level": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "audit_to": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer"
+                                }
+                            },
+                            "audit_type": {
+                                "type": "integer",
+                                "enum": [
+                                    1,
+                                    2
+                                ]
+                            }
+                        }
+                    }
+                },
                 "audit_to": {
                     "type": "array",
                     "items": {
@@ -14603,6 +16031,9 @@
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "expiry_date": {
                     "type": "string"
                 },
                 "id": {
@@ -14710,6 +16141,9 @@
                 "description": {
                     "type": "string"
                 },
+                "expiry_date": {
+                    "type": "string"
+                },
                 "logo": {
                     "type": "string"
                 },
@@ -14778,6 +16212,9 @@
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "expiry_date": {
                     "type": "string"
                 },
                 "id": {
@@ -15363,6 +16800,117 @@
                 "data": {}
             }
         },
+        "shortcut.ShortcutNew": {
+            "type": "object",
+            "required": [
+                "content",
+                "shortcut_type"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "shortcut_type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "shortcut.ShortcutResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "shortcut_type": {
+                    "type": "integer"
+                },
+                "shortcut_type_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "shortcut.ShortcutTypeNew": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "parent_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "shortcut.ShortcutTypeResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "shortcut.ShortcutTypeUpdate": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "shortcut.ShortcutUpdate": {
+            "type": "object",
+            "required": [
+                "content"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                }
+            }
+        },
         "template.Template": {
             "type": "object",
             "properties": {
@@ -15584,7 +17132,7 @@
                 },
                 "cover": {
                     "type": "string",
-                    "maxLength": 64
+                    "maxLength": 255
                 },
                 "description": {
                     "type": "string"

@@ -329,8 +329,8 @@ func (r *eventQuery) GetCheckinList(filter CheckinFilter) (*[]CheckinResponse, e
 func (r *eventQuery) GetAuditHistoryList(eventID int64) (*[]EventAuditHistoryResponse, error) {
 	var historys []EventAuditHistoryResponse
 	err := r.conn.Select(&historys, `
-		SELECT id, event_id, audit_user, audit_time, audit_content, status
-		FROM event_audit_historys
+		SELECT id, event_id, history_type, audit_user, audit_time, audit_content, status
+		FROM event_historys
 		WHERE event_id = ? AND status > 0
 		ORDER BY audit_time asc
 	`, eventID)
@@ -455,4 +455,28 @@ func (r *eventQuery) CheckLevelActive(eventID, userID, positionID int64, auditLe
 	} else {
 		return true, nil
 	}
+}
+
+func (r *eventQuery) GetEventAuditFile(eventID int64) (*[]string, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "event_id = ?"), append(args, eventID)
+	var projectReports []string
+	err := r.conn.Select(&projectReports, `
+		SELECT link
+		FROM event_audit_files
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
+}
+
+func (r *eventQuery) GetEventHistoryFile(historyID int64) (*[]string, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	where, args = append(where, "history_id = ?"), append(args, historyID)
+	var projectReports []string
+	err := r.conn.Select(&projectReports, `
+		SELECT link
+		FROM event_history_files
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
 }

@@ -12,6 +12,7 @@ func Routers(g *gin.RouterGroup) {
 	g.POST("/assignments/:id/audit", AuditAssignment)
 	g.GET("/assignments/my", GetMyAssignmentList)
 	g.GET("/assignments/myaudit", GetMyAuditList)
+	g.GET("/assignments/:id/historys", GetHistory)
 }
 
 func WxRouters(g *gin.RouterGroup) {
@@ -24,4 +25,5 @@ func WxRouters(g *gin.RouterGroup) {
 	g.POST("/wx/assignments/:id/audit", WxAuditAssignment)
 	g.GET("/wx/assignments/my", WxGetMyAssignmentList)
 	g.GET("/wx/assignments/myaudit", WxGetMyAuditList)
+	g.GET("/wx/assignments/:id/historys", WxGetHistory)
 }

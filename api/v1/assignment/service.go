@@ -33,9 +33,15 @@ func (s *assignmentService) GetAssignmentByID(id int64, organizationID int64) (*
 		msg := "获取报告链接失败"
 		return nil, errors.New(msg)
 	}
+	auditFiles, err := query.GetAssignmentAuditFile(id)
+	if err != nil {
+		msg := "获取报告链接失败"
+		return nil, errors.New(msg)
+	}
 	assignment, err := query.GetAssignmentByID(id, organizationID)
 	assignment.File = *links
 	assignment.CompleteFile = *completeFiles
+	assignment.AuditFile = *auditFiles
 	return assignment, err
 }
 
@@ -157,6 +163,12 @@ func (s *assignmentService) GetAssignmentList(filter AssignmentFilter, organizat
 			return 0, nil, errors.New(msg)
 		}
 		(*list)[k].CompleteFile = *completeFiles
+		auditFiles, err := query.GetAssignmentAuditFile(v.ID)
+		if err != nil {
+			msg := "获取完成文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].AuditFile = *auditFiles
 	}
 	return count, list, err
 }
@@ -294,6 +306,14 @@ func (s *assignmentService) DeleteAssignment(assignmentID, organizationID int64,
 	if err != nil {
 		return err
 	}
+	err = repo.DeleteAssignmentCompleteFile(assignmentID, byUser)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteAssignmentAuditFile(assignmentID, byUser)
+	if err != nil {
+		return err
+	}
 	tx.Commit()
 	return nil
 }
@@ -323,11 +343,16 @@ func (s *assignmentService) CompleteAssignment(assignmentID int64, info Assignme
 		msg := "只能完成分配给你的任务"
 		return errors.New(msg)
 	}
-	err = repo.CompleteAssignment(assignmentID, info)
+	historyID, err := repo.CompleteAssignment(assignmentID, info)
+	if err != nil {
+		msg := "完成任务失败"
+		fmt.Println("完成任务失败", err.Error())
+		return errors.New(msg)
+	}
+	err = repo.DeleteAssignmentCompleteFile(assignmentID, info.User)
 	if err != nil {
 		return err
 	}
-
 	for _, link := range info.File {
 		var assignmentFile AssignmentCompleteFile
 		assignmentFile.AssignmentID = assignmentID
@@ -342,6 +367,20 @@ func (s *assignmentService) CompleteAssignment(assignmentID int64, info Assignme
 			msg := "创建文件失败"
 			return errors.New(msg)
 		}
+		var assignmentHistoryFile AssignmentHistoryFile
+		assignmentHistoryFile.HistoryID = historyID
+		assignmentHistoryFile.Link = link
+		assignmentHistoryFile.Status = 1
+		assignmentHistoryFile.Created = time.Now()
+		assignmentHistoryFile.CreatedBy = info.User
+		assignmentHistoryFile.Updated = time.Now()
+		assignmentHistoryFile.UpdatedBy = info.User
+		err = repo.CreateAssignmentHistoryFile(assignmentHistoryFile)
+		if err != nil {
+			msg := "创建历史文件失败"
+			return errors.New(msg)
+		}
+
 	}
 	tx.Commit()
 	type NewAssignmentCompleted struct {
@@ -384,9 +423,42 @@ func (s *assignmentService) AuditAssignment(assignmentID int64, info AssignmentA
 		msg := "只能审核分配给你的任务"
 		return errors.New(msg)
 	}
-	err = repo.AuditAssignment(assignmentID, info)
+	historyID, err := repo.AuditAssignment(assignmentID, info)
 	if err != nil {
 		return err
+	}
+	err = repo.DeleteAssignmentAuditFile(assignmentID, info.User)
+	if err != nil {
+		return err
+	}
+	for _, link := range info.File {
+		var assignmentFile AssignmentAuditFile
+		assignmentFile.AssignmentID = assignmentID
+		assignmentFile.Link = link
+		assignmentFile.Status = 1
+		assignmentFile.Created = time.Now()
+		assignmentFile.CreatedBy = info.User
+		assignmentFile.Updated = time.Now()
+		assignmentFile.UpdatedBy = info.User
+		err = repo.CreateAssignmentAuditFile(assignmentFile)
+		if err != nil {
+			msg := "创建文件失败"
+			return errors.New(msg)
+		}
+		var assignmentHistoryFile AssignmentHistoryFile
+		assignmentHistoryFile.HistoryID = historyID
+		assignmentHistoryFile.Link = link
+		assignmentHistoryFile.Status = 1
+		assignmentHistoryFile.Created = time.Now()
+		assignmentHistoryFile.CreatedBy = info.User
+		assignmentHistoryFile.Updated = time.Now()
+		assignmentHistoryFile.UpdatedBy = info.User
+		err = repo.CreateAssignmentHistoryFile(assignmentHistoryFile)
+		if err != nil {
+			msg := "创建历史文件失败"
+			return errors.New(msg)
+		}
+
 	}
 	tx.Commit()
 	if info.Result == 2 {
@@ -431,6 +503,12 @@ func (s *assignmentService) GetMyAssignmentList(filter MyAssignmentFilter) (int,
 			return 0, nil, errors.New(msg)
 		}
 		(*list)[k].CompleteFile = *completeLinks
+		auditLinks, err := query.GetAssignmentAuditFile(v.ID)
+		if err != nil {
+			msg := "获取审核文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].AuditFile = *auditLinks
 	}
 	return count, list, err
 }
@@ -459,6 +537,35 @@ func (s *assignmentService) GetMyAuditList(filter MyAuditFilter) (int, *[]Assign
 			return 0, nil, errors.New(msg)
 		}
 		(*list)[k].CompleteFile = *completeLinks
+		auditLinks, err := query.GetAssignmentAuditFile(v.ID)
+		if err != nil {
+			msg := "获取审核文件失败" // + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].AuditFile = *auditLinks
 	}
 	return count, list, err
+}
+
+func (s *assignmentService) GetAssignmentHistory(assignmentID, organizationID int64) (*[]AssignmentHistoryResponse, error) {
+	db := database.InitMySQL()
+	query := NewAssignmentQuery(db)
+	_, err := query.GetAssignmentByID(assignmentID, organizationID)
+	if err != nil {
+		msg := "事件不存在"
+		return nil, errors.New(msg)
+	}
+	list, err := query.GetHistoryList(assignmentID)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range *list {
+		links, err := query.GetAssignmentHistoryFile(v.ID)
+		if err != nil {
+			msg := "获取文件失败" // + err.Error()
+			return nil, errors.New(msg)
+		}
+		(*list)[k].File = *links
+	}
+	return list, err
 }
