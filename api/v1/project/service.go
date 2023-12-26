@@ -930,7 +930,7 @@ func (s *projectService) NewProjectRecord(projectID int64, info ProjectRecordNew
 	return nil
 }
 
-func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRecordFilter) (int, *[]ProjectRecordResponse, error) {
+func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRecordFilter, userType int) (int, *[]ProjectRecordResponse, error) {
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
 	memberQuery := member.NewMemberQuery(db)
@@ -944,7 +944,7 @@ func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRec
 		msg := "获取客户失败"
 		return 0, nil, errors.New(msg)
 	}
-	if filter.UserID != projectClientUserID && filter.OrganizationID != 0 {
+	if filter.UserID != projectClientUserID && filter.OrganizationID != 0 && userType != 1 {
 		members, err := memberQuery.GetMembersByProjectID(projectID)
 		if err != nil {
 			msg := "获取成员失败" + err.Error()
@@ -983,7 +983,7 @@ func (s *projectService) GetProjectRecordList(projectID int64, filter ProjectRec
 	return count, list, err
 }
 
-func (s *projectService) GetProjectRecordByID(recordID, userID, organizationID int64) (*ProjectRecordResponse, error) {
+func (s *projectService) GetProjectRecordByID(recordID, userID, organizationID int64, userType int) (*ProjectRecordResponse, error) {
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
 	memberQuery := member.NewMemberQuery(db)
@@ -1002,7 +1002,7 @@ func (s *projectService) GetProjectRecordByID(recordID, userID, organizationID i
 		msg := "获取客户失败"
 		return nil, errors.New(msg)
 	}
-	if userID != projectClientUserID && organizationID != 0 {
+	if userID != projectClientUserID && organizationID != 0 && userType != 1 {
 		members, err := memberQuery.GetMembersByProjectID(project.ID)
 		if err != nil {
 			msg := "获取成员失败" + err.Error()
