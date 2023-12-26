@@ -687,7 +687,7 @@ func UpdateProjectRecord(c *gin.Context) {
 	record.OrganizationID = claims.OrganizationID
 	record.UserID = claims.UserID
 	projectService := NewProjectService()
-	err := projectService.UpdateProjectRecord(uri.ID, record)
+	err := projectService.UpdateProjectRecord(uri.ID, record, claims.UserType)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

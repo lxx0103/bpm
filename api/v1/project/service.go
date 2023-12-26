@@ -1082,7 +1082,7 @@ func (s *projectService) DeleteProjectRecord(recordID, userID int64, userName st
 	return err
 }
 
-func (s *projectService) UpdateProjectRecord(recordID int64, info ProjectRecordNew) error {
+func (s *projectService) UpdateProjectRecord(recordID int64, info ProjectRecordNew, userType int) error {
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -1096,7 +1096,7 @@ func (s *projectService) UpdateProjectRecord(recordID int64, info ProjectRecordN
 		msg := "报告不存在"
 		return errors.New(msg)
 	}
-	if oldRecord.UserID != info.UserID {
+	if userType != 1 && oldRecord.UserID != info.UserID {
 		msg := "只能更新自己创建的报告"
 		return errors.New(msg)
 	}
