@@ -625,7 +625,7 @@ func GetProjectRecordByID(c *gin.Context) {
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	projectService := NewProjectService()
-	project, err := projectService.GetProjectRecordByID(uri.ID, claims.UserID, claims.OrganizationID)
+	project, err := projectService.GetProjectRecordByID(uri.ID, claims.UserID, claims.OrganizationID, claims.UserType)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
