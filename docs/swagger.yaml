@@ -710,6 +710,282 @@ definitions:
       value:
         type: string
     type: object
+  costControl.ReqBudgetNew:
+    properties:
+      budget:
+        minimum: 0
+        type: number
+      budget_type:
+        maximum: 2
+        minimum: 1
+        type: integer
+      name:
+        maxLength: 100
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      picture:
+        items:
+          type: string
+        type: array
+      project_id:
+        minimum: 1
+        type: integer
+      quantity:
+        minimum: 1
+        type: integer
+      remark:
+        maxLength: 255
+        type: string
+      unit_price:
+        minimum: 0
+        type: number
+    required:
+    - budget
+    - budget_type
+    - name
+    - organization_id
+    - project_id
+    - quantity
+    - unit_price
+    type: object
+  costControl.ReqBudgetUpdate:
+    properties:
+      budget:
+        minimum: 0
+        type: number
+      budget_type:
+        maximum: 2
+        minimum: 1
+        type: integer
+      name:
+        maxLength: 100
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      quantity:
+        minimum: 1
+        type: integer
+      remark:
+        maxLength: 255
+        type: string
+      unit_price:
+        minimum: 0
+        type: number
+    required:
+    - budget
+    - budget_type
+    - name
+    - quantity
+    - unit_price
+    type: object
+  costControl.ReqPaymentRequestNew:
+    properties:
+      budget_id:
+        description: 可选Budget（如果project id 不为空）
+        minimum: 1
+        type: integer
+      name:
+        maxLength: 100
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      payment_request_type:
+        description: 1:采购类，2:工款类
+        maximum: 2
+        minimum: 1
+        type: integer
+      picture:
+        items:
+          type: string
+        type: array
+      project_id:
+        type: integer
+      quantity:
+        minimum: 1
+        type: integer
+      remark:
+        maxLength: 255
+        type: string
+      total:
+        type: number
+      unit_price:
+        type: number
+    required:
+    - name
+    - organization_id
+    - payment_request_type
+    - quantity
+    - total
+    - unit_price
+    type: object
+  costControl.ReqPaymentRequestTypeUpdate:
+    properties:
+      audit_info:
+        items:
+          properties:
+            audit_level:
+              minimum: 1
+              type: integer
+            audit_to:
+              items:
+                type: integer
+              type: array
+            audit_type:
+              enum:
+              - 1
+              - 2
+              type: integer
+          required:
+          - audit_level
+          - audit_to
+          - audit_type
+          type: object
+        type: array
+      payment_request_type:
+        maximum: 2
+        minimum: 1
+        type: integer
+    required:
+    - payment_request_type
+    type: object
+  costControl.ReqPaymentRequestUpdate:
+    properties:
+      budget_id:
+        description: 可选Budget（如果project id 不为空）
+        minimum: 1
+        type: integer
+      name:
+        maxLength: 100
+        type: string
+      payment_request_type:
+        description: 1:采购类，2:工款类
+        maximum: 2
+        minimum: 1
+        type: integer
+      picture:
+        items:
+          type: string
+        type: array
+      project_id:
+        type: integer
+      quantity:
+        minimum: 1
+        type: integer
+      remark:
+        maxLength: 255
+        type: string
+      total:
+        type: number
+      unit_price:
+        type: number
+    required:
+    - name
+    - payment_request_type
+    - quantity
+    - total
+    - unit_price
+    type: object
+  costControl.RespBudget:
+    properties:
+      balance:
+        type: number
+      budget:
+        type: number
+      budget_type:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      project_id:
+        type: integer
+      project_name:
+        type: string
+      quantity:
+        type: integer
+      remark:
+        type: string
+      status:
+        type: integer
+      unit_price:
+        type: number
+      used:
+        type: number
+    type: object
+  costControl.RespPaymentRequest:
+    properties:
+      budget_id:
+        type: integer
+      due:
+        type: number
+      id:
+        type: integer
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      paid:
+        type: number
+      payment_request_type:
+        type: integer
+      picture:
+        items:
+          type: string
+        type: array
+      project_id:
+        type: integer
+      project_name:
+        type: string
+      quantity:
+        type: integer
+      remark:
+        type: string
+      status:
+        type: integer
+      total:
+        type: number
+      unit_price:
+        type: number
+      user_id:
+        type: integer
+    type: object
+  costControl.RespPaymentRequestType:
+    properties:
+      audit:
+        items:
+          $ref: '#/definitions/costControl.RespPaymentRequestTypeAudit'
+        type: array
+      payment_request_type:
+        type: integer
+      payment_request_type_name:
+        type: string
+    type: object
+  costControl.RespPaymentRequestTypeAudit:
+    properties:
+      audit_level:
+        type: integer
+      audit_to:
+        type: integer
+      audit_to_name:
+        type: string
+      audit_type:
+        type: integer
+    type: object
   element.Element:
     properties:
       created:
@@ -3429,6 +3705,176 @@ paths:
       summary: 根据ID更新品牌
       tags:
       - 基础信息管理
+  /budgets:
+    get:
+      consumes:
+      - application/json
+      operationId: S001
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        required: true
+        type: integer
+      - description: 组织名称
+        in: query
+        name: organization_id
+        type: integer
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespBudget'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目预算清单
+      tags:
+      - 成控管理
+    post:
+      consumes:
+      - application/json
+      operationId: S002
+      parameters:
+      - description: 预算信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqBudgetNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目预算
+      tags:
+      - 成控管理
+  /budgets/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: S005
+      parameters:
+      - description: 预算ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除项目预算
+      tags:
+      - 成控管理
+    get:
+      consumes:
+      - application/json
+      operationId: S004
+      parameters:
+      - description: 预算ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespBudget'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取项目预算
+      tags:
+      - 成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: S003
+      parameters:
+      - description: 预算ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 预算信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqBudgetUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新项目预算
+      tags:
+      - 成控管理
   /checkins:
     get:
       consumes:
@@ -5504,6 +5950,240 @@ paths:
       summary: 更新密码
       tags:
       - 用户管理
+  /paymentRequestTypes:
+    get:
+      consumes:
+      - application/json
+      operationId: S012
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespPaymentRequestType'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 费用申请审核设置列表
+      tags:
+      - 成控管理
+    post:
+      consumes:
+      - application/json
+      operationId: S011
+      parameters:
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestTypeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新费用申请审核设置
+      tags:
+      - 成控管理
+  /paymentRequests:
+    get:
+      consumes:
+      - application/json
+      operationId: S008
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespPaymentRequest'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 费用申请列表
+      tags:
+      - 成控管理
+    post:
+      consumes:
+      - application/json
+      operationId: S006
+      parameters:
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建费用申请
+      tags:
+      - 成控管理
+  /paymentRequests/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: S010
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除费用申请
+      tags:
+      - 成控管理
+    get:
+      consumes:
+      - application/json
+      operationId: S009
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespPaymentRequest'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取费用申请
+      tags:
+      - 成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: S007
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新费用申请
+      tags:
+      - 成控管理
   /portal/banners:
     get:
       consumes:

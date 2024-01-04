@@ -1,0 +1,24 @@
+{
+    "ReqBudgetNew":
+    {
+        "organization_id": 1,
+        "project_id":84,
+        "budget_type":1,
+        "name":"瓷砖",
+        "quantity":100,
+        "unit_price":2000,
+        "budget":200000,
+        "remark":"test",
+        "picture":["1.jpg","2.png"]
+    },
+    "ReqBudgetUpdate":
+    {
+        "budget_type":1,
+        "name":"瓷砖",
+        "quantity":100,
+        "unit_price":2000,
+        "budget":200000,
+        "remark":"test",
+        "picture":["1.jpg","2.png"]
+    }
+}
