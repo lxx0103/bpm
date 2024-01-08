@@ -755,10 +755,6 @@ definitions:
       budget:
         minimum: 0
         type: number
-      budget_type:
-        maximum: 2
-        minimum: 1
-        type: integer
       name:
         maxLength: 100
         type: string
@@ -777,10 +773,70 @@ definitions:
         type: number
     required:
     - budget
-    - budget_type
     - name
     - quantity
     - unit_price
+    type: object
+  costControl.ReqPaymentNew:
+    properties:
+      amount:
+        type: number
+      payment_date:
+        type: string
+      payment_method:
+        maxLength: 64
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      remark:
+        maxLength: 255
+        type: string
+    required:
+    - amount
+    - payment_date
+    type: object
+  costControl.ReqPaymentRequestAudit:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      file:
+        items:
+          type: string
+        type: array
+      result:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - result
+    type: object
+  costControl.ReqPaymentRequestAuditUpdate:
+    properties:
+      audit_info:
+        items:
+          properties:
+            audit_level:
+              minimum: 1
+              type: integer
+            audit_to:
+              items:
+                type: integer
+              type: array
+            audit_type:
+              enum:
+              - 1
+              - 2
+              type: integer
+          required:
+          - audit_level
+          - audit_to
+          - audit_type
+          type: object
+        type: array
     type: object
   costControl.ReqPaymentRequestNew:
     properties:
@@ -927,6 +983,12 @@ definitions:
     type: object
   costControl.RespPaymentRequest:
     properties:
+      audit:
+        items:
+          $ref: '#/definitions/costControl.RespPaymentRequestAudit'
+        type: array
+      audit_level:
+        type: integer
       budget_id:
         type: integer
       due:
@@ -962,6 +1024,17 @@ definitions:
       unit_price:
         type: number
       user_id:
+        type: integer
+    type: object
+  costControl.RespPaymentRequestAudit:
+    properties:
+      audit_level:
+        type: integer
+      audit_to:
+        type: integer
+      audit_to_name:
+        type: string
+      audit_type:
         type: integer
     type: object
   costControl.RespPaymentRequestType:
@@ -5950,6 +6023,42 @@ paths:
       summary: 更新密码
       tags:
       - 用户管理
+  /paymentRequestHistorys:
+    get:
+      consumes:
+      - application/json
+      operationId: S014
+      parameters:
+      - description: 请款ID
+        in: query
+        name: payment_request_id
+        required: true
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespPaymentRequest'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 费用申请操作历史列表
+      tags:
+      - 成控管理
   /paymentRequestTypes:
     get:
       consumes:
@@ -6182,6 +6291,113 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 更新费用申请
+      tags:
+      - 成控管理
+  /paymentRequests/:id/audit:
+    post:
+      consumes:
+      - application/json
+      operationId: S013
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestAudit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 审核费用申请
+      tags:
+      - 成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: S015
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestAuditUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新费用申请审核
+      tags:
+      - 成控管理
+  /paymentRequests/:id/payments:
+    post:
+      consumes:
+      - application/json
+      operationId: S016
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 付款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新增付款
       tags:
       - 成控管理
   /portal/banners:

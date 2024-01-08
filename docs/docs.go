@@ -5074,6 +5074,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/paymentRequestHistorys": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "费用申请操作历史列表",
+                "operationId": "S014",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "请款ID",
+                        "name": "payment_request_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/costControl.RespPaymentRequest"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/paymentRequestTypes": {
             "get": {
                 "consumes": [
@@ -5429,6 +5488,181 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/paymentRequests/:id/audit": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "更新费用申请审核",
+                "operationId": "S015",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "请款ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请款信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/costControl.ReqPaymentRequestAuditUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "审核费用申请",
+                "operationId": "S013",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "请款ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请款信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/costControl.ReqPaymentRequestAudit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/paymentRequests/:id/payments": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "新增付款",
+                "operationId": "S016",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "请款ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "付款信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/costControl.ReqPaymentNew"
+                        }
                     }
                 ],
                 "responses": {
@@ -15218,7 +15452,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "budget",
-                "budget_type",
                 "name",
                 "quantity",
                 "unit_price"
@@ -15227,11 +15460,6 @@ const docTemplate = `{
                 "budget": {
                     "type": "number",
                     "minimum": 0
-                },
-                "budget_type": {
-                    "type": "integer",
-                    "maximum": 2,
-                    "minimum": 1
                 },
                 "name": {
                     "type": "string",
@@ -15254,6 +15482,95 @@ const docTemplate = `{
                 "unit_price": {
                     "type": "number",
                     "minimum": 0
+                }
+            }
+        },
+        "costControl.ReqPaymentNew": {
+            "type": "object",
+            "required": [
+                "amount",
+                "payment_date"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "payment_date": {
+                    "type": "string"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "remark": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "costControl.ReqPaymentRequestAudit": {
+            "type": "object",
+            "required": [
+                "result"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "file": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "result": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "costControl.ReqPaymentRequestAuditUpdate": {
+            "type": "object",
+            "properties": {
+                "audit_info": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "audit_level",
+                            "audit_to",
+                            "audit_type"
+                        ],
+                        "properties": {
+                            "audit_level": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "audit_to": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer"
+                                }
+                            },
+                            "audit_type": {
+                                "type": "integer",
+                                "enum": [
+                                    1,
+                                    2
+                                ]
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -15461,6 +15778,15 @@ const docTemplate = `{
         "costControl.RespPaymentRequest": {
             "type": "object",
             "properties": {
+                "audit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/costControl.RespPaymentRequestAudit"
+                    }
+                },
+                "audit_level": {
+                    "type": "integer"
+                },
                 "budget_id": {
                     "type": "integer"
                 },
@@ -15513,6 +15839,23 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "costControl.RespPaymentRequestAudit": {
+            "type": "object",
+            "properties": {
+                "audit_level": {
+                    "type": "integer"
+                },
+                "audit_to": {
+                    "type": "integer"
+                },
+                "audit_to_name": {
+                    "type": "string"
+                },
+                "audit_type": {
                     "type": "integer"
                 }
             }

@@ -33,6 +33,18 @@ type BudgetPicture struct {
 	UpdatedBy string    `db:"updated_by" json:"updated_by"`
 }
 
+type BudgetDetail struct {
+	ID               int64     `db:"id" json:"id"`
+	BudgetID         int64     `db:"budget_id" json:"budget_id"`
+	PaymentRequestID int64     `db:"payment_request_id"`
+	Amount           float64   `db:"amount" json:"amount"`
+	Status           int       `db:"status" json:"status"`
+	Created          time.Time `db:"created" json:"created"`
+	CreatedBy        string    `db:"created_by" json:"created_by"`
+	Updated          time.Time `db:"updated" json:"updated"`
+	UpdatedBy        string    `db:"updated_by" json:"updated_by"`
+}
+
 type PaymentRequest struct {
 	ID                 int64     `db:"id" json:"id"`
 	OrganizationID     int64     `db:"organization_id" json:"organization_id"`
@@ -74,7 +86,7 @@ type PaymentRequestHistory struct {
 	ID               int64     `db:"id" json:"id"`
 	PaymentRequestID int64     `db:"payment_request_id" json:"payment_request_id"`
 	Action           string    `db:"action" json:"action"`
-	By               string    `db:"by" json:"by"`
+	Content          string    `db:"content" json:"content"`
 	Remark           string    `db:"remark" json:"remark"`
 	Status           int       `db:"status" json:"status"`
 	Created          time.Time `db:"created" json:"created"`

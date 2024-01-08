@@ -172,6 +172,7 @@ func (q *costControlQuery) GetPaymentRequestList(filter ReqPaymentRequestFilter)
 	b.paid AS paid,
 	b.due AS due,
 	b.remark AS remark,
+	b.audit_level AS audit_level,
 	b.status AS status,
 	b.user_id AS user_id
 	FROM payment_requests b
@@ -202,6 +203,7 @@ func (q *costControlQuery) GetPaymentRequestByID(id int64) (*RespPaymentRequest,
 	b.paid AS paid,
 	b.due AS due,
 	b.remark AS remark,
+	b.audit_level AS audit_level,
 	b.status AS status,
 	b.user_id AS user_id
 	FROM payment_requests b
@@ -239,5 +241,46 @@ func (q *costControlQuery) GetPaymentRequestTypeList(organizationID, paymentRequ
 		AND pr.status = 1
 		ORDER BY pr.audit_level ASC
 	`, organizationID, paymentRequestType)
+	return &res, err
+}
+
+func (q *costControlQuery) GetPaymentRequestHistoryList(paymentRequestID int64) (*[]RespPaymentRequestHistory, error) {
+	var res []RespPaymentRequestHistory
+	err := q.conn.Select(&res, `
+		SELECT id, payment_request_id, action, content, remark, created_by, created 
+		FROM payment_request_historys
+		WHERE payment_request_id = ?
+		AND status > 0
+		ORDER BY id desc
+	`, paymentRequestID)
+	return &res, err
+}
+
+func (q *costControlQuery) GetPaymentRequestHistoryPictureList(id int64) (*[]string, error) {
+	var pictures []string
+	err := q.conn.Select(&pictures, `
+	SELECT link 
+	FROM payment_request_history_pictures 
+	WHERE payment_request_history_id = ? AND status = 1
+	`, id)
+	return &pictures, err
+}
+
+func (q *costControlQuery) GetPaymentRequestAuditList(paymentRequestID int64) (*[]RespPaymentRequestAudit, error) {
+	var res []RespPaymentRequestAudit
+	err := q.conn.Select(&res, `
+		SELECT pr.audit_level AS audit_level,
+		pr.audit_type AS audit_type,
+		pr.audit_to AS audit_to,
+		CASE WHEN pr.audit_type = 1 THEN IFNULL(p.name,"") ELSE IFNULL(u.name,"") END AS audit_to_name		
+		FROM payment_request_audits pr
+		LEFT JOIN positions p
+		ON pr.audit_to = p.id
+		LEFT JOIN users u
+		ON pr.audit_to = u.id
+		WHERE pr.payment_request_id = ?
+		AND pr.status = 1
+		ORDER BY pr.audit_level ASC
+	`, paymentRequestID)
 	return &res, err
 }

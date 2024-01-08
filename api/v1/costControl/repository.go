@@ -2,6 +2,7 @@ package costControl
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -139,6 +140,7 @@ func (r *costControlRepository) CreatePaymentRequest(info ReqPaymentRequestNew) 
 			due,
 			status,
 			remark,
+			audit_level,
 			user_id,
 			created,
 			created_by,
@@ -146,8 +148,8 @@ func (r *costControlRepository) CreatePaymentRequest(info ReqPaymentRequestNew) 
 			updated_by
 		) 
 		VALUES (
-			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-		)`, info.OrganizationID, info.ProjectID, info.BudgetID, info.PaymentRequestType, info.Name, info.Quantity, info.UnitPrice, info.Total, 0, info.Total, 1, info.Remark, info.UserID, time.Now(), info.User, time.Now(), info.User)
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+		)`, info.OrganizationID, info.ProjectID, info.BudgetID, info.PaymentRequestType, info.Name, info.Quantity, info.UnitPrice, info.Total, 0, info.Total, 1, info.Remark, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -184,12 +186,13 @@ func (r *costControlRepository) DeletePaymentRequestPicture(paymentRequestID int
 	return err
 }
 
-func (r *costControlRepository) CreatePaymentRequestHistory(info ReqPaymentRequestHistoryNew) error {
-	_, err := r.tx.Exec(`
+func (r *costControlRepository) CreatePaymentRequestHistory(info ReqPaymentRequestHistoryNew) (int64, error) {
+	result, err := r.tx.Exec(`
 		INSERT INTO payment_request_historys 
 		(
 			payment_request_id,
 			action,
+			content,
 			remark,
 			status,
 			created,
@@ -198,9 +201,12 @@ func (r *costControlRepository) CreatePaymentRequestHistory(info ReqPaymentReque
 			updated_by
 		) 
 		VALUES (
-			?, ?, ?, ?, ?, ?, ?, ?
-		)`, info.PaymentRequestID, info.Action, info.Remark, 1, time.Now(), info.User, time.Now(), info.User)
-	return err
+			?, ?, ?, ?, ?, ?, ?, ?, ?
+		)`, info.PaymentRequestID, info.Action, info.Content, info.Remark, 1, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		return 0, err
+	}
+	return result.LastInsertId()
 }
 
 func (r *costControlRepository) GetPaymentRequestByID(id int64) (RespPaymentRequest, error) {
@@ -217,13 +223,14 @@ func (r *costControlRepository) GetPaymentRequestByID(id int64) (RespPaymentRequ
 		paid,
 		due,
 		remark,
+		audit_level,
 		user_id,
 		status
 		FROM payment_requests
 		WHERE id = ?
-		AND status = 1
+		AND status > 0
 	`, id)
-	err := row.Scan(&paymentRequest.OrganizationID, &paymentRequest.ProjectID, &paymentRequest.BudgetID, &paymentRequest.PaymentRequestType, &paymentRequest.Name, &paymentRequest.Quantity, &paymentRequest.UnitPrice, &paymentRequest.Total, &paymentRequest.Paid, &paymentRequest.Due, &paymentRequest.Remark, &paymentRequest.UserID, &paymentRequest.Status)
+	err := row.Scan(&paymentRequest.OrganizationID, &paymentRequest.ProjectID, &paymentRequest.BudgetID, &paymentRequest.PaymentRequestType, &paymentRequest.Name, &paymentRequest.Quantity, &paymentRequest.UnitPrice, &paymentRequest.Total, &paymentRequest.Paid, &paymentRequest.Due, &paymentRequest.Remark, &paymentRequest.AuditLevel, &paymentRequest.UserID, &paymentRequest.Status)
 	return paymentRequest, err
 }
 
@@ -240,11 +247,12 @@ func (r *costControlRepository) UpdatePaymentRequest(info ReqPaymentRequestUpdat
 			paid = ?,
 			due = ?,
 			remark = ?,
+			audit_level = ?,
 			status = ?,
 			updated = ?,
 			updated_by = ?
 		WHERE id = ?
-	`, info.ProjectID, info.PaymentRequestType, info.BudgetID, info.Name, info.Quantity, info.UnitPrice, info.Total, 0, info.Total, info.Remark, info.Status, time.Now(), info.User, id)
+	`, info.ProjectID, info.PaymentRequestType, info.BudgetID, info.Name, info.Quantity, info.UnitPrice, info.Total, 0, info.Total, info.Remark, 1, info.Status, time.Now(), info.User, id)
 	return err
 }
 
@@ -314,4 +322,162 @@ func (r *costControlRepository) GetPaymentRequestTypeAudit(organizationID int64,
 		res = append(res, rowRes)
 	}
 	return &res, nil
+}
+
+func (r *costControlRepository) CreatePaymentRequestAudit(info ReqPaymentRequestAuditNew) error {
+	_, err := r.tx.Exec(`
+	INSERT INTO payment_request_audits 
+	(
+		payment_request_id,
+		audit_level,
+		audit_type,
+		audit_to,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	) 
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?, ?, ?
+	)`, info.PaymentRequestID, info.AuditLevel, info.AuditType, info.AuditTo, 1, time.Now(), info.User, time.Now(), info.User)
+
+	return err
+
+}
+
+func (r *costControlRepository) DeletePaymentRequestAudits(paymentRequestID int64) error {
+	_, err := r.tx.Exec(`
+	UPDATE payment_request_audits 
+	SET status = -1 
+	WHERE payment_request_id = ?
+	`, paymentRequestID)
+	return err
+}
+
+func (r *costControlRepository) CheckAudit(paymentRequestID int64, userID int64, positionID int64, auditLevel int) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT count(1) FROM payment_request_audits WHERE payment_request_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) AND status > 0 AND audit_level = ? LIMIT 1`, paymentRequestID, positionID, userID, auditLevel)
+	err := row.Scan(&res)
+	return res, err
+}
+
+func (r *costControlRepository) GetNextLevel(paymentRequestID int64, auditLevel int) (int, error) {
+	var res int
+	row := r.tx.QueryRow(`SELECT audit_level FROM payment_request_audits WHERE payment_request_id = ? AND status > 0 AND audit_level > ? ORDER by audit_level ASC LIMIT 1`, paymentRequestID, auditLevel)
+	err := row.Scan(&res)
+	return res, err
+}
+
+func (r *costControlRepository) AuditPaymentRequest(paymentRequestID int64, auditLevel, status int, byUser string) error {
+	_, err := r.tx.Exec(`
+	UPDATE payment_requests 
+	SET audit_level = ?,
+	status = ?,
+	updated = ?,
+	updated_by = ?
+	WHERE id = ?
+	`, auditLevel, status, time.Now(), byUser, paymentRequestID)
+	return err
+}
+
+func (r *costControlRepository) CreatePaymentRequestHistoryPicture(info ReqPaymentRequestHistoryPictureNew) error {
+	_, err := r.tx.Exec(`
+	INSERT INTO payment_request_history_pictures 
+	(
+		payment_request_history_id,
+		link,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	) 
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?
+	)`, info.PaymentRequestHistoryID, info.Picture, 1, time.Now(), info.User, time.Now(), info.User)
+
+	return err
+
+}
+
+func (r *costControlRepository) DeletePaymentRequestAudit(paymentRequestID int64, organizationID int64, byUser string) error {
+	_, err := r.tx.Exec(`
+	    UPDATE payment_request_audits SET
+			status = -1,
+			updated = ?,
+			updated_by = ?
+		WHERE payment_request_id = ?	
+	`, time.Now(), byUser, paymentRequestID)
+	return err
+}
+
+func (r *costControlRepository) CreatePayment(paymentRequestID int64, info ReqPaymentNew) (int64, error) {
+	result, err := r.tx.Exec(`
+	INSERT INTO payments 
+	(
+		organization_id,
+		project_id,
+		payment_request_id,
+		amount,
+		payment_method,
+		payment_date,
+		remark,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	) 
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+	)`, info.OrganizationID, info.ProjectID, paymentRequestID, info.Amount, info.PaymentMethod, info.PaymentDate, info.Remark, 1, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	return result.LastInsertId()
+}
+
+func (r *costControlRepository) CreatePaymentPicture(info ReqPaymentPictureNew) error {
+	_, err := r.tx.Exec(`
+	INSERT INTO payment_pictures 
+	(
+		payment_id,
+		link,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	) 
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?
+	)`, info.PaymentID, info.Picture, 1, time.Now(), info.User, time.Now(), info.User)
+	return err
+}
+
+func (r *costControlRepository) UpdatePaymentRequestPaid(paymentRequestID int64, info ReqPaymentRequestPaid) error {
+	_, err := r.tx.Exec(`
+		UPDATE payment_requests SET 
+			paid = ?,
+			due = ?,
+			status = ?,
+			updated = ?,
+			updated_by = ?
+		WHERE id = ?
+	`, info.Paid, info.Due, info.Status, time.Now(), info.User, paymentRequestID)
+	return err
+}
+
+func (r *costControlRepository) UpdateBudgitUsed(budgetID int64, info ReqBudgetPaid) error {
+	_, err := r.tx.Exec(`
+		UPDATE budgets SET 
+			used = ?,
+			balance = ?,
+			updated = ?,
+			updated_by = ?
+		WHERE id = ?
+	`, info.Used, info.Balance, time.Now(), info.User, budgetID)
+	return err
 }

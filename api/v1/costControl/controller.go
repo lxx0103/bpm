@@ -403,3 +403,145 @@ func GetPaymentRequestTypeList(c *gin.Context) {
 	}
 	response.Response(c, res)
 }
+
+// @Summary 审核费用申请
+// @Id S013
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "请款ID"
+// @Param info body ReqPaymentRequestAudit true "请款信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /paymentRequests/:id/audit [POST]
+func AuditPaymentRequest(c *gin.Context) {
+	var uri PaymentRequestID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info ReqPaymentRequestAudit
+	err := c.ShouldBindJSON(&info)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	info.PositionID = claims.PositionID
+	costControlService := NewCostControlService()
+	err = costControlService.AuditPaymentRequest(uri.ID, info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 费用申请操作历史列表
+// @Id S014
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param payment_request_id query int true "请款ID"
+// @Param organization_id query int false "组织ID"
+// @Success 200 object response.ListRes{data=[]RespPaymentRequest} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /paymentRequestHistorys [GET]
+func GetPaymentRequestHistory(c *gin.Context) {
+	var filter ReqPaymentRequestHistoryFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	if claims.OrganizationID != 0 {
+		filter.OrganizationID = claims.OrganizationID
+	}
+	costControlService := NewCostControlService()
+	list, err := costControlService.GetPaymentRequestHistoryList(filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, list)
+}
+
+// @Summary 更新费用申请审核
+// @Id S015
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "请款ID"
+// @Param info body ReqPaymentRequestAuditUpdate true "请款信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /paymentRequests/:id/audit [PUT]
+func UpdatePaymentRequestAudit(c *gin.Context) {
+	var uri PaymentRequestID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info ReqPaymentRequestAuditUpdate
+	err := c.ShouldBindJSON(&info)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	err = info.Verify()
+	if err != nil {
+		response.ResponseError(c, "VerifyError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	costControlService := NewCostControlService()
+	err = costControlService.UpdatePaymentRequestAudit(uri.ID, info, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 新增付款
+// @Id S016
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "请款ID"
+// @Param info body ReqPaymentNew true "付款信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /paymentRequests/:id/payments [POST]
+func NewPayment(c *gin.Context) {
+	var uri PaymentRequestID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info ReqPaymentNew
+	err := c.ShouldBindJSON(&info)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	costControlService := NewCostControlService()
+	err = costControlService.NewPayment(uri.ID, info, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}

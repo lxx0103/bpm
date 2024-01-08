@@ -14,8 +14,17 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/paymentRequests", GetPaymentRequestList)
 	g.GET("/paymentRequests/:id", GetPaymentRequestByID)
 	g.DELETE("/paymentRequests/:id", DeletePaymentRequest)
+	g.POST("/paymentRequests/:id/audit", AuditPaymentRequest)
+	g.GET("paymentRequestHistorys", GetPaymentRequestHistory)
+	g.PUT("/paymentRequests/:id/audit", UpdatePaymentRequestAudit)
 
 	g.POST("/paymentRequestTypes", UpdatePaymentRequestType)
 	g.GET("/paymentRequestTypes", GetPaymentRequestTypeList)
+
+	g.POST("/paymentRequests/:id/payments", NewPayment)
+	// g.PUT("/payments/:id", UpdatePayment)
+	// g.GET("/payments", GetPaymentList)
+	// g.GET("/payments/:id", GetPaymentByID)
+	// g.DELETE("/payments/:id", DeletePayment)
 
 }
