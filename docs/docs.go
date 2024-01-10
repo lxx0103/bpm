@@ -16529,6 +16529,7 @@ const docTemplate = `{
         "costControl.ReqPaymentRequestTypeUpdate": {
             "type": "object",
             "required": [
+                "organization_id",
                 "payment_request_type"
             ],
             "properties": {
@@ -16561,6 +16562,9 @@ const docTemplate = `{
                             }
                         }
                     }
+                },
+                "organization_id": {
+                    "type": "integer"
                 },
                 "payment_request_type": {
                     "type": "integer",

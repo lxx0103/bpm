@@ -365,8 +365,11 @@ func UpdatePaymentRequestType(c *gin.Context) {
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	info.User = claims.Username
 	info.UserID = claims.UserID
+	if claims.OrganizationID != 0 {
+		info.OrganizationID = claims.OrganizationID
+	}
 	costControlService := NewCostControlService()
-	err = costControlService.UpdatePaymentRequestType(info, claims.OrganizationID)
+	err = costControlService.UpdatePaymentRequestType(info)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

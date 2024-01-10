@@ -206,7 +206,8 @@ func (f *ReqPaymentRequestFilter) Verify() error {
 }
 
 type ReqPaymentRequestTypeUpdate struct {
-	ReqPaymentRequestType int `json:"payment_request_type" binding:"required,min=1,max=2"`
+	OrganizationID        int64 `json:"organization_id" binding:"required"`
+	ReqPaymentRequestType int   `json:"payment_request_type" binding:"required,min=1,max=2"`
 	AuditInfo             []struct {
 		AuditLevel int     `json:"audit_level" binding:"required,min=1"`
 		AuditType  int     `json:"audit_type" binding:"required,oneof=1 2"`

@@ -902,11 +902,14 @@ definitions:
           - audit_type
           type: object
         type: array
+      organization_id:
+        type: integer
       payment_request_type:
         maximum: 2
         minimum: 1
         type: integer
     required:
+    - organization_id
     - payment_request_type
     type: object
   costControl.ReqPaymentRequestUpdate:

@@ -477,7 +477,11 @@ func (s *costControlService) DeletePaymentRequest(id, organizationID int64, user
 	return nil
 }
 
-func (s *costControlService) UpdatePaymentRequestType(info ReqPaymentRequestTypeUpdate, organizationID int64) error {
+func (s *costControlService) UpdatePaymentRequestType(info ReqPaymentRequestTypeUpdate) error {
+	if info.OrganizationID == 0 {
+		msg := "必须制定组织"
+		return errors.New(msg)
+	}
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -487,7 +491,7 @@ func (s *costControlService) UpdatePaymentRequestType(info ReqPaymentRequestType
 	repo := NewCostControlRepository(tx)
 	positionRepo := position.NewPositionRepository(tx)
 	userRepo := auth.NewAuthRepository(tx)
-	err = repo.DeletePaymentRequestTypeAudit(info.ReqPaymentRequestType, organizationID, info.User)
+	err = repo.DeletePaymentRequestTypeAudit(info.ReqPaymentRequestType, info.OrganizationID, info.User)
 	if err != nil {
 		msg := "更新审核设置失败"
 		return errors.New(msg)
@@ -496,12 +500,12 @@ func (s *costControlService) UpdatePaymentRequestType(info ReqPaymentRequestType
 		for _, auditTo := range audit.AuditTo {
 			var auditInfo ReqPaymentRequestTypeAudit
 			auditInfo.PaymentRequestType = info.ReqPaymentRequestType
-			auditInfo.OrganizationID = organizationID
+			auditInfo.OrganizationID = info.OrganizationID
 			auditInfo.AuditLevel = audit.AuditLevel
 			auditInfo.AuditType = audit.AuditType
 			auditInfo.AuditTo = auditTo
 			if auditInfo.AuditType == 1 {
-				_, err := positionRepo.GetPositionByID(auditTo, organizationID)
+				_, err := positionRepo.GetPositionByID(auditTo, info.OrganizationID)
 				if err != nil {
 					msg := "审核层次" + strconv.Itoa(int(auditInfo.AuditLevel)) + "职位不存在"
 					return errors.New(msg)
@@ -512,7 +516,7 @@ func (s *costControlService) UpdatePaymentRequestType(info ReqPaymentRequestType
 					msg := "审核层次" + strconv.Itoa(int(auditInfo.AuditLevel)) + "用户不存在"
 					return errors.New(msg)
 				}
-				if userInfo.OrganizationID != organizationID {
+				if userInfo.OrganizationID != info.OrganizationID {
 					msg := "审核层次" + strconv.Itoa(int(auditInfo.AuditLevel)) + "用户不存在"
 					return errors.New(msg)
 				}
