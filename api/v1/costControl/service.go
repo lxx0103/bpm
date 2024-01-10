@@ -479,7 +479,7 @@ func (s *costControlService) DeletePaymentRequest(id, organizationID int64, user
 
 func (s *costControlService) UpdatePaymentRequestType(info ReqPaymentRequestTypeUpdate) error {
 	if info.OrganizationID == 0 {
-		msg := "必须制定组织"
+		msg := "必须指定组织"
 		return errors.New(msg)
 	}
 	db := database.InitMySQL()
