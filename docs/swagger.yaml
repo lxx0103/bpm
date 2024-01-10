@@ -9245,6 +9245,176 @@ paths:
       summary: 审核事件
       tags:
       - 小程序接口
+  /wx/budgets:
+    get:
+      consumes:
+      - application/json
+      operationId: WXS001
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        required: true
+        type: integer
+      - description: 组织名称
+        in: query
+        name: organization_id
+        type: integer
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespBudget'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目预算清单
+      tags:
+      - 小程序成控管理
+    post:
+      consumes:
+      - application/json
+      operationId: WXS002
+      parameters:
+      - description: 预算信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqBudgetNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建项目预算
+      tags:
+      - 小程序成控管理
+  /wx/budgets/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: WXS005
+      parameters:
+      - description: 预算ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除项目预算
+      tags:
+      - 小程序成控管理
+    get:
+      consumes:
+      - application/json
+      operationId: WXS004
+      parameters:
+      - description: 预算ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespBudget'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取项目预算
+      tags:
+      - 小程序成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: WXS003
+      parameters:
+      - description: 预算ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 预算信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqBudgetUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新项目预算
+      tags:
+      - 小程序成控管理
   /wx/checkins:
     get:
       consumes:
@@ -10327,6 +10497,383 @@ paths:
       summary: 根据ID获取组织
       tags:
       - 小程序接口
+  /wx/paymentRequestHistorys:
+    get:
+      consumes:
+      - application/json
+      operationId: WXS014
+      parameters:
+      - description: 请款ID
+        in: query
+        name: payment_request_id
+        required: true
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespPaymentRequest'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 费用申请操作历史列表
+      tags:
+      - 小程序成控管理
+  /wx/paymentRequestTypes:
+    get:
+      consumes:
+      - application/json
+      operationId: WXS012
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespPaymentRequestType'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 费用申请审核设置列表
+      tags:
+      - 小程序成控管理
+    post:
+      consumes:
+      - application/json
+      operationId: WXS011
+      parameters:
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestTypeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新费用申请审核设置
+      tags:
+      - 小程序成控管理
+  /wx/paymentRequests:
+    get:
+      consumes:
+      - application/json
+      operationId: WXS008
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespPaymentRequest'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 费用申请列表
+      tags:
+      - 小程序成控管理
+    post:
+      consumes:
+      - application/json
+      operationId: WXS006
+      parameters:
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建费用申请
+      tags:
+      - 小程序成控管理
+  /wx/paymentRequests/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: WXS010
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除费用申请
+      tags:
+      - 小程序成控管理
+    get:
+      consumes:
+      - application/json
+      operationId: WXS009
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespPaymentRequest'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取费用申请
+      tags:
+      - 小程序成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: WXS007
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新费用申请
+      tags:
+      - 小程序成控管理
+  /wx/paymentRequests/:id/audit:
+    post:
+      consumes:
+      - application/json
+      operationId: WXS013
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestAudit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 审核费用申请
+      tags:
+      - 小程序成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: WXS015
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentRequestAuditUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新费用申请审核
+      tags:
+      - 小程序成控管理
+  /wx/paymentRequests/:id/payments:
+    post:
+      consumes:
+      - application/json
+      operationId: WXS016
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 付款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新增付款
+      tags:
+      - 小程序成控管理
   /wx/positions:
     get:
       consumes:
