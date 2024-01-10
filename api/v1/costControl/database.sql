@@ -82,7 +82,7 @@ CREATE TABLE `payment_request_audits` (
     `updated_by` varchar(64) NOT NULL DEFAULT '' COMMENT '更新人',
     `status` tinyint NOT NULL DEFAULT '0' COMMENT '状态:1:激活-1删除',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci	
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- payment_request_history.sql
 CREATE TABLE `payment_request_historys` (
@@ -97,7 +97,7 @@ CREATE TABLE `payment_request_historys` (
     `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `updated_by` varchar(64) NOT NULL DEFAULT '' COMMENT '更新人',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='请款记录操作历史'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='请款记录操作历史';
 
 -- payment_request_history_pictures
 CREATE TABLE `payment_request_history_pictures` (
