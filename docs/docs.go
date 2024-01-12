@@ -9615,7 +9615,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "获取我参加的项目",
                 "operationId": "M007",
@@ -12225,7 +12225,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "获取我创建的项目",
                 "operationId": "M006",
@@ -13086,7 +13086,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID获取项目记录",
                 "operationId": "M029",
@@ -13134,7 +13134,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID更新项目记录",
                 "operationId": "M031",
@@ -13191,7 +13191,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID删除项目记录",
                 "operationId": "M030",
@@ -13241,7 +13241,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID获取项目报告",
                 "operationId": "M018",
@@ -13289,7 +13289,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID更新项目报告",
                 "operationId": "M021",
@@ -13346,7 +13346,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID删除项目报告",
                 "operationId": "M019",
@@ -13396,7 +13396,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID已阅项目报告",
                 "operationId": "M033",
@@ -13446,7 +13446,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "项目报告未读列表",
                 "operationId": "M034",
@@ -13482,6 +13482,76 @@ const docTemplate = `{
             }
         },
         "/wx/projects": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理-小程序接口"
+                ],
+                "summary": "W项目列表",
+                "operationId": "M035",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "项目名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目类型",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/project.ProjectResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -13490,7 +13560,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "新建项目",
                 "operationId": "M008",
@@ -13542,7 +13612,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID获取项目",
                 "operationId": "M009",
@@ -13590,7 +13660,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID更新项目",
                 "operationId": "M010",
@@ -13647,7 +13717,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "根据ID删除项目",
                 "operationId": "M011",
@@ -13697,7 +13767,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "项目记录列表",
                 "operationId": "M028",
@@ -13753,7 +13823,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "新建项目记录",
                 "operationId": "M027",
@@ -13805,7 +13875,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "项目报告列表",
                 "operationId": "M015",
@@ -13861,7 +13931,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "小程序接口"
+                    "项目管理-小程序接口"
                 ],
                 "summary": "新建项目报告",
                 "operationId": "M013",

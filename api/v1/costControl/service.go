@@ -548,7 +548,7 @@ func (s *costControlService) GetPaymentRequestTypeList(filter ReqPaymentRequestT
 	type1.Audit = *res1
 	var type2 RespPaymentRequestType
 	type2.PaymentRequestType = 2
-	type2.PaymentRequestTypeName = "采购类"
+	type2.PaymentRequestTypeName = "工款类"
 	res2, err := query.GetPaymentRequestTypeList(filter.OrganizationID, 2)
 	if err != nil {
 		msg := "获取审核设置失败"

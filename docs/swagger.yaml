@@ -8836,7 +8836,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 获取我参加的项目
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/assignments:
     get:
       consumes:
@@ -10437,7 +10437,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 获取我创建的项目
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/mywxmodule/:id:
     get:
       consumes:
@@ -10947,7 +10947,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID删除项目记录
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
     get:
       consumes:
       - application/json
@@ -10976,7 +10976,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID获取项目记录
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
     put:
       consumes:
       - application/json
@@ -11011,7 +11011,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新项目记录
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/projectreports/:id:
     delete:
       consumes:
@@ -11041,7 +11041,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID删除项目报告
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
     get:
       consumes:
       - application/json
@@ -11070,7 +11070,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID获取项目报告
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
     put:
       consumes:
       - application/json
@@ -11105,7 +11105,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新项目报告
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/projectreports/:id/views:
     post:
       consumes:
@@ -11135,7 +11135,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID已阅项目报告
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/projectreports/unread:
     get:
       consumes:
@@ -11161,8 +11161,52 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 项目报告未读列表
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/projects:
+    get:
+      consumes:
+      - application/json
+      operationId: M035
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 项目名称
+        in: query
+        name: name
+        type: string
+      - description: 项目类型
+        in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: W项目列表
+      tags:
+      - 项目管理-小程序接口
     post:
       consumes:
       - application/json
@@ -11192,7 +11236,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 新建项目
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/projects/:id:
     delete:
       consumes:
@@ -11222,7 +11266,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID删除项目
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
     get:
       consumes:
       - application/json
@@ -11251,7 +11295,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID获取项目
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
     put:
       consumes:
       - application/json
@@ -11286,7 +11330,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 根据ID更新项目
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/projects/:id/records:
     get:
       consumes:
@@ -11321,7 +11365,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 项目记录列表
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
     post:
       consumes:
       - application/json
@@ -11351,7 +11395,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 新建项目记录
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/projects/:id/reports:
     get:
       consumes:
@@ -11386,7 +11430,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 项目报告列表
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
     post:
       consumes:
       - application/json
@@ -11416,7 +11460,7 @@ paths:
             $ref: '#/definitions/response.ErrorRes'
       summary: 新建项目报告
       tags:
-      - 小程序接口
+      - 项目管理-小程序接口
   /wx/qrcode:
     post:
       consumes:

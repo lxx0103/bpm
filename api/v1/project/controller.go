@@ -158,7 +158,7 @@ func DeleteProject(c *gin.Context) {
 
 // @Summary 获取我创建的项目
 // @Id M006
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -201,7 +201,7 @@ func WxGetMyProjects(c *gin.Context) {
 
 // @Summary 获取我参加的项目
 // @Id M007
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -232,7 +232,7 @@ func WxGetAssignedProjects(c *gin.Context) {
 
 // @Summary 新建项目
 // @Id M008
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -246,7 +246,7 @@ func WxNewProject(c *gin.Context) {
 
 // @Summary 根据ID获取项目
 // @Id M009
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -261,7 +261,7 @@ func WxGetProjectByID(c *gin.Context) {
 
 // @Summary 根据ID更新项目
 // @Id M010
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -276,7 +276,7 @@ func WxUpdateProject(c *gin.Context) {
 
 // @Summary 根据ID删除项目
 // @Id M011
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -324,7 +324,7 @@ func NewProjectReport(c *gin.Context) {
 
 // @Summary 新建项目报告
 // @Id M013
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -373,7 +373,7 @@ func GetProjectReportList(c *gin.Context) {
 
 // @Summary 项目报告列表
 // @Id M015
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -461,7 +461,7 @@ func DeleteProjectReport(c *gin.Context) {
 
 // @Summary 根据ID获取项目报告
 // @Id M018
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -476,7 +476,7 @@ func WxGetProjectReportByID(c *gin.Context) {
 
 // @Summary 根据ID删除项目报告
 // @Id M019
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -525,7 +525,7 @@ func UpdateProjectReport(c *gin.Context) {
 
 // @Summary 根据ID更新项目报告
 // @Id M021
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -697,7 +697,7 @@ func UpdateProjectRecord(c *gin.Context) {
 
 // @Summary 新建项目记录
 // @Id M027
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -711,7 +711,7 @@ func WxNewProjectRecord(c *gin.Context) {
 
 // @Summary 项目记录列表
 // @Id M028
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -726,7 +726,7 @@ func WxGetProjectRecordList(c *gin.Context) {
 
 // @Summary 根据ID获取项目记录
 // @Id M029
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -741,7 +741,7 @@ func WxGetProjectRecordByID(c *gin.Context) {
 
 // @Summary 根据ID删除项目记录
 // @Id M030
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -755,7 +755,7 @@ func WxDeleteProjectRecord(c *gin.Context) {
 
 // @Summary 根据ID更新项目记录
 // @Id M031
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -802,7 +802,7 @@ func PortalGetProjectRecordList(c *gin.Context) {
 
 // @Summary 根据ID已阅项目报告
 // @Id M033
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -828,7 +828,7 @@ func WxViewProjectReport(c *gin.Context) {
 
 // @Summary 项目报告未读列表
 // @Id M034
-// @Tags 小程序接口
+// @Tags 项目管理-小程序接口
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
@@ -844,4 +844,21 @@ func WxGetUnreadReportList(c *gin.Context) {
 		return
 	}
 	response.Response(c, list)
+}
+
+// @Summary W项目列表
+// @Id M035
+// @Tags 项目管理-小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Param name query string false "项目名称"
+// @Param type query int false "项目类型"
+// @Success 200 object response.ListRes{data=[]ProjectResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projects [GET]
+func WxGetProjectList(c *gin.Context) {
+	GetProjectList(c)
 }
