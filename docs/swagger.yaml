@@ -2345,6 +2345,8 @@ definitions:
     type: object
   project.Project:
     properties:
+      area:
+        type: string
       checkin_distance:
         type: integer
       client_id:
@@ -2355,6 +2357,8 @@ definitions:
         type: string
       id:
         type: integer
+      last_record_date:
+        type: string
       latitude:
         type: number
       location:
@@ -2369,7 +2373,11 @@ definitions:
         type: integer
       progress:
         type: integer
+      record_alert_day:
+        type: integer
       status:
+        type: integer
+      team_id:
         type: integer
       template_id:
         type: integer
@@ -2382,6 +2390,10 @@ definitions:
     type: object
   project.ProjectNew:
     properties:
+      area:
+        maxLength: 64
+        minLength: 1
+        type: string
       checkin_distance:
         type: integer
       client_id:
@@ -2404,6 +2416,11 @@ definitions:
         - 1
         - 2
         - 3
+        type: integer
+      record_alert_day:
+        minimum: 1
+        type: integer
+      team_id:
         type: integer
       template_id:
         minimum: 1
@@ -2461,6 +2478,17 @@ definitions:
       user_id:
         type: integer
       user_name:
+        type: string
+    type: object
+  project.ProjectRecordStatusResponse:
+    properties:
+      last_record_date:
+        type: string
+      no_record_day:
+        type: integer
+      record_count:
+        type: integer
+      start_date:
         type: string
     type: object
   project.ProjectReportMemberViewResponse:
@@ -2536,6 +2564,8 @@ definitions:
         items:
           $ref: '#/definitions/project.ActiveEventResponse'
         type: array
+      area:
+        type: string
       checkin_distance:
         type: integer
       client_id:
@@ -2548,6 +2578,8 @@ definitions:
         type: string
       id:
         type: integer
+      last_record_date:
+        type: string
       latitude:
         type: number
       location:
@@ -2564,8 +2596,14 @@ definitions:
         type: integer
       progress:
         type: integer
+      record_alert_day:
+        type: integer
       status:
         type: integer
+      team_id:
+        type: integer
+      team_name:
+        type: string
       template_id:
         type: integer
       template_name:
@@ -2577,8 +2615,52 @@ definitions:
       updated_by:
         type: string
     type: object
+  project.ProjectSumByArea:
+    properties:
+      area_name:
+        type: string
+      completed:
+        type: integer
+      in_progress:
+        type: integer
+      total:
+        type: integer
+    type: object
+  project.ProjectSumByStatus:
+    properties:
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  project.ProjectSumByTeam:
+    properties:
+      completed:
+        type: integer
+      in_progress:
+        type: integer
+      team_name:
+        type: string
+      total:
+        type: integer
+    type: object
+  project.ProjectSumByUser:
+    properties:
+      completed:
+        type: integer
+      in_progress:
+        type: integer
+      total:
+        type: integer
+      user_name:
+        type: string
+    type: object
   project.ProjectUpdate:
     properties:
+      area:
+        maxLength: 64
+        minLength: 1
+        type: string
       checkin_distance:
         type: integer
       client_id:
@@ -2601,6 +2683,11 @@ definitions:
         - 1
         - 2
         - 3
+        type: integer
+      record_alert_day:
+        minimum: 1
+        type: integer
+      team_id:
         type: integer
     type: object
   response.ErrorRes:
@@ -2696,6 +2783,73 @@ definitions:
         type: string
     required:
     - content
+    type: object
+  team.Team:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      leader:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: integer
+      phone:
+        type: string
+      status:
+        type: integer
+      updated:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  team.TeamNew:
+    properties:
+      leader:
+        maxLength: 64
+        minLength: 1
+        type: string
+      name:
+        maxLength: 64
+        minLength: 1
+        type: string
+      organization_id:
+        minimum: 1
+        type: integer
+      phone:
+        maxLength: 64
+        minLength: 1
+        type: string
+      status:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - leader
+    - name
+    - status
+    type: object
+  team.TeamResponse:
+    properties:
+      id:
+        type: integer
+      leader:
+        type: string
+      name:
+        type: string
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      phone:
+        type: string
+      status:
+        type: integer
     type: object
   template.Template:
     properties:
@@ -7409,6 +7563,38 @@ paths:
       summary: 根据ID更新项目
       tags:
       - 项目管理
+  /projects/:id/recordStatus:
+    get:
+      consumes:
+      - application/json
+      operationId: M036
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectRecordStatusResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 项目记录状态
+      tags:
+      - 项目管理
   /projects/:id/records:
     get:
       consumes:
@@ -7539,6 +7725,110 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 新建项目报告
+      tags:
+      - 项目管理
+  /projects/sumbyarea:
+    get:
+      consumes:
+      - application/json
+      operationId: M040
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectSumByArea'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 楼盘项目统计
+      tags:
+      - 项目管理
+  /projects/sumbystatus:
+    get:
+      consumes:
+      - application/json
+      operationId: M037
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectSumByStatus'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 全部项目统计
+      tags:
+      - 项目管理
+  /projects/sumbyteam:
+    get:
+      consumes:
+      - application/json
+      operationId: M038
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectSumByTeam'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 班组项目统计
+      tags:
+      - 项目管理
+  /projects/sumbyuser:
+    get:
+      consumes:
+      - application/json
+      operationId: M039
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectSumByUser'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 负责人项目统计
       tags:
       - 项目管理
   /qrcode:
@@ -8202,6 +8492,150 @@ paths:
       summary: 用户注册
       tags:
       - 用户权限
+  /teams:
+    get:
+      consumes:
+      - application/json
+      operationId: T001
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 班组名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/team.TeamResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 班组列表
+      tags:
+      - 班组管理
+    post:
+      consumes:
+      - application/json
+      operationId: T002
+      parameters:
+      - description: 班组信息
+        in: body
+        name: team_info
+        required: true
+        schema:
+          $ref: '#/definitions/team.TeamNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/team.Team'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新建班组
+      tags:
+      - 班组管理
+  /teams/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: T003
+      parameters:
+      - description: 班组ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/team.Team'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取班组
+      tags:
+      - 班组管理
+    put:
+      consumes:
+      - application/json
+      operationId: T004
+      parameters:
+      - description: 班组ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 班组信息
+        in: body
+        name: team_info
+        required: true
+        schema:
+          $ref: '#/definitions/team.TeamNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/team.Team'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID更新班组
+      tags:
+      - 班组管理
   /templates:
     get:
       consumes:
@@ -11141,6 +11575,11 @@ paths:
       consumes:
       - application/json
       operationId: M034
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
       produces:
       - application/json
       responses:
@@ -11896,6 +12335,47 @@ paths:
       summary: 根据ID更新快捷模版
       tags:
       - 小程序接口-快捷模版管理
+  /wx/teams:
+    get:
+      consumes:
+      - application/json
+      operationId: T005
+      parameters:
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      - description: 班组编码
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/team.Team'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 班组列表
+      tags:
+      - 小程序接口
   /wx/templates:
     get:
       consumes:

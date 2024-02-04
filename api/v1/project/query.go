@@ -160,6 +160,10 @@ func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, us
 	if v := filter.Name; v != "" {
 		where, args = append(where, "p.name like ?"), append(args, "%"+v+"%")
 	}
+	if v := filter.RecordStatus; v == "over" {
+		where = append(where, "DATEDIFF(NOW(), IFNULL(p.last_record_date, p.created)) > p.record_alert_day")
+		where = append(where, "record_alert_day > 0")
+	}
 	args = append(args, organizationID)
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
@@ -199,6 +203,10 @@ func (r *projectQuery) GetProjectCountByAssigned(filter AssignedProjectFilter, u
 	}
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name like ?"), append(args, "%"+v+"%")
+	}
+	if v := filter.RecordStatus; v == "over" {
+		where = append(where, "DATEDIFF(NOW(), IFNULL(last_record_date, created)) > record_alert_day")
+		where = append(where, "record_alert_day > 0")
 	}
 	args = append(args, organizationID)
 	var count int
@@ -525,4 +533,75 @@ func (r *projectQuery) GetEventAuditPosition(eventID int64) (*[]AssignToResponse
 		`, eventID, auditLevel)
 	}
 	return &events, err
+}
+
+func (r *projectQuery) GetProjectSumByStatus(organizationID int64) (*[]ProjectSumByStatus, error) {
+	var records []ProjectSumByStatus
+	err := r.conn.Select(&records, `
+		SELECT count(id) as sum,
+		CASE 
+		    WHEN status = 2 THEN '已完成'
+			ELSE '进行中'
+		END as status
+		FROM projects
+		WHERE status in (1, 2) and organization_id = ?
+		GROUP BY status
+	`, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	return &records, nil
+}
+
+func (r *projectQuery) GetProjectSumByTeam(organizationID int64) (*[]ProjectSumByTeam, error) {
+	var records []ProjectSumByTeam
+	err := r.conn.Select(&records, `
+		SELECT count(CASE WHEN p.status = 1 Then 1 END) as in_progress,
+		count(CASE WHEN p.status = 2 Then 1 END) as completed,
+		count(1) as total,
+		IFNULL(t.name,"未分组") as team_name
+		FROM projects p
+		LEFT JOIN teams t 
+		ON p.team_id = t.id
+		WHERE p.status in (1, 2) and p.organization_id = ?
+		GROUP BY team_id
+	`, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	return &records, nil
+}
+
+func (r *projectQuery) GetProjectSumByUser(organizationID int64) (*[]ProjectSumByUser, error) {
+	var records []ProjectSumByUser
+	err := r.conn.Select(&records, `
+		SELECT count(CASE WHEN status = 1 Then 1 END) as in_progress,
+		count(CASE WHEN status = 2 Then 1 END) as completed,
+		count(1) as total,
+		created_by as user_name
+		FROM projects p
+		WHERE status in (1, 2) and organization_id = ?
+		GROUP BY created_by
+	`, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	return &records, nil
+}
+
+func (r *projectQuery) GetProjectSumByArea(organizationID int64) (*[]ProjectSumByArea, error) {
+	var records []ProjectSumByArea
+	err := r.conn.Select(&records, `
+		SELECT count(CASE WHEN status = 1 Then 1 END) as in_progress,
+		count(CASE WHEN status = 2 Then 1 END) as completed,
+		count(1) as total,
+		CASE when area = "" Then "未设置" ELSE area END as area_name
+		FROM projects p
+		WHERE status in (1, 2) and organization_id = ?
+		GROUP BY area
+	`, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	return &records, nil
 }

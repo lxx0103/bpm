@@ -7334,6 +7334,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/projects/:id/recordStatus": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "项目记录状态",
+                "operationId": "M036",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/project.ProjectRecordStatusResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/projects/:id/records": {
             "get": {
                 "consumes": [
@@ -7537,6 +7590,182 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/sumbyarea": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "楼盘项目统计",
+                "operationId": "M040",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/project.ProjectSumByArea"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/sumbystatus": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "全部项目统计",
+                "operationId": "M037",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/project.ProjectSumByStatus"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/sumbyteam": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "班组项目统计",
+                "operationId": "M038",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/project.ProjectSumByTeam"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/sumbyuser": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "负责人项目统计",
+                "operationId": "M039",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/project.ProjectSumByUser"
+                                            }
                                         }
                                     }
                                 }
@@ -8626,6 +8855,241 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/teams": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "班组管理"
+                ],
+                "summary": "班组列表",
+                "operationId": "T001",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "班组名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/team.TeamResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "班组管理"
+                ],
+                "summary": "新建班组",
+                "operationId": "T002",
+                "parameters": [
+                    {
+                        "description": "班组信息",
+                        "name": "team_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/team.TeamNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/team.Team"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/teams/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "班组管理"
+                ],
+                "summary": "根据ID获取班组",
+                "operationId": "T003",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "班组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/team.Team"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "班组管理"
+                ],
+                "summary": "根据ID更新班组",
+                "operationId": "T004",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "班组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "班组信息",
+                        "name": "team_info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/team.TeamNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/team.Team"
                                         }
                                     }
                                 }
@@ -13450,6 +13914,14 @@ const docTemplate = `{
                 ],
                 "summary": "项目报告未读列表",
                 "operationId": "M034",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -14675,6 +15147,72 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/wx/teams": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序接口"
+                ],
+                "summary": "班组列表",
+                "operationId": "T005",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "班组编码",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/team.Team"
+                                            }
                                         }
                                     }
                                 }
@@ -18760,6 +19298,9 @@ const docTemplate = `{
         "project.Project": {
             "type": "object",
             "properties": {
+                "area": {
+                    "type": "string"
+                },
                 "checkin_distance": {
                     "type": "integer"
                 },
@@ -18774,6 +19315,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "last_record_date": {
+                    "type": "string"
                 },
                 "latitude": {
                     "type": "number"
@@ -18796,7 +19340,13 @@ const docTemplate = `{
                 "progress": {
                     "type": "integer"
                 },
+                "record_alert_day": {
+                    "type": "integer"
+                },
                 "status": {
+                    "type": "integer"
+                },
+                "team_id": {
                     "type": "integer"
                 },
                 "template_id": {
@@ -18821,6 +19371,11 @@ const docTemplate = `{
                 "template_id"
             ],
             "properties": {
+                "area": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
                 "checkin_distance": {
                     "type": "integer"
                 },
@@ -18851,6 +19406,13 @@ const docTemplate = `{
                         2,
                         3
                     ]
+                },
+                "record_alert_day": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "team_id": {
+                    "type": "integer"
                 },
                 "template_id": {
                     "type": "integer",
@@ -18929,6 +19491,23 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "user_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "project.ProjectRecordStatusResponse": {
+            "type": "object",
+            "properties": {
+                "last_record_date": {
+                    "type": "string"
+                },
+                "no_record_day": {
+                    "type": "integer"
+                },
+                "record_count": {
+                    "type": "integer"
+                },
+                "start_date": {
                     "type": "string"
                 }
             }
@@ -19043,6 +19622,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/project.ActiveEventResponse"
                     }
                 },
+                "area": {
+                    "type": "string"
+                },
                 "checkin_distance": {
                     "type": "integer"
                 },
@@ -19060,6 +19642,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "last_record_date": {
+                    "type": "string"
                 },
                 "latitude": {
                     "type": "number"
@@ -19085,8 +19670,17 @@ const docTemplate = `{
                 "progress": {
                     "type": "integer"
                 },
+                "record_alert_day": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "integer"
+                },
+                "team_id": {
+                    "type": "integer"
+                },
+                "team_name": {
+                    "type": "string"
                 },
                 "template_id": {
                     "type": "integer"
@@ -19105,9 +19699,76 @@ const docTemplate = `{
                 }
             }
         },
+        "project.ProjectSumByArea": {
+            "type": "object",
+            "properties": {
+                "area_name": {
+                    "type": "string"
+                },
+                "completed": {
+                    "type": "integer"
+                },
+                "in_progress": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "project.ProjectSumByStatus": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "project.ProjectSumByTeam": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "integer"
+                },
+                "in_progress": {
+                    "type": "integer"
+                },
+                "team_name": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "project.ProjectSumByUser": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "integer"
+                },
+                "in_progress": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "user_name": {
+                    "type": "string"
+                }
+            }
+        },
         "project.ProjectUpdate": {
             "type": "object",
             "properties": {
+                "area": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
                 "checkin_distance": {
                     "type": "integer"
                 },
@@ -19138,6 +19799,13 @@ const docTemplate = `{
                         2,
                         3
                     ]
+                },
+                "record_alert_day": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "team_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -19281,6 +19949,103 @@ const docTemplate = `{
             "properties": {
                 "content": {
                     "type": "string"
+                }
+            }
+        },
+        "team.Team": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "leader": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "updated_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "team.TeamNew": {
+            "type": "object",
+            "required": [
+                "leader",
+                "name",
+                "status"
+            ],
+            "properties": {
+                "leader": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "organization_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "minLength": 1
+                },
+                "status": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "team.TeamResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "leader": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },

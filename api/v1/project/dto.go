@@ -53,11 +53,12 @@ type MyProjectFilter struct {
 	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
 }
 type AssignedProjectFilter struct {
-	Name     string `form:"name" binding:"omitempty"`
-	Status   int    `form:"status" binding:"omitempty,oneof=1 2"`
-	Type     int    `form:"type" binding:"omitempty,oneof=1 2"`
-	PageId   int    `form:"page_id" binding:"required,min=1"`
-	PageSize int    `form:"page_size" binding:"required,min=5,max=200"`
+	Name         string `form:"name" binding:"omitempty"`
+	Status       int    `form:"status" binding:"omitempty,oneof=1 2"`
+	Type         int    `form:"type" binding:"omitempty,oneof=1 2"`
+	RecordStatus string `form:"record_status" binding:"omitempty,oneof=over active"`
+	PageId       int    `form:"page_id" binding:"required,min=1"`
+	PageSize     int    `form:"page_size" binding:"required,min=5,max=200"`
 }
 
 type ProjectResponse struct {
@@ -198,4 +199,33 @@ type ProjectRecordStatusResponse struct {
 	RecordCount    int    `json:"record_count"`
 	LastRecordDate string `json:"last_record_date"`
 	NoRecordDay    int    `json:"no_record_day"`
+}
+
+type ProjectSumFilter struct {
+	OrganizationID int64 `json:"organization_id" swaggerignore:"true"`
+}
+
+type ProjectSumByStatus struct {
+	Name  string `db:"status" json:"name"`
+	Value int    `db:"sum" json:"value"`
+}
+type ProjectSumByTeam struct {
+	TeamName   string `db:"team_name" json:"team_name"`
+	InProgress int    `db:"in_progress" json:"in_progress"`
+	Completed  int    `db:"completed" json:"completed"`
+	Total      int    `db:"total" json:"total"`
+}
+
+type ProjectSumByUser struct {
+	UserName   string `db:"user_name" json:"user_name"`
+	InProgress int    `db:"in_progress" json:"in_progress"`
+	Completed  int    `db:"completed" json:"completed"`
+	Total      int    `db:"total" json:"total"`
+}
+
+type ProjectSumByArea struct {
+	AreaName   string `db:"area_name" json:"area_name"`
+	InProgress int    `db:"in_progress" json:"in_progress"`
+	Completed  int    `db:"completed" json:"completed"`
+	Total      int    `db:"total" json:"total"`
 }

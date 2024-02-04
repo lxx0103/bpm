@@ -20,7 +20,12 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/projectrecords/:id", GetProjectRecordByID)
 	g.DELETE("/projectrecords/:id", DeleteProjectRecord)
 	g.PUT("/projectrecords/:id", UpdateProjectRecord)
+
 	g.GET("/projects/:id/recordStatus", GetProjectRecordStatus)
+	g.GET("/projects/sumbystatus", GetProjectSumByStatus)
+	g.GET("/projects/sumbyteam", GetProjectSumByTeam)
+	g.GET("/projects/sumbyuser", GetProjectSumByUser)
+	g.GET("/projects/sumbyarea", GetProjectSumByArea)
 }
 
 func WxRouters(g *gin.RouterGroup) {

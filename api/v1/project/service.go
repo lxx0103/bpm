@@ -1338,3 +1338,59 @@ func (s *projectService) GetProjectRecordStatus(projectID, organizationID int64)
 	return &res, nil
 
 }
+
+func (s *projectService) GetProjectSumByStatus(filter ProjectSumFilter, organizationID int64) (*[]ProjectSumByStatus, error) {
+	if organizationID == 0 && filter.OrganizationID == 0 {
+		msg := "组织ID不能为空"
+		return nil, errors.New(msg)
+	}
+	if organizationID != 0 {
+		filter.OrganizationID = organizationID
+	}
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	res, err := query.GetProjectSumByStatus(filter.OrganizationID)
+	return res, err
+}
+
+func (s *projectService) GetProjectSumByTeam(filter ProjectSumFilter, organizationID int64) (*[]ProjectSumByTeam, error) {
+	if organizationID == 0 && filter.OrganizationID == 0 {
+		msg := "组织ID不能为空"
+		return nil, errors.New(msg)
+	}
+	if organizationID != 0 {
+		filter.OrganizationID = organizationID
+	}
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	res, err := query.GetProjectSumByTeam(filter.OrganizationID)
+	return res, err
+}
+
+func (s *projectService) GetProjectSumByUser(filter ProjectSumFilter, organizationID int64) (*[]ProjectSumByUser, error) {
+	if organizationID == 0 && filter.OrganizationID == 0 {
+		msg := "组织ID不能为空"
+		return nil, errors.New(msg)
+	}
+	if organizationID != 0 {
+		filter.OrganizationID = organizationID
+	}
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	res, err := query.GetProjectSumByUser(filter.OrganizationID)
+	return res, err
+}
+
+func (s *projectService) GetProjectSumByArea(filter ProjectSumFilter, organizationID int64) (*[]ProjectSumByArea, error) {
+	if organizationID == 0 && filter.OrganizationID == 0 {
+		msg := "组织ID不能为空"
+		return nil, errors.New(msg)
+	}
+	if organizationID != 0 {
+		filter.OrganizationID = organizationID
+	}
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	res, err := query.GetProjectSumByArea(filter.OrganizationID)
+	return res, err
+}

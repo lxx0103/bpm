@@ -832,6 +832,7 @@ func WxViewProjectReport(c *gin.Context) {
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
+// @Param organization_id query int false "组织ID"
 // @Success 200 object response.SuccessRes{data=[]ProjectReportResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/projectreports/unread [GET]
@@ -882,6 +883,110 @@ func GetProjectRecordStatus(c *gin.Context) {
 	projectService := NewProjectService()
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	res, err := projectService.GetProjectRecordStatus(uri.ID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, res)
+}
+
+// @Summary 全部项目统计
+// @Id M037
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Success 200 object response.SuccessRes{data=[]ProjectSumByStatus} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projects/sumbystatus [GET]
+func GetProjectSumByStatus(c *gin.Context) {
+	var filter ProjectSumFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	res, err := projectService.GetProjectSumByStatus(filter, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, res)
+}
+
+// @Summary 班组项目统计
+// @Id M038
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Success 200 object response.SuccessRes{data=[]ProjectSumByTeam} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projects/sumbyteam [GET]
+func GetProjectSumByTeam(c *gin.Context) {
+	var filter ProjectSumFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	res, err := projectService.GetProjectSumByTeam(filter, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, res)
+}
+
+// @Summary 负责人项目统计
+// @Id M039
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Success 200 object response.SuccessRes{data=[]ProjectSumByUser} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projects/sumbyuser [GET]
+func GetProjectSumByUser(c *gin.Context) {
+	var filter ProjectSumFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	res, err := projectService.GetProjectSumByUser(filter, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, res)
+}
+
+// @Summary 楼盘项目统计
+// @Id M040
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Success 200 object response.SuccessRes{data=[]ProjectSumByArea} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projects/sumbyarea [GET]
+func GetProjectSumByArea(c *gin.Context) {
+	var filter ProjectSumFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	res, err := projectService.GetProjectSumByArea(filter, claims.OrganizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
