@@ -21,6 +21,9 @@ type ProjectNew struct {
 	Latitude        float64 `json:"latitude" binding:"omitempty"`
 	CheckinDistance int     `json:"checkin_distance" binding:"omitempty"`
 	Priority        int     `json:"priority" binding:"required,oneof=1 2 3"`
+	TeamID          int64   `json:"team_id" binding:"omitempty"`
+	Area            string  `json:"area" binding:"omitempty,min=1,max=64"`
+	RecordAlertDay  int     `json:"record_alert_day" binding:"omitempty,min=1"`
 	User            string  `json:"user" swaggerignore:"true"`
 	UserID          int64   `json:"user_id" swaggerignore:"true"`
 }
@@ -37,6 +40,9 @@ type ProjectUpdate struct {
 	Latitude        float64 `json:"latitude" binding:"omitempty"`
 	CheckinDistance int     `json:"checkin_distance" binding:"omitempty"`
 	Priority        int     `json:"priority" binding:"omitempty,oneof=1 2 3"`
+	TeamID          int64   `json:"team_id" binding:"omitempty"`
+	Area            string  `json:"area" binding:"omitempty,min=1,max=64"`
+	RecordAlertDay  int     `json:"record_alert_day" binding:"omitempty,min=1"`
 	User            string  `json:"user" swaggerignore:"true"`
 	UserID          int64   `json:"user_id" swaggerignore:"true"`
 }
@@ -69,6 +75,11 @@ type ProjectResponse struct {
 	Latitude         float64               `db:"latitude" json:"latitude"`
 	CheckinDistance  int                   `db:"checkin_distance" json:"checkin_distance"`
 	Priority         int                   `db:"priority" json:"priority"`
+	TeamID           int64                 `db:"team_id" json:"team_id"`
+	TeamName         string                `db:"team_name" json:"team_name"`
+	Area             string                `db:"area" json:"area"`
+	RecordAlertDay   int                   `db:"record_alert_day" json:"record_alert_day"`
+	LastRecordDate   string                `db:"last_record_date" json:"last_record_date"`
 	Progress         int                   `db:"progress" json:"progress"`
 	Status           int                   `db:"status" json:"status"`
 	ActiveEvents     []ActiveEventResponse `json:"active_events"`

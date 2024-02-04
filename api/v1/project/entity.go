@@ -15,6 +15,10 @@ type Project struct {
 	CheckinDistance int       `db:"checkin_distance" json:"checkin_distance"`
 	Priority        int       `db:"priority" json:"priority"`
 	Progress        int       `db:"progress" json:"progress"`
+	TeamID          int64     `db:"team_id" json:"team_id"`
+	Area            string    `db:"area" json:"area"`
+	RecordAlertDay  int       `db:"record_alert_day" json:"record_alert_day"`
+	LastRecordDate  string    `db:"last_record_date" json:"last_record_date"`
 	Status          int       `db:"status" json:"status"`
 	Created         time.Time `db:"created" json:"created"`
 	CreatedBy       string    `db:"created_by" json:"created_by"`

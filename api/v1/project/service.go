@@ -6,6 +6,7 @@ import (
 	"bpm/api/v1/event"
 	"bpm/api/v1/member"
 	"bpm/api/v1/node"
+	"bpm/api/v1/team"
 	"bpm/api/v1/template"
 	"bpm/core/database"
 	"bpm/core/queue"
@@ -60,6 +61,14 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 	if exist != 0 {
 		msg := "项目名称重复"
 		return nil, errors.New(msg)
+	}
+	if info.TeamID != 0 {
+		teamRepo := team.NewTeamRepository(tx)
+		_, err = teamRepo.GetTeamByID(info.TeamID, organizationID)
+		if err != nil {
+			msg := "班组不存在"
+			return nil, errors.New(msg)
+		}
 	}
 	info.Type = template.Type
 	projectID, err := repo.CreateProject(info, template.OrganizationID)
@@ -243,6 +252,14 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 		}
 		oldProject.Name = info.Name
 	}
+	if info.TeamID != 0 {
+		teamRepo := team.NewTeamRepository(tx)
+		_, err = teamRepo.GetTeamByID(info.TeamID, organizationID)
+		if err != nil {
+			msg := "班组不存在"
+			return nil, errors.New(msg)
+		}
+	}
 	if info.ClientID != 0 {
 		oldProject.ClientID = info.ClientID
 	}
@@ -260,6 +277,15 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 	}
 	if info.Priority != 0 {
 		oldProject.Priority = info.Priority
+	}
+	if info.TeamID != 0 {
+		oldProject.TeamID = info.TeamID
+	}
+	if info.Area != "" {
+		oldProject.Area = info.Area
+	}
+	if info.RecordAlertDay != 0 {
+		oldProject.RecordAlertDay = info.RecordAlertDay
 	}
 	err = repo.UpdateProject(projectID, *oldProject, info.User)
 	if err != nil {
