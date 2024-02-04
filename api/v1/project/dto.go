@@ -192,3 +192,10 @@ type NodeAudit struct {
 	AuditLevel int
 	AuditTo    int64
 }
+
+type ProjectRecordStatusResponse struct {
+	StartDate      string `json:"start_date"`
+	RecordCount    int    `json:"record_count"`
+	LastRecordDate string `json:"last_record_date"`
+	NoRecordDay    int    `json:"no_record_day"`
+}

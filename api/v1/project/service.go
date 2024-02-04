@@ -1301,3 +1301,40 @@ func (s *projectService) GetProjectReportUnreadList(userID int64) (*[]ProjectRep
 	}
 	return list, err
 }
+
+func (s *projectService) GetProjectRecordStatus(projectID, organizationID int64) (*ProjectRecordStatusResponse, error) {
+	var res ProjectRecordStatusResponse
+	var lastRecordDate string
+	db := database.InitMySQL()
+	query := NewProjectQuery(db)
+	project, err := query.GetProjectByID(projectID, organizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return nil, errors.New(msg)
+	}
+	count, err := query.GetProjectRecordCount(projectID)
+	if err != nil {
+		msg := "获取项目记录数量失败"
+		return nil, errors.New(msg)
+	}
+	res.StartDate = project.Created.Format("2006-01-02")
+	res.RecordCount = count
+	res.LastRecordDate = project.LastRecordDate
+	if project.LastRecordDate == "" {
+		lastRecordDate = res.StartDate
+	} else {
+		lastRecordDate = project.LastRecordDate
+	}
+	recordDateTime, err := time.Parse("2006-01-02", lastRecordDate)
+	if err != nil {
+		return nil, err
+	}
+	today, err := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+	if err != nil {
+		return nil, err
+	}
+	interval := today.Sub(recordDateTime)
+	res.NoRecordDay = int(interval.Hours() / 24)
+	return &res, nil
+
+}

@@ -862,3 +862,29 @@ func WxGetUnreadReportList(c *gin.Context) {
 func WxGetProjectList(c *gin.Context) {
 	GetProjectList(c)
 }
+
+// @Summary 项目记录状态
+// @Id M036
+// @Tags 项目管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目ID"
+// @Success 200 object response.SuccessRes{data=[]ProjectRecordStatusResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /projects/:id/recordStatus [GET]
+func GetProjectRecordStatus(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	projectService := NewProjectService()
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	res, err := projectService.GetProjectRecordStatus(uri.ID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, res)
+}
