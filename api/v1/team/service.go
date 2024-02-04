@@ -72,13 +72,6 @@ func (s *teamService) GetTeamList(filter TeamFilter, organizationID int64) (int,
 }
 
 func (s *teamService) UpdateTeam(teamID int64, info TeamNew, organizationID int64) (*Team, error) {
-	if organizationID == 0 && info.OrganizationID == 0 {
-		msg := "组织ID错误"
-		return nil, errors.New(msg)
-	}
-	if organizationID != 0 {
-		info.OrganizationID = organizationID
-	}
 	db := database.InitMySQL()
 	tx, err := db.Begin()
 	if err != nil {
@@ -86,7 +79,12 @@ func (s *teamService) UpdateTeam(teamID int64, info TeamNew, organizationID int6
 	}
 	defer tx.Rollback()
 	repo := NewTeamRepository(tx)
-	exist, err := repo.CheckNameExist(info.Name, info.OrganizationID, teamID)
+	oldTeam, err := repo.GetTeamByID(teamID, organizationID)
+	if err != nil {
+		msg := "获取班组信息失败"
+		return nil, errors.New(msg)
+	}
+	exist, err := repo.CheckNameExist(info.Name, oldTeam.OrganizationID, teamID)
 	if err != nil {
 		return nil, err
 	}

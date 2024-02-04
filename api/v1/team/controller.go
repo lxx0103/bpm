@@ -15,7 +15,8 @@ import (
 // @Produce application/json
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
-// @Param name query string false "班组编码"
+// @Param name query string false "班组名称"
+// @Param status query string false "状态"
 // @Param organization_id query int64 false "组织ID"
 // @Success 200 object response.ListRes{data=[]TeamResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误

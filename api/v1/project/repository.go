@@ -2,6 +2,7 @@ package project
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -394,6 +395,15 @@ func (r *projectRepository) UpdateProjectReportStatus(id int64, status int, byUs
 		updated_by = ?
 		WHERE id = ?
 	`, status, time.Now(), byUser, id)
+	return err
+}
+func (r *projectRepository) UpdateProjectRecordDate(id int64) error {
+	fmt.Println(id)
+	_, err := r.tx.Exec(`
+		UPDATE projects 
+		SET last_record_date = (SELECT record_date from project_records WHERE project_id = ? and status = 1 order by record_date desc limit 1)
+		WHERE id = ?
+	`, id, id)
 	return err
 }
 func (r *projectRepository) CheckViewExist(reportID, userID int64) (int, error) {

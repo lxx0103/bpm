@@ -952,6 +952,11 @@ func (s *projectService) NewProjectRecord(projectID int64, info ProjectRecordNew
 			return errors.New(msg)
 		}
 	}
+	err = repo.UpdateProjectRecordDate(projectID)
+	if err != nil {
+		msg := "更新最后报告日期失败"
+		return errors.New(msg)
+	}
 	tx.Commit()
 	return nil
 }
@@ -1104,6 +1109,11 @@ func (s *projectService) DeleteProjectRecord(recordID, userID int64, userName st
 		msg := "删除报告图片失败" + err.Error()
 		return errors.New(msg)
 	}
+	err = repo.UpdateProjectRecordDate(record.ProjectID)
+	if err != nil {
+		msg := "更新最后报告日期失败"
+		return errors.New(msg)
+	}
 	tx.Commit()
 	return err
 }
@@ -1161,6 +1171,11 @@ func (s *projectService) UpdateProjectRecord(recordID int64, info ProjectRecordN
 			msg := "创建图片失败"
 			return errors.New(msg)
 		}
+	}
+	err = repo.UpdateProjectRecordDate(oldRecord.ProjectID)
+	if err != nil {
+		msg := "更新最后报告日期失败"
+		return errors.New(msg)
 	}
 	tx.Commit()
 	return nil
