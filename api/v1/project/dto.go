@@ -56,7 +56,7 @@ type AssignedProjectFilter struct {
 	Name         string `form:"name" binding:"omitempty"`
 	Status       int    `form:"status" binding:"omitempty,oneof=1 2"`
 	Type         int    `form:"type" binding:"omitempty,oneof=1 2"`
-	RecordStatus string `form:"record_status" binding:"omitempty,oneof=over active"`
+	RecordStatus string `form:"record_status" binding:"omitempty,oneof=over all"`
 	PageId       int    `form:"page_id" binding:"required,min=1"`
 	PageSize     int    `form:"page_size" binding:"required,min=5,max=200"`
 }
