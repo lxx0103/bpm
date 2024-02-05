@@ -20,9 +20,9 @@ func (r *projectQuery) GetProjectByID(id int64, organizationID int64) (*Project,
 	var project Project
 	var err error
 	if organizationID != 0 {
-		err = r.conn.Get(&project, `SELECT id, organization_id, template_id, client_id, name, type, location, longitude, latitude, checkin_distance, priority, progress, team_id, area, record_alert_day, IFNULL(last_record_date, "") as last_record_date, status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND organization_id = ? AND status > 0`, id, organizationID)
+		err = r.conn.Get(&project, `SELECT id, organization_id, template_id, client_id, name, type, location, longitude, latitude, checkin_distance, priority, progress, area, record_alert_day, IFNULL(last_record_date, "") as last_record_date, status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND organization_id = ? AND status > 0`, id, organizationID)
 	} else {
-		err = r.conn.Get(&project, `SELECT id, organization_id, template_id, client_id, name, type, location, longitude, latitude, checkin_distance, priority, progress, team_id, area, record_alert_day, IFNULL(last_record_date, "") as last_record_date, status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND status > 0`, id)
+		err = r.conn.Get(&project, `SELECT id, organization_id, template_id, client_id, name, type, location, longitude, latitude, checkin_distance, priority, progress, area, record_alert_day, IFNULL(last_record_date, "") as last_record_date, status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND status > 0`, id)
 	}
 	if err != nil {
 		return nil, err
@@ -71,14 +71,12 @@ func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64
 	args = append(args, filter.PageSize)
 	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT p.id as id, p.organization_id as organization_id, o.name as organization_name, p.client_id as client_id, IFNULL(c.name, "内部流程") as client_name, p.name as name, p.type as type, p.location as location, p.longitude as longitude, p.latitude as latitude, p.checkin_distance as checkin_distance, p.priority, p.team_id as team_id, IFNULL(t.name, "") as team_name, p.area, p.record_alert_day, IFNULL(p.last_record_date, "") as last_record_date, p.status as status
+		SELECT p.id as id, p.organization_id as organization_id, o.name as organization_name, p.client_id as client_id, IFNULL(c.name, "内部流程") as client_name, p.name as name, p.type as type, p.location as location, p.longitude as longitude, p.latitude as latitude, p.checkin_distance as checkin_distance, p.priority, p.area, p.record_alert_day, IFNULL(p.last_record_date, "") as last_record_date, p.status as status
 		FROM projects p
 		LEFT JOIN organizations o
 		ON p.organization_id = o.id
 		LEFT JOIN clients c
 		ON p.client_id = c.id
-		LEFT JOIN teams t
-		ON p.team_id = t.id
 		WHERE `+strings.Join(where, " AND ")+`
 		ORDER BY p.id desc
 		LIMIT ?, ?
@@ -105,7 +103,7 @@ func (r *projectQuery) GetProjectListByCreate(userName string, organization_id i
 	args = append(args, filter.PageSize)
 	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.team_id as team_id, IFNULL(t2.name, "") as team_name, p.area, p.record_alert_day, IFNULL(p.last_record_date, "") as last_record_date, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
+		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.area, p.record_alert_day, IFNULL(p.last_record_date, "") as last_record_date, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
 		FROM projects p
 		LEFT JOIN organizations o
 		ON p.organization_id = o.id
@@ -113,8 +111,6 @@ func (r *projectQuery) GetProjectListByCreate(userName string, organization_id i
 		ON p.template_id = t.id
 		LEFT JOIN clients c
 		ON p.client_id = c.id 
-		LEFT JOIN teams t2
-		ON p.team_id = t2.id
 		WHERE `+strings.Join(where, " AND ")+`
 		ORDER BY p.id desc
 		LIMIT ?, ?
@@ -170,7 +166,7 @@ func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, us
 	args = append(args, filter.PageSize)
 	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.team_id as team_id, IFNULL(t2.name, "") as team_name, p.area, p.record_alert_day, IFNULL(p.last_record_date, "") as last_record_date, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
+		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.area, p.record_alert_day, IFNULL(p.last_record_date, "") as last_record_date, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
 		FROM projects p
 		LEFT JOIN organizations o
 		ON p.organization_id = o.id
@@ -178,8 +174,6 @@ func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, us
 		ON p.template_id = t.id
 		LEFT JOIN clients c
 		ON p.client_id = c.id
-		LEFT JOIN teams t2
-		ON p.team_id = t2.id
 		WHERE p.id IN 
 		(
 			SELECT project_id FROM project_members WHERE user_id = ? AND status > 0
@@ -239,7 +233,7 @@ func (r *projectQuery) GetProjectListByClientID(userID int64, organization_id in
 	args = append(args, filter.PageSize)
 	var projects []ProjectResponse
 	err := r.conn.Select(&projects, `
-		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.team_id as team_id, IFNULL(t2.name, "") as team_name, p.area, p.record_alert_day, IFNULL(p.last_record_date, "") as last_record_date, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
+		SELECT p.id, p.organization_id, o.name as organization_name, p.template_id, IFNULL(t.name, "") as template_name, p.client_id, IFNULL(c.name, "") as client_name, p.name, p.type, p.location, p.longitude, p.latitude, p.checkin_distance, p.priority, p.area, p.record_alert_day, IFNULL(p.last_record_date, "") as last_record_date, p.progress, p.status, p.created, p.created_by, p.updated, p.updated_by
 		FROM projects p
 		LEFT JOIN organizations o
 		ON p.organization_id = o.id
@@ -247,8 +241,6 @@ func (r *projectQuery) GetProjectListByClientID(userID int64, organization_id in
 		ON p.template_id = t.id
 		LEFT JOIN clients c
 		ON p.client_id = c.id 
-		LEFT JOIN teams t2
-		ON p.team_id = t2.id
 		WHERE `+strings.Join(where, " AND ")+`
 		LIMIT ?, ?
 	`, args...)
@@ -558,14 +550,16 @@ func (r *projectQuery) GetProjectSumByStatus(organizationID int64) (*[]ProjectSu
 func (r *projectQuery) GetProjectSumByTeam(organizationID int64) (*[]ProjectSumByTeam, error) {
 	var records []ProjectSumByTeam
 	err := r.conn.Select(&records, `
-		SELECT count(CASE WHEN p.status = 1 Then 1 END) as in_progress,
-		count(CASE WHEN p.status = 2 Then 1 END) as completed,
+		SELECT count(CASE WHEN status = 1 Then 1 END) as in_progress,
+		count(CASE WHEN status = 2 Then 1 END) as completed,
 		count(1) as total,
-		IFNULL(t.name,"未分组") as team_name
-		FROM projects p
-		LEFT JOIN teams t 
-		ON p.team_id = t.id
-		WHERE p.status in (1, 2) and p.organization_id = ?
+		team_name
+		FROM 
+		(
+			SELECT p.status as status, pt.team_id as team_id, t.name as team_name
+			FROM project_teams pt left join projects p on pt.project_id = p.id left join teams t on t.id = pt.team_id
+			WHERE p.status in (1,2) and pt.status > 0 and p.organization_id = ?
+		) as t
 		GROUP BY team_id
 	`, organizationID)
 	if err != nil {
@@ -606,4 +600,18 @@ func (r *projectQuery) GetProjectSumByArea(organizationID int64) (*[]ProjectSumB
 		return nil, err
 	}
 	return &records, nil
+}
+
+func (r *projectQuery) GetProjectTeam(projectID int64) (*[]ProjectTeamResponse, error) {
+	where, args := []string{"pt.status > 0"}, []interface{}{}
+	where, args = append(where, "pt.project_id = ?"), append(args, projectID)
+	var projectReports []ProjectTeamResponse
+	err := r.conn.Select(&projectReports, `
+		SELECT pt.id, pt.project_id, pt.team_id, t.name as team_name
+		FROM project_teams pt
+		LEFT JOIN teams t
+		ON t.id = pt.team_id
+		WHERE `+strings.Join(where, " AND ")+`
+	`, args...)
+	return &projectReports, err
 }

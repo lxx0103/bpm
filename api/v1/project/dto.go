@@ -21,7 +21,7 @@ type ProjectNew struct {
 	Latitude        float64 `json:"latitude" binding:"omitempty"`
 	CheckinDistance int     `json:"checkin_distance" binding:"omitempty"`
 	Priority        int     `json:"priority" binding:"required,oneof=1 2 3"`
-	TeamID          int64   `json:"team_id" binding:"omitempty"`
+	TeamID          []int64 `json:"team_id" binding:"omitempty"`
 	Area            string  `json:"area" binding:"omitempty,min=1,max=64"`
 	RecordAlertDay  int     `json:"record_alert_day" binding:"omitempty,min=1"`
 	User            string  `json:"user" swaggerignore:"true"`
@@ -40,7 +40,7 @@ type ProjectUpdate struct {
 	Latitude        float64 `json:"latitude" binding:"omitempty"`
 	CheckinDistance int     `json:"checkin_distance" binding:"omitempty"`
 	Priority        int     `json:"priority" binding:"omitempty,oneof=1 2 3"`
-	TeamID          int64   `json:"team_id" binding:"omitempty"`
+	TeamID          []int64 `json:"team_id" binding:"omitempty"`
 	Area            string  `json:"area" binding:"omitempty,min=1,max=64"`
 	RecordAlertDay  int     `json:"record_alert_day" binding:"omitempty,min=1"`
 	User            string  `json:"user" swaggerignore:"true"`
@@ -76,8 +76,7 @@ type ProjectResponse struct {
 	Latitude         float64               `db:"latitude" json:"latitude"`
 	CheckinDistance  int                   `db:"checkin_distance" json:"checkin_distance"`
 	Priority         int                   `db:"priority" json:"priority"`
-	TeamID           int64                 `db:"team_id" json:"team_id"`
-	TeamName         string                `db:"team_name" json:"team_name"`
+	Teams            []ProjectTeamResponse `json:"teams"`
 	Area             string                `db:"area" json:"area"`
 	RecordAlertDay   int                   `db:"record_alert_day" json:"record_alert_day"`
 	LastRecordDate   string                `db:"last_record_date" json:"last_record_date"`
@@ -228,4 +227,11 @@ type ProjectSumByArea struct {
 	InProgress int    `db:"in_progress" json:"in_progress"`
 	Completed  int    `db:"completed" json:"completed"`
 	Total      int    `db:"total" json:"total"`
+}
+
+type ProjectTeamResponse struct {
+	ID        int64  `db:"id" json:"id"`
+	ProjectID int64  `db:"project_id" json:"project_id"`
+	TeamID    int64  `db:"team_id" json:"team_id"`
+	TeamName  string `db:"team_name" json:"team_name"`
 }

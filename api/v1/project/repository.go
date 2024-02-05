@@ -30,7 +30,6 @@ func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64)
 			latitude,
 			checkin_distance,
 			priority,
-			team_id,
 			area,
 			record_alert_day,
 			status,
@@ -39,8 +38,8 @@ func (r *projectRepository) CreateProject(info ProjectNew, organizationID int64)
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, organizationID, info.TemplateID, info.ClientID, info.Name, info.Type, info.Location, info.Longitude, info.Latitude, info.CheckinDistance, info.Priority, info.TeamID, info.Area, info.RecordAlertDay, 1, time.Now(), info.User, time.Now(), info.User)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, organizationID, info.TemplateID, info.ClientID, info.Name, info.Type, info.Location, info.Longitude, info.Latitude, info.CheckinDistance, info.Priority, info.Area, info.RecordAlertDay, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -61,13 +60,12 @@ func (r *projectRepository) UpdateProject(id int64, info Project, byUser string)
 		latitude = ?,
 		checkin_distance = ?,
 		priority = ?,
-		team_id = ?,
 		area = ?,
 		record_alert_day = ?,
 		updated = ?,
 		updated_by = ? 
 		WHERE id = ?
-	`, info.Name, info.ClientID, info.Location, info.Longitude, info.Latitude, info.CheckinDistance, info.Priority, info.TeamID, info.Area, info.RecordAlertDay, time.Now(), byUser, id)
+	`, info.Name, info.ClientID, info.Location, info.Longitude, info.Latitude, info.CheckinDistance, info.Priority, info.Area, info.RecordAlertDay, time.Now(), byUser, id)
 	return err
 }
 
@@ -75,11 +73,11 @@ func (r *projectRepository) GetProjectByID(id int64, organizationID int64) (*Pro
 	var res Project
 	var row *sql.Row
 	if organizationID != 0 {
-		row = r.tx.QueryRow(`SELECT id, organization_id, name, type, location, longitude, latitude, checkin_distance, team_id, area, record_alert_day, IFNULL(last_record_date, ""), status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
+		row = r.tx.QueryRow(`SELECT id, organization_id, name, type, location, longitude, latitude, checkin_distance, area, record_alert_day, IFNULL(last_record_date, ""), status, created, created_by, updated, updated_by FROM projects WHERE id = ? AND organization_id = ? LIMIT 1`, id, organizationID)
 	} else {
-		row = r.tx.QueryRow(`SELECT id, organization_id, name, type, location, longitude, latitude, checkin_distance, team_id, area, record_alert_day, IFNULL(last_record_date, ""), status, created, created_by, updated, updated_by FROM projects WHERE id = ? LIMIT 1`, id)
+		row = r.tx.QueryRow(`SELECT id, organization_id, name, type, location, longitude, latitude, checkin_distance, area, record_alert_day, IFNULL(last_record_date, ""), status, created, created_by, updated, updated_by FROM projects WHERE id = ? LIMIT 1`, id)
 	}
-	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.Type, &res.Location, &res.Longitude, &res.Latitude, &res.CheckinDistance, &res.TeamID, &res.Area, &res.RecordAlertDay, &res.LastRecordDate, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
+	err := row.Scan(&res.ID, &res.OrganizationID, &res.Name, &res.Type, &res.Location, &res.Longitude, &res.Latitude, &res.CheckinDistance, &res.Area, &res.RecordAlertDay, &res.LastRecordDate, &res.Status, &res.Created, &res.CreatedBy, &res.Updated, &res.UpdatedBy)
 	if err != nil {
 		return nil, err
 	}
@@ -414,4 +412,32 @@ func (r *projectRepository) CheckViewExist(reportID, userID int64) (int, error) 
 		return 0, err
 	}
 	return res, nil
+}
+
+func (r *projectRepository) CreateProjectTeam(projectID, teamID int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		INSERT INTO project_teams
+		(
+			project_id,
+			team_id,
+			status,
+			created,
+			created_by,
+			updated,
+			updated_by
+		)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`, projectID, teamID, 1, time.Now(), byUser, time.Now(), byUser)
+	return err
+}
+
+func (r *projectRepository) DeleteProjectTeam(id int64, byUser string) error {
+	_, err := r.tx.Exec(`
+		Update project_teams SET 
+		status = -1,
+		updated = ?,
+		updated_by = ? 
+		WHERE id = ?
+	`, time.Now(), byUser, id)
+	return err
 }

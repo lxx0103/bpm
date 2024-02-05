@@ -27,7 +27,17 @@ func (s *projectService) GetProjectByID(id int64, organizationID int64) (*Projec
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
 	project, err := query.GetProjectByID(id, organizationID)
-	return project, err
+	if err != nil {
+		msg := "获取项目失败"
+		return nil, errors.New(msg)
+	}
+	teams, err := query.GetProjectTeam(id)
+	if err != nil {
+		msg := "获取项目班组失败"
+		return nil, errors.New(msg)
+	}
+	project.Teams = *teams
+	return project, nil
 }
 
 func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Project, error) {
@@ -61,14 +71,6 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 	if exist != 0 {
 		msg := "项目名称重复"
 		return nil, errors.New(msg)
-	}
-	if info.TeamID != 0 {
-		teamRepo := team.NewTeamRepository(tx)
-		_, err = teamRepo.GetTeamByID(info.TeamID, organizationID)
-		if err != nil {
-			msg := "班组不存在"
-			return nil, errors.New(msg)
-		}
 	}
 	info.Type = template.Type
 	projectID, err := repo.CreateProject(info, template.OrganizationID)
@@ -190,6 +192,21 @@ func (s *projectService) NewProject(info ProjectNew, organizationID int64) (*Pro
 		return nil, err
 	}
 	memberRepo.CreateProjectMember(projectID, projectMember, organizationID, info.User)
+	if len(info.TeamID) > 0 {
+		teamRepo := team.NewTeamRepository(tx)
+		for _, teamID := range info.TeamID {
+			_, err = teamRepo.GetTeamByID(teamID, organizationID)
+			if err != nil {
+				msg := "班组不存在"
+				return nil, errors.New(msg)
+			}
+			err = repo.CreateProjectTeam(projectID, teamID, info.User)
+			if err != nil {
+				msg := "创建班组信息失败"
+				return nil, errors.New(msg)
+			}
+		}
+	}
 	project, err := repo.GetProjectByID(projectID, organizationID)
 	if err != nil {
 		return nil, err
@@ -222,6 +239,14 @@ func (s *projectService) GetProjectList(filter ProjectFilter, organizationID int
 	if err != nil {
 		return 0, nil, err
 	}
+	for k, v := range *list {
+		teams, err := query.GetProjectTeam(v.ID)
+		if err != nil {
+			msg := "获取项目班组失败" + err.Error()
+			return 0, nil, errors.New(msg)
+		}
+		(*list)[k].Teams = *teams
+	}
 	return count, list, err
 }
 
@@ -252,14 +277,6 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 		}
 		oldProject.Name = info.Name
 	}
-	if info.TeamID != 0 {
-		teamRepo := team.NewTeamRepository(tx)
-		_, err = teamRepo.GetTeamByID(info.TeamID, organizationID)
-		if err != nil {
-			msg := "班组不存在"
-			return nil, errors.New(msg)
-		}
-	}
 	if info.ClientID != 0 {
 		oldProject.ClientID = info.ClientID
 	}
@@ -278,9 +295,6 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 	if info.Priority != 0 {
 		oldProject.Priority = info.Priority
 	}
-	if info.TeamID != 0 {
-		oldProject.TeamID = info.TeamID
-	}
 	if info.Area != "" {
 		oldProject.Area = info.Area
 	}
@@ -290,6 +304,25 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 	err = repo.UpdateProject(projectID, *oldProject, info.User)
 	if err != nil {
 		return nil, err
+	}
+	err = repo.DeleteProjectTeam(projectID, info.User)
+	if err != nil {
+		return nil, err
+	}
+	if len(info.TeamID) > 0 {
+		teamRepo := team.NewTeamRepository(tx)
+		for _, teamID := range info.TeamID {
+			_, err = teamRepo.GetTeamByID(teamID, organizationID)
+			if err != nil {
+				msg := "班组不存在"
+				return nil, errors.New(msg)
+			}
+			err = repo.CreateProjectTeam(projectID, teamID, info.User)
+			if err != nil {
+				msg := "创建班组信息失败"
+				return nil, errors.New(msg)
+			}
+		}
 	}
 	project, err := repo.GetProjectByID(projectID, organizationID)
 	if err != nil {
@@ -333,6 +366,10 @@ func (s *projectService) DeleteProject(projectID int64, organizationID int64, us
 		return err
 	}
 	err = repo.DeleteAssignmentByProjectID(projectID, user)
+	if err != nil {
+		return err
+	}
+	err = repo.DeleteProjectTeam(projectID, user)
 	if err != nil {
 		return err
 	}
