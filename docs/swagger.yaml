@@ -11774,6 +11774,38 @@ paths:
       summary: 根据ID更新项目
       tags:
       - 项目管理-小程序接口
+  /wx/projects/:id/recordStatus:
+    get:
+      consumes:
+      - application/json
+      operationId: M041
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/project.ProjectRecordStatusResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 微信项目记录状态
+      tags:
+      - 项目管理-小程序接口
   /wx/projects/:id/records:
     get:
       consumes:

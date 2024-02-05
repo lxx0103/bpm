@@ -994,3 +994,17 @@ func GetProjectSumByArea(c *gin.Context) {
 	}
 	response.Response(c, res)
 }
+
+// @Summary 微信项目记录状态
+// @Id M041
+// @Tags 项目管理-小程序接口
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目ID"
+// @Success 200 object response.SuccessRes{data=[]ProjectRecordStatusResponse} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/projects/:id/recordStatus [GET]
+func WxGetProjectRecordStatus(c *gin.Context) {
+	GetProjectRecordStatus(c)
+}

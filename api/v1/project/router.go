@@ -51,6 +51,8 @@ func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/projectrecords/:id", WxGetProjectRecordByID)
 	g.DELETE("/wx/projectrecords/:id", WxDeleteProjectRecord)
 	g.PUT("/wx/projectrecords/:id", WxUpdateProjectRecord)
+
+	g.GET("/wx/projects/:id/recordStatus", WxGetProjectRecordStatus)
 }
 
 func PortalRouters(g *gin.RouterGroup) {
