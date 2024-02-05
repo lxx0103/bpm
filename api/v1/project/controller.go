@@ -833,7 +833,6 @@ func WxViewProjectReport(c *gin.Context) {
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
-// @Param organization_id query int false "组织ID"
 // @Success 200 object response.SuccessRes{data=[]ProjectReportResponse} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/projectreports/unread [GET]
@@ -897,6 +896,10 @@ func GetProjectRecordStatus(c *gin.Context) {
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
+// @Param organization_id query int false "组织ID"
+// @Param from query string true "开始时间（包括）"
+// @Param to query string true "结束时间（不包括）"
+// @Param organization_id query int false "组织ID"
 // @Success 200 object response.SuccessRes{data=[]ProjectSumByStatus} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /projects/sumbystatus [GET]
@@ -923,6 +926,9 @@ func GetProjectSumByStatus(c *gin.Context) {
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
+// @Param organization_id query int false "组织ID"
+// @Param from query string true "开始时间（包括）"
+// @Param to query string true "结束时间（不包括）"
 // @Success 200 object response.SuccessRes{data=[]ProjectSumByTeam} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /projects/sumbyteam [GET]
@@ -949,6 +955,9 @@ func GetProjectSumByTeam(c *gin.Context) {
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
+// @Param organization_id query int false "组织ID"
+// @Param from query string true "开始时间（包括）"
+// @Param to query string true "结束时间（不包括）"
 // @Success 200 object response.SuccessRes{data=[]ProjectSumByUser} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /projects/sumbyuser [GET]
@@ -975,6 +984,9 @@ func GetProjectSumByUser(c *gin.Context) {
 // @version 1.0
 // @Accept application/json
 // @Produce application/json
+// @Param organization_id query int false "组织ID"
+// @Param from query string true "开始时间（包括）"
+// @Param to query string true "结束时间（不包括）"
 // @Success 200 object response.SuccessRes{data=[]ProjectSumByArea} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /projects/sumbyarea [GET]

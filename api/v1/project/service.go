@@ -1386,7 +1386,7 @@ func (s *projectService) GetProjectSumByStatus(filter ProjectSumFilter, organiza
 	}
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
-	res, err := query.GetProjectSumByStatus(filter.OrganizationID)
+	res, err := query.GetProjectSumByStatus(filter)
 	return res, err
 }
 
@@ -1400,7 +1400,7 @@ func (s *projectService) GetProjectSumByTeam(filter ProjectSumFilter, organizati
 	}
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
-	res, err := query.GetProjectSumByTeam(filter.OrganizationID)
+	res, err := query.GetProjectSumByTeam(filter)
 	return res, err
 }
 
@@ -1414,7 +1414,7 @@ func (s *projectService) GetProjectSumByUser(filter ProjectSumFilter, organizati
 	}
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
-	res, err := query.GetProjectSumByUser(filter.OrganizationID)
+	res, err := query.GetProjectSumByUser(filter)
 	return res, err
 }
 
@@ -1428,6 +1428,6 @@ func (s *projectService) GetProjectSumByArea(filter ProjectSumFilter, organizati
 	}
 	db := database.InitMySQL()
 	query := NewProjectQuery(db)
-	res, err := query.GetProjectSumByArea(filter.OrganizationID)
+	res, err := query.GetProjectSumByArea(filter)
 	return res, err
 }

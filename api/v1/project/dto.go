@@ -201,7 +201,9 @@ type ProjectRecordStatusResponse struct {
 }
 
 type ProjectSumFilter struct {
-	OrganizationID int64 `json:"organization_id" swaggerignore:"true"`
+	OrganizationID int64  `json:"organization_id" swaggerignore:"true"`
+	From           string `form:"from" binding:"required,datetime=2006-01-02"`
+	To             string `form:"to" binding:"required,datetime=2006-01-02"`
 }
 
 type ProjectSumByStatus struct {

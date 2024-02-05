@@ -7618,6 +7618,28 @@ const docTemplate = `{
                 ],
                 "summary": "楼盘项目统计",
                 "operationId": "M040",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间（包括）",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间（不包括）",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -7662,6 +7684,34 @@ const docTemplate = `{
                 ],
                 "summary": "全部项目统计",
                 "operationId": "M037",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间（包括）",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间（不包括）",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -7706,6 +7756,28 @@ const docTemplate = `{
                 ],
                 "summary": "班组项目统计",
                 "operationId": "M038",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间（包括）",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间（不包括）",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -7750,6 +7822,28 @@ const docTemplate = `{
                 ],
                 "summary": "负责人项目统计",
                 "operationId": "M039",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间（包括）",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间（不包括）",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -13920,14 +14014,6 @@ const docTemplate = `{
                 ],
                 "summary": "项目报告未读列表",
                 "operationId": "M034",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "组织ID",
-                        "name": "organization_id",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -19405,8 +19491,11 @@ const docTemplate = `{
                 "status": {
                     "type": "integer"
                 },
-                "team_id": {
-                    "type": "integer"
+                "teams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/project.ProjectTeamResponse"
+                    }
                 },
                 "template_id": {
                     "type": "integer"
@@ -19471,7 +19560,10 @@ const docTemplate = `{
                     "minimum": 1
                 },
                 "team_id": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "template_id": {
                     "type": "integer",
@@ -19735,11 +19827,11 @@ const docTemplate = `{
                 "status": {
                     "type": "integer"
                 },
-                "team_id": {
-                    "type": "integer"
-                },
-                "team_name": {
-                    "type": "string"
+                "teams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/project.ProjectTeamResponse"
+                    }
                 },
                 "template_id": {
                     "type": "integer"
@@ -19820,6 +19912,23 @@ const docTemplate = `{
                 }
             }
         },
+        "project.ProjectTeamResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "team_id": {
+                    "type": "integer"
+                },
+                "team_name": {
+                    "type": "string"
+                }
+            }
+        },
         "project.ProjectUpdate": {
             "type": "object",
             "properties": {
@@ -19864,7 +19973,10 @@ const docTemplate = `{
                     "minimum": 1
                 },
                 "team_id": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },

@@ -2377,8 +2377,10 @@ definitions:
         type: integer
       status:
         type: integer
-      team_id:
-        type: integer
+      teams:
+        items:
+          $ref: '#/definitions/project.ProjectTeamResponse'
+        type: array
       template_id:
         type: integer
       type:
@@ -2421,7 +2423,9 @@ definitions:
         minimum: 1
         type: integer
       team_id:
-        type: integer
+        items:
+          type: integer
+        type: array
       template_id:
         minimum: 1
         type: integer
@@ -2600,10 +2604,10 @@ definitions:
         type: integer
       status:
         type: integer
-      team_id:
-        type: integer
-      team_name:
-        type: string
+      teams:
+        items:
+          $ref: '#/definitions/project.ProjectTeamResponse'
+        type: array
       template_id:
         type: integer
       template_name:
@@ -2655,6 +2659,17 @@ definitions:
       user_name:
         type: string
     type: object
+  project.ProjectTeamResponse:
+    properties:
+      id:
+        type: integer
+      project_id:
+        type: integer
+      team_id:
+        type: integer
+      team_name:
+        type: string
+    type: object
   project.ProjectUpdate:
     properties:
       area:
@@ -2688,7 +2703,9 @@ definitions:
         minimum: 1
         type: integer
       team_id:
-        type: integer
+        items:
+          type: integer
+        type: array
     type: object
   response.ErrorRes:
     properties:
@@ -7732,6 +7749,21 @@ paths:
       consumes:
       - application/json
       operationId: M040
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 开始时间（包括）
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: 结束时间（不包括）
+        in: query
+        name: to
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -7758,6 +7790,25 @@ paths:
       consumes:
       - application/json
       operationId: M037
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 开始时间（包括）
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: 结束时间（不包括）
+        in: query
+        name: to
+        required: true
+        type: string
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
       produces:
       - application/json
       responses:
@@ -7784,6 +7835,21 @@ paths:
       consumes:
       - application/json
       operationId: M038
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 开始时间（包括）
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: 结束时间（不包括）
+        in: query
+        name: to
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -7810,6 +7876,21 @@ paths:
       consumes:
       - application/json
       operationId: M039
+      parameters:
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 开始时间（包括）
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: 结束时间（不包括）
+        in: query
+        name: to
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -11579,11 +11660,6 @@ paths:
       consumes:
       - application/json
       operationId: M034
-      parameters:
-      - description: 组织ID
-        in: query
-        name: organization_id
-        type: integer
       produces:
       - application/json
       responses:
