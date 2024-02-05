@@ -10109,6 +10109,12 @@ const docTemplate = `{
                         "description": "项目类型",
                         "name": "type",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态（over超时all全部）",
+                        "name": "record_status",
+                        "in": "query"
                     }
                 ],
                 "responses": {

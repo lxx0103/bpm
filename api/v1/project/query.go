@@ -163,6 +163,7 @@ func (r *projectQuery) GetProjectListByAssigned(filter AssignedProjectFilter, us
 	if v := filter.RecordStatus; v == "over" {
 		where = append(where, "DATEDIFF(NOW(), IFNULL(p.last_record_date, p.created)) > p.record_alert_day")
 		where = append(where, "record_alert_day > 0")
+		where = append(where, "status = 1")
 	}
 	args = append(args, organizationID)
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
@@ -207,6 +208,7 @@ func (r *projectQuery) GetProjectCountByAssigned(filter AssignedProjectFilter, u
 	if v := filter.RecordStatus; v == "over" {
 		where = append(where, "DATEDIFF(NOW(), IFNULL(last_record_date, created)) > record_alert_day")
 		where = append(where, "record_alert_day > 0")
+		where = append(where, "status = 1")
 	}
 	args = append(args, organizationID)
 	var count int

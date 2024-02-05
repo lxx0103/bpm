@@ -9250,6 +9250,10 @@ paths:
         in: query
         name: type
         type: integer
+      - description: 状态（over超时all全部）
+        in: query
+        name: record_status
+        type: string
       produces:
       - application/json
       responses:

@@ -210,6 +210,7 @@ func WxGetMyProjects(c *gin.Context) {
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Param type query int false "项目类型"
+// @Param record_status query string false "状态（over超时all全部）"
 // @Success 200 object response.ListRes{data=[]Project} 成功
 // @Failure 400 object response.ErrorRes 内部错误
 // @Router /wx/assignedprojects [GET]
