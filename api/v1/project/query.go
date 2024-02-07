@@ -43,6 +43,24 @@ func (r *projectQuery) GetProjectCount(filter ProjectFilter, organizationID int6
 	} else if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
+	if v := filter.Created; v != "" {
+		where, args = append(where, "created_by = ?"), append(args, v)
+	}
+	if v := filter.Area; v != "" {
+		where, args = append(where, "area = ?"), append(args, v)
+	}
+	if v := filter.Status; v != 0 {
+		where, args = append(where, "status = ?"), append(args, v)
+	}
+	if v := filter.TeamID; v != 0 {
+		where, args = append(where, "id in (SELECT project_id FROM project_teams WHERE team_id = ? and status > 0)"), append(args, v)
+	}
+	if v := filter.From; v != "" {
+		where, args = append(where, "created >= ?"), append(args, v)
+	}
+	if v := filter.To; v != "" {
+		where, args = append(where, "created < ?"), append(args, v)
+	}
 	var count int
 	err := r.conn.Get(&count, `
 		SELECT count(1) as count 
@@ -66,6 +84,24 @@ func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64
 		where, args = append(where, "p.organization_id = ?"), append(args, v)
 	} else if v := filter.OrganizationID; v != 0 {
 		where, args = append(where, "p.organization_id = ?"), append(args, v)
+	}
+	if v := filter.Created; v != "" {
+		where, args = append(where, "p.created_by = ?"), append(args, v)
+	}
+	if v := filter.Area; v != "" {
+		where, args = append(where, "p.area = ?"), append(args, v)
+	}
+	if v := filter.Status; v != 0 {
+		where, args = append(where, "p.status = ?"), append(args, v)
+	}
+	if v := filter.TeamID; v != 0 {
+		where, args = append(where, "p.id in (SELECT project_id FROM project_teams WHERE team_id = ? and status > 0)"), append(args, v)
+	}
+	if v := filter.From; v != "" {
+		where, args = append(where, "p.created >= ?"), append(args, v)
+	}
+	if v := filter.To; v != "" {
+		where, args = append(where, "p.created < ?"), append(args, v)
 	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)

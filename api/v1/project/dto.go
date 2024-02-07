@@ -7,6 +7,12 @@ type ProjectFilter struct {
 	OrganizationID int64  `form:"organization_id" binding:"omitempty,min=1"`
 	Type           int    `form:"type" binding:"omitempty,oneof=1 2"`
 	Priority       int    `form:"priority" binding:"omitempty,oneof=1 2 3"`
+	Created        string `form:"created" binding:"omitempty"`
+	Status         int    `form:"status" binding:"omitempty,oneof=1 2"`
+	TeamID         int64  `form:"team_id" binding:"omitempty,min=1"`
+	From           string `form:"from" binding:"omitempty,datetime=2006-01-02"`
+	To             string `form:"to" binding:"omitempty,datetime=2006-01-02"`
+	Area           string `form:"area" binding:"omitempty,min=1,max=64"`
 	PageId         int    `form:"page_id" binding:"required,min=1"`
 	PageSize       int    `form:"page_size" binding:"required,min=5,max=200"`
 }
