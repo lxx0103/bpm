@@ -89,6 +89,9 @@ func (r *projectQuery) GetProjectList(filter ProjectFilter, organizationID int64
 		where, args = append(where, "p.created_by = ?"), append(args, v)
 	}
 	if v := filter.Area; v != "" {
+		if v == "未设置" {
+			v = ""
+		}
 		where, args = append(where, "p.area = ?"), append(args, v)
 	}
 	if v := filter.Status; v != 0 {
