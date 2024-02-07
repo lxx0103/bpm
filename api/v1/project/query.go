@@ -593,7 +593,8 @@ func (r *projectQuery) GetProjectSumByTeam(filter ProjectSumFilter) (*[]ProjectS
 		SELECT count(CASE WHEN status = 1 Then 1 END) as in_progress,
 		count(CASE WHEN status = 2 Then 1 END) as completed,
 		count(1) as total,
-		team_name
+		team_name,
+		team_id
 		FROM 
 		(
 			SELECT p.status as status, pt.team_id as team_id, t.name as team_name

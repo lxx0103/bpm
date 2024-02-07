@@ -217,6 +217,7 @@ type ProjectSumByStatus struct {
 	Value int    `db:"sum" json:"value"`
 }
 type ProjectSumByTeam struct {
+	TeamID     int64  `db:"team_id" json:"team_id"`
 	TeamName   string `db:"team_name" json:"team_name"`
 	InProgress int    `db:"in_progress" json:"in_progress"`
 	Completed  int    `db:"completed" json:"completed"`
