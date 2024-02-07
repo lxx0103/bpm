@@ -298,9 +298,7 @@ func (s *projectService) UpdateProject(projectID int64, info ProjectUpdate, orga
 	if info.Area != "" {
 		oldProject.Area = info.Area
 	}
-	if info.RecordAlertDay != 0 {
-		oldProject.RecordAlertDay = info.RecordAlertDay
-	}
+	oldProject.RecordAlertDay = info.RecordAlertDay
 	err = repo.UpdateProject(projectID, *oldProject, info.User)
 	if err != nil {
 		return nil, err

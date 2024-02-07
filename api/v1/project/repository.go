@@ -437,7 +437,7 @@ func (r *projectRepository) DeleteProjectTeam(id int64, byUser string) error {
 		status = -1,
 		updated = ?,
 		updated_by = ? 
-		WHERE id = ?
+		WHERE project_id = ?
 	`, time.Now(), byUser, id)
 	return err
 }
