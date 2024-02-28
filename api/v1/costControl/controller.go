@@ -259,6 +259,7 @@ func UpdatePaymentRequest(c *gin.Context) {
 // @Param project_id query int false "项目ID"
 // @Param organization_id query int false "组织ID"
 // @Param name query string false "名称"
+// @Param type query string false "类型（audit：审核人员， mine：我创建的，passed：已审核通过的）"
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Success 200 object response.ListRes{data=[]RespPaymentRequest} 成功
@@ -279,6 +280,9 @@ func GetPaymentRequestList(c *gin.Context) {
 	if claims.OrganizationID != 0 {
 		filter.OrganizationID = claims.OrganizationID
 	}
+	filter.User = claims.Username
+	filter.UserID = claims.UserID
+	filter.PositionID = claims.PositionID
 	costControlService := NewCostControlService()
 	count, list, err := costControlService.GetPaymentRequestList(filter)
 	if err != nil {

@@ -197,8 +197,12 @@ type ReqPaymentRequestFilter struct {
 	OrganizationID     int64  `form:"organization_id" binding:"omitempty,min=1"`
 	PaymentRequestType int    `form:"payment_request_type" binding:"omitempty,min=1,max=2"`
 	Name               string `form:"name" binding:"omitempty,max=100"`
+	Type               string `form:"type" binding:"omitempty,oneof=audit passed mine"`
 	PageId             int    `form:"page_id" binding:"required,min=1"`
 	PageSize           int    `form:"page_size" binding:"required,min=5,max=200"`
+	User               string `json:"user" swaggerignore:"true"`
+	UserID             int64  `json:"user_id" swaggerignore:"true"`
+	PositionID         int64  `json:"position_id" swaggerignore:"true"`
 }
 
 func (f *ReqPaymentRequestFilter) Verify() error {

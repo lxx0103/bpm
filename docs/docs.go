@@ -5268,6 +5268,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "类型（audit：审核人员， mine：我创建的，passed：已审核通过的）",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "页码",
                         "name": "page_id",
@@ -19885,6 +19891,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "in_progress": {
+                    "type": "integer"
+                },
+                "team_id": {
                     "type": "integer"
                 },
                 "team_name": {

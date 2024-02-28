@@ -131,6 +131,15 @@ func (q *costControlQuery) GetPaymentRequestCount(filter ReqPaymentRequestFilter
 	if v := filter.Name; v != "" {
 		where, args = append(where, "name LIKE ?"), append(args, "%"+v+"%")
 	}
+	if v := filter.Type; v == "mine" {
+		where, args = append(where, "created_by = ?"), append(args, filter.User)
+	}
+	if v := filter.Type; v == "passed" {
+		where = append(where, "status in (2, 4, 5)")
+	}
+	if v := filter.Type; v == "audit" {
+		where, args = append(where, "id in (SELECT p.id FROM payment_requests p LEFT JOIN payment_request_audits pa ON p.id = pa.payment_request_id AND p.audit_level = pa.audit_level WHERE p.status = 1 and pa.status > 0 AND p.organization_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) )"), append(args, filter.OrganizationID, filter.PositionID, filter.UserID)
+	}
 	var count int
 	err := q.conn.Get(&count, `
 		SELECT COUNT(*) 
@@ -154,6 +163,16 @@ func (q *costControlQuery) GetPaymentRequestList(filter ReqPaymentRequestFilter)
 	if v := filter.Name; v != "" {
 		where, args = append(where, "b.name LIKE ?"), append(args, "%"+v+"%")
 	}
+	if v := filter.Type; v == "mine" {
+		where, args = append(where, "b.created_by = ?"), append(args, filter.User)
+	}
+	if v := filter.Type; v == "passed" {
+		where = append(where, "b.status in (2, 4, 5)")
+	}
+	if v := filter.Type; v == "audit" {
+		where, args = append(where, "b.id in (SELECT p.id FROM payment_requests p LEFT JOIN payment_request_audits pa ON p.id = pa.payment_request_id AND p.audit_level = pa.audit_level WHERE p.status = 1 and pa.status > 0 AND p.organization_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) )"), append(args, filter.OrganizationID, filter.PositionID, filter.UserID)
+	}
+
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
 	var payment_requests []RespPaymentRequest

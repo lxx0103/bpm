@@ -2643,6 +2643,8 @@ definitions:
         type: integer
       in_progress:
         type: integer
+      team_id:
+        type: integer
       team_name:
         type: string
       total:
@@ -6311,6 +6313,10 @@ paths:
       - description: 名称
         in: query
         name: name
+        type: string
+      - description: 类型（audit：审核人员， mine：我创建的，passed：已审核通过的）
+        in: query
+        name: type
         type: string
       - description: 页码
         in: query
