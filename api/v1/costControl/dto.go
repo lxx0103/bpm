@@ -183,6 +183,7 @@ type RespPaymentRequest struct {
 	Audit              []RespPaymentRequestAudit `json:"audit"`
 	UserID             int64                     `db:"user_id" json:"user_id"`
 	Status             int                       `db:"status" json:"status"`
+	Created            string                    `db:"created" json:"created"`
 }
 
 type RespPaymentRequestAudit struct {

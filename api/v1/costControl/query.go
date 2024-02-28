@@ -132,7 +132,7 @@ func (q *costControlQuery) GetPaymentRequestCount(filter ReqPaymentRequestFilter
 		where, args = append(where, "name LIKE ?"), append(args, "%"+v+"%")
 	}
 	if v := filter.Type; v == "mine" {
-		where, args = append(where, "created_by = ?"), append(args, filter.User)
+		where, args = append(where, "user_id = ?"), append(args, filter.UserID)
 	}
 	if v := filter.Type; v == "passed" {
 		where = append(where, "status in (2, 4, 5)")
@@ -164,7 +164,7 @@ func (q *costControlQuery) GetPaymentRequestList(filter ReqPaymentRequestFilter)
 		where, args = append(where, "b.name LIKE ?"), append(args, "%"+v+"%")
 	}
 	if v := filter.Type; v == "mine" {
-		where, args = append(where, "b.created_by = ?"), append(args, filter.User)
+		where, args = append(where, "b.user_id = ?"), append(args, filter.UserID)
 	}
 	if v := filter.Type; v == "passed" {
 		where = append(where, "b.status in (2, 4, 5)")
@@ -193,7 +193,8 @@ func (q *costControlQuery) GetPaymentRequestList(filter ReqPaymentRequestFilter)
 	b.remark AS remark,
 	b.audit_level AS audit_level,
 	b.status AS status,
-	b.user_id AS user_id
+	b.user_id AS user_id,
+	b.created AS created
 	FROM payment_requests b
 	LEFT JOIN projects p ON b.project_id = p.id
 	LEFT JOIN organizations o ON b.organization_id = o.id
@@ -224,7 +225,8 @@ func (q *costControlQuery) GetPaymentRequestByID(id int64) (*RespPaymentRequest,
 	b.remark AS remark,
 	b.audit_level AS audit_level,
 	b.status AS status,
-	b.user_id AS user_id
+	b.user_id AS user_id,
+	b.created AS created
 	FROM payment_requests b
 	LEFT JOIN projects p ON b.project_id = p.id
 	LEFT JOIN organizations o ON b.organization_id = o.id

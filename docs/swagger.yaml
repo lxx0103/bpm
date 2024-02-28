@@ -994,6 +994,8 @@ definitions:
         type: integer
       budget_id:
         type: integer
+      created:
+        type: string
       due:
         type: number
       id:

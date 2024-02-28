@@ -17450,6 +17450,9 @@ const docTemplate = `{
                 "budget_id": {
                     "type": "integer"
                 },
+                "created": {
+                    "type": "string"
+                },
                 "due": {
                     "type": "number"
                 },
