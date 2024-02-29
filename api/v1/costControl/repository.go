@@ -481,3 +481,48 @@ func (r *costControlRepository) UpdateBudgitUsed(budgetID int64, info ReqBudgetP
 	`, info.Used, info.Balance, time.Now(), info.User, budgetID)
 	return err
 }
+
+func (r *costControlRepository) CreateIncome(info ReqIncomeNew) (int64, error) {
+	result, err := r.tx.Exec(`
+	INSERT INTO incomes 
+	(
+		organization_id,
+		project_id,
+		title,
+		amount,
+		payment_method,
+		date,
+		remark,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	) 
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+	)`, info.OrganizationID, info.ProjectID, info.Title, info.Amount, info.PaymentMethod, info.Date, info.Remark, 1, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	return result.LastInsertId()
+}
+
+func (r *costControlRepository) CreateIncomePicture(info ReqIncomePictureNew) error {
+	_, err := r.tx.Exec(`
+	INSERT INTO income_pictures 
+	(
+		income_id,
+		link,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	) 
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?
+	)`, info.IncomeID, info.Picture, 1, time.Now(), info.User, time.Now(), info.User)
+	return err
+}

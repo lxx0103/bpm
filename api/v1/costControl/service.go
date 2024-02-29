@@ -848,3 +848,42 @@ func (s *costControlService) NewPayment(paymentRequestID int64, info ReqPaymentN
 	return nil
 
 }
+
+func (s *costControlService) NewIncome(info ReqIncomeNew) error {
+	if info.OrganizationID == 0 {
+		msg := "组织ID错误"
+		return errors.New(msg)
+	}
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCostControlRepository(tx)
+	projectRepo := project.NewProjectRepository(tx)
+	_, err = projectRepo.GetProjectByID(info.ProjectID, info.OrganizationID)
+	if err != nil {
+		msg := "获取项目信息失败"
+		return errors.New(msg)
+	}
+	incomeID, err := repo.CreateIncome(info)
+	if err != nil {
+		msg := "生成收入记录失败"
+		return errors.New(msg)
+	}
+	for _, picture := range info.Picture {
+		var paymentPicture ReqIncomePictureNew
+		paymentPicture.IncomeID = incomeID
+		paymentPicture.Picture = picture
+		paymentPicture.User = info.User
+		err = repo.CreateIncomePicture(paymentPicture)
+		if err != nil {
+			msg := "创建收入记录文件失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+	return nil
+
+}

@@ -339,3 +339,23 @@ type ReqBudgetPaid struct {
 	Balance float64 `json:"balance"`
 	User    string  `json:"user" swaggerignore:"true"`
 }
+
+type ReqIncomeNew struct {
+	ProjectID      int64    `json:"project_id" binding:"required,min=1"`
+	Title          string   `json:"title" binding:"required,max=255"`
+	Amount         float64  `json:"amount" binding:"required"`
+	PaymentMethod  string   `json:"payment_method" binding:"omitempty,max=64"`
+	Date           string   `json:"date" binding:"required,datetime=2006-01-02"`
+	Remark         string   `json:"remark" binding:"omitempty,max=255"`
+	Picture        []string `json:"picture" binding:"omitempty"`
+	OrganizationID int64    `json:"organization_id" swaggerignore:"true"`
+	User           string   `json:"user" swaggerignore:"true"`
+	UserID         int64    `json:"user_id" swaggerignore:"true"`
+}
+
+type ReqIncomePictureNew struct {
+	IncomeID int64  `json:"payment_id" binding:"required,min=1"`
+	Picture  string `json:"picture" binding:"required"`
+	User     string `json:"user" swaggerignore:"true"`
+	UserID   int64  `json:"user_id" swaggerignore:"true"`
+}

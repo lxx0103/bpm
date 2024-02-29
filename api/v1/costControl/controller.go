@@ -552,3 +552,33 @@ func NewPayment(c *gin.Context) {
 	}
 	response.Response(c, "ok")
 }
+
+// @Summary 新增收入
+// @Id S017
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param info body ReqIncomeNew true "收入信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /incomes [POST]
+func NewIncome(c *gin.Context) {
+	var info ReqIncomeNew
+	err := c.ShouldBindJSON(&info)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	info.OrganizationID = claims.OrganizationID
+	costControlService := NewCostControlService()
+	err = costControlService.NewIncome(info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
