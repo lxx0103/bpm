@@ -194,7 +194,8 @@ func (q *costControlQuery) GetPaymentRequestList(filter ReqPaymentRequestFilter)
 	b.audit_level AS audit_level,
 	b.status AS status,
 	b.user_id AS user_id,
-	b.created AS created
+	b.created AS created,
+	b.created_by AS created_by
 	FROM payment_requests b
 	LEFT JOIN projects p ON b.project_id = p.id
 	LEFT JOIN organizations o ON b.organization_id = o.id
@@ -226,7 +227,8 @@ func (q *costControlQuery) GetPaymentRequestByID(id int64) (*RespPaymentRequest,
 	b.audit_level AS audit_level,
 	b.status AS status,
 	b.user_id AS user_id,
-	b.created AS created
+	b.created AS created,
+	b.created_by AS created_by
 	FROM payment_requests b
 	LEFT JOIN projects p ON b.project_id = p.id
 	LEFT JOIN organizations o ON b.organization_id = o.id

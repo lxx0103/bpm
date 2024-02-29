@@ -17453,6 +17453,9 @@ const docTemplate = `{
                 "created": {
                     "type": "string"
                 },
+                "created_by": {
+                    "type": "string"
+                },
                 "due": {
                     "type": "number"
                 },

@@ -303,6 +303,10 @@ func (s *costControlService) UpdatePaymentRequest(info ReqPaymentRequestUpdate, 
 		msg := "请款记录状态错误"
 		return errors.New(msg)
 	}
+	if oldPaymentRequest.Status == 1 && oldPaymentRequest.AuditLevel != 1 {
+		msg := "当前正在审核，请勿修改"
+		return errors.New(msg)
+	}
 	if info.ProjectID != 0 {
 		projectRepo := project.NewProjectRepository(tx)
 		_, err := projectRepo.GetProjectByID(info.ProjectID, organizationID)

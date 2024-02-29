@@ -996,6 +996,8 @@ definitions:
         type: integer
       created:
         type: string
+      created_by:
+        type: string
       due:
         type: number
       id:

@@ -184,6 +184,7 @@ type RespPaymentRequest struct {
 	UserID             int64                     `db:"user_id" json:"user_id"`
 	Status             int                       `db:"status" json:"status"`
 	Created            string                    `db:"created" json:"created"`
+	CreatedBy          string                    `db:"created_by" json:"created_by"`
 }
 
 type RespPaymentRequestAudit struct {
