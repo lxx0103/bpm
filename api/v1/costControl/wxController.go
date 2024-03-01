@@ -238,3 +238,17 @@ func WxUpdatePaymentRequestAudit(c *gin.Context) {
 func WxNewPayment(c *gin.Context) {
 	NewPayment(c)
 }
+
+// @Summary 新增收入
+// @Id WXS017
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param info body ReqIncomeNew true "收入信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/incomes [POST]
+func WxNewIncome(c *gin.Context) {
+	NewIncome(c)
+}

@@ -777,6 +777,34 @@ definitions:
     - quantity
     - unit_price
     type: object
+  costControl.ReqIncomeNew:
+    properties:
+      amount:
+        type: number
+      date:
+        type: string
+      payment_method:
+        maxLength: 64
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      project_id:
+        minimum: 1
+        type: integer
+      remark:
+        maxLength: 255
+        type: string
+      title:
+        maxLength: 255
+        type: string
+    required:
+    - amount
+    - date
+    - project_id
+    - title
+    type: object
   costControl.ReqPaymentNew:
     properties:
       amount:
@@ -949,6 +977,26 @@ definitions:
     - total
     - unit_price
     type: object
+  costControl.ReqPaymentUpdate:
+    properties:
+      amount:
+        type: number
+      payment_date:
+        type: string
+      payment_method:
+        maxLength: 64
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      remark:
+        maxLength: 255
+        type: string
+    required:
+    - amount
+    - payment_date
+    type: object
   costControl.RespBudget:
     properties:
       balance:
@@ -983,6 +1031,41 @@ definitions:
         type: number
       used:
         type: number
+    type: object
+  costControl.RespPayment:
+    properties:
+      amount:
+        type: number
+      created:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: integer
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      payment_date:
+        type: string
+      payment_method:
+        type: string
+      payment_request_id:
+        type: integer
+      picture:
+        items:
+          type: string
+        type: array
+      project_id:
+        type: integer
+      project_name:
+        type: string
+      remark:
+        type: string
+      status:
+        type: integer
+      user_id:
+        type: integer
     type: object
   costControl.RespPaymentRequest:
     properties:
@@ -5165,6 +5248,37 @@ paths:
       summary: 更新案例材料
       tags:
       - 案例管理
+  /incomes:
+    post:
+      consumes:
+      - application/json
+      operationId: S021
+      parameters:
+      - description: 收入信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqIncomeNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新增收入
+      tags:
+      - 成控管理
   /key:
     get:
       consumes:
@@ -6582,6 +6696,145 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 新增付款
+      tags:
+      - 成控管理
+  /payments:
+    get:
+      consumes:
+      - application/json
+      operationId: S018
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespPayment'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 付款列表
+      tags:
+      - 成控管理
+  /payments/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: S020
+      parameters:
+      - description: 付款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除付款
+      tags:
+      - 成控管理
+    get:
+      consumes:
+      - application/json
+      operationId: S019
+      parameters:
+      - description: 付款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespPayment'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取付款
+      tags:
+      - 成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: S017
+      parameters:
+      - description: 付款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 付款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新付款
       tags:
       - 成控管理
   /portal/banners:
@@ -10591,6 +10844,37 @@ paths:
       summary: 根据ID获取案例
       tags:
       - 小程序接口
+  /wx/incomes:
+    post:
+      consumes:
+      - application/json
+      operationId: WXS017
+      parameters:
+      - description: 收入信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqIncomeNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新增收入
+      tags:
+      - 小程序成控管理
   /wx/key:
     get:
       consumes:

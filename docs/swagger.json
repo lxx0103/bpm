@@ -3363,6 +3363,58 @@
                 }
             }
         },
+        "/incomes": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "新增收入",
+                "operationId": "S021",
+                "parameters": [
+                    {
+                        "description": "收入信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/costControl.ReqIncomeNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/key": {
             "get": {
                 "consumes": [
@@ -5663,6 +5715,233 @@
                         "schema": {
                             "$ref": "#/definitions/costControl.ReqPaymentNew"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "付款列表",
+                "operationId": "S018",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "project_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/costControl.RespPayment"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/payments/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "根据ID获取付款",
+                "operationId": "S019",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "付款ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/costControl.RespPayment"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "更新付款",
+                "operationId": "S017",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "付款ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "付款信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/costControl.ReqPaymentUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "删除付款",
+                "operationId": "S020",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "付款ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -12236,6 +12515,58 @@
                 }
             }
         },
+        "/wx/incomes": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序成控管理"
+                ],
+                "summary": "新增收入",
+                "operationId": "WXS017",
+                "parameters": [
+                    {
+                        "description": "收入信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/costControl.ReqIncomeNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/key": {
             "get": {
                 "consumes": [
@@ -17135,6 +17466,45 @@
                 }
             }
         },
+        "costControl.ReqIncomeNew": {
+            "type": "object",
+            "required": [
+                "amount",
+                "date",
+                "project_id",
+                "title"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "project_id": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "remark": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "costControl.ReqPaymentNew": {
             "type": "object",
             "required": [
@@ -17376,6 +17746,35 @@
                 }
             }
         },
+        "costControl.ReqPaymentUpdate": {
+            "type": "object",
+            "required": [
+                "amount",
+                "payment_date"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "payment_date": {
+                    "type": "string"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "remark": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "costControl.RespBudget": {
             "type": "object",
             "properties": {
@@ -17426,6 +17825,59 @@
                 },
                 "used": {
                     "type": "number"
+                }
+            }
+        },
+        "costControl.RespPayment": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "payment_date": {
+                    "type": "string"
+                },
+                "payment_method": {
+                    "type": "string"
+                },
+                "payment_request_id": {
+                    "type": "integer"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "project_name": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

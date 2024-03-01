@@ -22,12 +22,22 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/paymentRequestTypes", GetPaymentRequestTypeList)
 
 	g.POST("/paymentRequests/:id/payments", NewPayment)
-	// g.PUT("/payments/:id", UpdatePayment)
-	// g.GET("/payments", GetPaymentList)
-	// g.GET("/payments/:id", GetPaymentByID)
-	// g.DELETE("/payments/:id", DeletePayment)
+	g.PUT("/payments/:id", UpdatePayment)
+	g.GET("/payments", GetPaymentList)
+	g.GET("/payments/:id", GetPaymentByID)
+	g.DELETE("/payments/:id", DeletePayment)
+
+	// g.POST("/paymentRequests/:id/matirials", NewMatirial)
+	// g.PUT("/matirials/:id", UpdateMatirial)
+	// g.GET("/matirials", GetMatirialList)
+	// g.GET("/matirials/:id", GetMatirialByID)
+	// g.DELETE("/matirials/:id", DeleteMatirial)
 
 	g.POST("/incomes", NewIncome)
+	// g.PUT("/incomes/:id", UpdateIncome)
+	// g.GET("/incomes", GetIncomeList)
+	// g.GET("/incomes/:id", GetIncomeByID)
+	// g.DELETE("/incomes/:id", DeleteIncome)
 }
 
 func WxRouters(g *gin.RouterGroup) {
@@ -47,4 +57,6 @@ func WxRouters(g *gin.RouterGroup) {
 	g.PUT("/wx/paymentRequests/:id/audit", WxUpdatePaymentRequestAudit)
 
 	g.POST("/wx/paymentRequests/:id/payments", WxNewPayment)
+
+	g.POST("/wx/incomes", WxNewIncome)
 }

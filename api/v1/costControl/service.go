@@ -344,7 +344,7 @@ func (s *costControlService) UpdatePaymentRequest(info ReqPaymentRequestUpdate, 
 		pictureInfo.PaymentRequestID = id
 		pictureInfo.Picture = picture
 		pictureInfo.User = info.User
-		repo.CreatePaymentRequestPicture(pictureInfo)
+		err = repo.CreatePaymentRequestPicture(pictureInfo)
 		if err != nil {
 			return err
 		}
@@ -846,7 +846,220 @@ func (s *costControlService) NewPayment(paymentRequestID int64, info ReqPaymentN
 	}
 	tx.Commit()
 	return nil
+}
 
+func (s *costControlService) UpdatePayment(id int64, info ReqPaymentUpdate) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCostControlRepository(tx)
+	oldPayment, err := repo.GetPaymentByID(id)
+	if err != nil {
+		msg := "获取付款信息失败"
+		return errors.New(msg)
+	}
+	if oldPayment.UserID != info.UserID {
+		msg := "只能更新自己的付款"
+		return errors.New(msg)
+	}
+	if oldPayment.OrganizationID != info.OrganizationID {
+		msg := "付款信息不存在"
+		return errors.New(msg)
+	}
+	paymentRequest, err := repo.GetPaymentRequestByID(oldPayment.PaymentRequestID)
+	if err != nil {
+		msg := "获取请款记录失败"
+		return errors.New(msg)
+	}
+	if paymentRequest.OrganizationID != info.OrganizationID {
+		msg := "请款记录不存在"
+		return errors.New(msg)
+	}
+	paymentRequest.Due = paymentRequest.Due + oldPayment.Amount
+	paymentRequest.Paid = paymentRequest.Paid - oldPayment.Amount
+	if info.Amount > paymentRequest.Due {
+		msg := "此次付款金额大于未付款金额"
+		return errors.New(msg)
+	}
+	err = repo.DeletePaymentPicture(id)
+	if err != nil {
+		msg := "删除付款图片失败"
+		return errors.New(msg)
+	}
+	err = repo.UpdatePayment(id, info)
+	if err != nil {
+		msg := "更新付款记录失败"
+		return errors.New(msg)
+	}
+	for _, picture := range info.Picture {
+		var paymentPicture ReqPaymentPictureNew
+		paymentPicture.PaymentID = id
+		paymentPicture.Picture = picture
+		paymentPicture.User = info.User
+		err = repo.CreatePaymentPicture(paymentPicture)
+		if err != nil {
+			msg := "创建付款记录文件失败"
+			return errors.New(msg)
+		}
+	}
+	var paymentRequestUpdate ReqPaymentRequestPaid
+	paymentRequestUpdate.Paid = paymentRequest.Paid + info.Amount
+	paymentRequestUpdate.Due = paymentRequest.Due - info.Amount
+	if paymentRequestUpdate.Due == 0 {
+		paymentRequestUpdate.Status = 5
+	} else {
+		paymentRequestUpdate.Status = 4
+	}
+	paymentRequestUpdate.User = info.User
+	err = repo.UpdatePaymentRequestPaid(paymentRequest.ID, paymentRequestUpdate)
+	if err != nil {
+		msg := "更新请款信息失败"
+		return errors.New(msg)
+	}
+	var history ReqPaymentRequestHistoryNew
+	history.PaymentRequestID = paymentRequest.ID
+	history.OrganizationID = paymentRequest.OrganizationID
+	history.User = info.User
+	history.Action = "更新付款"
+	history.Remark = "本次付款金额由" + strconv.FormatFloat(oldPayment.Amount, 'f', 2, 64) + "元更新为" + strconv.FormatFloat(info.Amount, 'f', 2, 64) + "元，"
+	if paymentRequestUpdate.Due == 0 {
+		history.Remark += "已完全付款，当前状态为已付款"
+	} else {
+		history.Remark += "未完全付款，当前状态为部分付款"
+	}
+	history.Content = info.Remark
+	historyID, err := repo.CreatePaymentRequestHistory(history)
+	if err != nil {
+		msg := "生成付款记录失败"
+		return errors.New(msg)
+	}
+	for _, link := range info.Picture {
+		var paymentRequestHistoryPicture ReqPaymentRequestHistoryPictureNew
+		paymentRequestHistoryPicture.PaymentRequestHistoryID = historyID
+		paymentRequestHistoryPicture.Picture = link
+		paymentRequestHistoryPicture.User = info.User
+		err = repo.CreatePaymentRequestHistoryPicture(paymentRequestHistoryPicture)
+		if err != nil {
+			msg := "创建付款记录文件失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *costControlService) GetPaymentList(filter ReqPaymentFilter) (int, *[]RespPayment, error) {
+	db := database.InitMySQL()
+	query := NewCostControlQuery(db)
+	count, err := query.GetPaymentCount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetPaymentList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	for key, budget := range *list {
+		pictures, err := query.GetPaymentPictureList(budget.ID)
+		if err != nil {
+			return 0, nil, err
+		}
+		(*list)[key].Picture = *pictures
+	}
+	return count, list, nil
+}
+
+func (s *costControlService) GetPaymentByID(id, organizationID int64) (*RespPayment, error) {
+	db := database.InitMySQL()
+	query := NewCostControlQuery(db)
+	payment, err := query.GetPaymentByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if payment.OrganizationID != organizationID && organizationID != 0 {
+		msg := "付款不存在或无权限"
+		return nil, errors.New(msg)
+	}
+	pictures, err := query.GetPaymentPictureList(id)
+	if err != nil {
+		return nil, err
+	}
+	payment.Picture = *pictures
+	return payment, nil
+}
+
+func (s *costControlService) DeletePayment(id, organizationID int64, user string, userID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCostControlRepository(tx)
+	oldPayment, err := repo.GetPaymentByID(id)
+	if err != nil {
+		msg := "获取付款记录失败"
+		return errors.New(msg)
+	}
+	if oldPayment.OrganizationID != organizationID && organizationID != 0 {
+		msg := "付款记录不存在或无权限"
+		return errors.New(msg)
+	}
+	if oldPayment.UserID != userID {
+		msg := "只能删除自己创建的付款"
+		return errors.New(msg)
+	}
+	err = repo.DeletePayment(id, user)
+	if err != nil {
+		msg := "删除付款失败"
+		return errors.New(msg)
+	}
+	err = repo.DeletePaymentPicture(id)
+	if err != nil {
+		msg := "删除付款图片失败"
+		return errors.New(msg)
+	}
+	paymentRequest, err := repo.GetPaymentRequestByID(oldPayment.PaymentRequestID)
+	if err != nil {
+		msg := "获取请款信息失败"
+		return errors.New(msg)
+	}
+	var paymentRequestUpdate ReqPaymentRequestPaid
+	paymentRequestUpdate.Paid = paymentRequest.Paid - oldPayment.Amount
+	paymentRequestUpdate.Due = paymentRequest.Due + oldPayment.Amount
+	if paymentRequestUpdate.Paid == 0 {
+		paymentRequestUpdate.Status = 2
+	} else {
+		paymentRequestUpdate.Status = 4
+	}
+	paymentRequestUpdate.User = user
+	err = repo.UpdatePaymentRequestPaid(paymentRequest.ID, paymentRequestUpdate)
+	if err != nil {
+		msg := "更新请款信息失败"
+		return errors.New(msg)
+	}
+	var history ReqPaymentRequestHistoryNew
+	history.PaymentRequestID = paymentRequest.ID
+	history.OrganizationID = paymentRequest.OrganizationID
+	history.User = user
+	history.Action = "删除付款"
+	history.Remark = "删除付款金额为" + strconv.FormatFloat(oldPayment.Amount, 'f', 2, 64) + "元，"
+	if paymentRequestUpdate.Paid == 0 {
+		history.Remark += "未付款，当前状态为审核通过"
+	} else {
+		history.Remark += "未完全付款，当前状态为部分付款"
+	}
+	history.Content = ""
+	_, err = repo.CreatePaymentRequestHistory(history)
+	if err != nil {
+		msg := "生成付款记录失败"
+		return errors.New(msg)
+	}
+	tx.Commit()
+	return nil
 }
 
 func (s *costControlService) NewIncome(info ReqIncomeNew) error {

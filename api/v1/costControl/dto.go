@@ -340,6 +340,46 @@ type ReqBudgetPaid struct {
 	User    string  `json:"user" swaggerignore:"true"`
 }
 
+type PaymentID struct {
+	ID int64 `uri:"id" binding:"required,min=1"`
+}
+
+type ReqPaymentUpdate struct {
+	Amount         float64  `json:"amount" binding:"required"`
+	PaymentMethod  string   `json:"payment_method" binding:"omitempty,max=64"`
+	PaymentDate    string   `json:"payment_date" binding:"required,datetime=2006-01-02"`
+	Remark         string   `json:"remark" binding:"omitempty,max=255"`
+	Picture        []string `json:"picture" binding:"omitempty"`
+	OrganizationID int64    `json:"organization_id" swaggerignore:"true"`
+	User           string   `json:"user" swaggerignore:"true"`
+	UserID         int64    `json:"user_id" swaggerignore:"true"`
+}
+
+type RespPayment struct {
+	ID               int64    `db:"id" json:"id"`
+	OrganizationID   int64    `db:"organization_id" json:"organization_id"`
+	OrganizationName string   `db:"organization_name" json:"organization_name"`
+	ProjectID        int64    `db:"project_id" json:"project_id"`
+	ProjectName      string   `db:"project_name" json:"project_name"`
+	PaymentRequestID int64    `db:"payment_request_id" json:"payment_request_id"`
+	PaymentDate      string   `db:"payment_date" json:"payment_date"`
+	Amount           float64  `db:"amount" json:"amount"`
+	PaymentMethod    string   `db:"payment_method" json:"payment_method"`
+	Remark           string   `db:"remark" json:"remark"`
+	Picture          []string `json:"picture"`
+	UserID           int64    `db:"user_id" json:"user_id"`
+	Status           int      `db:"status" json:"status"`
+	Created          string   `db:"created" json:"created"`
+	CreatedBy        string   `db:"created_by" json:"created_by"`
+}
+
+type ReqPaymentFilter struct {
+	ProjectID      int64 `form:"project_id" binding:"omitempty,min=1"`
+	OrganizationID int64 `form:"organization_id" binding:"omitempty,min=1"`
+	PageId         int   `form:"page_id" binding:"required,min=1"`
+	PageSize       int   `form:"page_size" binding:"required,min=5,max=200"`
+}
+
 type ReqIncomeNew struct {
 	ProjectID      int64    `json:"project_id" binding:"required,min=1"`
 	Title          string   `json:"title" binding:"required,max=255"`

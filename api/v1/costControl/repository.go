@@ -482,6 +482,60 @@ func (r *costControlRepository) UpdateBudgitUsed(budgetID int64, info ReqBudgetP
 	return err
 }
 
+func (r *costControlRepository) GetPaymentByID(id int64) (RespPayment, error) {
+	var payment RespPayment
+	row := r.tx.QueryRow(`
+	    SELECT organization_id,
+		project_id,
+		payment_request_id,
+		payment_date,
+		amount,
+		payment_method,
+		remark,
+		user_id,
+		status
+		FROM payments
+		WHERE id = ?
+		AND status > 0
+	`, id)
+	err := row.Scan(&payment.OrganizationID, &payment.ProjectID, &payment.PaymentRequestID, &payment.PaymentDate, &payment.Amount, &payment.PaymentMethod, &payment.Remark, &payment.UserID, &payment.Status)
+	return payment, err
+}
+
+func (r *costControlRepository) DeletePaymentPicture(paymentID int64) error {
+	_, err := r.tx.Exec(`
+	UPDATE payment_pictures 
+	SET status = -1 
+	WHERE payment_id = ?
+	`, paymentID)
+	return err
+}
+
+func (r *costControlRepository) DeletePayment(id int64, user string) error {
+	_, err := r.tx.Exec(`
+	UPDATE payments 
+	SET status = -1 
+	updated = ?,
+	updated_by = ?
+	WHERE id = ?
+	`, id, time.Now(), user)
+	return err
+}
+
+func (r *costControlRepository) UpdatePayment(paymentID int64, info ReqPaymentUpdate) error {
+	_, err := r.tx.Exec(`
+		UPDATE payments SET 
+			amount = ?,
+			payment_method = ?,
+			payment_date = ?,
+			remark = ?,
+			updated = ?,
+			updated_by = ?
+		WHERE id = ?
+	`, info.Amount, info.PaymentMethod, info.PaymentDate, info.Remark, time.Now(), info.User, paymentID)
+	return err
+}
+
 func (r *costControlRepository) CreateIncome(info ReqIncomeNew) (int64, error) {
 	result, err := r.tx.Exec(`
 	INSERT INTO incomes 

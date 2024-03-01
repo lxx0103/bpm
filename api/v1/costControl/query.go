@@ -307,3 +307,94 @@ func (q *costControlQuery) GetPaymentRequestAuditList(paymentRequestID int64) (*
 	`, paymentRequestID)
 	return &res, err
 }
+
+func (q *costControlQuery) GetPaymentCount(filter ReqPaymentFilter) (int, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	if v := filter.ProjectID; v > 0 {
+		where, args = append(where, "project_id = ?"), append(args, v)
+	}
+	if v := filter.OrganizationID; v > 0 {
+		where, args = append(where, "organization_id = ?"), append(args, v)
+	}
+	var count int
+	err := q.conn.Get(&count, `
+		SELECT COUNT(*) 
+		FROM payments
+		WHERE `+strings.Join(where, " AND "), args...)
+
+	return count, err
+}
+
+func (q *costControlQuery) GetPaymentList(filter ReqPaymentFilter) (*[]RespPayment, error) {
+	where, args := []string{"b.status > 0"}, []interface{}{}
+	if v := filter.ProjectID; v > 0 {
+		where, args = append(where, "b.project_id = ?"), append(args, v)
+	}
+	if v := filter.OrganizationID; v > 0 {
+		where, args = append(where, "b.organization_id = ?"), append(args, v)
+	}
+
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var payments []RespPayment
+	err := q.conn.Select(&payments, `
+	SELECT b.id AS id, 
+	b.organization_id AS organization_id, 
+	o.name AS organization_name, 
+	b.project_id AS project_id, 
+	IFNULL(p.name, "") AS project_name, 
+	b.payment_request_id AS payment_request_id, 
+	b.payment_date AS payment_date,
+	b.amount AS amount, 
+	b.payment_method AS payment_method,
+	b.remark AS remark,
+	b.user_id AS user_id,
+	b.status AS status,
+	b.user_id AS user_id,
+	b.created AS created,
+	b.created_by AS created_by
+	FROM payments b
+	LEFT JOIN projects p ON b.project_id = p.id
+	LEFT JOIN organizations o ON b.organization_id = o.id
+	WHERE `+strings.Join(where, " AND ")+`
+	ORDER BY b.id DESC
+	LIMIT ?, ?
+	`, args...)
+	return &payments, err
+}
+
+func (q *costControlQuery) GetPaymentByID(id int64) (*RespPayment, error) {
+	var payment RespPayment
+	err := q.conn.Get(&payment, `
+	SELECT b.id AS id, 
+	b.organization_id AS organization_id, 
+	o.name AS organization_name, 
+	b.project_id AS project_id, 
+	IFNULL(p.name, "") AS project_name, 
+	b.payment_request_id AS payment_request_id, 
+	b.payment_date AS payment_date,
+	b.amount AS amount, 
+	b.payment_method AS payment_method,
+	b.remark AS remark,
+	b.user_id AS user_id,
+	b.status AS status,
+	b.user_id AS user_id,
+	b.created AS created,
+	b.created_by AS created_by
+	FROM payments b
+	LEFT JOIN projects p ON b.project_id = p.id
+	LEFT JOIN organizations o ON b.organization_id = o.id
+	WHERE b.id = ? AND b.status > 0
+	`, id)
+	return &payment, err
+}
+
+func (q *costControlQuery) GetPaymentPictureList(id int64) (*[]string, error) {
+	var pictures []string
+	err := q.conn.Select(&pictures, `
+	SELECT link 
+	FROM payment_pictures 
+	WHERE payment_id = ? AND status = 1
+	`, id)
+	return &pictures, err
+}
