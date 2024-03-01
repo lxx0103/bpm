@@ -34,10 +34,10 @@ func Routers(g *gin.RouterGroup) {
 	// g.DELETE("/matirials/:id", DeleteMatirial)
 
 	g.POST("/incomes", NewIncome)
-	// g.PUT("/incomes/:id", UpdateIncome)
-	// g.GET("/incomes", GetIncomeList)
-	// g.GET("/incomes/:id", GetIncomeByID)
-	// g.DELETE("/incomes/:id", DeleteIncome)
+	g.PUT("/incomes/:id", UpdateIncome)
+	g.GET("/incomes", GetIncomeList)
+	g.GET("/incomes/:id", GetIncomeByID)
+	g.DELETE("/incomes/:id", DeleteIncome)
 }
 
 func WxRouters(g *gin.RouterGroup) {

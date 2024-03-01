@@ -189,3 +189,6 @@ CREATE TABLE `income_pictures` (
     `updated_by` varchar(64) NOT NULL DEFAULT '' COMMENT '更新人',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收入记录图片';
+
+ALTER TABLE `incomes` ADD `user_id` INT NOT NULL DEFAULT '0' AFTER `remark`;
+ALTER TABLE `payments` ADD `user_id` INT NOT NULL DEFAULT '0' AFTER `remark`;

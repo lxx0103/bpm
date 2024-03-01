@@ -857,6 +857,7 @@ func (s *costControlService) UpdatePayment(id int64, info ReqPaymentUpdate) erro
 	defer tx.Rollback()
 	repo := NewCostControlRepository(tx)
 	oldPayment, err := repo.GetPaymentByID(id)
+	fmt.Println(oldPayment.PaymentRequestID)
 	if err != nil {
 		msg := "获取付款信息失败"
 		return errors.New(msg)
@@ -880,6 +881,7 @@ func (s *costControlService) UpdatePayment(id int64, info ReqPaymentUpdate) erro
 	}
 	paymentRequest.Due = paymentRequest.Due + oldPayment.Amount
 	paymentRequest.Paid = paymentRequest.Paid - oldPayment.Amount
+	fmt.Println(paymentRequest.Due, paymentRequest.Paid)
 	if info.Amount > paymentRequest.Due {
 		msg := "此次付款金额大于未付款金额"
 		return errors.New(msg)
@@ -914,13 +916,13 @@ func (s *costControlService) UpdatePayment(id int64, info ReqPaymentUpdate) erro
 		paymentRequestUpdate.Status = 4
 	}
 	paymentRequestUpdate.User = info.User
-	err = repo.UpdatePaymentRequestPaid(paymentRequest.ID, paymentRequestUpdate)
+	err = repo.UpdatePaymentRequestPaid(oldPayment.PaymentRequestID, paymentRequestUpdate)
 	if err != nil {
 		msg := "更新请款信息失败"
 		return errors.New(msg)
 	}
 	var history ReqPaymentRequestHistoryNew
-	history.PaymentRequestID = paymentRequest.ID
+	history.PaymentRequestID = oldPayment.PaymentRequestID
 	history.OrganizationID = paymentRequest.OrganizationID
 	history.User = info.User
 	history.Action = "更新付款"
@@ -1099,4 +1101,125 @@ func (s *costControlService) NewIncome(info ReqIncomeNew) error {
 	tx.Commit()
 	return nil
 
+}
+
+func (s *costControlService) UpdateIncome(id int64, info ReqIncomeUpdate) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCostControlRepository(tx)
+	oldIncome, err := repo.GetIncomeByID(id)
+	if err != nil {
+		msg := "获取收入信息失败"
+		return errors.New(msg)
+	}
+	if oldIncome.UserID != info.UserID {
+		msg := "只能更新自己的收入"
+		return errors.New(msg)
+	}
+	if oldIncome.OrganizationID != info.OrganizationID {
+		msg := "收入信息不存在"
+		return errors.New(msg)
+	}
+	err = repo.DeleteIncomePicture(id)
+	if err != nil {
+		msg := "删除收入图片失败"
+		return errors.New(msg)
+	}
+	err = repo.UpdateIncome(id, info)
+	if err != nil {
+		msg := "更新收入记录失败"
+		return errors.New(msg)
+	}
+	for _, picture := range info.Picture {
+		var paymentPicture ReqIncomePictureNew
+		paymentPicture.IncomeID = id
+		paymentPicture.Picture = picture
+		paymentPicture.User = info.User
+		err = repo.CreateIncomePicture(paymentPicture)
+		if err != nil {
+			msg := "创建收入记录文件失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *costControlService) GetIncomeList(filter ReqIncomeFilter) (int, *[]RespIncome, error) {
+	db := database.InitMySQL()
+	query := NewCostControlQuery(db)
+	count, err := query.GetIncomeCount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetIncomeList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	for key, budget := range *list {
+		pictures, err := query.GetIncomePictureList(budget.ID)
+		if err != nil {
+			return 0, nil, err
+		}
+		(*list)[key].Picture = *pictures
+	}
+	return count, list, nil
+}
+
+func (s *costControlService) GetIncomeByID(id, organizationID int64) (*RespIncome, error) {
+	db := database.InitMySQL()
+	query := NewCostControlQuery(db)
+	payment, err := query.GetIncomeByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if payment.OrganizationID != organizationID && organizationID != 0 {
+		msg := "收入不存在或无权限"
+		return nil, errors.New(msg)
+	}
+	pictures, err := query.GetIncomePictureList(id)
+	if err != nil {
+		return nil, err
+	}
+	payment.Picture = *pictures
+	return payment, nil
+}
+
+func (s *costControlService) DeleteIncome(id, organizationID int64, user string, userID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCostControlRepository(tx)
+	oldIncome, err := repo.GetIncomeByID(id)
+	if err != nil {
+		msg := "获取收入记录失败"
+		return errors.New(msg)
+	}
+	if oldIncome.OrganizationID != organizationID && organizationID != 0 {
+		msg := "收入记录不存在或无权限"
+		return errors.New(msg)
+	}
+	if oldIncome.UserID != userID {
+		msg := "只能删除自己创建的收入"
+		return errors.New(msg)
+	}
+	err = repo.DeleteIncome(id, user)
+	if err != nil {
+		msg := "删除收入失败"
+		return errors.New(msg)
+	}
+	err = repo.DeleteIncomePicture(id)
+	if err != nil {
+		msg := "删除收入图片失败"
+		return errors.New(msg)
+	}
+	tx.Commit()
+	return nil
 }

@@ -514,11 +514,11 @@ func (r *costControlRepository) DeletePaymentPicture(paymentID int64) error {
 func (r *costControlRepository) DeletePayment(id int64, user string) error {
 	_, err := r.tx.Exec(`
 	UPDATE payments 
-	SET status = -1 
+	SET status = -1,
 	updated = ?,
 	updated_by = ?
 	WHERE id = ?
-	`, id, time.Now(), user)
+	`, time.Now(), user, id)
 	return err
 }
 
@@ -578,5 +578,60 @@ func (r *costControlRepository) CreateIncomePicture(info ReqIncomePictureNew) er
 	VALUES (
 		?, ?, ?, ?, ?, ?, ?
 	)`, info.IncomeID, info.Picture, 1, time.Now(), info.User, time.Now(), info.User)
+	return err
+}
+
+func (r *costControlRepository) GetIncomeByID(id int64) (RespIncome, error) {
+	var income RespIncome
+	row := r.tx.QueryRow(`
+	    SELECT organization_id,
+		project_id,
+		title,
+		amount,
+		payment_method,
+		date,
+		remark,
+		user_id,
+		status
+		FROM incomes
+		WHERE id = ?
+		AND status > 0
+	`, id)
+	err := row.Scan(&income.OrganizationID, &income.ProjectID, &income.Title, &income.Amount, &income.PaymentMethod, &income.Date, &income.Remark, &income.UserID, &income.Status)
+	return income, err
+}
+
+func (r *costControlRepository) DeleteIncomePicture(incomeID int64) error {
+	_, err := r.tx.Exec(`
+	UPDATE income_pictures 
+	SET status = -1 
+	WHERE income_id = ?
+	`, incomeID)
+	return err
+}
+
+func (r *costControlRepository) DeleteIncome(id int64, user string) error {
+	_, err := r.tx.Exec(`
+	UPDATE incomes 
+	SET status = -1 
+	updated = ?,
+	updated_by = ?
+	WHERE id = ?
+	`, id, time.Now(), user)
+	return err
+}
+
+func (r *costControlRepository) UpdateIncome(incomeID int64, info ReqIncomeUpdate) error {
+	_, err := r.tx.Exec(`
+		UPDATE incomes SET 
+		    title = ?,
+			amount = ?,
+			payment_method = ?,
+			date = ?,
+			remark = ?,
+			updated = ?,
+			updated_by = ?
+		WHERE id = ?
+	`, info.Title, info.Amount, info.PaymentMethod, info.Date, info.Remark, time.Now(), info.User, incomeID)
 	return err
 }

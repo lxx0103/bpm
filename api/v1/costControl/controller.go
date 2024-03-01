@@ -703,3 +703,124 @@ func NewIncome(c *gin.Context) {
 	}
 	response.Response(c, "ok")
 }
+
+// @Summary 更新收入
+// @Id S022
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "收入ID"
+// @Param info body ReqIncomeUpdate true "收入信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /incomes/:id [PUT]
+func UpdateIncome(c *gin.Context) {
+	var uri IncomeID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info ReqIncomeUpdate
+	err := c.ShouldBindJSON(&info)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	info.OrganizationID = claims.OrganizationID
+	costControlService := NewCostControlService()
+	err = costControlService.UpdateIncome(uri.ID, info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 收入列表
+// @Id S023
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_id query int false "项目ID"
+// @Param organization_id query int false "组织ID"
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.ListRes{data=[]RespIncome} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /incomes [GET]
+func GetIncomeList(c *gin.Context) {
+	var filter ReqIncomeFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	if claims.OrganizationID != 0 {
+		filter.OrganizationID = claims.OrganizationID
+	}
+	costControlService := NewCostControlService()
+	count, list, err := costControlService.GetIncomeList(filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 根据ID获取收入
+// @Id S024
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "收入ID"
+// @Success 200 object response.SuccessRes{data=RespIncome} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /incomes/:id [GET]
+func GetIncomeByID(c *gin.Context) {
+	var uri IncomeID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	costControlService := NewCostControlService()
+	row, err := costControlService.GetIncomeByID(uri.ID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, row)
+}
+
+// @Summary 删除收入
+// @Id S025
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "收入ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /incomes/:id [DELETE]
+func DeleteIncome(c *gin.Context) {
+	var uri IncomeID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	costControlService := NewCostControlService()
+	err := costControlService.DeleteIncome(uri.ID, claims.OrganizationID, claims.Username, claims.UserID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
