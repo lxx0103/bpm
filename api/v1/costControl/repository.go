@@ -547,6 +547,7 @@ func (r *costControlRepository) CreateIncome(info ReqIncomeNew) (int64, error) {
 		payment_method,
 		date,
 		remark,
+		user_id,
 		status,
 		created,
 		created_by,
@@ -554,8 +555,8 @@ func (r *costControlRepository) CreateIncome(info ReqIncomeNew) (int64, error) {
 		updated_by
 	) 
 	VALUES (
-		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-	)`, info.OrganizationID, info.ProjectID, info.Title, info.Amount, info.PaymentMethod, info.Date, info.Remark, 1, time.Now(), info.User, time.Now(), info.User)
+		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+	)`, info.OrganizationID, info.ProjectID, info.Title, info.Amount, info.PaymentMethod, info.Date, info.Remark, info.UserID, 1, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		fmt.Println(err)
 		return 0, err
@@ -613,11 +614,11 @@ func (r *costControlRepository) DeleteIncomePicture(incomeID int64) error {
 func (r *costControlRepository) DeleteIncome(id int64, user string) error {
 	_, err := r.tx.Exec(`
 	UPDATE incomes 
-	SET status = -1 
+	SET status = -1,
 	updated = ?,
 	updated_by = ?
 	WHERE id = ?
-	`, id, time.Now(), user)
+	`, time.Now(), user, id)
 	return err
 }
 

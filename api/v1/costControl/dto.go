@@ -425,7 +425,7 @@ type RespIncome struct {
 	Title            string   `db:"title" json:"title"`
 	Amount           float64  `db:"amount" json:"amount"`
 	PaymentMethod    string   `db:"payment_method" json:"payment_method"`
-	Date             string   `db:"payment_date" json:"payment_date"`
+	Date             string   `db:"date" json:"payment_date"`
 	Remark           string   `db:"remark" json:"remark"`
 	Picture          []string `json:"picture"`
 	UserID           int64    `db:"user_id" json:"user_id"`
