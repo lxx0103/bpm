@@ -1,6 +1,8 @@
 package costControl
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 // @Summary 项目预算清单
 // @Id WXS001
@@ -239,8 +241,68 @@ func WxNewPayment(c *gin.Context) {
 	NewPayment(c)
 }
 
-// @Summary 新增收入
+// @Summary 更新付款
 // @Id WXS017
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "付款ID"
+// @Param info body ReqPaymentUpdate true "付款信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/payments/:id [PUT]
+func WxUpdatePayment(c *gin.Context) {
+	UpdatePayment(c)
+}
+
+// @Summary 付款列表
+// @Id WXS018
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_id query int false "项目ID"
+// @Param organization_id query int false "组织ID"
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.ListRes{data=[]RespPayment} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/payments [GET]
+func WxGetPaymentList(c *gin.Context) {
+	GetPaymentList(c)
+}
+
+// @Summary 根据ID获取付款
+// @Id WXS019
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "付款ID"
+// @Success 200 object response.SuccessRes{data=RespPayment} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/payments/:id [GET]
+func WxGetPaymentByID(c *gin.Context) {
+	GetPaymentByID(c)
+}
+
+// @Summary 删除付款
+// @Id WXS020
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "付款ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/payments/:id [DELETE]
+func WxDeletePayment(c *gin.Context) {
+	DeletePayment(c)
+}
+
+// @Summary 新增收入
+// @Id WXS021
 // @Tags 小程序成控管理
 // @version 1.0
 // @Accept application/json
@@ -251,4 +313,64 @@ func WxNewPayment(c *gin.Context) {
 // @Router /wx/incomes [POST]
 func WxNewIncome(c *gin.Context) {
 	NewIncome(c)
+}
+
+// @Summary 更新收入
+// @Id WXS022
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "收入ID"
+// @Param info body ReqIncomeUpdate true "收入信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/incomes/:id [PUT]
+func WxUpdateIncome(c *gin.Context) {
+	UpdateIncome(c)
+}
+
+// @Summary 收入列表
+// @Id S023
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_id query int false "项目ID"
+// @Param organization_id query int false "组织ID"
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.ListRes{data=[]RespIncome} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/incomes [GET]
+func WxGetIncomeList(c *gin.Context) {
+	GetIncomeList(c)
+}
+
+// @Summary 根据ID获取收入
+// @Id S024
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "收入ID"
+// @Success 200 object response.SuccessRes{data=RespIncome} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/incomes/:id [GET]
+func WxGetIncomeByID(c *gin.Context) {
+	GetIncomeByID(c)
+}
+
+// @Summary 删除收入
+// @Id S025
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "收入ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/incomes/:id [DELETE]
+func WxDeleteIncome(c *gin.Context) {
+	DeleteIncome(c)
 }

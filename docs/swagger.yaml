@@ -11041,10 +11041,54 @@ paths:
       tags:
       - 小程序接口
   /wx/incomes:
+    get:
+      consumes:
+      - application/json
+      operationId: S023
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespIncome'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 收入列表
+      tags:
+      - 小程序成控管理
     post:
       consumes:
       - application/json
-      operationId: WXS017
+      operationId: WXS021
       parameters:
       - description: 收入信息
         in: body
@@ -11069,6 +11113,100 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 新增收入
+      tags:
+      - 小程序成控管理
+  /wx/incomes/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: S025
+      parameters:
+      - description: 收入ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除收入
+      tags:
+      - 小程序成控管理
+    get:
+      consumes:
+      - application/json
+      operationId: S024
+      parameters:
+      - description: 收入ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespIncome'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取收入
+      tags:
+      - 小程序成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: WXS022
+      parameters:
+      - description: 收入ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 收入信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqIncomeUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新收入
       tags:
       - 小程序成控管理
   /wx/key:
@@ -11884,6 +12022,145 @@ paths:
           schema:
             $ref: '#/definitions/response.ErrorRes'
       summary: 新增付款
+      tags:
+      - 小程序成控管理
+  /wx/payments:
+    get:
+      consumes:
+      - application/json
+      operationId: WXS018
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespPayment'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 付款列表
+      tags:
+      - 小程序成控管理
+  /wx/payments/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: WXS020
+      parameters:
+      - description: 付款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除付款
+      tags:
+      - 小程序成控管理
+    get:
+      consumes:
+      - application/json
+      operationId: WXS019
+      parameters:
+      - description: 付款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespPayment'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取付款
+      tags:
+      - 小程序成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: WXS017
+      parameters:
+      - description: 付款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 付款信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqPaymentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新付款
       tags:
       - 小程序成控管理
   /wx/positions:
