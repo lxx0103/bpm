@@ -3972,6 +3972,233 @@ const docTemplate = `{
                 }
             }
         },
+        "/matirials": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "材料进场列表",
+                "operationId": "S028",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "project_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "organization_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页行数",
+                        "name": "page_size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.ListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/costControl.RespMatirial"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/matirials/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "根据ID获取材料进场",
+                "operationId": "S029",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "材料进场ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/costControl.RespMatirial"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "更新材料进场",
+                "operationId": "S027",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "材料进场ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "材料进场信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/costControl.ReqMatirialUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "删除材料进场",
+                "operationId": "S030",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "材料进场ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/meetings": {
             "get": {
                 "consumes": [
@@ -5917,6 +6144,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/paymentRequests/:id/matirials": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "新增材料进场",
+                "operationId": "S026",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "请款ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "材料进场信息",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/costControl.ReqMatirialNew"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/paymentRequests/:id/payments": {
             "post": {
                 "consumes": [
@@ -5994,6 +6280,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "项目ID",
                         "name": "project_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "请款ID",
+                        "name": "payment_request_id",
                         "in": "query"
                     },
                     {
@@ -12758,7 +13050,7 @@ const docTemplate = `{
                     "小程序成控管理"
                 ],
                 "summary": "收入列表",
-                "operationId": "S023",
+                "operationId": "WXS023",
                 "parameters": [
                     {
                         "type": "integer",
@@ -12880,7 +13172,7 @@ const docTemplate = `{
                     "小程序成控管理"
                 ],
                 "summary": "根据ID获取收入",
-                "operationId": "S024",
+                "operationId": "WXS024",
                 "parameters": [
                     {
                         "type": "integer",
@@ -12985,7 +13277,7 @@ const docTemplate = `{
                     "小程序成控管理"
                 ],
                 "summary": "删除收入",
-                "operationId": "S025",
+                "operationId": "WXS025",
                 "parameters": [
                     {
                         "type": "integer",
@@ -18221,6 +18513,56 @@ const docTemplate = `{
                 }
             }
         },
+        "costControl.ReqMatirialNew": {
+            "type": "object",
+            "required": [
+                "date",
+                "quantity"
+            ],
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "costControl.ReqMatirialUpdate": {
+            "type": "object",
+            "required": [
+                "date",
+                "quantity"
+            ],
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "costControl.ReqPaymentNew": {
             "type": "object",
             "required": [
@@ -18597,6 +18939,56 @@ const docTemplate = `{
                 }
             }
         },
+        "costControl.RespMatirial": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "organization_name": {
+                    "type": "string"
+                },
+                "payment_request_id": {
+                    "type": "integer"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "project_name": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "costControl.RespPayment": {
             "type": "object",
             "properties": {
@@ -18671,6 +19063,12 @@ const docTemplate = `{
                 "created_by": {
                     "type": "string"
                 },
+                "deliveried": {
+                    "type": "integer"
+                },
+                "delivery_status": {
+                    "type": "integer"
+                },
                 "due": {
                     "type": "number"
                 },
@@ -18690,6 +19088,9 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "payment_request_type": {
+                    "type": "integer"
+                },
+                "pending": {
                     "type": "integer"
                 },
                 "picture": {

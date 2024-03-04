@@ -331,7 +331,7 @@ func WxUpdateIncome(c *gin.Context) {
 }
 
 // @Summary 收入列表
-// @Id S023
+// @Id WXS023
 // @Tags 小程序成控管理
 // @version 1.0
 // @Accept application/json
@@ -348,7 +348,7 @@ func WxGetIncomeList(c *gin.Context) {
 }
 
 // @Summary 根据ID获取收入
-// @Id S024
+// @Id WXS024
 // @Tags 小程序成控管理
 // @version 1.0
 // @Accept application/json
@@ -362,7 +362,7 @@ func WxGetIncomeByID(c *gin.Context) {
 }
 
 // @Summary 删除收入
-// @Id S025
+// @Id WXS025
 // @Tags 小程序成控管理
 // @version 1.0
 // @Accept application/json

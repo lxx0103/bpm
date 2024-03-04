@@ -192,3 +192,41 @@ CREATE TABLE `income_pictures` (
 
 ALTER TABLE `incomes` ADD `user_id` INT NOT NULL DEFAULT '0' AFTER `remark`;
 ALTER TABLE `payments` ADD `user_id` INT NOT NULL DEFAULT '0' AFTER `remark`;
+
+
+ALTER TABLE `payment_requests` 
+ADD `deliveried` INT NOT NULL DEFAULT '0' COMMENT '已进场' AFTER `status`, 
+ADD `pending` INT NOT NULL DEFAULT '0' COMMENT '未进场' AFTER `deliveried`, 
+ADD `delivery_status` TINYINT NOT NULL DEFAULT '1' COMMENT '进场状态（1未2部分3全部）' AFTER `pending`;
+
+
+-- matirials.sql
+CREATE TABLE `matirials` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `organization_id` int NOT NULL DEFAULT 0 COMMENT '组织ID',
+    `project_id` int NOT NULL DEFAULT 0 COMMENT '项目ID',
+    `payment_request_id` int NOT NULL DEFAULT 0 COMMENT '请款ID',
+    `date` date COMMENT '日期',
+    `quantity` int NOT NULL DEFAULT 0 COMMENT '金额',
+    `remark` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+    `user_id` int NOT NULL DEFAULT 0 COMMENT '用户ID',
+    `status` tinyint NOT NULL DEFAULT 0 COMMENT '状态',
+    `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `created_by` varchar(64) NOT NULL DEFAULT '' COMMENT '创建人',
+    `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_by` varchar(64) NOT NULL DEFAULT '' COMMENT '更新人',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='进场记录';
+
+-- matirial_pictures.sql
+CREATE TABLE `matirial_pictures` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `matirial_id` int NOT NULL DEFAULT 0 COMMENT '进场记录ID',
+    `link` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
+    `status` tinyint NOT NULL DEFAULT 0 COMMENT '状态',
+    `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `created_by` varchar(64) NOT NULL DEFAULT '' COMMENT '创建人',
+    `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `updated_by` varchar(64) NOT NULL DEFAULT '' COMMENT '更新人',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='进场记录图片';

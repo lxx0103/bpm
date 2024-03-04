@@ -225,12 +225,15 @@ func (r *costControlRepository) GetPaymentRequestByID(id int64) (RespPaymentRequ
 		remark,
 		audit_level,
 		user_id,
-		status
+		status,
+		deliveried,
+		pending,
+		delivery_status
 		FROM payment_requests
 		WHERE id = ?
 		AND status > 0
 	`, id)
-	err := row.Scan(&paymentRequest.OrganizationID, &paymentRequest.ProjectID, &paymentRequest.BudgetID, &paymentRequest.PaymentRequestType, &paymentRequest.Name, &paymentRequest.Quantity, &paymentRequest.UnitPrice, &paymentRequest.Total, &paymentRequest.Paid, &paymentRequest.Due, &paymentRequest.Remark, &paymentRequest.AuditLevel, &paymentRequest.UserID, &paymentRequest.Status)
+	err := row.Scan(&paymentRequest.OrganizationID, &paymentRequest.ProjectID, &paymentRequest.BudgetID, &paymentRequest.PaymentRequestType, &paymentRequest.Name, &paymentRequest.Quantity, &paymentRequest.UnitPrice, &paymentRequest.Total, &paymentRequest.Paid, &paymentRequest.Due, &paymentRequest.Remark, &paymentRequest.AuditLevel, &paymentRequest.UserID, &paymentRequest.Status, &paymentRequest.Deliveried, &paymentRequest.Pending, &paymentRequest.DeliveryStatus)
 	return paymentRequest, err
 }
 
@@ -424,14 +427,15 @@ func (r *costControlRepository) CreatePayment(paymentRequestID int64, info ReqPa
 		payment_date,
 		remark,
 		status,
+		user_id,
 		created,
 		created_by,
 		updated,
 		updated_by
 	) 
 	VALUES (
-		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-	)`, info.OrganizationID, info.ProjectID, paymentRequestID, info.Amount, info.PaymentMethod, info.PaymentDate, info.Remark, 1, time.Now(), info.User, time.Now(), info.User)
+		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+	)`, info.OrganizationID, info.ProjectID, paymentRequestID, info.Amount, info.PaymentMethod, info.PaymentDate, info.Remark, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		fmt.Println(err)
 		return 0, err
@@ -634,5 +638,115 @@ func (r *costControlRepository) UpdateIncome(incomeID int64, info ReqIncomeUpdat
 			updated_by = ?
 		WHERE id = ?
 	`, info.Title, info.Amount, info.PaymentMethod, info.Date, info.Remark, time.Now(), info.User, incomeID)
+	return err
+}
+
+func (r *costControlRepository) CreateMatirial(paymentRequestID int64, info ReqMatirialNew) (int64, error) {
+	result, err := r.tx.Exec(`
+	INSERT INTO matirials 
+	(
+		organization_id,
+		project_id,
+		payment_request_id,
+		quantity,
+		date,
+		remark,
+		status,
+		user_id,
+		created,
+		created_by,
+		updated,
+		updated_by
+	) 
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+	)`, info.OrganizationID, info.ProjectID, paymentRequestID, info.Quantity, info.Date, info.Remark, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	return result.LastInsertId()
+}
+
+func (r *costControlRepository) CreateMatirialPicture(info ReqMatirialPictureNew) error {
+	_, err := r.tx.Exec(`
+	INSERT INTO matirial_pictures 
+	(
+		matirial_id,
+		link,
+		status,
+		created,
+		created_by,
+		updated,
+		updated_by
+	) 
+	VALUES (
+		?, ?, ?, ?, ?, ?, ?
+	)`, info.MatirialID, info.Picture, 1, time.Now(), info.User, time.Now(), info.User)
+	return err
+}
+
+func (r *costControlRepository) UpdatePaymentRequestDeliveried(paymentRequestID int64, info ReqPaymentRequestDeliveried) error {
+	_, err := r.tx.Exec(`
+		UPDATE payment_requests SET 
+			deliveried = ?,
+			pending = ?,
+			delivery_status = ?,
+			updated = ?,
+			updated_by = ?
+		WHERE id = ?
+	`, info.Deliveried, info.Pending, info.DeliveryStatus, time.Now(), info.User, paymentRequestID)
+	return err
+}
+
+func (r *costControlRepository) GetMatirialByID(id int64) (RespMatirial, error) {
+	var payment RespMatirial
+	row := r.tx.QueryRow(`
+	    SELECT organization_id,
+		project_id,
+		payment_request_id,
+		date,
+		quantity,
+		remark,
+		user_id,
+		status
+		FROM matirials
+		WHERE id = ?
+		AND status > 0
+	`, id)
+	err := row.Scan(&payment.OrganizationID, &payment.ProjectID, &payment.PaymentRequestID, &payment.Date, &payment.Quantity, &payment.Remark, &payment.UserID, &payment.Status)
+	return payment, err
+}
+
+func (r *costControlRepository) DeleteMatirialPicture(matirialID int64) error {
+	_, err := r.tx.Exec(`
+	UPDATE matirial_pictures 
+	SET status = -1 
+	WHERE matirial_id = ?
+	`, matirialID)
+	return err
+}
+
+func (r *costControlRepository) DeleteMatirial(id int64, user string) error {
+	_, err := r.tx.Exec(`
+	UPDATE matirials 
+	SET status = -1,
+	updated = ?,
+	updated_by = ?
+	WHERE id = ?
+	`, time.Now(), user, id)
+	return err
+}
+
+func (r *costControlRepository) UpdateMatirial(matirialID int64, info ReqMatirialUpdate) error {
+	_, err := r.tx.Exec(`
+		UPDATE matirials SET 
+			quantity = ?,
+			date = ?,
+			remark = ?,
+			updated = ?,
+			updated_by = ?
+		WHERE id = ?
+	`, info.Quantity, info.Date, info.Remark, time.Now(), info.User, matirialID)
 	return err
 }

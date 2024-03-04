@@ -193,6 +193,9 @@ func (q *costControlQuery) GetPaymentRequestList(filter ReqPaymentRequestFilter)
 	b.remark AS remark,
 	b.audit_level AS audit_level,
 	b.status AS status,
+	b.deliveried as deliveried,
+	b.pending as pending,
+	b.delivery_status as delivery_status,
 	b.user_id AS user_id,
 	b.created AS created,
 	b.created_by AS created_by
@@ -226,6 +229,9 @@ func (q *costControlQuery) GetPaymentRequestByID(id int64) (*RespPaymentRequest,
 	b.remark AS remark,
 	b.audit_level AS audit_level,
 	b.status AS status,
+	b.deliveried as deliveried,
+	b.pending as pending,
+	b.delivery_status as delivery_status,
 	b.user_id AS user_id,
 	b.created AS created,
 	b.created_by AS created_by
@@ -316,6 +322,9 @@ func (q *costControlQuery) GetPaymentCount(filter ReqPaymentFilter) (int, error)
 	if v := filter.OrganizationID; v > 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
+	if v := filter.PaymentRequestID; v > 0 {
+		where, args = append(where, "payment_request_id = ?"), append(args, v)
+	}
 	var count int
 	err := q.conn.Get(&count, `
 		SELECT COUNT(*) 
@@ -333,7 +342,9 @@ func (q *costControlQuery) GetPaymentList(filter ReqPaymentFilter) (*[]RespPayme
 	if v := filter.OrganizationID; v > 0 {
 		where, args = append(where, "b.organization_id = ?"), append(args, v)
 	}
-
+	if v := filter.PaymentRequestID; v > 0 {
+		where, args = append(where, "b.payment_request_id = ?"), append(args, v)
+	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
 	var payments []RespPayment
@@ -486,6 +497,95 @@ func (q *costControlQuery) GetIncomePictureList(id int64) (*[]string, error) {
 	SELECT link 
 	FROM income_pictures 
 	WHERE income_id = ? AND status = 1
+	`, id)
+	return &pictures, err
+}
+
+func (q *costControlQuery) GetMatirialCount(filter ReqMatirialFilter) (int, error) {
+	where, args := []string{"status > 0"}, []interface{}{}
+	if v := filter.ProjectID; v > 0 {
+		where, args = append(where, "project_id = ?"), append(args, v)
+	}
+	if v := filter.OrganizationID; v > 0 {
+		where, args = append(where, "organization_id = ?"), append(args, v)
+	}
+	var count int
+	err := q.conn.Get(&count, `
+		SELECT COUNT(*) 
+		FROM matirials
+		WHERE `+strings.Join(where, " AND "), args...)
+
+	return count, err
+}
+
+func (q *costControlQuery) GetMatirialList(filter ReqMatirialFilter) (*[]RespMatirial, error) {
+	where, args := []string{"b.status > 0"}, []interface{}{}
+	if v := filter.ProjectID; v > 0 {
+		where, args = append(where, "b.project_id = ?"), append(args, v)
+	}
+	if v := filter.OrganizationID; v > 0 {
+		where, args = append(where, "b.organization_id = ?"), append(args, v)
+	}
+
+	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
+	args = append(args, filter.PageSize)
+	var payments []RespMatirial
+	err := q.conn.Select(&payments, `
+	SELECT b.id AS id, 
+	b.organization_id AS organization_id, 
+	o.name AS organization_name, 
+	b.project_id AS project_id, 
+	IFNULL(p.name, "") AS project_name, 
+	b.payment_request_id AS payment_request_id, 
+	b.date AS date,
+	b.quantity AS quantity, 
+	b.remark AS remark,
+	b.user_id AS user_id,
+	b.status AS status,
+	b.user_id AS user_id,
+	b.created AS created,
+	b.created_by AS created_by
+	FROM matirials b
+	LEFT JOIN projects p ON b.project_id = p.id
+	LEFT JOIN organizations o ON b.organization_id = o.id
+	WHERE `+strings.Join(where, " AND ")+`
+	ORDER BY b.id DESC
+	LIMIT ?, ?
+	`, args...)
+	return &payments, err
+}
+
+func (q *costControlQuery) GetMatirialByID(id int64) (*RespMatirial, error) {
+	var payment RespMatirial
+	err := q.conn.Get(&payment, `
+	SELECT b.id AS id, 
+	b.organization_id AS organization_id, 
+	o.name AS organization_name, 
+	b.project_id AS project_id, 
+	IFNULL(p.name, "") AS project_name, 
+	b.payment_request_id AS payment_request_id, 
+	b.date AS date,
+	b.quantity AS quantity, 
+	b.remark AS remark,
+	b.user_id AS user_id,
+	b.status AS status,
+	b.user_id AS user_id,
+	b.created AS created,
+	b.created_by AS created_by
+	FROM matirials b
+	LEFT JOIN projects p ON b.project_id = p.id
+	LEFT JOIN organizations o ON b.organization_id = o.id
+	WHERE b.id = ? AND b.status > 0
+	`, id)
+	return &payment, err
+}
+
+func (q *costControlQuery) GetMatirialPictureList(id int64) (*[]string, error) {
+	var pictures []string
+	err := q.conn.Select(&pictures, `
+	SELECT link 
+	FROM matirial_pictures 
+	WHERE matirial_id = ? AND status = 1
 	`, id)
 	return &pictures, err
 }

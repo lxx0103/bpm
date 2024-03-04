@@ -183,6 +183,9 @@ type RespPaymentRequest struct {
 	Audit              []RespPaymentRequestAudit `json:"audit"`
 	UserID             int64                     `db:"user_id" json:"user_id"`
 	Status             int                       `db:"status" json:"status"`
+	Deliveried         int                       `db:"deliveried" json:"deliveried"`
+	Pending            int                       `db:"pending" json:"pending"`
+	DeliveryStatus     int                       `db:"delivery_status" json:"delivery_status"`
 	Created            string                    `db:"created" json:"created"`
 	CreatedBy          string                    `db:"created_by" json:"created_by"`
 }
@@ -374,10 +377,11 @@ type RespPayment struct {
 }
 
 type ReqPaymentFilter struct {
-	ProjectID      int64 `form:"project_id" binding:"omitempty,min=1"`
-	OrganizationID int64 `form:"organization_id" binding:"omitempty,min=1"`
-	PageId         int   `form:"page_id" binding:"required,min=1"`
-	PageSize       int   `form:"page_size" binding:"required,min=5,max=200"`
+	ProjectID        int64 `form:"project_id" binding:"omitempty,min=1"`
+	PaymentRequestID int64 `form:"payment_request_id" binding:"omitempty,min=1"`
+	OrganizationID   int64 `form:"organization_id" binding:"omitempty,min=1"`
+	PageId           int   `form:"page_id" binding:"required,min=1"`
+	PageSize         int   `form:"page_size" binding:"required,min=5,max=200"`
 }
 
 type ReqIncomeNew struct {
@@ -435,6 +439,69 @@ type RespIncome struct {
 }
 
 type ReqIncomeFilter struct {
+	ProjectID      int64 `form:"project_id" binding:"omitempty,min=1"`
+	OrganizationID int64 `form:"organization_id" binding:"omitempty,min=1"`
+	PageId         int   `form:"page_id" binding:"required,min=1"`
+	PageSize       int   `form:"page_size" binding:"required,min=5,max=200"`
+}
+
+type ReqMatirialNew struct {
+	Quantity       int      `json:"quantity" binding:"required"`
+	Date           string   `json:"date" binding:"required,datetime=2006-01-02"`
+	Remark         string   `json:"remark" binding:"omitempty,max=255"`
+	Picture        []string `json:"picture" binding:"omitempty"`
+	OrganizationID int64    `json:"organization_id" swaggerignore:"true"`
+	ProjectID      int64    `json:"project_id" swaggerignore:"true"`
+	User           string   `json:"user" swaggerignore:"true"`
+	UserID         int64    `json:"user_id" swaggerignore:"true"`
+}
+
+type ReqMatirialPictureNew struct {
+	MatirialID int64  `json:"matirial_id" binding:"required,min=1"`
+	Picture    string `json:"picture" binding:"required"`
+	User       string `json:"user" swaggerignore:"true"`
+	UserID     int64  `json:"user_id" swaggerignore:"true"`
+}
+
+type ReqPaymentRequestDeliveried struct {
+	Deliveried     int    `json:"deliveried"`
+	Pending        int    `json:"pending"`
+	DeliveryStatus int    `json:"delivery_status"`
+	User           string `json:"user" swaggerignore:"true"`
+}
+
+type MatirialID struct {
+	ID int64 `uri:"id" binding:"required,min=1"`
+}
+
+type ReqMatirialUpdate struct {
+	Quantity       int      `json:"quantity" binding:"required"`
+	Date           string   `json:"date" binding:"required,datetime=2006-01-02"`
+	Remark         string   `json:"remark" binding:"omitempty,max=255"`
+	Picture        []string `json:"picture" binding:"omitempty"`
+	OrganizationID int64    `json:"organization_id" swaggerignore:"true"`
+	User           string   `json:"user" swaggerignore:"true"`
+	UserID         int64    `json:"user_id" swaggerignore:"true"`
+}
+
+type RespMatirial struct {
+	ID               int64    `db:"id" json:"id"`
+	OrganizationID   int64    `db:"organization_id" json:"organization_id"`
+	OrganizationName string   `db:"organization_name" json:"organization_name"`
+	ProjectID        int64    `db:"project_id" json:"project_id"`
+	ProjectName      string   `db:"project_name" json:"project_name"`
+	PaymentRequestID int64    `db:"payment_request_id" json:"payment_request_id"`
+	Date             string   `db:"date" json:"date"`
+	Quantity         int      `db:"quantity" json:"quantity"`
+	Remark           string   `db:"remark" json:"remark"`
+	Picture          []string `json:"picture"`
+	UserID           int64    `db:"user_id" json:"user_id"`
+	Status           int      `db:"status" json:"status"`
+	Created          string   `db:"created" json:"created"`
+	CreatedBy        string   `db:"created_by" json:"created_by"`
+}
+
+type ReqMatirialFilter struct {
 	ProjectID      int64 `form:"project_id" binding:"omitempty,min=1"`
 	OrganizationID int64 `form:"organization_id" binding:"omitempty,min=1"`
 	PageId         int   `form:"page_id" binding:"required,min=1"`

@@ -828,6 +828,40 @@ definitions:
     - date
     - title
     type: object
+  costControl.ReqMatirialNew:
+    properties:
+      date:
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      quantity:
+        type: integer
+      remark:
+        maxLength: 255
+        type: string
+    required:
+    - date
+    - quantity
+    type: object
+  costControl.ReqMatirialUpdate:
+    properties:
+      date:
+        type: string
+      picture:
+        items:
+          type: string
+        type: array
+      quantity:
+        type: integer
+      remark:
+        maxLength: 255
+        type: string
+    required:
+    - date
+    - quantity
+    type: object
   costControl.ReqPaymentNew:
     properties:
       amount:
@@ -1090,6 +1124,39 @@ definitions:
       user_id:
         type: integer
     type: object
+  costControl.RespMatirial:
+    properties:
+      created:
+        type: string
+      created_by:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      organization_id:
+        type: integer
+      organization_name:
+        type: string
+      payment_request_id:
+        type: integer
+      picture:
+        items:
+          type: string
+        type: array
+      project_id:
+        type: integer
+      project_name:
+        type: string
+      quantity:
+        type: integer
+      remark:
+        type: string
+      status:
+        type: integer
+      user_id:
+        type: integer
+    type: object
   costControl.RespPayment:
     properties:
       amount:
@@ -1139,6 +1206,10 @@ definitions:
         type: string
       created_by:
         type: string
+      deliveried:
+        type: integer
+      delivery_status:
+        type: integer
       due:
         type: number
       id:
@@ -1152,6 +1223,8 @@ definitions:
       paid:
         type: number
       payment_request_type:
+        type: integer
+      pending:
         type: integer
       picture:
         items:
@@ -5673,6 +5746,145 @@ paths:
       summary: 根据ID更新材料
       tags:
       - 基础信息管理
+  /matirials:
+    get:
+      consumes:
+      - application/json
+      operationId: S028
+      parameters:
+      - description: 项目ID
+        in: query
+        name: project_id
+        type: integer
+      - description: 组织ID
+        in: query
+        name: organization_id
+        type: integer
+      - description: 页码
+        in: query
+        name: page_id
+        required: true
+        type: integer
+      - description: 每页行数
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.ListRes'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/costControl.RespMatirial'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 材料进场列表
+      tags:
+      - 成控管理
+  /matirials/:id:
+    delete:
+      consumes:
+      - application/json
+      operationId: S030
+      parameters:
+      - description: 材料进场ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 删除材料进场
+      tags:
+      - 成控管理
+    get:
+      consumes:
+      - application/json
+      operationId: S029
+      parameters:
+      - description: 材料进场ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespMatirial'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据ID获取材料进场
+      tags:
+      - 成控管理
+    put:
+      consumes:
+      - application/json
+      operationId: S027
+      parameters:
+      - description: 材料进场ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 材料进场信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqMatirialUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 更新材料进场
+      tags:
+      - 成控管理
   /meetings:
     get:
       consumes:
@@ -6858,6 +7070,42 @@ paths:
       summary: 更新费用申请审核
       tags:
       - 成控管理
+  /paymentRequests/:id/matirials:
+    post:
+      consumes:
+      - application/json
+      operationId: S026
+      parameters:
+      - description: 请款ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 材料进场信息
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/costControl.ReqMatirialNew'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 新增材料进场
+      tags:
+      - 成控管理
   /paymentRequests/:id/payments:
     post:
       consumes:
@@ -6903,6 +7151,10 @@ paths:
       - description: 项目ID
         in: query
         name: project_id
+        type: integer
+      - description: 请款ID
+        in: query
+        name: payment_request_id
         type: integer
       - description: 组织ID
         in: query
@@ -11044,7 +11296,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: S023
+      operationId: WXS023
       parameters:
       - description: 项目ID
         in: query
@@ -11119,7 +11371,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: S025
+      operationId: WXS025
       parameters:
       - description: 收入ID
         in: path
@@ -11148,7 +11400,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: S024
+      operationId: WXS024
       parameters:
       - description: 收入ID
         in: path

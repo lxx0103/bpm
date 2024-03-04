@@ -596,6 +596,7 @@ func UpdatePayment(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param project_id query int false "项目ID"
+// @Param payment_request_id query int false "请款ID"
 // @Param organization_id query int false "组织ID"
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
@@ -818,6 +819,162 @@ func DeleteIncome(c *gin.Context) {
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	costControlService := NewCostControlService()
 	err := costControlService.DeleteIncome(uri.ID, claims.OrganizationID, claims.Username, claims.UserID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 新增材料进场
+// @Id S026
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "请款ID"
+// @Param info body ReqMatirialNew true "材料进场信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /paymentRequests/:id/matirials [POST]
+func NewMatirial(c *gin.Context) {
+	var uri PaymentRequestID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info ReqMatirialNew
+	err := c.ShouldBindJSON(&info)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	costControlService := NewCostControlService()
+	err = costControlService.NewMatirial(uri.ID, info, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 更新材料进场
+// @Id S027
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "材料进场ID"
+// @Param info body ReqMatirialUpdate true "材料进场信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /matirials/:id [PUT]
+func UpdateMatirial(c *gin.Context) {
+	var uri MatirialID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	var info ReqMatirialUpdate
+	err := c.ShouldBindJSON(&info)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	info.User = claims.Username
+	info.UserID = claims.UserID
+	info.OrganizationID = claims.OrganizationID
+	costControlService := NewCostControlService()
+	err = costControlService.UpdateMatirial(uri.ID, info)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, "ok")
+}
+
+// @Summary 材料进场列表
+// @Id S028
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_id query int false "项目ID"
+// @Param organization_id query int false "组织ID"
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.ListRes{data=[]RespMatirial} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /matirials [GET]
+func GetMatirialList(c *gin.Context) {
+	var filter ReqMatirialFilter
+	err := c.ShouldBindQuery(&filter)
+	if err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	if claims.OrganizationID != 0 {
+		filter.OrganizationID = claims.OrganizationID
+	}
+	costControlService := NewCostControlService()
+	count, list, err := costControlService.GetMatirialList(filter)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.ResponseList(c, filter.PageId, filter.PageSize, count, list)
+}
+
+// @Summary 根据ID获取材料进场
+// @Id S029
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "材料进场ID"
+// @Success 200 object response.SuccessRes{data=RespMatirial} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /matirials/:id [GET]
+func GetMatirialByID(c *gin.Context) {
+	var uri MatirialID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	costControlService := NewCostControlService()
+	row, err := costControlService.GetMatirialByID(uri.ID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, row)
+}
+
+// @Summary 删除材料进场
+// @Id S030
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "材料进场ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /matirials/:id [DELETE]
+func DeleteMatirial(c *gin.Context) {
+	var uri MatirialID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	costControlService := NewCostControlService()
+	err := costControlService.DeleteMatirial(uri.ID, claims.OrganizationID, claims.Username, claims.UserID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

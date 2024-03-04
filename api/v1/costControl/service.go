@@ -1223,3 +1223,311 @@ func (s *costControlService) DeleteIncome(id, organizationID int64, user string,
 	tx.Commit()
 	return nil
 }
+
+func (s *costControlService) NewMatirial(paymentRequestID int64, info ReqMatirialNew, organizationID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCostControlRepository(tx)
+	paymentRequest, err := repo.GetPaymentRequestByID(paymentRequestID)
+	if err != nil {
+		msg := "获取请款记录失败"
+		return errors.New(msg)
+	}
+	if paymentRequest.OrganizationID != organizationID {
+		msg := "请款记录不存在"
+		return errors.New(msg)
+	}
+	if paymentRequest.Status != 2 && paymentRequest.Status != 4 && paymentRequest.Status != 5 {
+		msg := "请款记录状态不正确"
+		return errors.New(msg)
+	}
+	if paymentRequest.DeliveryStatus != 1 && paymentRequest.DeliveryStatus != 2 { //1：未进场，2：部分进场
+		msg := "请款记录进场状态不正确"
+		return errors.New(msg)
+	}
+	if info.Quantity > paymentRequest.Pending {
+		msg := "此次进场数量大于未进场数量"
+		return errors.New(msg)
+	}
+	info.OrganizationID = paymentRequest.OrganizationID
+	info.ProjectID = paymentRequest.ProjectID
+	matirialID, err := repo.CreateMatirial(paymentRequestID, info)
+	if err != nil {
+		msg := "生成进场记录失败"
+		return errors.New(msg)
+	}
+	for _, picture := range info.Picture {
+		var matirialPicture ReqMatirialPictureNew
+		matirialPicture.MatirialID = matirialID
+		matirialPicture.Picture = picture
+		matirialPicture.User = info.User
+		err = repo.CreateMatirialPicture(matirialPicture)
+		if err != nil {
+			msg := "创建进场记录文件失败"
+			return errors.New(msg)
+		}
+	}
+	var paymentRequestUpdate ReqPaymentRequestDeliveried
+	paymentRequestUpdate.Deliveried = paymentRequest.Deliveried + info.Quantity
+	paymentRequestUpdate.Pending = paymentRequest.Pending - info.Quantity
+	if paymentRequestUpdate.Pending == 0 {
+		paymentRequestUpdate.DeliveryStatus = 3
+	} else {
+		paymentRequestUpdate.DeliveryStatus = 2
+	}
+	paymentRequestUpdate.User = info.User
+	err = repo.UpdatePaymentRequestDeliveried(paymentRequestID, paymentRequestUpdate)
+	if err != nil {
+		msg := "更新请款信息失败"
+		return errors.New(msg)
+	}
+	var history ReqPaymentRequestHistoryNew
+	history.PaymentRequestID = paymentRequestID
+	history.OrganizationID = paymentRequest.OrganizationID
+	history.User = info.User
+	history.Action = "材料进场"
+	history.Remark = "本次进场数量" + strconv.Itoa(info.Quantity) + "，"
+	if paymentRequestUpdate.Pending == 0 {
+		history.Remark += "已完全进场，当前状态为已进场"
+	} else {
+		history.Remark += "未完全进场，当前状态为部分进场"
+	}
+	history.Content = info.Remark
+	historyID, err := repo.CreatePaymentRequestHistory(history)
+	if err != nil {
+		msg := "生成付款记录失败"
+		return errors.New(msg)
+	}
+	for _, link := range info.Picture {
+		var paymentRequestHistoryPicture ReqPaymentRequestHistoryPictureNew
+		paymentRequestHistoryPicture.PaymentRequestHistoryID = historyID
+		paymentRequestHistoryPicture.Picture = link
+		paymentRequestHistoryPicture.User = info.User
+		err = repo.CreatePaymentRequestHistoryPicture(paymentRequestHistoryPicture)
+		if err != nil {
+			msg := "创建付款记录文件失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *costControlService) UpdateMatirial(id int64, info ReqMatirialUpdate) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCostControlRepository(tx)
+	oldMatirial, err := repo.GetMatirialByID(id)
+	if err != nil {
+		msg := "获取进场信息失败"
+		return errors.New(msg)
+	}
+	if oldMatirial.UserID != info.UserID {
+		msg := "只能更新自己的进场"
+		return errors.New(msg)
+	}
+	if oldMatirial.OrganizationID != info.OrganizationID {
+		msg := "进场信息不存在"
+		return errors.New(msg)
+	}
+	paymentRequest, err := repo.GetPaymentRequestByID(oldMatirial.PaymentRequestID)
+	if err != nil {
+		msg := "获取请款记录失败"
+		return errors.New(msg)
+	}
+	if paymentRequest.OrganizationID != info.OrganizationID {
+		msg := "请款记录不存在"
+		return errors.New(msg)
+	}
+	paymentRequest.Pending = paymentRequest.Pending + oldMatirial.Quantity
+	paymentRequest.Deliveried = paymentRequest.Deliveried - oldMatirial.Quantity
+	fmt.Println(paymentRequest.Pending, paymentRequest.Deliveried)
+	if info.Quantity > paymentRequest.Pending {
+		msg := "此次进场数量大于未进场数量"
+		return errors.New(msg)
+	}
+	err = repo.DeleteMatirialPicture(id)
+	if err != nil {
+		msg := "删除进场图片失败"
+		return errors.New(msg)
+	}
+	err = repo.UpdateMatirial(id, info)
+	if err != nil {
+		msg := "更新进场记录失败"
+		return errors.New(msg)
+	}
+	for _, picture := range info.Picture {
+		var matirialPicture ReqMatirialPictureNew
+		matirialPicture.MatirialID = id
+		matirialPicture.Picture = picture
+		matirialPicture.User = info.User
+		err = repo.CreateMatirialPicture(matirialPicture)
+		if err != nil {
+			msg := "创建进场记录文件失败"
+			return errors.New(msg)
+		}
+	}
+	var paymentRequestUpdate ReqPaymentRequestDeliveried
+	paymentRequestUpdate.Deliveried = paymentRequest.Deliveried + info.Quantity
+	paymentRequestUpdate.Pending = paymentRequest.Pending - info.Quantity
+	if paymentRequestUpdate.Pending == 0 {
+		paymentRequestUpdate.DeliveryStatus = 3
+	} else {
+		paymentRequestUpdate.DeliveryStatus = 2
+	}
+	paymentRequestUpdate.User = info.User
+	err = repo.UpdatePaymentRequestDeliveried(oldMatirial.PaymentRequestID, paymentRequestUpdate)
+	if err != nil {
+		msg := "更新请款信息失败"
+		return errors.New(msg)
+	}
+	var history ReqPaymentRequestHistoryNew
+	history.PaymentRequestID = oldMatirial.PaymentRequestID
+	history.OrganizationID = paymentRequest.OrganizationID
+	history.User = info.User
+	history.Action = "更新进场"
+	history.Remark = "本次进场数量由" + strconv.Itoa(oldMatirial.Quantity) + "更新为" + strconv.Itoa(info.Quantity) + "，"
+	if paymentRequestUpdate.Pending == 0 {
+		history.Remark += "已完全进场，当前状态为已进场"
+	} else {
+		history.Remark += "未完全进场，当前状态为部分进场"
+	}
+	history.Content = info.Remark
+	historyID, err := repo.CreatePaymentRequestHistory(history)
+	if err != nil {
+		msg := "生成进场记录失败"
+		return errors.New(msg)
+	}
+	for _, link := range info.Picture {
+		var paymentRequestHistoryPicture ReqPaymentRequestHistoryPictureNew
+		paymentRequestHistoryPicture.PaymentRequestHistoryID = historyID
+		paymentRequestHistoryPicture.Picture = link
+		paymentRequestHistoryPicture.User = info.User
+		err = repo.CreatePaymentRequestHistoryPicture(paymentRequestHistoryPicture)
+		if err != nil {
+			msg := "创建进场记录文件失败"
+			return errors.New(msg)
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+func (s *costControlService) GetMatirialList(filter ReqMatirialFilter) (int, *[]RespMatirial, error) {
+	db := database.InitMySQL()
+	query := NewCostControlQuery(db)
+	count, err := query.GetMatirialCount(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	list, err := query.GetMatirialList(filter)
+	if err != nil {
+		return 0, nil, err
+	}
+	for key, budget := range *list {
+		pictures, err := query.GetMatirialPictureList(budget.ID)
+		if err != nil {
+			return 0, nil, err
+		}
+		(*list)[key].Picture = *pictures
+	}
+	return count, list, nil
+}
+
+func (s *costControlService) GetMatirialByID(id, organizationID int64) (*RespMatirial, error) {
+	db := database.InitMySQL()
+	query := NewCostControlQuery(db)
+	payment, err := query.GetMatirialByID(id)
+	if err != nil {
+		return nil, err
+	}
+	if payment.OrganizationID != organizationID && organizationID != 0 {
+		msg := "进场记录不存在或无权限"
+		return nil, errors.New(msg)
+	}
+	pictures, err := query.GetMatirialPictureList(id)
+	if err != nil {
+		return nil, err
+	}
+	payment.Picture = *pictures
+	return payment, nil
+}
+
+func (s *costControlService) DeleteMatirial(id, organizationID int64, user string, userID int64) error {
+	db := database.InitMySQL()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	repo := NewCostControlRepository(tx)
+	oldMatirial, err := repo.GetMatirialByID(id)
+	if err != nil {
+		msg := "获取进场记录失败"
+		return errors.New(msg)
+	}
+	if oldMatirial.OrganizationID != organizationID && organizationID != 0 {
+		msg := "进场记录不存在或无权限"
+		return errors.New(msg)
+	}
+	if oldMatirial.UserID != userID {
+		msg := "只能删除自己创建的进场记录"
+		return errors.New(msg)
+	}
+	err = repo.DeleteMatirial(id, user)
+	if err != nil {
+		msg := "删除进场记录失败"
+		return errors.New(msg)
+	}
+	err = repo.DeleteMatirialPicture(id)
+	if err != nil {
+		msg := "删除进场记录图片失败"
+		return errors.New(msg)
+	}
+	paymentRequest, err := repo.GetPaymentRequestByID(oldMatirial.PaymentRequestID)
+	if err != nil {
+		msg := "获取请款信息失败"
+		return errors.New(msg)
+	}
+	var paymentRequestUpdate ReqPaymentRequestDeliveried
+	paymentRequestUpdate.Deliveried = paymentRequest.Deliveried - oldMatirial.Quantity
+	paymentRequestUpdate.Pending = paymentRequest.Pending + oldMatirial.Quantity
+	if paymentRequestUpdate.Deliveried == 0 {
+		paymentRequestUpdate.DeliveryStatus = 1
+	} else {
+		paymentRequestUpdate.DeliveryStatus = 2
+	}
+	paymentRequestUpdate.User = user
+	err = repo.UpdatePaymentRequestDeliveried(paymentRequest.ID, paymentRequestUpdate)
+	if err != nil {
+		msg := "更新请款信息失败"
+		return errors.New(msg)
+	}
+	var history ReqPaymentRequestHistoryNew
+	history.PaymentRequestID = paymentRequest.ID
+	history.OrganizationID = paymentRequest.OrganizationID
+	history.User = user
+	history.Action = "删除进场记录"
+	history.Remark = "删除进场记录数量为" + strconv.Itoa(oldMatirial.Quantity) + "，"
+	if paymentRequestUpdate.Deliveried == 0 {
+		history.Remark += "未进场，当前状态为未进场"
+	} else {
+		history.Remark += "未完全进场，当前状态为部分进场"
+	}
+	history.Content = ""
+	_, err = repo.CreatePaymentRequestHistory(history)
+	if err != nil {
+		msg := "生成进场历史记录失败"
+		return errors.New(msg)
+	}
+	tx.Commit()
+	return nil
+}
