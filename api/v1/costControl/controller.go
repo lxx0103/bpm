@@ -833,17 +833,17 @@ func DeleteIncome(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path int true "请款ID"
-// @Param info body ReqMatirialNew true "材料进场信息"
+// @Param info body ReqDeliveryNew true "材料进场信息"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /paymentRequests/:id/matirials [POST]
-func NewMatirial(c *gin.Context) {
+// @Router /paymentRequests/:id/deliverys [POST]
+func NewDelivery(c *gin.Context) {
 	var uri PaymentRequestID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	var info ReqMatirialNew
+	var info ReqDeliveryNew
 	err := c.ShouldBindJSON(&info)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)
@@ -853,7 +853,7 @@ func NewMatirial(c *gin.Context) {
 	info.User = claims.Username
 	info.UserID = claims.UserID
 	costControlService := NewCostControlService()
-	err = costControlService.NewMatirial(uri.ID, info, claims.OrganizationID)
+	err = costControlService.NewDelivery(uri.ID, info, claims.OrganizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -868,17 +868,17 @@ func NewMatirial(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path int true "材料进场ID"
-// @Param info body ReqMatirialUpdate true "材料进场信息"
+// @Param info body ReqDeliveryUpdate true "材料进场信息"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /matirials/:id [PUT]
-func UpdateMatirial(c *gin.Context) {
-	var uri MatirialID
+// @Router /deliverys/:id [PUT]
+func UpdateDelivery(c *gin.Context) {
+	var uri DeliveryID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
-	var info ReqMatirialUpdate
+	var info ReqDeliveryUpdate
 	err := c.ShouldBindJSON(&info)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)
@@ -889,7 +889,7 @@ func UpdateMatirial(c *gin.Context) {
 	info.UserID = claims.UserID
 	info.OrganizationID = claims.OrganizationID
 	costControlService := NewCostControlService()
-	err = costControlService.UpdateMatirial(uri.ID, info)
+	err = costControlService.UpdateDelivery(uri.ID, info)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -907,11 +907,11 @@ func UpdateMatirial(c *gin.Context) {
 // @Param organization_id query int false "组织ID"
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
-// @Success 200 object response.ListRes{data=[]RespMatirial} 成功
+// @Success 200 object response.ListRes{data=[]RespDelivery} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /matirials [GET]
-func GetMatirialList(c *gin.Context) {
-	var filter ReqMatirialFilter
+// @Router /deliverys [GET]
+func GetDeliveryList(c *gin.Context) {
+	var filter ReqDeliveryFilter
 	err := c.ShouldBindQuery(&filter)
 	if err != nil {
 		response.ResponseError(c, "BindingError", err)
@@ -922,7 +922,7 @@ func GetMatirialList(c *gin.Context) {
 		filter.OrganizationID = claims.OrganizationID
 	}
 	costControlService := NewCostControlService()
-	count, list, err := costControlService.GetMatirialList(filter)
+	count, list, err := costControlService.GetDeliveryList(filter)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -937,18 +937,18 @@ func GetMatirialList(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path int true "材料进场ID"
-// @Success 200 object response.SuccessRes{data=RespMatirial} 成功
+// @Success 200 object response.SuccessRes{data=RespDelivery} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /matirials/:id [GET]
-func GetMatirialByID(c *gin.Context) {
-	var uri MatirialID
+// @Router /deliverys/:id [GET]
+func GetDeliveryByID(c *gin.Context) {
+	var uri DeliveryID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	costControlService := NewCostControlService()
-	row, err := costControlService.GetMatirialByID(uri.ID, claims.OrganizationID)
+	row, err := costControlService.GetDeliveryByID(uri.ID, claims.OrganizationID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return
@@ -965,16 +965,16 @@ func GetMatirialByID(c *gin.Context) {
 // @Param id path int true "材料进场ID"
 // @Success 200 object response.SuccessRes{data=string} 成功
 // @Failure 400 object response.ErrorRes 内部错误
-// @Router /matirials/:id [DELETE]
-func DeleteMatirial(c *gin.Context) {
-	var uri MatirialID
+// @Router /deliverys/:id [DELETE]
+func DeleteDelivery(c *gin.Context) {
+	var uri DeliveryID
 	if err := c.ShouldBindUri(&uri); err != nil {
 		response.ResponseError(c, "BindingError", err)
 		return
 	}
 	claims := c.MustGet("claims").(*service.CustomClaims)
 	costControlService := NewCostControlService()
-	err := costControlService.DeleteMatirial(uri.ID, claims.OrganizationID, claims.Username, claims.UserID)
+	err := costControlService.DeleteDelivery(uri.ID, claims.OrganizationID, claims.Username, claims.UserID)
 	if err != nil {
 		response.ResponseError(c, "DatabaseError", err)
 		return

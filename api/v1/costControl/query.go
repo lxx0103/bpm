@@ -501,7 +501,7 @@ func (q *costControlQuery) GetIncomePictureList(id int64) (*[]string, error) {
 	return &pictures, err
 }
 
-func (q *costControlQuery) GetMatirialCount(filter ReqMatirialFilter) (int, error) {
+func (q *costControlQuery) GetDeliveryCount(filter ReqDeliveryFilter) (int, error) {
 	where, args := []string{"status > 0"}, []interface{}{}
 	if v := filter.ProjectID; v > 0 {
 		where, args = append(where, "project_id = ?"), append(args, v)
@@ -509,16 +509,19 @@ func (q *costControlQuery) GetMatirialCount(filter ReqMatirialFilter) (int, erro
 	if v := filter.OrganizationID; v > 0 {
 		where, args = append(where, "organization_id = ?"), append(args, v)
 	}
+	if v := filter.PaymentRequestID; v > 0 {
+		where, args = append(where, "payment_request_id = ?"), append(args, v)
+	}
 	var count int
 	err := q.conn.Get(&count, `
 		SELECT COUNT(*) 
-		FROM matirials
+		FROM deliverys
 		WHERE `+strings.Join(where, " AND "), args...)
 
 	return count, err
 }
 
-func (q *costControlQuery) GetMatirialList(filter ReqMatirialFilter) (*[]RespMatirial, error) {
+func (q *costControlQuery) GetDeliveryList(filter ReqDeliveryFilter) (*[]RespDelivery, error) {
 	where, args := []string{"b.status > 0"}, []interface{}{}
 	if v := filter.ProjectID; v > 0 {
 		where, args = append(where, "b.project_id = ?"), append(args, v)
@@ -526,10 +529,12 @@ func (q *costControlQuery) GetMatirialList(filter ReqMatirialFilter) (*[]RespMat
 	if v := filter.OrganizationID; v > 0 {
 		where, args = append(where, "b.organization_id = ?"), append(args, v)
 	}
-
+	if v := filter.PaymentRequestID; v > 0 {
+		where, args = append(where, "b.payment_request_id = ?"), append(args, v)
+	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
-	var payments []RespMatirial
+	var payments []RespDelivery
 	err := q.conn.Select(&payments, `
 	SELECT b.id AS id, 
 	b.organization_id AS organization_id, 
@@ -545,7 +550,7 @@ func (q *costControlQuery) GetMatirialList(filter ReqMatirialFilter) (*[]RespMat
 	b.user_id AS user_id,
 	b.created AS created,
 	b.created_by AS created_by
-	FROM matirials b
+	FROM deliverys b
 	LEFT JOIN projects p ON b.project_id = p.id
 	LEFT JOIN organizations o ON b.organization_id = o.id
 	WHERE `+strings.Join(where, " AND ")+`
@@ -555,8 +560,8 @@ func (q *costControlQuery) GetMatirialList(filter ReqMatirialFilter) (*[]RespMat
 	return &payments, err
 }
 
-func (q *costControlQuery) GetMatirialByID(id int64) (*RespMatirial, error) {
-	var payment RespMatirial
+func (q *costControlQuery) GetDeliveryByID(id int64) (*RespDelivery, error) {
+	var payment RespDelivery
 	err := q.conn.Get(&payment, `
 	SELECT b.id AS id, 
 	b.organization_id AS organization_id, 
@@ -572,7 +577,7 @@ func (q *costControlQuery) GetMatirialByID(id int64) (*RespMatirial, error) {
 	b.user_id AS user_id,
 	b.created AS created,
 	b.created_by AS created_by
-	FROM matirials b
+	FROM deliverys b
 	LEFT JOIN projects p ON b.project_id = p.id
 	LEFT JOIN organizations o ON b.organization_id = o.id
 	WHERE b.id = ? AND b.status > 0
@@ -580,12 +585,12 @@ func (q *costControlQuery) GetMatirialByID(id int64) (*RespMatirial, error) {
 	return &payment, err
 }
 
-func (q *costControlQuery) GetMatirialPictureList(id int64) (*[]string, error) {
+func (q *costControlQuery) GetDeliveryPictureList(id int64) (*[]string, error) {
 	var pictures []string
 	err := q.conn.Select(&pictures, `
 	SELECT link 
-	FROM matirial_pictures 
-	WHERE matirial_id = ? AND status = 1
+	FROM delivery_pictures 
+	WHERE delivery_id = ? AND status = 1
 	`, id)
 	return &pictures, err
 }

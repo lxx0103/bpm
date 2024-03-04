@@ -200,8 +200,8 @@ ADD `pending` INT NOT NULL DEFAULT '0' COMMENT '未进场' AFTER `deliveried`,
 ADD `delivery_status` TINYINT NOT NULL DEFAULT '1' COMMENT '进场状态（1未2部分3全部）' AFTER `pending`;
 
 
--- matirials.sql
-CREATE TABLE `matirials` (
+-- deliverys.sql
+CREATE TABLE `deliverys` (
     `id` int NOT NULL AUTO_INCREMENT,
     `organization_id` int NOT NULL DEFAULT 0 COMMENT '组织ID',
     `project_id` int NOT NULL DEFAULT 0 COMMENT '项目ID',
@@ -218,10 +218,10 @@ CREATE TABLE `matirials` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='进场记录';
 
--- matirial_pictures.sql
-CREATE TABLE `matirial_pictures` (
+-- delivery_pictures.sql
+CREATE TABLE `delivery_pictures` (
     `id` int NOT NULL AUTO_INCREMENT,
-    `matirial_id` int NOT NULL DEFAULT 0 COMMENT '进场记录ID',
+    `delivery_id` int NOT NULL DEFAULT 0 COMMENT '进场记录ID',
     `link` varchar(255) NOT NULL DEFAULT '' COMMENT '图片',
     `status` tinyint NOT NULL DEFAULT 0 COMMENT '状态',
     `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

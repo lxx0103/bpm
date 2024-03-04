@@ -445,7 +445,7 @@ type ReqIncomeFilter struct {
 	PageSize       int   `form:"page_size" binding:"required,min=5,max=200"`
 }
 
-type ReqMatirialNew struct {
+type ReqDeliveryNew struct {
 	Quantity       int      `json:"quantity" binding:"required"`
 	Date           string   `json:"date" binding:"required,datetime=2006-01-02"`
 	Remark         string   `json:"remark" binding:"omitempty,max=255"`
@@ -456,8 +456,8 @@ type ReqMatirialNew struct {
 	UserID         int64    `json:"user_id" swaggerignore:"true"`
 }
 
-type ReqMatirialPictureNew struct {
-	MatirialID int64  `json:"matirial_id" binding:"required,min=1"`
+type ReqDeliveryPictureNew struct {
+	DeliveryID int64  `json:"delivery_id" binding:"required,min=1"`
 	Picture    string `json:"picture" binding:"required"`
 	User       string `json:"user" swaggerignore:"true"`
 	UserID     int64  `json:"user_id" swaggerignore:"true"`
@@ -470,11 +470,11 @@ type ReqPaymentRequestDeliveried struct {
 	User           string `json:"user" swaggerignore:"true"`
 }
 
-type MatirialID struct {
+type DeliveryID struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
-type ReqMatirialUpdate struct {
+type ReqDeliveryUpdate struct {
 	Quantity       int      `json:"quantity" binding:"required"`
 	Date           string   `json:"date" binding:"required,datetime=2006-01-02"`
 	Remark         string   `json:"remark" binding:"omitempty,max=255"`
@@ -484,7 +484,7 @@ type ReqMatirialUpdate struct {
 	UserID         int64    `json:"user_id" swaggerignore:"true"`
 }
 
-type RespMatirial struct {
+type RespDelivery struct {
 	ID               int64    `db:"id" json:"id"`
 	OrganizationID   int64    `db:"organization_id" json:"organization_id"`
 	OrganizationName string   `db:"organization_name" json:"organization_name"`
@@ -501,9 +501,10 @@ type RespMatirial struct {
 	CreatedBy        string   `db:"created_by" json:"created_by"`
 }
 
-type ReqMatirialFilter struct {
-	ProjectID      int64 `form:"project_id" binding:"omitempty,min=1"`
-	OrganizationID int64 `form:"organization_id" binding:"omitempty,min=1"`
-	PageId         int   `form:"page_id" binding:"required,min=1"`
-	PageSize       int   `form:"page_size" binding:"required,min=5,max=200"`
+type ReqDeliveryFilter struct {
+	ProjectID        int64 `form:"project_id" binding:"omitempty,min=1"`
+	OrganizationID   int64 `form:"organization_id" binding:"omitempty,min=1"`
+	PaymentRequestID int64 `form:"payment_request_id" binding:"omitempty,min=1"`
+	PageId           int   `form:"page_id" binding:"required,min=1"`
+	PageSize         int   `form:"page_size" binding:"required,min=5,max=200"`
 }

@@ -27,11 +27,11 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/payments/:id", GetPaymentByID)
 	g.DELETE("/payments/:id", DeletePayment)
 
-	g.POST("/paymentRequests/:id/matirials", NewMatirial)
-	g.PUT("/matirials/:id", UpdateMatirial)
-	g.GET("/matirials", GetMatirialList)
-	g.GET("/matirials/:id", GetMatirialByID)
-	g.DELETE("/matirials/:id", DeleteMatirial)
+	g.POST("/paymentRequests/:id/deliverys", NewDelivery)
+	g.PUT("/deliverys/:id", UpdateDelivery)
+	g.GET("/deliverys", GetDeliveryList)
+	g.GET("/deliverys/:id", GetDeliveryByID)
+	g.DELETE("/deliverys/:id", DeleteDelivery)
 
 	g.POST("/incomes", NewIncome)
 	g.PUT("/incomes/:id", UpdateIncome)
@@ -67,4 +67,10 @@ func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/incomes", WxGetIncomeList)
 	g.GET("/wx/incomes/:id", WxGetIncomeByID)
 	g.DELETE("/wx/incomes/:id", WxDeleteIncome)
+
+	g.POST("/wx/paymentRequests/:id/deliverys", WxNewDelivery)
+	g.PUT("/wx/deliverys/:id", WxUpdateDelivery)
+	g.GET("/wx/deliverys", WxGetDeliveryList)
+	g.GET("/wx/deliverys/:id", WxGetDeliveryByID)
+	g.DELETE("/wx/deliverys/:id", WxDeleteDelivery)
 }

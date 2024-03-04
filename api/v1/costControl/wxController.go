@@ -374,3 +374,79 @@ func WxGetIncomeByID(c *gin.Context) {
 func WxDeleteIncome(c *gin.Context) {
 	DeleteIncome(c)
 }
+
+// @Summary 新增材料进场
+// @Id WXS026
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "请款ID"
+// @Param info body ReqDeliveryNew true "材料进场信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/paymentRequests/:id/deliverys [POST]
+func WxNewDelivery(c *gin.Context) {
+	NewDelivery(c)
+}
+
+// @Summary 更新材料进场
+// @Id WXS027
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "材料进场ID"
+// @Param info body ReqDeliveryUpdate true "材料进场信息"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/deliverys/:id [PUT]
+func WxUpdateDelivery(c *gin.Context) {
+	UpdateDelivery(c)
+}
+
+// @Summary 材料进场列表
+// @Id WXS028
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param project_id query int false "项目ID"
+// @Param organization_id query int false "组织ID"
+// @Param payment_request_id query int false "付款申请ID"
+// @Param page_id query int true "页码"
+// @Param page_size query int true "每页行数"
+// @Success 200 object response.ListRes{data=[]RespDelivery} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/deliverys [GET]
+func WxGetDeliveryList(c *gin.Context) {
+	GetDeliveryList(c)
+}
+
+// @Summary 根据ID获取材料进场
+// @Id WXS029
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "材料进场ID"
+// @Success 200 object response.SuccessRes{data=RespDelivery} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/deliverys/:id [GET]
+func WxGetDeliveryByID(c *gin.Context) {
+	GetDeliveryByID(c)
+}
+
+// @Summary 删除材料进场
+// @Id WXS030
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "材料进场ID"
+// @Success 200 object response.SuccessRes{data=string} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/deliverys/:id [DELETE]
+func WxDeleteDelivery(c *gin.Context) {
+	DeleteDelivery(c)
+}

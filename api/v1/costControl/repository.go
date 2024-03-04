@@ -139,6 +139,9 @@ func (r *costControlRepository) CreatePaymentRequest(info ReqPaymentRequestNew) 
 			paid,
 			due,
 			status,
+			deliveried,
+			pending,
+			delivery_status,
 			remark,
 			audit_level,
 			user_id,
@@ -148,8 +151,8 @@ func (r *costControlRepository) CreatePaymentRequest(info ReqPaymentRequestNew) 
 			updated_by
 		) 
 		VALUES (
-			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-		)`, info.OrganizationID, info.ProjectID, info.BudgetID, info.PaymentRequestType, info.Name, info.Quantity, info.UnitPrice, info.Total, 0, info.Total, 1, info.Remark, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
+			?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+		)`, info.OrganizationID, info.ProjectID, info.BudgetID, info.PaymentRequestType, info.Name, info.Quantity, info.UnitPrice, info.Total, 0, info.Total, 1, 0, info.Quantity, 1, info.Remark, 1, info.UserID, time.Now(), info.User, time.Now(), info.User)
 	if err != nil {
 		return 0, err
 	}
@@ -249,13 +252,15 @@ func (r *costControlRepository) UpdatePaymentRequest(info ReqPaymentRequestUpdat
 			total = ?,
 			paid = ?,
 			due = ?,
+			deliveried = ?,
+			pending = ?,
 			remark = ?,
 			audit_level = ?,
 			status = ?,
 			updated = ?,
 			updated_by = ?
 		WHERE id = ?
-	`, info.ProjectID, info.PaymentRequestType, info.BudgetID, info.Name, info.Quantity, info.UnitPrice, info.Total, 0, info.Total, info.Remark, 1, info.Status, time.Now(), info.User, id)
+	`, info.ProjectID, info.PaymentRequestType, info.BudgetID, info.Name, info.Quantity, info.UnitPrice, info.Total, 0, info.Total, 0, info.Quantity, info.Remark, 1, info.Status, time.Now(), info.User, id)
 	return err
 }
 
@@ -641,9 +646,9 @@ func (r *costControlRepository) UpdateIncome(incomeID int64, info ReqIncomeUpdat
 	return err
 }
 
-func (r *costControlRepository) CreateMatirial(paymentRequestID int64, info ReqMatirialNew) (int64, error) {
+func (r *costControlRepository) CreateDelivery(paymentRequestID int64, info ReqDeliveryNew) (int64, error) {
 	result, err := r.tx.Exec(`
-	INSERT INTO matirials 
+	INSERT INTO deliverys 
 	(
 		organization_id,
 		project_id,
@@ -668,11 +673,11 @@ func (r *costControlRepository) CreateMatirial(paymentRequestID int64, info ReqM
 	return result.LastInsertId()
 }
 
-func (r *costControlRepository) CreateMatirialPicture(info ReqMatirialPictureNew) error {
+func (r *costControlRepository) CreateDeliveryPicture(info ReqDeliveryPictureNew) error {
 	_, err := r.tx.Exec(`
-	INSERT INTO matirial_pictures 
+	INSERT INTO delivery_pictures 
 	(
-		matirial_id,
+		delivery_id,
 		link,
 		status,
 		created,
@@ -682,7 +687,7 @@ func (r *costControlRepository) CreateMatirialPicture(info ReqMatirialPictureNew
 	) 
 	VALUES (
 		?, ?, ?, ?, ?, ?, ?
-	)`, info.MatirialID, info.Picture, 1, time.Now(), info.User, time.Now(), info.User)
+	)`, info.DeliveryID, info.Picture, 1, time.Now(), info.User, time.Now(), info.User)
 	return err
 }
 
@@ -699,8 +704,8 @@ func (r *costControlRepository) UpdatePaymentRequestDeliveried(paymentRequestID 
 	return err
 }
 
-func (r *costControlRepository) GetMatirialByID(id int64) (RespMatirial, error) {
-	var payment RespMatirial
+func (r *costControlRepository) GetDeliveryByID(id int64) (RespDelivery, error) {
+	var payment RespDelivery
 	row := r.tx.QueryRow(`
 	    SELECT organization_id,
 		project_id,
@@ -710,7 +715,7 @@ func (r *costControlRepository) GetMatirialByID(id int64) (RespMatirial, error) 
 		remark,
 		user_id,
 		status
-		FROM matirials
+		FROM deliverys
 		WHERE id = ?
 		AND status > 0
 	`, id)
@@ -718,18 +723,18 @@ func (r *costControlRepository) GetMatirialByID(id int64) (RespMatirial, error) 
 	return payment, err
 }
 
-func (r *costControlRepository) DeleteMatirialPicture(matirialID int64) error {
+func (r *costControlRepository) DeleteDeliveryPicture(deliveryID int64) error {
 	_, err := r.tx.Exec(`
-	UPDATE matirial_pictures 
+	UPDATE delivery_pictures 
 	SET status = -1 
-	WHERE matirial_id = ?
-	`, matirialID)
+	WHERE delivery_id = ?
+	`, deliveryID)
 	return err
 }
 
-func (r *costControlRepository) DeleteMatirial(id int64, user string) error {
+func (r *costControlRepository) DeleteDelivery(id int64, user string) error {
 	_, err := r.tx.Exec(`
-	UPDATE matirials 
+	UPDATE deliverys 
 	SET status = -1,
 	updated = ?,
 	updated_by = ?
@@ -738,15 +743,15 @@ func (r *costControlRepository) DeleteMatirial(id int64, user string) error {
 	return err
 }
 
-func (r *costControlRepository) UpdateMatirial(matirialID int64, info ReqMatirialUpdate) error {
+func (r *costControlRepository) UpdateDelivery(deliveryID int64, info ReqDeliveryUpdate) error {
 	_, err := r.tx.Exec(`
-		UPDATE matirials SET 
+		UPDATE deliverys SET 
 			quantity = ?,
 			date = ?,
 			remark = ?,
 			updated = ?,
 			updated_by = ?
 		WHERE id = ?
-	`, info.Quantity, info.Date, info.Remark, time.Now(), info.User, matirialID)
+	`, info.Quantity, info.Date, info.Remark, time.Now(), info.User, deliveryID)
 	return err
 }
