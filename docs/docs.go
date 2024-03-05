@@ -21729,6 +21729,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "no_record_day": {
+                    "type": "integer"
+                },
                 "organization_id": {
                     "type": "integer"
                 },

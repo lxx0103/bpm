@@ -86,6 +86,7 @@ type ProjectResponse struct {
 	Area             string                `db:"area" json:"area"`
 	RecordAlertDay   int                   `db:"record_alert_day" json:"record_alert_day"`
 	LastRecordDate   string                `db:"last_record_date" json:"last_record_date"`
+	NoRecordDay      int                   `json:"no_record_day"`
 	Progress         int                   `db:"progress" json:"progress"`
 	Status           int                   `db:"status" json:"status"`
 	ActiveEvents     []ActiveEventResponse `json:"active_events"`

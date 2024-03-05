@@ -481,6 +481,22 @@ func (s *projectService) GetAssignedProject(filter AssignedProjectFilter, userID
 			}
 		}
 		(*myProjects)[k].ActiveEvents = *events
+
+		startDate := v.Created.Format("2006-01-02")
+		lastRecordDate := v.LastRecordDate
+		if v.LastRecordDate == "" {
+			lastRecordDate = startDate
+		}
+		recordDateTime, err := time.Parse("2006-01-02", lastRecordDate)
+		if err != nil {
+			return 0, nil, err
+		}
+		today, err := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+		if err != nil {
+			return 0, nil, err
+		}
+		interval := today.Sub(recordDateTime)
+		(*myProjects)[k].NoRecordDay = int(interval.Hours() / 24)
 	}
 	return myProjectsCount, myProjects, err
 }
