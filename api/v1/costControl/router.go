@@ -38,6 +38,8 @@ func Routers(g *gin.RouterGroup) {
 	g.GET("/incomes", GetIncomeList)
 	g.GET("/incomes/:id", GetIncomeByID)
 	g.DELETE("/incomes/:id", DeleteIncome)
+
+	g.GET("/reports/project/:id", GetReportByProjectID)
 }
 
 func WxRouters(g *gin.RouterGroup) {
@@ -73,4 +75,6 @@ func WxRouters(g *gin.RouterGroup) {
 	g.GET("/wx/deliverys", WxGetDeliveryList)
 	g.GET("/wx/deliverys/:id", WxGetDeliveryByID)
 	g.DELETE("/wx/deliverys/:id", WxDeleteDelivery)
+
+	g.GET("/wx/reports/project/:id", WxGetReportByProjectID)
 }

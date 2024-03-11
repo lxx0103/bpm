@@ -510,3 +510,17 @@ type ReqDeliveryFilter struct {
 	PageId           int   `form:"page_id" binding:"required,min=1"`
 	PageSize         int   `form:"page_size" binding:"required,min=5,max=200"`
 }
+
+type ProjectID struct {
+	ID int64 `uri:"id" binding:"required,min=1"`
+}
+
+type RespReport struct {
+	OrganizationID  int64                `json:"organization_id"`
+	ProjectID       int64                `json:"project_id"`
+	ProjectName     string               `json:"project_name"`
+	Income          float64              `json:"income"`
+	Payment         float64              `json:"payment"`
+	Budget          float64              `json:"budget"`
+	PaymentRequests []RespPaymentRequest `json:"payment_requests"`
+}

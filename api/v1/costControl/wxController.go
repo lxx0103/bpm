@@ -453,3 +453,17 @@ func WxGetDeliveryByID(c *gin.Context) {
 func WxDeleteDelivery(c *gin.Context) {
 	DeleteDelivery(c)
 }
+
+// @Summary 根据项目ID获取报表
+// @Id WXS031
+// @Tags 小程序成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目ID"
+// @Success 200 object response.SuccessRes{data=RespReport} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /wx/reports/project/:id [GET]
+func WxGetReportByProjectID(c *gin.Context) {
+	GetReportByProjectID(c)
+}

@@ -1280,6 +1280,25 @@ definitions:
       audit_type:
         type: integer
     type: object
+  costControl.RespReport:
+    properties:
+      budget:
+        type: number
+      income:
+        type: number
+      organization_id:
+        type: integer
+      payment:
+        type: number
+      payment_requests:
+        items:
+          $ref: '#/definitions/costControl.RespPaymentRequest'
+        type: array
+      project_id:
+        type: integer
+      project_name:
+        type: string
+    type: object
   element.Element:
     properties:
       created:
@@ -8664,6 +8683,36 @@ paths:
       summary: 获取小程序码
       tags:
       - 组织管理
+  /reports/project/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: S031
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespReport'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据项目ID获取报表
+      tags:
+      - 成控管理
   /rolemenus/:id:
     get:
       consumes:
@@ -13263,6 +13312,36 @@ paths:
       summary: 获取小程序码
       tags:
       - 组织管理
+  /wx/reports/project/:id:
+    get:
+      consumes:
+      - application/json
+      operationId: WXS031
+      parameters:
+      - description: 项目ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessRes'
+            - properties:
+                data:
+                  $ref: '#/definitions/costControl.RespReport'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorRes'
+      summary: 根据项目ID获取报表
+      tags:
+      - 小程序成控管理
   /wx/reviews/:id/handle:
     put:
       consumes:

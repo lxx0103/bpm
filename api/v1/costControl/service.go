@@ -1531,3 +1531,49 @@ func (s *costControlService) DeleteDelivery(id, organizationID int64, user strin
 	tx.Commit()
 	return nil
 }
+
+func (s *costControlService) GetReportByProjectID(projectID, organizationID int64) (*RespReport, error) {
+	db := database.InitMySQL()
+	query := NewCostControlQuery(db)
+	projectQuery := project.NewProjectQuery(db)
+	project, err := projectQuery.GetProjectByID(projectID, organizationID)
+	if err != nil {
+		msg := "项目不存在"
+		return nil, errors.New(msg)
+	}
+	budget, err := query.GetBudgetSumByProjectID(projectID)
+	if err != nil {
+		msg := "获取总预算失败"
+		return nil, errors.New(msg)
+	}
+	income, err := query.GetIncomeSumByProjectID(projectID)
+	if err != nil {
+		msg := "获取总收入失败"
+		return nil, errors.New(msg)
+	}
+	payment, err := query.GetPaymentSumByProjectID(projectID)
+	if err != nil {
+		msg := "获取总付款失败"
+		return nil, errors.New(msg)
+	}
+	var filter ReqPaymentRequestFilter
+	filter.ProjectID = projectID
+	filter.OrganizationID = organizationID
+	filter.PageId = 1
+	filter.PageSize = 2000
+	fmt.Println(filter)
+	paymentRequests, err := query.GetPaymentRequestList(filter)
+	if err != nil {
+		msg := "获取付款申请列表失败"
+		return nil, errors.New(msg)
+	}
+	var res RespReport
+	res.ProjectID = projectID
+	res.ProjectName = project.Name
+	res.OrganizationID = organizationID
+	res.Budget = budget
+	res.Income = income
+	res.Payment = payment
+	res.PaymentRequests = *paymentRequests
+	return &res, nil
+}

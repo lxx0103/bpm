@@ -629,3 +629,33 @@ func (q *costControlQuery) GetDeliveryPictureList(id int64) (*[]string, error) {
 	`, id)
 	return &pictures, err
 }
+
+func (q *costControlQuery) GetBudgetSumByProjectID(projectID int64) (float64, error) {
+	var sum float64
+	err := q.conn.Get(&sum, `
+	SELECT sum(budget) 
+	FROM budgets 
+	WHERE project_id = ? AND status = 1
+	`, projectID)
+	return sum, err
+}
+
+func (q *costControlQuery) GetIncomeSumByProjectID(projectID int64) (float64, error) {
+	var sum float64
+	err := q.conn.Get(&sum, `
+	SELECT sum(amount) 
+	FROM incomes 
+	WHERE project_id = ? AND status = 1
+	`, projectID)
+	return sum, err
+}
+
+func (q *costControlQuery) GetPaymentSumByProjectID(projectID int64) (float64, error) {
+	var sum float64
+	err := q.conn.Get(&sum, `
+	SELECT sum(amount) 
+	FROM payments 
+	WHERE project_id = ? AND status = 1
+	`, projectID)
+	return sum, err
+}

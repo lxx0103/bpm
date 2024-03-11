@@ -8741,6 +8741,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/reports/project/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "成控管理"
+                ],
+                "summary": "根据项目ID获取报表",
+                "operationId": "S031",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/costControl.RespReport"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rolemenus/:id": {
             "get": {
                 "consumes": [
@@ -16271,6 +16321,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/wx/reports/project/:id": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "小程序成控管理"
+                ],
+                "summary": "根据项目ID获取报表",
+                "operationId": "WXS031",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/costControl.RespReport"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorRes"
+                        }
+                    }
+                }
+            }
+        },
         "/wx/reviews/:id/handle": {
             "put": {
                 "consumes": [
@@ -19495,6 +19595,35 @@ const docTemplate = `{
                 },
                 "audit_type": {
                     "type": "integer"
+                }
+            }
+        },
+        "costControl.RespReport": {
+            "type": "object",
+            "properties": {
+                "budget": {
+                    "type": "number"
+                },
+                "income": {
+                    "type": "number"
+                },
+                "organization_id": {
+                    "type": "integer"
+                },
+                "payment": {
+                    "type": "number"
+                },
+                "payment_requests": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/costControl.RespPaymentRequest"
+                    }
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "project_name": {
+                    "type": "string"
                 }
             }
         },

@@ -983,3 +983,29 @@ func DeleteDelivery(c *gin.Context) {
 	}
 	response.Response(c, "ok")
 }
+
+// @Summary 根据项目ID获取报表
+// @Id S031
+// @Tags 成控管理
+// @version 1.0
+// @Accept application/json
+// @Produce application/json
+// @Param id path int true "项目ID"
+// @Success 200 object response.SuccessRes{data=RespReport} 成功
+// @Failure 400 object response.ErrorRes 内部错误
+// @Router /reports/project/:id [GET]
+func GetReportByProjectID(c *gin.Context) {
+	var uri ProjectID
+	if err := c.ShouldBindUri(&uri); err != nil {
+		response.ResponseError(c, "BindingError", err)
+		return
+	}
+	claims := c.MustGet("claims").(*service.CustomClaims)
+	costControlService := NewCostControlService()
+	row, err := costControlService.GetReportByProjectID(uri.ID, claims.OrganizationID)
+	if err != nil {
+		response.ResponseError(c, "DatabaseError", err)
+		return
+	}
+	response.Response(c, row)
+}
