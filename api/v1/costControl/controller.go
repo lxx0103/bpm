@@ -260,6 +260,8 @@ func UpdatePaymentRequest(c *gin.Context) {
 // @Param organization_id query int false "组织ID"
 // @Param name query string false "名称"
 // @Param type query string false "类型（audit：审核人员， mine：我创建的，passed：已审核通过的）"
+// @Param payment_status query string false "付款状态（none：未付款， partial：部分付款，paid：已付款）"
+// @Param delivery_status query string false "进场状态（none：未进场， partial：部分进场，deliveried：已进场）"
 // @Param page_id query int true "页码"
 // @Param page_size query int true "每页行数"
 // @Success 200 object response.ListRes{data=[]RespPaymentRequest} 成功

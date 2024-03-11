@@ -5778,6 +5778,18 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "付款状态（none：未付款， partial：部分付款，paid：已付款）",
+                        "name": "payment_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "进场状态（none：未进场， partial：部分进场，deliveried：已进场）",
+                        "name": "delivery_status",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "页码",
                         "name": "page_id",
@@ -14459,6 +14471,24 @@ const docTemplate = `{
                         "type": "string",
                         "description": "名称",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "类型（audit：审核人员， mine：我创建的，passed：已审核通过的）",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "付款状态（none：未付款， partial：部分付款，paid：已付款）",
+                        "name": "payment_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "进场状态（none：未进场， partial：部分进场，deliveried：已进场）",
+                        "name": "delivery_status",
                         "in": "query"
                     },
                     {

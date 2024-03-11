@@ -140,6 +140,24 @@ func (q *costControlQuery) GetPaymentRequestCount(filter ReqPaymentRequestFilter
 	if v := filter.Type; v == "audit" {
 		where, args = append(where, "id in (SELECT p.id FROM payment_requests p LEFT JOIN payment_request_audits pa ON p.id = pa.payment_request_id AND p.audit_level = pa.audit_level WHERE p.status = 1 and pa.status > 0 AND p.organization_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) )"), append(args, filter.OrganizationID, filter.PositionID, filter.UserID)
 	}
+	if v := filter.PaymentStatus; v == "none" {
+		where = append(where, "paid = 0")
+	}
+	if v := filter.PaymentStatus; v == "partial" {
+		where = append(where, "paid > 0 AND due > 0")
+	}
+	if v := filter.PaymentStatus; v == "paid" {
+		where = append(where, "due = 0")
+	}
+	if v := filter.DeliveryStatus; v == "none" {
+		where = append(where, "deliveried = 0")
+	}
+	if v := filter.DeliveryStatus; v == "partial" {
+		where = append(where, "deliveried > 0 AND pending > 0")
+	}
+	if v := filter.DeliveryStatus; v == "deliveried" {
+		where = append(where, "pending = 0")
+	}
 	var count int
 	err := q.conn.Get(&count, `
 		SELECT COUNT(*) 
@@ -172,7 +190,24 @@ func (q *costControlQuery) GetPaymentRequestList(filter ReqPaymentRequestFilter)
 	if v := filter.Type; v == "audit" {
 		where, args = append(where, "b.id in (SELECT p.id FROM payment_requests p LEFT JOIN payment_request_audits pa ON p.id = pa.payment_request_id AND p.audit_level = pa.audit_level WHERE p.status = 1 and pa.status > 0 AND p.organization_id = ? AND ( ( audit_type = 1 AND audit_to = ? ) OR ( audit_type = 2 and audit_to = ? ) ) )"), append(args, filter.OrganizationID, filter.PositionID, filter.UserID)
 	}
-
+	if v := filter.PaymentStatus; v == "none" {
+		where = append(where, "b.paid = 0")
+	}
+	if v := filter.PaymentStatus; v == "partial" {
+		where = append(where, "b.paid > 0 AND b.due > 0")
+	}
+	if v := filter.PaymentStatus; v == "paid" {
+		where = append(where, "b.due = 0")
+	}
+	if v := filter.DeliveryStatus; v == "none" {
+		where = append(where, "b.deliveried = 0")
+	}
+	if v := filter.DeliveryStatus; v == "partial" {
+		where = append(where, "b.deliveried > 0 AND b.pending > 0")
+	}
+	if v := filter.DeliveryStatus; v == "deliveried" {
+		where = append(where, "b.pending = 0")
+	}
 	args = append(args, filter.PageId*filter.PageSize-filter.PageSize)
 	args = append(args, filter.PageSize)
 	var payment_requests []RespPaymentRequest
