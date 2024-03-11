@@ -1570,6 +1570,8 @@ func (s *costControlService) GetReportByProjectID(projectID, organizationID int6
 	var filterIncome ReqIncomeFilter
 	filterIncome.ProjectID = projectID
 	filterIncome.OrganizationID = organizationID
+	filterIncome.PageId = 1
+	filterIncome.PageSize = 2000
 	incomeList, err := query.GetIncomeList(filterIncome)
 	if err != nil {
 		msg := "获取收入列表失败"
