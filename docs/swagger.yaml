@@ -1286,6 +1286,10 @@ definitions:
         type: number
       income:
         type: number
+      income_list:
+        items:
+          $ref: '#/definitions/costControl.RespIncome'
+        type: array
       organization_id:
         type: integer
       payment:

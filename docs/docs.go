@@ -19607,6 +19607,12 @@ const docTemplate = `{
                 "income": {
                     "type": "number"
                 },
+                "income_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/costControl.RespIncome"
+                    }
+                },
                 "organization_id": {
                     "type": "integer"
                 },
