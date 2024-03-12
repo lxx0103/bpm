@@ -1284,6 +1284,10 @@ definitions:
     properties:
       budget:
         type: number
+      budget_list:
+        items:
+          $ref: '#/definitions/costControl.RespBudget'
+        type: array
       income:
         type: number
       income_list:

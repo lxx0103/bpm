@@ -19604,6 +19604,12 @@ const docTemplate = `{
                 "budget": {
                     "type": "number"
                 },
+                "budget_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/costControl.RespBudget"
+                    }
+                },
                 "income": {
                     "type": "number"
                 },

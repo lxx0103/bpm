@@ -524,4 +524,5 @@ type RespReport struct {
 	Budget          float64              `json:"budget"`
 	PaymentRequests []RespPaymentRequest `json:"payment_requests"`
 	IncomeList      []RespIncome         `json:"income_list"`
+	BudgetList      []RespBudget         `json:"budget_list"`
 }

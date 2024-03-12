@@ -1577,6 +1577,16 @@ func (s *costControlService) GetReportByProjectID(projectID, organizationID int6
 		msg := "获取收入列表失败"
 		return nil, errors.New(msg)
 	}
+	var filterBudget ReqBudgetFilter
+	filterBudget.ProjectID = projectID
+	filterBudget.OrganizationID = organizationID
+	filterBudget.PageId = 1
+	filterBudget.PageSize = 2000
+	budgetList, err := query.GetBudgetList(filterBudget)
+	if err != nil {
+		msg := "获取收入列表失败"
+		return nil, errors.New(msg)
+	}
 	var res RespReport
 	res.ProjectID = projectID
 	res.ProjectName = project.Name
@@ -1586,5 +1596,6 @@ func (s *costControlService) GetReportByProjectID(projectID, organizationID int6
 	res.Payment = payment
 	res.PaymentRequests = *paymentRequests
 	res.IncomeList = *incomeList
+	res.BudgetList = *budgetList
 	return &res, nil
 }
