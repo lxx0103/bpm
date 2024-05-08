@@ -133,6 +133,10 @@ func (s *authService) GetUserInfo(openID string, authType int, organizationID in
 		msg := "组织已禁用"
 		return nil, errors.New(msg)
 	}
+	if user.Status == 2 {
+		msg := "用户已禁用"
+		return nil, errors.New(msg)
+	}
 	return user, nil
 }
 
@@ -171,6 +175,10 @@ func (s *authService) VerifyCredential(signinInfo SigninRequest) (*UserResponse,
 			msg := "组织已禁用"
 			return nil, errors.New(msg)
 		}
+	}
+	if userInfo.Status == 2 {
+		msg := "用户已禁用"
+		return nil, errors.New(msg)
 	}
 	return userInfo, err
 }
