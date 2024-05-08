@@ -151,6 +151,27 @@ func (s *authService) VerifyCredential(signinInfo SigninRequest) (*UserResponse,
 		errMessage := "密码错误"
 		return nil, errors.New(errMessage)
 	}
+	if userInfo.OrganizationID != 0 {
+		organizationQuery := organization.NewOrganizationQuery(db)
+		organization, err := organizationQuery.GetOrganizationByID(userInfo.OrganizationID)
+		if err != nil {
+			msg := "组织不存在"
+			return nil, errors.New(msg)
+		}
+		if organization.ExpiryDate != "" {
+			t, _ := time.Parse("2006-01-02", organization.ExpiryDate)
+			expiry := t.Unix()
+			now := time.Now().Unix()
+			if now > expiry {
+				msg := "组织已过期"
+				return nil, errors.New(msg)
+			}
+		}
+		if organization.Status != 1 {
+			msg := "组织已禁用"
+			return nil, errors.New(msg)
+		}
+	}
 	return userInfo, err
 }
 
