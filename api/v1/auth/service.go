@@ -129,6 +129,10 @@ func (s *authService) GetUserInfo(openID string, authType int, organizationID in
 			return nil, errors.New(msg)
 		}
 	}
+	if organization.Status != 1 {
+		msg := "组织已禁用"
+		return nil, errors.New(msg)
+	}
 	return user, nil
 }
 
