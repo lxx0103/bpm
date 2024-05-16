@@ -1359,7 +1359,7 @@ func sendMessageByAudit(paymentRequestID int64) error {
 					if !checkExist2(toSends, user) {
 						var msg auditToSend
 						msg.OpenID = user
-						msg.Thing1 = paymentRequest.Name
+						msg.Thing1 = paymentRequest.ProjectName
 						msg.Thing2 = paymentRequest.CreatedBy
 						msg.Thing11 = paymentRequest.Name
 						msg.Thing6 = "有需要你审批的请款"
