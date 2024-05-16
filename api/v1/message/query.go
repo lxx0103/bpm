@@ -111,3 +111,25 @@ func (r *messageQuery) GetOtherMemberByProject(projectID, userID int64) ([]strin
 		`, projectID, userID)
 	return openID, err
 }
+
+func (r *messageQuery) GetUserByPosition(positionID int64) (*[]string, error) {
+	var openIDs []string
+	err := r.conn.Select(&openIDs, `
+		SELECT identifier
+		FROM users
+		WHERE position_id = ?
+		AND status = 1
+	`, positionID)
+	return &openIDs, err
+}
+
+func (r *messageQuery) GetUserByID(userID int64) (string, error) {
+	var openID string
+	err := r.conn.Get(&openID, `
+		SELECT identifier
+		FROM users
+		WHERE id = ?
+		AND status = 1
+		`, userID)
+	return openID, err
+}

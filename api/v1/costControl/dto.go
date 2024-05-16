@@ -1,6 +1,9 @@
 package costControl
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 type ReqBudgetNew struct {
 	OrganizationID int64    `json:"organization_id" binding:"required,min=1"`
@@ -186,7 +189,7 @@ type RespPaymentRequest struct {
 	Deliveried         int                       `db:"deliveried" json:"deliveried"`
 	Pending            int                       `db:"pending" json:"pending"`
 	DeliveryStatus     int                       `db:"delivery_status" json:"delivery_status"`
-	Created            string                    `db:"created" json:"created"`
+	Created            time.Time                 `db:"created" json:"created"`
 	CreatedBy          string                    `db:"created_by" json:"created_by"`
 }
 
