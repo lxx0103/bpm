@@ -1517,7 +1517,7 @@ func NewPaymentRequestTodo(d amqp.Delivery) bool {
 	paymentRequest, err := costControlQuery.GetPaymentRequestByID(NewPaymentRequestCreated.PaymentRequestID)
 	if err != nil {
 		fmt.Println("GET PAYMENT REQUEST ERROR:", err.Error())
-		return false
+		return true
 	}
 	if paymentRequest.Status == 3 {
 		err = sendMessageByCreated(NewPaymentRequestCreated.PaymentRequestID)
