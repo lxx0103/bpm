@@ -98,6 +98,7 @@ func Subscribe(conn *queue.Conn) {
 	conn.StartConsumer("NewAssignmentCreated", "NewAssignmentCreated", NewAssignmentTodo)
 	conn.StartConsumer("NewAssignmentCompleted", "NewAssignmentCompleted", NewAssignmentAuditTodo)
 	conn.StartConsumer("NewPaymentRequestCreated", "NewPaymentRequestCreated", NewPaymentRequestAudit)
+	conn.StartConsumer("NewPaymentRequestAudited", "NewPaymentRequestAudited", NewPaymentRequestTodo)
 }
 
 func NewTodo(d amqp.Delivery) bool {
@@ -1458,6 +1459,179 @@ func sendMessageByAudit(paymentRequestID int64) error {
 		templateID := config.ReadConfig("Wechat.shenpi_template_id")
 		state := config.ReadConfig("Wechat.state")
 		jsonReq := []byte(`{ "touser" : "` + toSend.OpenID + `", "template_id" : "` + templateID + `", "page" : "pages/index/index","miniprogram_state" : "` + state + `","lang" : "zh_CN","data" : {  "thing1" : { "value": "` + toSend.Thing1 + `"}, "thing2": { "value": "` + toSend.Thing2 + `"}, "thing11": { "value": "` + toSend.Thing11 + `"}, "thing6": { "value": "` + toSend.Thing6 + `"}, "time12": { "value": "` + toSend.Time12 + `" } } }`)
+
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonReq))
+		if err != nil {
+			if err != nil {
+				fmt.Println(err.Error() + "14")
+				return err
+			}
+		}
+		q := req.URL.Query()
+		q.Add("access_token", accessToken)
+		req.URL.RawQuery = q.Encode()
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			if err != nil {
+				fmt.Println(err.Error() + "15")
+				return err
+			}
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			if err != nil {
+				fmt.Println(err.Error() + "16")
+				return err
+			}
+		}
+		var res messageRes
+		err = json.Unmarshal(body, &res)
+		if err != nil {
+			if err != nil {
+				fmt.Println(err.Error() + "17")
+				return err
+			}
+		}
+		if res.Errcode != 0 {
+			fmt.Println(res.Errmsg)
+		}
+	}
+	return nil
+}
+
+func NewPaymentRequestTodo(d amqp.Delivery) bool {
+	if d.Body == nil {
+		return false
+	}
+	var NewPaymentRequestCreated NewPaymentRequestCreated
+	err := json.Unmarshal(d.Body, &NewPaymentRequestCreated)
+	if err != nil {
+		if err != nil {
+			fmt.Println(err.Error() + "5")
+			return false
+		}
+	}
+	db := database.InitMySQL()
+	costControlQuery := costControl.NewCostControlQuery(db)
+	paymentRequest, err := costControlQuery.GetPaymentRequestByID(NewPaymentRequestCreated.PaymentRequestID)
+	if err != nil {
+		fmt.Println("GET PAYMENT REQUEST ERROR:", err.Error())
+		return false
+	}
+	if paymentRequest.Status == 3 {
+		err = sendMessageByCreated(NewPaymentRequestCreated.PaymentRequestID)
+		if err != nil {
+			fmt.Println(err.Error())
+			return false
+		} else {
+			return true
+		}
+	} else if paymentRequest.Status == 1 {
+		err = sendMessageByAudit(NewPaymentRequestCreated.PaymentRequestID)
+		if err != nil {
+			fmt.Println(err.Error())
+			return false
+		} else {
+			return true
+		}
+	} else {
+		return true
+	}
+}
+
+func sendMessageByCreated(paymentRequestID int64) error {
+	db := database.InitMySQL()
+	query := NewMessageQuery(db)
+	costControlQuery := costControl.NewCostControlQuery(db)
+	paymentRequest, err := costControlQuery.GetPaymentRequestByID(paymentRequestID)
+	if err != nil {
+		fmt.Println(err.Error() + "1")
+		return err
+	}
+	user, err := query.GetUserByID(paymentRequest.UserID)
+	if err != nil {
+		fmt.Println(err.Error() + "1")
+		return err
+	}
+	var toSends []todoToSend
+	var msg todoToSend
+	msg.OpenID = user
+	msg.Thing2 = paymentRequest.ProjectName
+	msg.Thing5 = paymentRequest.Name
+	msg.Name7 = paymentRequest.CreatedBy
+	msg.Date3 = paymentRequest.Created.Format("2006-01-02 15:04:05")
+	msg.Thing8 = "审核不通过，请重新提交"
+	toSends = append(toSends, msg)
+	organizationQuery := organization.NewOrganizationQuery(db)
+	for _, toSend := range toSends {
+		accessToken, err := organizationQuery.GetAccessToken("bpm")
+		if err != nil {
+			if err.Error() != "sql: no rows in result set" {
+				if err != nil {
+					fmt.Println(err.Error() + "7")
+					return err
+				}
+			} else {
+				var tokenRes organization.WechatToken
+				httpClient := &http.Client{}
+				token_uri := config.ReadConfig("Wechat.token_uri")
+				appID := config.ReadConfig("Wechat.app_id")
+				appSecret := config.ReadConfig("Wechat.app_secret")
+				uri := token_uri + "?appid=" + appID + "&secret=" + appSecret + "&grant_type=client_credential"
+				req, err := http.NewRequest("GET", uri, nil)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "8")
+						return err
+					}
+				}
+				res, err := httpClient.Do(req)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "9")
+						return err
+					}
+				}
+				defer res.Body.Close()
+				body, err := ioutil.ReadAll(res.Body)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "10")
+						return err
+					}
+				}
+				err = json.Unmarshal(body, &tokenRes)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "11")
+						return err
+					}
+				}
+				tx, err := db.Begin()
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "12")
+						return err
+					}
+				}
+				defer tx.Rollback()
+				repo := organization.NewOrganizationRepository(tx)
+				err = repo.NewAccessToken("bpm", tokenRes.AccessToken)
+				if err != nil {
+					if err != nil {
+						fmt.Println(err.Error() + "13")
+						return err
+					}
+				}
+				tx.Commit()
+				accessToken = tokenRes.AccessToken
+			}
+		}
+		url := config.ReadConfig("Wechat.message_uri")
+		templateID := config.ReadConfig("Wechat.daiban_template_id")
+		state := config.ReadConfig("Wechat.state")
+		jsonReq := []byte(`{ "touser" : "` + toSend.OpenID + `", "template_id" : "` + templateID + `", "page" : "pages/index/index","miniprogram_state" : "` + state + `","lang" : "zh_CN","data" : {  "thing2" : { "value": "` + toSend.Thing2 + `"}, "thing5": { "value": "` + toSend.Thing5 + `"}, "name7": { "value": "` + toSend.Name7 + `"}, "date3": { "value": "` + toSend.Date3 + `"}, "thing8": { "value": "` + toSend.Thing8 + `" } } }`)
 
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonReq))
 		if err != nil {
