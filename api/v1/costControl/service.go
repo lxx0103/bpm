@@ -662,7 +662,7 @@ func (s *costControlService) AuditPaymentRequest(paymentRequestID int64, info Re
 
 	tx.Commit()
 	type NewPaymentRequestAudited struct {
-		PaymentRequestID int64 `json:"paymentRequest_id"`
+		PaymentRequestID int64 `json:"payment_request_id"`
 	}
 	var newPaymentRequest NewPaymentRequestAudited
 	newPaymentRequest.PaymentRequestID = paymentRequestID

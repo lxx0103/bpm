@@ -45,6 +45,10 @@ type NewAssignmentCompleted struct {
 type NewPaymentRequestCreated struct {
 	PaymentRequestID int64 `json:"payment_request_id"`
 }
+
+type NewPaymentRequestAudited struct {
+	PaymentRequestID int64 `json:"payment_request_id"`
+}
 type todoToSend struct {
 	OpenID string `json:"open_id"`
 	Thing2 string `json:"thing2"`
@@ -1504,8 +1508,8 @@ func NewPaymentRequestTodo(d amqp.Delivery) bool {
 	if d.Body == nil {
 		return false
 	}
-	var NewPaymentRequestCreated NewPaymentRequestCreated
-	err := json.Unmarshal(d.Body, &NewPaymentRequestCreated)
+	var NewPaymentRequestAudited NewPaymentRequestAudited
+	err := json.Unmarshal(d.Body, &NewPaymentRequestAudited)
 	if err != nil {
 		if err != nil {
 			fmt.Println(err.Error() + "5")
@@ -1514,13 +1518,13 @@ func NewPaymentRequestTodo(d amqp.Delivery) bool {
 	}
 	db := database.InitMySQL()
 	costControlQuery := costControl.NewCostControlQuery(db)
-	paymentRequest, err := costControlQuery.GetPaymentRequestByID(NewPaymentRequestCreated.PaymentRequestID)
+	paymentRequest, err := costControlQuery.GetPaymentRequestByID(NewPaymentRequestAudited.PaymentRequestID)
 	if err != nil {
 		fmt.Println("GET PAYMENT REQUEST ERROR:", err.Error())
 		return true
 	}
 	if paymentRequest.Status == 3 {
-		err = sendMessageByCreated(NewPaymentRequestCreated.PaymentRequestID)
+		err = sendMessageByCreated(NewPaymentRequestAudited.PaymentRequestID)
 		if err != nil {
 			fmt.Println(err.Error())
 			return false
@@ -1528,7 +1532,7 @@ func NewPaymentRequestTodo(d amqp.Delivery) bool {
 			return true
 		}
 	} else if paymentRequest.Status == 1 {
-		err = sendMessageByAudit(NewPaymentRequestCreated.PaymentRequestID)
+		err = sendMessageByAudit(NewPaymentRequestAudited.PaymentRequestID)
 		if err != nil {
 			fmt.Println(err.Error())
 			return false
