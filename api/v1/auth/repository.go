@@ -32,7 +32,7 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 			updated,
 			updated_by
 		)
-		VALUES (?, ?, ?, ?, ?, 2, ?, "SIGNUP", ?, "SIGNUP")
+		VALUES (?, ?, ?, ?, ?, 3, ?, "SIGNUP", ?, "SIGNUP")
 	`, newUser.Type, newUser.Identifier, newUser.OrganizationID, newUser.Credential, newUser.Birthday, time.Now(), time.Now())
 	if err != nil {
 		return 0, err
@@ -53,7 +53,7 @@ func (r *authRepository) CreateUser(newUser User) (int64, error) {
 				updated,
 				updated_by
 			)
-			VALUES (?, ?, 2, ?, "SIGNUP", ?, "SIGNUP")
+			VALUES (?, ?, 3, ?, "SIGNUP", ?, "SIGNUP")
 		`, id, newUser.OrganizationID, time.Now(), time.Now())
 		if err != nil {
 			return 0, err
